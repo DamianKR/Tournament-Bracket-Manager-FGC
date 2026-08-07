@@ -1,0 +1,53 @@
+.tournament-view {
+  display: flex;
+  min-height: 100vh;
+}
+
+.tournament-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-x: auto;
+}
+
+.tournament-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.tournament-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.tournament-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.meta-separator {
+  color: var(--text-tertiary);
+}
+
+.meta-item.champion {
+  color: var(--warning-color);
+  font-weight: 600;
+}
+
+.error-state,
+.setup-notice {
+  max-width: 600px;
+  margin: 4rem auto;
+  text-align: center;
+  padding: 3rem;
+}
+
+.participants-view {
+  max-width: 800px;
+  margin: 0 auto;
+}

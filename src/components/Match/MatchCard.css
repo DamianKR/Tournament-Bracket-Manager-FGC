@@ -1,0 +1,126 @@
+.match-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s;
+}
+
+.match-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.match-card.grand-final-match {
+  border: 2px solid var(--warning-color);
+  background: linear-gradient(to bottom, #fffbeb, var(--bg-primary));
+}
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.match-id {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.match-status {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.match-status.completed {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.match-status.pending {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.match-participants {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.participant {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  background-color: var(--bg-secondary);
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.participant.selectable {
+  cursor: pointer;
+}
+
+.participant.selectable:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--primary-color);
+  transform: translateX(2px);
+}
+
+.participant.winner {
+  background-color: #d1fae5;
+  border-color: var(--success-color);
+  font-weight: 600;
+}
+
+.participant.loser {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.participant-name {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.winner-badge {
+  background-color: var(--success-color);
+  color: white;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.match-divider {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  margin: 0.25rem 0;
+}
+
+.match-hint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Empty participant slots */
+.participant-name:empty::before {
+  content: 'TBD';
+  color: var(--text-tertiary);
+  font-style: italic;
+}
