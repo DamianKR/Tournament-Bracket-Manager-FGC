@@ -224,19 +224,39 @@ function calculateLoserRoundMatches(round: number, participantCount: number): nu
 
 /**
  * Link loser bracket matches together
+ * Loser bracket has alternating structure:
+ * - Odd rounds (1, 3, 5...): Receive losers from winner bracket + play
+ * - Even rounds (2, 4, 6...): Winners from previous loser round only
  */
 function linkLoserBracketMatches(matches: Match[], totalRounds: number): void {
   for (let round = 1; round < totalRounds; round++) {
     const currentRoundMatches = matches.filter(m => m.roundNumber === round);
     const nextRoundMatches = matches.filter(m => m.roundNumber === round + 1);
     
-    currentRoundMatches.forEach((match, index) => {
-      // Loser bracket linking is more complex due to alternating structure
-      const nextMatchIndex = Math.floor(index / 2);
-      if (nextRoundMatches[nextMatchIndex]) {
-        match.nextWinnerMatchId = nextRoundMatches[nextMatchIndex].id;
-      }
-    });
+    if (nextRoundMatches.length === 0) continue;
+    
+    // Determine linking pattern based on round parity
+    if (round % 2 === 1) {
+      // Odd round: Each match winner goes to next round
+      // If next round is even, winners play each other
+      // Pattern: 2 winners → 1 match in next round
+      currentRoundMatches.forEach((match, index) => {
+        const nextMatchIndex = Math.floor(index / 2);
+        if (nextRoundMatches[nextMatchIndex]) {
+          match.nextWinnerMatchId = nextRoundMatches[nextMatchIndex].id;
+        }
+      });
+    } else {
+      // Even round: Winners advance to next odd round
+      // Next odd round will receive both these winners AND new losers from winner bracket
+      // Pattern: Each winner goes to a specific match in next round
+      currentRoundMatches.forEach((match, index) => {
+        // In even rounds, winners go to the match at the same index in next round
+        if (nextRoundMatches[index]) {
+          match.nextWinnerMatchId = nextRoundMatches[index].id;
+        }
+      });
+    }
   }
 }
 
@@ -247,6 +267,8 @@ function linkWinnerToLoserBracket(
   winnerMatches: Match[],
   loserMatches: Match[]
 ): void {
+  if (loserMatches.length === 0) return;
+  
   // First round of winner bracket losers go to first round of loser bracket
   const winnerRound1 = winnerMatches.filter(m => m.roundNumber === 1);
   const loserRound1 = loserMatches.filter(m => m.roundNumber === 1);
@@ -258,14 +280,21 @@ function linkWinnerToLoserBracket(
     }
   });
 
-  // Subsequent winner rounds feed into loser bracket
+  // Subsequent winner rounds feed into ODD loser bracket rounds
+  // Winner R2 → Loser R2 (odd round that receives new losers)
+  // Winner R3 → Loser R4 (odd round that receives new losers)
+  // Pattern: Winner Rn → Loser R(2n-2) for n >= 2
   const winnerRounds = Math.max(...winnerMatches.map(m => m.roundNumber));
   
-  for (let round = 2; round <= winnerRounds; round++) {
-    const winnerRoundMatches = winnerMatches.filter(m => m.roundNumber === round);
-    const loserRoundNumber = (round - 1) * 2;
+  for (let winnerRound = 2; winnerRound <= winnerRounds; winnerRound++) {
+    const winnerRoundMatches = winnerMatches.filter(m => m.roundNumber === winnerRound);
+    
+    // Calculate which loser round receives these losers
+    // Winner R2 → Loser R2, Winner R3 → Loser R4, Winner R4 → Loser R6
+    const loserRoundNumber = (winnerRound - 1) * 2;
     const loserRoundMatches = loserMatches.filter(m => m.roundNumber === loserRoundNumber);
     
+    // Each winner match sends its loser to a specific loser match
     winnerRoundMatches.forEach((match, index) => {
       if (loserRoundMatches[index]) {
         match.nextLoserMatchId = loserRoundMatches[index].id;

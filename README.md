@@ -21,7 +21,8 @@ Toda la documentación está en la carpeta **`DocumentationDevelopment/`**:
 - **[`README.md`](DocumentationDevelopment/README.md)** - Documentación técnica (inglés)
 - **[`AGENTS.md`](DocumentationDevelopment/AGENTS.md)** - Para desarrolladores/AI
 - **[`CHANGELOG.md`](DocumentationDevelopment/CHANGELOG.md)** - Historial de cambios
-- **[`BUGFIX_BYES.md`](DocumentationDevelopment/BUGFIX_BYES.md)** - Detalles de correcciones
+- **[`BUGFIX_BYES.md`](DocumentationDevelopment/BUGFIX_BYES.md)** - Fix de BYEs explícitos
+- **[`BUGFIX_IMPLICIT_BYES.md`](DocumentationDevelopment/BUGFIX_IMPLICIT_BYES.md)** - Fix de BYEs implícitos
 
 ---
 
@@ -50,5 +51,5 @@ npm run preview
 
 ---
 
-**Versión:** 1.0.1  
+**Versión:** 1.0.2  
 **Última actualización:** 2026-08-07

@@ -45,11 +45,17 @@ Bienvenido a la documentación del **Bracket Tournament Manager**.
    - Correcciones de bugs
    - Notas de migración
 
-6. **[BUGFIX_BYES.md](BUGFIX_BYES.md)** - Detalles del fix de BYEs
+6. **[BUGFIX_BYES.md](BUGFIX_BYES.md)** - Detalles del fix de BYEs explícitos
    - Descripción del problema
    - Causa raíz
    - Solución implementada
    - Casos de prueba
+
+7. **[BUGFIX_IMPLICIT_BYES.md](BUGFIX_IMPLICIT_BYES.md)** - Detalles del fix de BYEs implícitos
+   - BYEs en Loser Bracket
+   - Detección automática de slots vacíos
+   - Lógica de auto-completado
+   - Diferencia con BYEs explícitos
 
 ---
 
@@ -63,7 +69,8 @@ DocumentationDevelopment/
 ├── README.md                     ← Documentación técnica
 ├── AGENTS.md                     ← Para desarrolladores
 ├── CHANGELOG.md                  ← Historial de cambios
-└── BUGFIX_BYES.md                ← Detalles de correcciones
+├── BUGFIX_BYES.md                ← Fix de BYEs explícitos
+└── BUGFIX_IMPLICIT_BYES.md       ← Fix de BYEs implícitos
 ```
 
 ---
@@ -88,4 +95,4 @@ DocumentationDevelopment/
 ---
 
 **Última actualización:** 2026-08-07  
-**Versión del proyecto:** 1.0.1
+**Versión del proyecto:** 1.0.2

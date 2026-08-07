@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.0.2] - 2026-08-07
+
+### 🐛 Bug Fixes
+
+- **CRÍTICO**: Corregido bug de BYEs implícitos en Loser Bracket
+  - Matches con un solo participante (oponente nunca llegará) ahora se completan automáticamente
+  - Ocurría cuando un participante bajaba al Loser Bracket y su oponente era un slot vacío permanente
+  - Sistema ahora detecta cuando un slot nunca se llenará y auto-avanza al participante presente
+  - Ver `BUGFIX_IMPLICIT_BYES.md` para detalles técnicos
+
+### 🔧 Cambios Técnicos
+
+- Agregada función `checkAndProcessImplicitBye()` en `matchProgression.ts`
+- Agregada función `checkIfMatchCanReceiveParticipants()` para validar si un match puede recibir más participantes
+- Modificada función `advanceParticipant()` para detectar y procesar BYEs implícitos
+- Detección inteligente de slots vacíos que nunca se llenarán
+
+### 📊 Impacto
+
+- Resuelve matches bloqueados en Loser Bracket con torneos de cualquier tamaño
+- Especialmente importante para torneos con 6, 10, 14, 18, etc. participantes
+- No afecta torneos con potencias de 2 (4, 8, 16, 32, etc.)
+
+---
+
 ## [1.0.1] - 2026-08-07
 
 ### 🐛 Bug Fixes
