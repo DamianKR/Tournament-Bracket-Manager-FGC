@@ -98,6 +98,9 @@ function generateWinnerBracket(participants: Participant[]): Match[] {
   // Link matches (set nextWinnerMatchId)
   linkWinnerBracketMatches(matches, rounds);
 
+  // Process BYEs - advance winners to next matches
+  processByeMatches(matches);
+
   return matches;
 }
 
@@ -114,6 +117,31 @@ function linkWinnerBracketMatches(matches: Match[], totalRounds: number): void {
       match.nextWinnerMatchId = nextRoundMatches[nextMatchIndex]?.id || null;
     });
   }
+}
+
+/**
+ * Process BYE matches and advance winners automatically
+ */
+function processByeMatches(matches: Match[]): void {
+  matches.forEach(match => {
+    // If match is completed (BYE) and has a winner, advance them
+    if (match.status === 'completed' && match.winnerId && match.nextWinnerMatchId) {
+      const nextMatch = matches.find(m => m.id === match.nextWinnerMatchId);
+      if (nextMatch) {
+        // Place winner in next match
+        if (nextMatch.participant1Id === null) {
+          nextMatch.participant1Id = match.winnerId;
+        } else if (nextMatch.participant2Id === null) {
+          nextMatch.participant2Id = match.winnerId;
+        }
+        
+        // If both participants are present in next match, set it to in_progress
+        if (nextMatch.participant1Id && nextMatch.participant2Id) {
+          nextMatch.status = 'in_progress';
+        }
+      }
+    }
+  });
 }
 
 /**
@@ -164,6 +192,9 @@ function generateLoserBracket(
   
   // Link winner bracket to loser bracket
   linkWinnerToLoserBracket(winnerBracket, matches);
+
+  // Process BYEs in loser bracket
+  processByeMatches(matches);
 
   return matches;
 }

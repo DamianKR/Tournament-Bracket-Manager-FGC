@@ -1,0 +1,93 @@
+📁 ESTRUCTURA DEL PROYECTO
+==========================
+
+Bracket Project/
+│
+├── 📄 README.md                    ← Inicio rápido y enlaces a documentación
+├── 📄 Abrir_Aplicacion.bat         ← Abre la app con un click
+├── 📄 .gitignore                   ← Archivos ignorados por Git
+├── 📄 package.json                 ← Dependencias del proyecto
+├── 📄 tsconfig.json                ← Configuración de TypeScript
+├── 📄 vite.config.ts               ← Configuración de Vite
+├── 📄 index.html                   ← HTML principal (desarrollo)
+│
+├── 📁 dist/                        ← BUILD DE PRODUCCIÓN (USAR ESTO)
+│   ├── index.html                  ← Abre este archivo para usar la app
+│   └── assets/                     ← CSS y JS optimizados
+│       ├── index-[hash].css
+│       └── index-[hash].js
+│
+├── 📁 DocumentationDevelopment/    ← TODA LA DOCUMENTACIÓN
+│   ├── INDEX.md                    ← Índice de documentación
+│   ├── LEEME.md                    ← Guía en español (usuarios)
+│   ├── INSTRUCCIONES_USO_LOCAL.md  ← Uso local detallado
+│   ├── README.md                   ← Documentación técnica (inglés)
+│   ├── AGENTS.md                   ← Para desarrolladores/AI
+│   ├── CHANGELOG.md                ← Historial de cambios
+│   └── BUGFIX_BYES.md              ← Detalles de correcciones
+│
+├── 📁 src/                         ← CÓDIGO FUENTE
+│   ├── 📁 pages/                   ← Páginas principales
+│   │   ├── Dashboard/              ← Lista de torneos
+│   │   ├── CreateTournament/       ← Crear torneo
+│   │   └── Tournament/             ← Vista del bracket
+│   │
+│   ├── 📁 components/              ← Componentes reutilizables
+│   │   ├── Bracket/                ← Visualización del bracket
+│   │   ├── Match/                  ← Tarjeta de partido
+│   │   ├── Participants/           ← Lista de participantes
+│   │   ├── Sidebar/                ← Barra lateral
+│   │   ├── Tournament/             ← Componentes de torneo
+│   │   └── UI/                     ← Elementos UI comunes
+│   │
+│   ├── 📁 engine/                  ← LÓGICA DEL TORNEO (sin UI)
+│   │   ├── generator/              ← Generación de brackets
+│   │   ├── progression/            ← Avance de partidos
+│   │   ├── seeding/                ← Asignación de seeds
+│   │   ├── validation/             ← Validaciones
+│   │   └── utils/                  ← Utilidades matemáticas
+│   │
+│   ├── 📁 services/                ← Servicios de negocio
+│   │   ├── storage/                ← Persistencia (localStorage)
+│   │   └── tournament/             ← Gestión de torneos
+│   │
+│   ├── 📁 models/                  ← Tipos TypeScript
+│   ├── 📁 hooks/                   ← React hooks personalizados
+│   ├── 📁 utils/                   ← Utilidades generales
+│   ├── 📁 constants/               ← Constantes de la app
+│   ├── 📁 assets/                  ← Imágenes, iconos, etc.
+│   │
+│   ├── App.tsx                     ← Componente principal
+│   ├── main.tsx                    ← Punto de entrada
+│   └── index.css                   ← Estilos globales
+│
+└── 📁 node_modules/                ← Dependencias (no tocar)
+
+
+═══════════════════════════════════════════════════════════════
+
+🎯 ARCHIVOS IMPORTANTES:
+
+Para USAR la aplicación:
+  ✅ dist/index.html
+  ✅ Abrir_Aplicacion.bat
+
+Para LEER documentación:
+  📖 DocumentationDevelopment/INDEX.md
+  📖 DocumentationDevelopment/LEEME.md
+
+Para DESARROLLAR:
+  🔧 src/
+  🔧 DocumentationDevelopment/AGENTS.md
+
+═══════════════════════════════════════════════════════════════
+
+📊 ESTADÍSTICAS:
+
+Tamaño del build:     266 KB
+Archivos de código:   ~50 archivos
+Líneas de código:     ~3,000 líneas
+Documentación:        7 archivos MD
+Versión:              1.0.1
+
+═══════════════════════════════════════════════════════════════

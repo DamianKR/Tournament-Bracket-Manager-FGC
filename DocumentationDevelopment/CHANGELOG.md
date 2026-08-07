@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.1] - 2026-08-07
+
+### 🐛 Bug Fixes
+
+- **CRÍTICO**: Corregido bug donde participantes con BYE no avanzaban automáticamente al siguiente match
+  - Los matches con BYE ahora avanzan correctamente al ganador
+  - Afectaba a todos los torneos con número de participantes no potencia de 2
+  - Ver `BUGFIX_BYES.md` para detalles técnicos
+
+### 🔧 Cambios Técnicos
+
+- Agregada función `processByeMatches()` en `bracketGenerator.ts`
+- Procesamiento automático de BYEs después de vincular matches
+- Aplicado tanto a winner bracket como loser bracket
+
+---
+
 ## [1.0.0] - 2026-08-07
 
 ### ✨ Características Iniciales
