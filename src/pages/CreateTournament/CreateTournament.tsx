@@ -138,13 +138,8 @@ function CreateTournament() {
 
   const sidebarItems = [
     {
-      id: 'name',
-      label: 'Tournament Name',
-      active: !isCreated,
-    },
-    {
-      id: 'mode',
-      label: 'Mode',
+      id: 'setup',
+      label: 'Tournament Setup',
       active: !isCreated,
     },
     {

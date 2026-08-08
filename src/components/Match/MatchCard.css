@@ -16,6 +16,19 @@
   background: linear-gradient(to bottom, #fffbeb, var(--bg-primary));
 }
 
+.match-card.ghost-match {
+  opacity: 0.6;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--bg-primary),
+    var(--bg-primary) 10px,
+    var(--bg-secondary) 10px,
+    var(--bg-secondary) 20px
+  );
+  border-style: dashed;
+  border-color: var(--border-color);
+}
+
 .match-header {
   display: flex;
   justify-content: space-between;
@@ -48,6 +61,12 @@
 .match-status.pending {
   background-color: #e0e7ff;
   color: #3730a3;
+}
+
+.match-status.ghost {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: 1px dashed #9ca3af;
 }
 
 .match-participants {

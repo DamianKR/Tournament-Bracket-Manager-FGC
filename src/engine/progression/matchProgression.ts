@@ -363,17 +363,21 @@ function checkTournamentCompletion(tournament: Tournament): void {
     }
   } else {
     // Winner bracket champion won, or reset final completed
-    if (tournament.bracket.grandFinalReset?.status === 'completed' || 
-        grandFinal.winnerId === grandFinal.participant1Id) {
-      const finalMatch = tournament.bracket.grandFinalReset?.status === 'completed'
+    const resetCompleted = tournament.bracket.grandFinalReset?.status === 'completed';
+    const winnerBracketChampionWon = grandFinal.winnerId === grandFinal.participant1Id;
+    
+    if (resetCompleted || winnerBracketChampionWon) {
+      const finalMatch = resetCompleted
         ? tournament.bracket.grandFinalReset
         : grandFinal;
       
-      tournament.championId = finalMatch.winnerId;
-      tournament.status = 'completed';
-      
-      // Assign final positions
-      assignFinalPositions(tournament);
+      if (finalMatch && finalMatch.winnerId) {
+        tournament.championId = finalMatch.winnerId;
+        tournament.status = 'completed';
+        
+        // Assign final positions
+        assignFinalPositions(tournament);
+      }
     }
   }
 }

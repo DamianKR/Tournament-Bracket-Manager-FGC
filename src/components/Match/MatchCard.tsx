@@ -34,13 +34,22 @@ function MatchCard({
   };
 
   const canSelect = !readOnly && match.participant1Id && match.participant2Id;
+  
+  // Check if this is a ghost match (TBD vs TBD that was auto-completed)
+  const isGhostMatch = match.status === 'completed' && 
+                       !match.participant1Id && 
+                       !match.participant2Id && 
+                       !match.winnerId;
 
   return (
-    <div className={`match-card ${isGrandFinal ? 'grand-final-match' : ''}`}>
+    <div className={`match-card ${isGrandFinal ? 'grand-final-match' : ''} ${isGhostMatch ? 'ghost-match' : ''}`}>
       <div className="match-header">
         <span className="match-id">Match {match.matchNumber}</span>
-        {match.status === 'completed' && (
+        {match.status === 'completed' && !isGhostMatch && (
           <span className="match-status completed">✓</span>
+        )}
+        {isGhostMatch && (
+          <span className="match-status ghost">Auto-BYE</span>
         )}
         {match.status === 'pending' && (!match.participant1Id || !match.participant2Id) && (
           <span className="match-status pending">Waiting</span>
