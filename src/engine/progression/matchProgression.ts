@@ -40,7 +40,7 @@ export function recordMatchResult(
   match.status = 'completed';
 
   // Update participant loss counts
-  const loser = tournament.participants.find(p => p.id === loserId);
+  const loser = tournament.participants.find((p: Participant) => p.id === loserId);
   if (loser) {
     loser.lossCount++;
     
@@ -52,12 +52,18 @@ export function recordMatchResult(
 
   // Advance winner
   if (match.nextWinnerMatchId) {
-    advanceParticipant(tournament.bracket, match.nextWinnerMatchId, winnerId);
+    // Winners from loser bracket go to slot 1
+    if (match.bracketType === 'loser') {
+      advanceParticipantToSlot(tournament.bracket, match.nextWinnerMatchId, winnerId, 1);
+    } else {
+      advanceParticipant(tournament.bracket, match.nextWinnerMatchId, winnerId);
+    }
   }
 
   // Advance loser to loser bracket (if applicable)
   if (loserId && match.nextLoserMatchId && loser && !loser.eliminated) {
-    advanceParticipant(tournament.bracket, match.nextLoserMatchId, loserId);
+    // Losers from winner bracket go to slot 2 (to avoid immediate rematches)
+    advanceParticipantToSlot(tournament.bracket, match.nextLoserMatchId, loserId, 2);
   }
 
   // Check for tournament completion
@@ -74,11 +80,11 @@ export function recordMatchResult(
  */
 function findMatch(bracket: Bracket, matchId: string): Match | null {
   // Check winner bracket
-  const winnerMatch = bracket.winnerBracket.find(m => m.id === matchId);
+  const winnerMatch = bracket.winnerBracket.find((m: Match) => m.id === matchId);
   if (winnerMatch) return winnerMatch;
 
   // Check loser bracket
-  const loserMatch = bracket.loserBracket.find(m => m.id === matchId);
+  const loserMatch = bracket.loserBracket.find((m: Match) => m.id === matchId);
   if (loserMatch) return loserMatch;
 
   // Check grand finals
@@ -109,7 +115,121 @@ function advanceParticipant(
   // If both participants are present, match is ready
   if (nextMatch.participant1Id && nextMatch.participant2Id) {
     nextMatch.status = 'in_progress';
+  } else {
+    // Check if this is an implicit BYE (one participant, other will never come)
+    // This happens in loser bracket when the opponent slot was always empty
+    checkAndProcessImplicitBye(bracket, nextMatch);
   }
+}
+
+/**
+ * Advance a participant to a specific slot in the next match
+ * Used to ensure proper positioning in loser bracket
+ */
+function advanceParticipantToSlot(
+  bracket: Bracket,
+  nextMatchId: string,
+  participantId: string,
+  slot: 1 | 2
+): void {
+  const nextMatch = findMatch(bracket, nextMatchId);
+  if (!nextMatch) return;
+
+  // Place participant in specified slot
+  if (slot === 1) {
+    if (nextMatch.participant1Id === null) {
+      nextMatch.participant1Id = participantId;
+    } else {
+      // Slot 1 occupied, try slot 2
+      if (nextMatch.participant2Id === null) {
+        nextMatch.participant2Id = participantId;
+      }
+    }
+  } else {
+    if (nextMatch.participant2Id === null) {
+      nextMatch.participant2Id = participantId;
+    } else {
+      // Slot 2 occupied, try slot 1
+      if (nextMatch.participant1Id === null) {
+        nextMatch.participant1Id = participantId;
+      }
+    }
+  }
+
+  // If both participants are present, match is ready
+  if (nextMatch.participant1Id && nextMatch.participant2Id) {
+    nextMatch.status = 'in_progress';
+  } else {
+    checkAndProcessImplicitBye(bracket, nextMatch);
+  }
+}
+
+/**
+ * Check if a match is an implicit BYE and auto-complete it
+ * This happens when:
+ * 1. One participant is present but the other slot will never be filled
+ * 2. Both slots are empty and will never be filled (double BYE)
+ */
+function checkAndProcessImplicitBye(bracket: Bracket, match: Match): void {
+  // Only process if match is pending
+  if (match.status !== 'pending') return;
+  
+  const hasParticipant1 = match.participant1Id !== null;
+  const hasParticipant2 = match.participant2Id !== null;
+  
+  // If both participants are present, match is ready to play
+  if (hasParticipant1 && hasParticipant2) {
+    return;
+  }
+
+  // Check if this match can still receive participants
+  const canReceiveMoreParticipants = checkIfMatchCanReceiveParticipants(bracket, match);
+  
+  if (!canReceiveMoreParticipants) {
+    // Case 1: One participant present (single BYE)
+    if (hasParticipant1 || hasParticipant2) {
+      const winnerId = hasParticipant1 ? match.participant1Id : match.participant2Id;
+      
+      if (winnerId) {
+        match.winnerId = winnerId;
+        match.status = 'completed';
+        
+        // Advance winner to next match
+        if (match.nextWinnerMatchId) {
+          advanceParticipant(bracket, match.nextWinnerMatchId, winnerId);
+        }
+      }
+    }
+    // Case 2: Both slots empty (double BYE)
+    else if (!hasParticipant1 && !hasParticipant2) {
+      // Mark as completed with no winner (ghost match)
+      // This prevents blocking subsequent matches
+      match.status = 'completed';
+      // No winner to advance, next match will also be checked for BYE
+    }
+  }
+}
+
+/**
+ * Check if a match can still receive participants from previous matches
+ */
+function checkIfMatchCanReceiveParticipants(bracket: Bracket, targetMatch: Match): boolean {
+  // Find all matches that could feed into this match
+  const allMatches = [
+    ...bracket.winnerBracket,
+    ...bracket.loserBracket,
+  ];
+  
+  // Check if there are any incomplete matches in previous rounds that feed into this match
+  const feedingMatches = allMatches.filter(m => 
+    m.nextWinnerMatchId === targetMatch.id || 
+    m.nextLoserMatchId === targetMatch.id
+  );
+  
+  // If any feeding match is not completed, we might still receive participants
+  const hasIncompleteFeedingMatches = feedingMatches.some(m => m.status !== 'completed');
+  
+  return hasIncompleteFeedingMatches;
 }
 
 /**
@@ -159,7 +279,7 @@ export function revertMatchResult(
 
   // Revert participant loss counts
   if (match.loserId) {
-    const loser = tournament.participants.find(p => p.id === match.loserId);
+    const loser = tournament.participants.find((p: Participant) => p.id === match.loserId);
     if (loser && loser.lossCount > 0) {
       loser.lossCount--;
       loser.eliminated = false;
@@ -221,7 +341,7 @@ function checkTournamentCompletion(tournament: Tournament): void {
 
   // Check if we need a grand final reset
   const loserBracketWinner = tournament.participants.find(
-    p => p.id === grandFinal.participant2Id
+    (p: Participant) => p.id === grandFinal.participant2Id
   );
 
   if (loserBracketWinner && grandFinal.winnerId === loserBracketWinner.id) {
@@ -263,7 +383,7 @@ function checkTournamentCompletion(tournament: Tournament): void {
  */
 function assignFinalPositions(tournament: Tournament): void {
   // Champion gets position 1
-  const champion = tournament.participants.find(p => p.id === tournament.championId);
+  const champion = tournament.participants.find((p: Participant) => p.id === tournament.championId);
   if (champion) {
     champion.finalPosition = 1;
   }
@@ -271,7 +391,7 @@ function assignFinalPositions(tournament: Tournament): void {
   // Runner-up gets position 2
   const grandFinal = tournament.bracket?.grandFinalReset || tournament.bracket?.grandFinal;
   if (grandFinal) {
-    const runnerUp = tournament.participants.find(p => p.id === grandFinal.loserId);
+    const runnerUp = tournament.participants.find((p: Participant) => p.id === grandFinal.loserId);
     if (runnerUp) {
       runnerUp.finalPosition = 2;
     }
@@ -279,8 +399,8 @@ function assignFinalPositions(tournament: Tournament): void {
 
   // Assign positions to others based on elimination order
   // This is simplified - could be enhanced with more detailed tracking
-  const eliminated = tournament.participants.filter(p => p.eliminated && !p.finalPosition);
-  eliminated.forEach((p, index) => {
+  const eliminated = tournament.participants.filter((p: Participant) => p.eliminated && !p.finalPosition);
+  eliminated.forEach((p: Participant, index: number) => {
     p.finalPosition = 3 + index;
   });
 }

@@ -57,6 +57,12 @@ Bienvenido a la documentación del **Bracket Tournament Manager**.
    - Lógica de auto-completado
    - Diferencia con BYEs explícitos
 
+8. **[LOSER_BRACKET_STRUCTURE.md](LOSER_BRACKET_STRUCTURE.md)** - Estructura correcta del Loser Bracket
+   - Concepto de estructura alternada
+   - Fórmulas de vinculación
+   - Tablas de referencia
+   - Prevención de rematches
+
 ---
 
 ## 🗂️ Organización
@@ -70,7 +76,8 @@ DocumentationDevelopment/
 ├── AGENTS.md                     ← Para desarrolladores
 ├── CHANGELOG.md                  ← Historial de cambios
 ├── BUGFIX_BYES.md                ← Fix de BYEs explícitos
-└── BUGFIX_IMPLICIT_BYES.md       ← Fix de BYEs implícitos
+├── BUGFIX_IMPLICIT_BYES.md       ← Fix de BYEs implícitos
+└── LOSER_BRACKET_STRUCTURE.md    ← Estructura del Loser Bracket
 ```
 
 ---
@@ -95,4 +102,4 @@ DocumentationDevelopment/
 ---
 
 **Última actualización:** 2026-08-07  
-**Versión del proyecto:** 1.0.2
+**Versión del proyecto:** 1.0.4

@@ -123,137 +123,190 @@ function linkWinnerBracketMatches(matches: Match[], totalRounds: number): void {
  * Process BYE matches and advance winners automatically
  */
 function processByeMatches(matches: Match[]): void {
-  matches.forEach(match => {
-    // If match is completed (BYE) and has a winner, advance them
-    if (match.status === 'completed' && match.winnerId && match.nextWinnerMatchId) {
-      const nextMatch = matches.find(m => m.id === match.nextWinnerMatchId);
-      if (nextMatch) {
-        // Place winner in next match
-        if (nextMatch.participant1Id === null) {
-          nextMatch.participant1Id = match.winnerId;
-        } else if (nextMatch.participant2Id === null) {
-          nextMatch.participant2Id = match.winnerId;
-        }
-        
-        // If both participants are present in next match, set it to in_progress
-        if (nextMatch.participant1Id && nextMatch.participant2Id) {
-          nextMatch.status = 'in_progress';
+  // Advance winners from completed BYE matches
+  let changed = true;
+  let iterations = 0;
+  const maxIterations = 10;
+  
+  while (changed && iterations < maxIterations) {
+    changed = false;
+    iterations++;
+    
+    matches.forEach((match: Match) => {
+      // If match is completed (BYE) and has a winner, advance them
+      if (match.status === 'completed' && match.winnerId && match.nextWinnerMatchId) {
+        const nextMatch = matches.find((m: Match) => m.id === match.nextWinnerMatchId);
+        if (nextMatch) {
+          // Check if winner is already in the next match
+          const alreadyPlaced = nextMatch.participant1Id === match.winnerId || 
+                               nextMatch.participant2Id === match.winnerId;
+          
+          if (!alreadyPlaced) {
+            // Place winner in next match
+            if (nextMatch.participant1Id === null) {
+              nextMatch.participant1Id = match.winnerId;
+              changed = true;
+            } else if (nextMatch.participant2Id === null) {
+              nextMatch.participant2Id = match.winnerId;
+              changed = true;
+            }
+          }
+          
+          // If both participants are present in next match, set it to in_progress
+          if (nextMatch.participant1Id && nextMatch.participant2Id) {
+            nextMatch.status = 'in_progress';
+          }
         }
       }
-    }
-  });
+    });
+  }
 }
 
 /**
- * Generate loser bracket matches
+ * Generate loser bracket with correct double elimination structure
+ * Pattern: After each Winner round, Loser has 2 rounds (except first)
+ * - Odd Loser rounds: Receive losers from Winner
+ * - Even Loser rounds: Winners from previous Loser round play each other
  */
 function generateLoserBracket(
   participantCount: number,
   winnerBracket: Match[]
 ): Match[] {
+  if (participantCount <= 2) return [];
+  
   const matches: Match[] = [];
-  const loserRounds = calculateLoserRounds(participantCount);
+  const bracketSize = nextPowerOfTwo(participantCount);
+  const winnerRounds = Math.log2(bracketSize);
   
-  if (loserRounds === 0) return matches;
-
-  // Loser bracket structure is more complex
-  // Round 1: Losers from Winner Round 1
-  // Round 2: Winners from Loser Round 1 vs Losers from Winner Round 2
-  // And so on...
-
-  let matchCounter = 1;
+  console.log('=== LOSER BRACKET GENERATION ===');
+  console.log('Participants:', participantCount);
+  console.log('Bracket Size:', bracketSize);
+  console.log('Winner Rounds:', winnerRounds);
   
-  for (let round = 1; round <= loserRounds; round++) {
-    // Determine how many matches in this round
-    const matchesInRound = calculateLoserRoundMatches(round, participantCount);
+  let loserRound = 1;
+  
+  // Loser Round 1: Receives losers from Winner Round 1
+  const losersFromWR1 = bracketSize / 2; // All matches from Winner R1
+  const lr1Matches = losersFromWR1 / 2;
+  console.log(`Loser R${loserRound}: ${lr1Matches} matches (${losersFromWR1} losers from Winner R1)`);
+  
+  for (let i = 0; i < lr1Matches; i++) {
+    matches.push({
+      id: generateMatchId('loser', loserRound, i + 1),
+      roundNumber: loserRound,
+      matchNumber: i + 1,
+      bracketType: 'loser',
+      participant1Id: null,
+      participant2Id: null,
+      winnerId: null,
+      loserId: null,
+      status: 'pending',
+      nextWinnerMatchId: null,
+      nextLoserMatchId: null,
+    });
+  }
+  loserRound++;
+  
+  // Subsequent rounds follow the pattern
+  for (let winnerRound = 2; winnerRound <= winnerRounds; winnerRound++) {
+    // Odd Loser Round: Receives losers from Winner + winners from previous Loser
+    const losersFromWinner = bracketSize / Math.pow(2, winnerRound);
+    const winnersFromPrevLoser = bracketSize / Math.pow(2, winnerRound);
+    const totalParticipants = losersFromWinner + winnersFromPrevLoser;
+    const oddRoundMatches = totalParticipants / 2;
     
-    for (let i = 0; i < matchesInRound; i++) {
-      const match: Match = {
-        id: generateMatchId('loser', round, i + 1),
-        roundNumber: round,
+    console.log(`Loser R${loserRound}: ${oddRoundMatches} matches (${losersFromWinner} from Winner R${winnerRound} + ${winnersFromPrevLoser} from Loser R${loserRound-1})`);
+    
+    for (let i = 0; i < oddRoundMatches; i++) {
+      matches.push({
+        id: generateMatchId('loser', loserRound, i + 1),
+        roundNumber: loserRound,
         matchNumber: i + 1,
         bracketType: 'loser',
-        participant1Id: null, // Will be filled from winner bracket losers
+        participant1Id: null,
         participant2Id: null,
         winnerId: null,
         loserId: null,
         status: 'pending',
         nextWinnerMatchId: null,
-        nextLoserMatchId: null, // No loser advancement in loser bracket
-      };
+        nextLoserMatchId: null,
+      });
+    }
+    loserRound++;
+    
+    // Even Loser Round: Only winners from previous Loser round
+    if (oddRoundMatches > 1) {
+      const evenRoundMatches = oddRoundMatches / 2;
+      console.log(`Loser R${loserRound}: ${evenRoundMatches} matches (${oddRoundMatches} winners from Loser R${loserRound-1})`);
       
-      matches.push(match);
-      matchCounter++;
+      for (let i = 0; i < evenRoundMatches; i++) {
+        matches.push({
+          id: generateMatchId('loser', loserRound, i + 1),
+          roundNumber: loserRound,
+          matchNumber: i + 1,
+          bracketType: 'loser',
+          participant1Id: null,
+          participant2Id: null,
+          winnerId: null,
+          loserId: null,
+          status: 'pending',
+          nextWinnerMatchId: null,
+          nextLoserMatchId: null,
+        });
+      }
+      loserRound++;
     }
   }
 
+  console.log('Total Loser Matches:', matches.length);
+  console.log('Loser Rounds:', loserRound - 1);
+
   // Link loser bracket matches
-  linkLoserBracketMatches(matches, loserRounds);
+  linkLoserBracketMatchesCorrect(matches);
   
   // Link winner bracket to loser bracket
-  linkWinnerToLoserBracket(winnerBracket, matches);
-
-  // Process BYEs in loser bracket
-  processByeMatches(matches);
+  linkWinnerToLoserBracketCorrect(winnerBracket, matches);
 
   return matches;
 }
 
 /**
- * Calculate number of matches in a loser bracket round
+ * Link loser bracket matches correctly
+ * Pattern depends on round parity (odd/even)
  */
-function calculateLoserRoundMatches(round: number, participantCount: number): number {
-  const bracketSize = nextPowerOfTwo(participantCount);
-  const winnerRounds = Math.log2(bracketSize);
+function linkLoserBracketMatchesCorrect(matches: Match[]): void {
+  if (matches.length === 0) return;
   
-  // Loser bracket alternates between receiving losers and playing among themselves
-  if (round === 1) {
-    return bracketSize / 4; // First round gets losers from winner round 1
-  }
+  console.log('=== LINKING LOSER BRACKET ===');
   
-  // Odd rounds: receive new losers from winner bracket
-  // Even rounds: winners from previous loser round play each other
-  const winnerRoundSource = Math.ceil(round / 2) + 1;
+  const maxRound = Math.max(...matches.map((m: Match) => m.roundNumber));
   
-  if (winnerRoundSource > winnerRounds) {
-    return Math.max(1, bracketSize / Math.pow(2, round + 1));
-  }
-  
-  return Math.max(1, bracketSize / Math.pow(2, Math.ceil(round / 2) + 1));
-}
-
-/**
- * Link loser bracket matches together
- * Loser bracket has alternating structure:
- * - Odd rounds (1, 3, 5...): Receive losers from winner bracket + play
- * - Even rounds (2, 4, 6...): Winners from previous loser round only
- */
-function linkLoserBracketMatches(matches: Match[], totalRounds: number): void {
-  for (let round = 1; round < totalRounds; round++) {
-    const currentRoundMatches = matches.filter(m => m.roundNumber === round);
-    const nextRoundMatches = matches.filter(m => m.roundNumber === round + 1);
+  for (let round = 1; round < maxRound; round++) {
+    const currentRoundMatches = matches.filter((m: Match) => m.roundNumber === round);
+    const nextRoundMatches = matches.filter((m: Match) => m.roundNumber === round + 1);
     
     if (nextRoundMatches.length === 0) continue;
     
-    // Determine linking pattern based on round parity
-    if (round % 2 === 1) {
-      // Odd round: Each match winner goes to next round
-      // If next round is even, winners play each other
-      // Pattern: 2 winners → 1 match in next round
-      currentRoundMatches.forEach((match, index) => {
-        const nextMatchIndex = Math.floor(index / 2);
-        if (nextRoundMatches[nextMatchIndex]) {
-          match.nextWinnerMatchId = nextRoundMatches[nextMatchIndex].id;
+    console.log(`Loser R${round} (${currentRoundMatches.length} matches) → Loser R${round + 1} (${nextRoundMatches.length} matches)`);
+    
+    // Determine pattern based on round numbers
+    // Odd rounds (1, 3, 5...) go to even rounds (2, 4, 6...)
+    // Pattern: 1:1 mapping when same count, 2:1 when consolidating
+    if (currentRoundMatches.length === nextRoundMatches.length) {
+      // 1:1 mapping (e.g., L R1 → L R2, both have 2 matches)
+      currentRoundMatches.forEach((match: Match, index: number) => {
+        if (nextRoundMatches[index]) {
+          match.nextWinnerMatchId = nextRoundMatches[index].id;
+          console.log(`  L R${round} M${index + 1} → L R${round + 1} M${index + 1}`);
         }
       });
     } else {
-      // Even round: Winners advance to next odd round
-      // Next odd round will receive both these winners AND new losers from winner bracket
-      // Pattern: Each winner goes to a specific match in next round
-      currentRoundMatches.forEach((match, index) => {
-        // In even rounds, winners go to the match at the same index in next round
-        if (nextRoundMatches[index]) {
-          match.nextWinnerMatchId = nextRoundMatches[index].id;
+      // 2:1 mapping (consolidation, e.g., L R2 → L R3)
+      currentRoundMatches.forEach((match: Match, index: number) => {
+        const nextMatchIndex = Math.floor(index / 2);
+        if (nextRoundMatches[nextMatchIndex]) {
+          match.nextWinnerMatchId = nextRoundMatches[nextMatchIndex].id;
+          console.log(`  L R${round} M${index + 1} → L R${round + 1} M${nextMatchIndex + 1}`);
         }
       });
     }
@@ -261,43 +314,65 @@ function linkLoserBracketMatches(matches: Match[], totalRounds: number): void {
 }
 
 /**
- * Link winner bracket losers to loser bracket
+ * Link winner bracket to loser bracket correctly
+ * Winner R1 → Loser R1
+ * Winner R2 → Loser R2 (odd round that receives losers)
+ * Winner R3 → Loser R4 (odd round that receives losers)
+ * Pattern: Winner Rn → Loser R(2n-2) for n >= 2
  */
-function linkWinnerToLoserBracket(
+function linkWinnerToLoserBracketCorrect(
   winnerMatches: Match[],
   loserMatches: Match[]
 ): void {
   if (loserMatches.length === 0) return;
   
-  // First round of winner bracket losers go to first round of loser bracket
-  const winnerRound1 = winnerMatches.filter(m => m.roundNumber === 1);
-  const loserRound1 = loserMatches.filter(m => m.roundNumber === 1);
+  console.log('=== LINKING WINNER TO LOSER ===');
   
-  winnerRound1.forEach((match, index) => {
-    const loserMatchIndex = Math.floor(index / 2);
-    if (loserRound1[loserMatchIndex]) {
-      match.nextLoserMatchId = loserRound1[loserMatchIndex].id;
+  // Group loser matches by round
+  const loserByRound: { [round: number]: Match[] } = {};
+  loserMatches.forEach((m: Match) => {
+    if (!loserByRound[m.roundNumber]) {
+      loserByRound[m.roundNumber] = [];
     }
+    loserByRound[m.roundNumber].push(m);
   });
-
-  // Subsequent winner rounds feed into ODD loser bracket rounds
-  // Winner R2 → Loser R2 (odd round that receives new losers)
-  // Winner R3 → Loser R4 (odd round that receives new losers)
-  // Pattern: Winner Rn → Loser R(2n-2) for n >= 2
-  const winnerRounds = Math.max(...winnerMatches.map(m => m.roundNumber));
   
-  for (let winnerRound = 2; winnerRound <= winnerRounds; winnerRound++) {
-    const winnerRoundMatches = winnerMatches.filter(m => m.roundNumber === winnerRound);
+  console.log('Loser rounds:', Object.keys(loserByRound).map(Number));
+  
+  // Winner Round 1 → Loser Round 1
+  const winnerRound1 = winnerMatches.filter((m: Match) => m.roundNumber === 1);
+  console.log(`Winner R1 (${winnerRound1.length} matches) → Loser R1 (${loserByRound[1]?.length || 0} matches)`);
+  
+  if (loserByRound[1]) {
+    winnerRound1.forEach((match: Match, index: number) => {
+      const loserMatchIndex = Math.floor(index / 2);
+      if (loserByRound[1][loserMatchIndex]) {
+        match.nextLoserMatchId = loserByRound[1][loserMatchIndex].id;
+        console.log(`  W R1 M${index + 1} → L R1 M${loserMatchIndex + 1}`);
+      }
+    });
+  }
+  
+  // Winner Round n → Loser Round (2n-2) for n >= 2
+  const maxWinnerRound = Math.max(...winnerMatches.map((m: Match) => m.roundNumber));
+  for (let winnerRound = 2; winnerRound <= maxWinnerRound; winnerRound++) {
+    const loserRoundTarget = (winnerRound - 1) * 2;
     
-    // Calculate which loser round receives these losers
-    // Winner R2 → Loser R2, Winner R3 → Loser R4, Winner R4 → Loser R6
-    const loserRoundNumber = (winnerRound - 1) * 2;
-    const loserRoundMatches = loserMatches.filter(m => m.roundNumber === loserRoundNumber);
+    const winnerRoundMatches = winnerMatches.filter((m: Match) => m.roundNumber === winnerRound);
+    console.log(`Winner R${winnerRound} (${winnerRoundMatches.length} matches) → Loser R${loserRoundTarget} (${loserByRound[loserRoundTarget]?.length || 0} matches)`);
     
-    // Each winner match sends its loser to a specific loser match
-    winnerRoundMatches.forEach((match, index) => {
-      if (loserRoundMatches[index]) {
-        match.nextLoserMatchId = loserRoundMatches[index].id;
+    if (!loserByRound[loserRoundTarget]) {
+      console.log(`  WARNING: Loser R${loserRoundTarget} doesn't exist!`);
+      continue;
+    }
+    
+    // Each winner match sends loser to corresponding loser match
+    winnerRoundMatches.forEach((match: Match, index: number) => {
+      if (loserByRound[loserRoundTarget][index]) {
+        match.nextLoserMatchId = loserByRound[loserRoundTarget][index].id;
+        console.log(`  W R${winnerRound} M${index + 1} → L R${loserRoundTarget} M${index + 1}`);
+      } else {
+        console.log(`  WARNING: W R${winnerRound} M${index + 1} has no target in L R${loserRoundTarget}`);
       }
     });
   }

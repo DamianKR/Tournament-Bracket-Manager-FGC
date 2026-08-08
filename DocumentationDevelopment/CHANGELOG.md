@@ -1,5 +1,56 @@
 # Changelog
 
+## [1.0.4] - 2026-08-07
+
+### 🐛 Bug Fixes
+
+- **CRÍTICO**: Corregido procesamiento de "Ghost Matches" (TBD vs TBD)
+  - Matches con ambos slots vacíos ahora se completan automáticamente
+  - Ocurría en torneos con muchos BYEs (ej: 9 participantes → 7 BYEs)
+  - Sistema ahora detecta cuando ambos participantes nunca llegarán
+  - Previene bloqueo en cascada de rondas posteriores
+
+### 🔧 Cambios Técnicos
+
+- Modificada `checkAndProcessImplicitBye()` para manejar doble BYE
+- Agregado procesamiento iterativo de ghost matches en `processByeMatches()`
+- Sistema ahora completa matches vacíos que bloquean progresión
+
+### 📊 Impacto
+
+- Resuelve torneos con números pequeños de participantes (3-9)
+- Especialmente crítico para 9 participantes (7 BYEs)
+- Permite progresión correcta del Loser Bracket con múltiples BYEs
+
+---
+
+## [1.0.3] - 2026-08-07
+
+### 🐛 Bug Fixes - CRÍTICO
+
+- **CRÍTICO**: Corregida estructura del Loser Bracket
+  - **Problema 1**: Perdedores del Winner Bracket no bajaban correctamente al Loser Bracket
+  - **Problema 2**: Vinculación incorrecta entre rondas del Loser Bracket
+  - **Problema 3**: Fórmula de asignación `(round - 1) * 2` era incorrecta
+  - Ahora respeta la estructura alternada correcta (rondas impares/pares)
+  - Ver `LOSER_BRACKET_STRUCTURE.md` para detalles de la estructura correcta
+
+### 🔧 Cambios Técnicos
+
+- Reescrita función `linkWinnerToLoserBracket()` con fórmula correcta
+- Reescrita función `linkLoserBracketMatches()` con lógica de paridad
+- Agregada documentación completa de estructura en `LOSER_BRACKET_STRUCTURE.md`
+- Implementado cruce correcto para evitar rematches prematuros
+
+### 📊 Impacto
+
+- **CRÍTICO**: Afectaba a TODOS los torneos de doble eliminación
+- Resuelve asignaciones incorrectas en Loser Bracket
+- Previene rematches antes de Grand Final
+- Estructura ahora coincide con estándar de Challonge
+
+---
+
 ## [1.0.2] - 2026-08-07
 
 ### 🐛 Bug Fixes

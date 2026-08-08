@@ -23,6 +23,7 @@ Toda la documentación está en la carpeta **`DocumentationDevelopment/`**:
 - **[`CHANGELOG.md`](DocumentationDevelopment/CHANGELOG.md)** - Historial de cambios
 - **[`BUGFIX_BYES.md`](DocumentationDevelopment/BUGFIX_BYES.md)** - Fix de BYEs explícitos
 - **[`BUGFIX_IMPLICIT_BYES.md`](DocumentationDevelopment/BUGFIX_IMPLICIT_BYES.md)** - Fix de BYEs implícitos
+- **[`LOSER_BRACKET_STRUCTURE.md`](DocumentationDevelopment/LOSER_BRACKET_STRUCTURE.md)** - Estructura del Loser Bracket
 
 ---
 
@@ -51,5 +52,5 @@ npm run preview
 
 ---
 
-**Versión:** 1.0.2  
+**Versión:** 1.0.4  
 **Última actualización:** 2026-08-07

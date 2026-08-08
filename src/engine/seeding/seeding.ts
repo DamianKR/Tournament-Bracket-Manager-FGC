@@ -27,7 +27,6 @@ export function randomizeParticipants(participants: Participant[]): Participant[
  * This creates a balanced bracket where top seeds meet later
  */
 export function generateStandardSeeding(count: number): number[] {
-  const seeds: number[] = [];
   const rounds = Math.ceil(Math.log2(count));
   const bracketSize = Math.pow(2, rounds);
 
