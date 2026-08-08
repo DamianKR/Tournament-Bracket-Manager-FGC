@@ -9,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/create" element={<CreateTournament />} />
+        <Route path="/create/:id" element={<CreateTournament />} />
         <Route path="/tournament/:id" element={<TournamentView />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

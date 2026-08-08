@@ -15,7 +15,7 @@ function Dashboard() {
   const loadTournaments = () => {
     const allTournaments = getAllTournaments();
     // Sort by most recent first
-    allTournaments.sort((a, b) => 
+    allTournaments.sort((a: Tournament, b: Tournament) => 
       new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
     setTournaments(allTournaments);
@@ -26,7 +26,12 @@ function Dashboard() {
   };
 
   const handleOpenTournament = (id: string) => {
-    navigate(`/tournament/${id}`);
+    const tournament = tournaments.find(t => t.id === id);
+    if (tournament?.status === 'setup') {
+      navigate(`/create/${id}`);
+    } else {
+      navigate(`/tournament/${id}`);
+    }
   };
 
   const handleDeleteTournament = (id: string, e: React.MouseEvent) => {
@@ -114,7 +119,7 @@ function Dashboard() {
                 <div className="tournament-card-actions">
                   <button
                     className="btn-outline"
-                    onClick={() => handleOpenTournament(tournament.id)}
+                    onClick={() => tournament.status === 'setup' ? navigate(`/create/${tournament.id}`) : navigate(`/tournament/${tournament.id}`)}
                   >
                     {tournament.status === 'setup' ? 'Continue Setup' : 'View Bracket'}
                   </button>

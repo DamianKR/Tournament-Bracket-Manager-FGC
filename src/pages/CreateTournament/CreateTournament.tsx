@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { TournamentMode } from '@/models/types';
 import { 
   createTournament, 
@@ -20,7 +20,8 @@ type ViewMode = 'participants' | 'bracket';
 
 function CreateTournament() {
   const navigate = useNavigate();
-  const [tournamentId, setTournamentId] = useState<string | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const [tournamentId, setTournamentId] = useState<string | null>(id || null);
   const [tournamentName, setTournamentName] = useState('');
   const [mode, setMode] = useState<TournamentMode>('double_elimination');
   const [viewMode, setViewMode] = useState<ViewMode>('participants');
@@ -32,6 +33,7 @@ function CreateTournament() {
   useEffect(() => {
     if (tournamentId) {
       loadTournament();
+      setViewMode('participants');
     }
   }, [tournamentId]);
 
