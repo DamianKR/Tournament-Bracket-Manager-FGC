@@ -2,7 +2,6 @@ import { Match, Participant, Bracket } from '@/models/types';
 import {
   nextPowerOfTwo,
   calculateWinnerRounds,
-  calculateLoserRounds,
   generateMatchId,
 } from '@/engine/utils/bracketMath';
 import { generateStandardSeeding, applySeedingPattern } from '@/engine/seeding/seeding';
@@ -267,7 +266,86 @@ function generateLoserBracket(
   // Link winner bracket to loser bracket
   linkWinnerToLoserBracketCorrect(winnerBracket, matches);
 
+  // Process ghost matches (TBD vs TBD) that will never have participants
+  processGhostMatches(matches, winnerBracket);
+
   return matches;
+}
+
+/**
+ * Process ghost matches in loser bracket
+ * Ghost matches are matches where both participants will never arrive (both are BYEs)
+ */
+function processGhostMatches(loserMatches: Match[], winnerMatches: Match[]): void {
+  console.log('=== PROCESSING GHOST MATCHES ===');
+  
+  // For each loser match, check if both feeding winner matches are BYEs
+  loserMatches.forEach((loserMatch: Match) => {
+    if (loserMatch.status !== 'pending') return;
+    
+    // Find winner matches that feed into this loser match
+    const feedingWinnerMatches = winnerMatches.filter((m: Match) => 
+      m.nextLoserMatchId === loserMatch.id
+    );
+    
+    // If all feeding winner matches are BYEs, this is a ghost match
+    if (feedingWinnerMatches.length > 0) {
+      const allAreByes = feedingWinnerMatches.every((m: Match) => 
+        m.status === 'completed' && m.winnerId !== null
+      );
+      
+      if (allAreByes) {
+        // Also check if there are any loser matches feeding into this
+        const feedingLoserMatches = loserMatches.filter((m: Match) => 
+          m.nextWinnerMatchId === loserMatch.id
+        );
+        
+        // If no loser matches feed into this, or they're all completed with no winners
+        const noLoserFeeders = feedingLoserMatches.length === 0;
+        const allLoserFeedersEmpty = feedingLoserMatches.every((m: Match) => 
+          m.status === 'completed' && !m.winnerId
+        );
+        
+        if (noLoserFeeders || allLoserFeedersEmpty) {
+          console.log(`  Ghost match detected: ${loserMatch.id} (both participants are BYEs)`);
+          loserMatch.status = 'completed';
+          // No winner, no participants
+        }
+      }
+    }
+  });
+  
+  // Iteratively process ghost matches that are now unblocked
+  let changed = true;
+  let iterations = 0;
+  const maxIterations = 10;
+  
+  while (changed && iterations < maxIterations) {
+    changed = false;
+    iterations++;
+    
+    loserMatches.forEach((loserMatch: Match) => {
+      if (loserMatch.status !== 'pending') return;
+      if (loserMatch.participant1Id !== null || loserMatch.participant2Id !== null) return;
+      
+      // Find all matches that feed into this one
+      const feedingMatches = [
+        ...winnerMatches.filter((m: Match) => m.nextLoserMatchId === loserMatch.id),
+        ...loserMatches.filter((m: Match) => m.nextWinnerMatchId === loserMatch.id)
+      ];
+      
+      if (feedingMatches.length === 0) return;
+      
+      // If all feeding matches are completed and still no participants, it's a ghost
+      const allCompleted = feedingMatches.every((m: Match) => m.status === 'completed');
+      
+      if (allCompleted) {
+        console.log(`  Ghost match detected (iteration ${iterations}): ${loserMatch.id}`);
+        loserMatch.status = 'completed';
+        changed = true;
+      }
+    });
+  }
 }
 
 /**
