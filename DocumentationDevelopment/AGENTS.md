@@ -107,6 +107,25 @@ When a match result is recorded:
   - Even rounds are winners from previous loser round
 - Grand final: Both brackets converge
 
+### Drop Mapping Algorithm (rematch prevention)
+The key to avoiding early rematches is the **drop mapping** in `linkWinnerToLoserBracketCorrect()` (`bracketGenerator.ts`).
+
+**WR1 → LR1**: Adjacent WR1 pairs share one LR1 match.
+- Odd-numbered WR1 match → slot 1 of its LR1 match
+- Even-numbered WR1 match → slot 2 of its LR1 match
+This ensures the two participants who will meet in WR2 are in different slots of LR1 (so whoever survives LR1 has never faced the incoming WR2 loser in their own LR1 match).
+
+**WR2 → LR2**: Positions are **reversed** (top WR2 losers drop to bottom LR2, bottom WR2 losers drop to top LR2). This is the critical anti-rematch step — it guarantees the WR2 loser lands in the LR2 match whose LR1 survivor came from the *opposite* WR1 quadrant, making an early rematch impossible.
+
+**WR3+ → LR(2n-2)**: Direct (non-reversed) mapping. The WR2 reversal already established cross-bracket separation; further reversals would undo it.
+
+This matches the standard used by Challonge / smash.gg. Reference: `wireLoserRouting.ts` in github.com/nadersafa1/double-elimination.
+
+**Slot assignment in progression** (`matchProgression.ts`):
+- WR1 losers: slot determined by match parity (odd matchNumber → slot 1, even → slot 2)
+- WR2+ losers: always slot 2 (the "drop-in" slot)
+- LB winners advancing: always slot 1
+
 ### Persistence
 - Everything saved to localStorage automatically
 - Key: `bracket_tournaments`
@@ -179,4 +198,4 @@ When testing or modifying:
 
 ---
 
-Last updated: 2026-08-07
+Last updated: 2026-08-09

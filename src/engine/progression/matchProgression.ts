@@ -62,8 +62,17 @@ export function recordMatchResult(
 
   // Advance loser to loser bracket (if applicable)
   if (loserId && match.nextLoserMatchId && loser && !loser.eliminated) {
-    // Losers from winner bracket go to slot 2 (to avoid immediate rematches)
-    advanceParticipantToSlot(tournament.bracket, match.nextLoserMatchId, loserId, 2);
+    // WR1: two adjacent matches share one LR1 match. The odd-numbered WR1 match
+    // sends its loser to slot 1, the even-numbered to slot 2. This keeps
+    // the two participants who will meet in WR2 in separate slots so they
+    // face different opponents in the Loser Bracket.
+    // WR2+: Winners-bracket losers always go to slot 2 (the "drop-in" slot)
+    // so that the surviving LB player (slot 1) is always from a different group.
+    let targetSlot: 1 | 2 = 2;
+    if (match.bracketType === 'winner' && match.roundNumber === 1) {
+      targetSlot = (match.matchNumber % 2 === 1) ? 1 : 2;
+    }
+    advanceParticipantToSlot(tournament.bracket, match.nextLoserMatchId, loserId, targetSlot);
   }
 
   // Check for tournament completion

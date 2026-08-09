@@ -392,63 +392,97 @@ function linkLoserBracketMatchesCorrect(matches: Match[]): void {
 }
 
 /**
- * Link winner bracket to loser bracket correctly
- * Winner R1 → Loser R1
- * Winner R2 → Loser R2 (odd round that receives losers)
- * Winner R3 → Loser R4 (odd round that receives losers)
- * Pattern: Winner Rn → Loser R(2n-2) for n >= 2
+ * Link winner bracket to loser bracket correctly using the standard
+ * double-elimination drop mapping that prevents early rematches.
+ *
+ * Rules (same as Challonge / smash.gg standard):
+ *   WR1 → LR1 : pair-wise (M1+M2 → LR1 M1, M3+M4 → LR1 M2, …)
+ *                slot 1 for even-indexed WR1 match, slot 2 for odd-indexed
+ *   WR2 → LR2 : REVERSED positions to prevent rematches with LR1 survivors
+ *                (W R2 M1 → LR2 last, W R2 Mlast → LR2 M1), slot 2
+ *   WR3 → LR4 : direct positions, slot 2
+ *   WRn → LR(2n-2) for n ≥ 2 : direct positions (reversal in R2 already
+ *                provides the cross-bracket separation), slot 2
  */
 function linkWinnerToLoserBracketCorrect(
   winnerMatches: Match[],
   loserMatches: Match[]
 ): void {
   if (loserMatches.length === 0) return;
-  
+
   console.log('=== LINKING WINNER TO LOSER ===');
-  
-  // Group loser matches by round
+
+  // Group loser matches by round (sorted by matchNumber for determinism)
   const loserByRound: { [round: number]: Match[] } = {};
   loserMatches.forEach((m: Match) => {
-    if (!loserByRound[m.roundNumber]) {
-      loserByRound[m.roundNumber] = [];
-    }
+    if (!loserByRound[m.roundNumber]) loserByRound[m.roundNumber] = [];
     loserByRound[m.roundNumber].push(m);
   });
-  
+  Object.values(loserByRound).forEach(arr =>
+    arr.sort((a: Match, b: Match) => a.matchNumber - b.matchNumber)
+  );
+
   console.log('Loser rounds:', Object.keys(loserByRound).map(Number));
-  
-  // Winner Round 1 → Loser Round 1
-  const winnerRound1 = winnerMatches.filter((m: Match) => m.roundNumber === 1);
-  console.log(`Winner R1 (${winnerRound1.length} matches) → Loser R1 (${loserByRound[1]?.length || 0} matches)`);
-  
+
+  // ── Winner Round 1 → Loser Round 1 ──────────────────────────────────────
+  // Every pair of WR1 matches (M1+M2, M3+M4 …) feeds one LR1 match.
+  // The lower-indexed match loser goes to slot 1, the higher to slot 2
+  // so the two people who will meet in WR2 are in DIFFERENT slots of LR1.
+  const winnerRound1 = winnerMatches
+    .filter((m: Match) => m.roundNumber === 1)
+    .sort((a: Match, b: Match) => a.matchNumber - b.matchNumber);
+
+  console.log(
+    `Winner R1 (${winnerRound1.length} matches) → Loser R1 (${loserByRound[1]?.length || 0} matches)`
+  );
+
   if (loserByRound[1]) {
     winnerRound1.forEach((match: Match, index: number) => {
-      const loserMatchIndex = Math.floor(index / 2);
-      if (loserByRound[1][loserMatchIndex]) {
-        match.nextLoserMatchId = loserByRound[1][loserMatchIndex].id;
-        console.log(`  W R1 M${index + 1} → L R1 M${loserMatchIndex + 1}`);
+      const lrIndex = Math.floor(index / 2);
+      const lrMatch = loserByRound[1][lrIndex];
+      if (lrMatch) {
+        match.nextLoserMatchId = lrMatch.id;
+        // Slot: first of the pair → slot 1, second → slot 2
+        const slot = (index % 2 === 0) ? 1 : 2;
+        console.log(`  W R1 M${index + 1} → L R1 M${lrIndex + 1} slot ${slot}`);
       }
     });
   }
-  
-  // Winner Round n → Loser Round (2n-2) for n >= 2
+
+  // ── Winner Round n → Loser Round (2n-2) for n ≥ 2 ─────────────────────
   const maxWinnerRound = Math.max(...winnerMatches.map((m: Match) => m.roundNumber));
+
   for (let winnerRound = 2; winnerRound <= maxWinnerRound; winnerRound++) {
     const loserRoundTarget = (winnerRound - 1) * 2;
-    
-    const winnerRoundMatches = winnerMatches.filter((m: Match) => m.roundNumber === winnerRound);
-    console.log(`Winner R${winnerRound} (${winnerRoundMatches.length} matches) → Loser R${loserRoundTarget} (${loserByRound[loserRoundTarget]?.length || 0} matches)`);
-    
-    if (!loserByRound[loserRoundTarget]) {
+
+    const wbMatches = winnerMatches
+      .filter((m: Match) => m.roundNumber === winnerRound)
+      .sort((a: Match, b: Match) => a.matchNumber - b.matchNumber);
+
+    const lbTargets = loserByRound[loserRoundTarget];
+
+    console.log(
+      `Winner R${winnerRound} (${wbMatches.length} matches) → Loser R${loserRoundTarget} (${lbTargets?.length || 0} matches)`
+    );
+
+    if (!lbTargets) {
       console.log(`  WARNING: Loser R${loserRoundTarget} doesn't exist!`);
       continue;
     }
-    
-    // Each winner match sends loser to corresponding loser match
-    winnerRoundMatches.forEach((match: Match, index: number) => {
-      if (loserByRound[loserRoundTarget][index]) {
-        match.nextLoserMatchId = loserByRound[loserRoundTarget][index].id;
-        console.log(`  W R${winnerRound} M${index + 1} → L R${loserRoundTarget} M${index + 1}`);
+
+    wbMatches.forEach((match: Match, index: number) => {
+      // For WR2, REVERSE the mapping: top WB matches drop to bottom LB slots
+      // and vice-versa, ensuring they face survivors from the opposite LR1 group.
+      // For WR3+, use direct mapping (the WR2 reversal already establishes the
+      // correct cross-bracket separation; further reversals would undo it).
+      const lbIndex = (winnerRound === 2)
+        ? (lbTargets.length - 1 - index)
+        : index;
+
+      const lbMatch = lbTargets[lbIndex];
+      if (lbMatch) {
+        match.nextLoserMatchId = lbMatch.id;
+        console.log(`  W R${winnerRound} M${index + 1} → L R${loserRoundTarget} M${lbIndex + 1} slot 2`);
       } else {
         console.log(`  WARNING: W R${winnerRound} M${index + 1} has no target in L R${loserRoundTarget}`);
       }
