@@ -43,6 +43,7 @@ function MatchCard({
 
   return (
     <div className={`match-card ${isGrandFinal ? 'grand-final-match' : ''} ${isGhostMatch ? 'ghost-match' : ''}`}>
+      {/* Left column: match id + status */}
       <div className="match-header">
         <span className="match-id">Match {match.matchNumber}</span>
         {match.status === 'completed' && !isGhostMatch && (
@@ -56,41 +57,32 @@ function MatchCard({
         )}
       </div>
 
-      <div className="match-participants">
-        <div
-          className={`participant ${
-            isWinner(match.participant1Id) ? 'winner' : ''
-          } ${isLoser(match.participant1Id) ? 'loser' : ''} ${
-            canSelect ? 'selectable' : ''
-          }`}
-          onClick={() => canSelect && handleSelectWinner(match.participant1Id)}
-        >
-          <span className="participant-name">{participant1Name}</span>
-          {isWinner(match.participant1Id) && (
-            <span className="winner-badge">W</span>
-          )}
+      {/* Right column: participants stacked vertically */}
+      <div className="match-body">
+        <div className="match-participants">
+          <div
+            className={`participant ${isWinner(match.participant1Id) ? 'winner' : ''} ${isLoser(match.participant1Id) ? 'loser' : ''} ${canSelect ? 'selectable' : ''}`}
+            onClick={() => canSelect && handleSelectWinner(match.participant1Id)}
+          >
+            <span className="participant-name">{participant1Name}</span>
+            {isWinner(match.participant1Id) && <span className="winner-badge">W</span>}
+          </div>
+
+          <div className="match-divider">vs</div>
+
+          <div
+            className={`participant ${isWinner(match.participant2Id) ? 'winner' : ''} ${isLoser(match.participant2Id) ? 'loser' : ''} ${canSelect ? 'selectable' : ''}`}
+            onClick={() => canSelect && handleSelectWinner(match.participant2Id)}
+          >
+            <span className="participant-name">{participant2Name}</span>
+            {isWinner(match.participant2Id) && <span className="winner-badge">W</span>}
+          </div>
         </div>
 
-        <div className="match-divider">vs</div>
-
-        <div
-          className={`participant ${
-            isWinner(match.participant2Id) ? 'winner' : ''
-          } ${isLoser(match.participant2Id) ? 'loser' : ''} ${
-            canSelect ? 'selectable' : ''
-          }`}
-          onClick={() => canSelect && handleSelectWinner(match.participant2Id)}
-        >
-          <span className="participant-name">{participant2Name}</span>
-          {isWinner(match.participant2Id) && (
-            <span className="winner-badge">W</span>
-          )}
-        </div>
+        {canSelect && match.status !== 'completed' && (
+          <div className="match-hint">Click to select winner</div>
+        )}
       </div>
-
-      {canSelect && match.status !== 'completed' && (
-        <div className="match-hint">Click to select winner</div>
-      )}
     </div>
   );
 }

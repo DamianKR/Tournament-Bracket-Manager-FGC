@@ -6,7 +6,8 @@
 .tournament-content {
   flex: 1;
   padding: 2rem;
-  overflow-x: auto;
+  /* overflow-x handled by .bracket-rounds so sticky headers work on scroll */
+  min-width: 0;
 }
 
 .tournament-header {

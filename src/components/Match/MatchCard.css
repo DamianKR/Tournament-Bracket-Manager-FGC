@@ -1,10 +1,14 @@
+/* ── Match card ────────────────────────────────────────────────────── */
 .match-card {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: 1rem;
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.2s;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden;
 }
 
 .match-card:hover {
@@ -13,7 +17,7 @@
 
 .match-card.grand-final-match {
   border: 2px solid var(--warning-color);
-  background: linear-gradient(to bottom, #fffbeb, var(--bg-primary));
+  background: linear-gradient(to right, #fffbeb, var(--bg-primary));
 }
 
 .match-card.ghost-match {
@@ -29,28 +33,35 @@
   border-color: var(--border-color);
 }
 
+/* ── Left column: match id + status ─────────────────────────────────── */
 .match-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
+  gap: 0.25rem;
+  padding: 0.4rem 0.5rem;
+  border-right: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  min-width: 56px;
+  flex-shrink: 0;
 }
 
 .match-id {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 700;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
+  text-align: center;
 }
 
 .match-status {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 12px;
+  font-size: 0.6rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 10px;
   font-weight: 600;
+  text-align: center;
 }
 
 .match-status.completed {
@@ -69,21 +80,34 @@
   border: 1px dashed #9ca3af;
 }
 
+/* ── Right column: participants ──────────────────────────────────────── */
+.match-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .match-participants {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  flex: 1;
 }
 
 .participant {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem;
-  border-radius: var(--border-radius);
-  background-color: var(--bg-secondary);
+  padding: 0.3rem 0.5rem;
   border: 2px solid transparent;
-  transition: all 0.2s;
+  background-color: var(--bg-primary);
+  transition: all 0.15s;
+  flex: 1;
+  min-width: 0;
+}
+
+.participant + .participant {
+  border-top: 1px solid var(--border-color);
 }
 
 .participant.selectable {
@@ -93,48 +117,60 @@
 .participant.selectable:hover {
   background-color: var(--bg-tertiary);
   border-color: var(--primary-color);
-  transform: translateX(2px);
 }
 
 .participant.winner {
   background-color: #d1fae5;
-  border-color: var(--success-color);
+  border-left: 3px solid var(--success-color);
   font-weight: 600;
 }
 
 .participant.loser {
-  opacity: 0.6;
+  opacity: 0.55;
   text-decoration: line-through;
 }
 
 .participant-name {
   flex: 1;
-  font-size: 0.875rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .winner-badge {
   background-color: var(--success-color);
   color: white;
-  padding: 0.125rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 8px;
+  font-size: 0.6rem;
   font-weight: 700;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
 }
 
+/* ── vs divider between the two participant rows ─────────────────────── */
 .match-divider {
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.6rem;
   color: var(--text-tertiary);
   font-weight: 600;
-  margin: 0.25rem 0;
+  line-height: 1;
+  padding: 0.1rem 0;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
+/* ── hint text ───────────────────────────────────────────────────────── */
 .match-hint {
-  text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-tertiary);
-  margin-top: 0.5rem;
+  padding: 0.2rem 0.5rem;
   font-style: italic;
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
 }
 
 /* Empty participant slots */

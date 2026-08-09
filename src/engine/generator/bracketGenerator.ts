@@ -4,7 +4,7 @@ import {
   calculateWinnerRounds,
   generateMatchId,
 } from '@/engine/utils/bracketMath';
-import { generateStandardSeeding, applySeedingPattern } from '@/engine/seeding/seeding';
+// seeding.ts exports kept for external use; not needed here after switching to manual order
 
 /**
  * Generate a complete double elimination bracket
@@ -32,9 +32,15 @@ function generateWinnerBracket(participants: Participant[]): Match[] {
   const bracketSize = nextPowerOfTwo(participants.length);
   const rounds = calculateWinnerRounds(participants.length);
   
-  // Apply standard seeding
-  const seedingPattern = generateStandardSeeding(bracketSize);
-  const seededParticipants = applySeedingPattern(participants, seedingPattern);
+  // Use participants in the exact order the user arranged them (by seed).
+  // Seeds were already assigned to reflect the user's manual order, so we
+  // simply sort by seed and fill BYE slots at the end — no cross-placement.
+  const sortedParticipants = [...participants].sort((a, b) => a.seed - b.seed);
+  // Pad to bracketSize with nulls (BYEs)
+  const seededParticipants: (Participant | null)[] = [
+    ...sortedParticipants,
+    ...Array(bracketSize - sortedParticipants.length).fill(null),
+  ];
 
   // Generate first round matches
   const firstRoundMatches = bracketSize / 2;

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Bracket, Participant, Match } from '@/models/types';
 import MatchCard from '@/components/Match/MatchCard';
 import './BracketView.css';
@@ -9,7 +10,37 @@ interface BracketViewProps {
   readOnly?: boolean;
 }
 
+function getWinnerRoundName(roundNum: number, totalRounds: number): string {
+  const fromEnd = totalRounds - roundNum;
+  if (fromEnd === 0) return 'Winner Finals';
+  if (fromEnd === 1) return 'Winner Semifinals';
+  if (fromEnd === 2) return 'Winner Quarterfinals';
+  return `Round ${roundNum}`;
+}
+
+function getLoserRoundName(roundNum: number, totalRounds: number): string {
+  const fromEnd = totalRounds - roundNum;
+  if (fromEnd === 0) return 'Loser Finals';
+  if (fromEnd === 1) return 'Loser Semifinals';
+  return `Loser Round ${roundNum}`;
+}
+
 function BracketView({ bracket, participants, onMatchResult, readOnly = false }: BracketViewProps) {
+  // Refs to sync horizontal scroll between header row and matches
+  const winnerHeaderRef = useRef<HTMLDivElement>(null);
+  const winnerScrollRef = useRef<HTMLDivElement>(null);
+  const loserHeaderRef  = useRef<HTMLDivElement>(null);
+  const loserScrollRef  = useRef<HTMLDivElement>(null);
+
+  const syncScroll = (
+    source: React.RefObject<HTMLDivElement | null>,
+    target: React.RefObject<HTMLDivElement | null>
+  ) => {
+    if (source.current && target.current) {
+      target.current.scrollLeft = source.current.scrollLeft;
+    }
+  };
+
   const getParticipantName = (id: string | null): string => {
     if (!id) return 'TBD';
     const participant = participants.find(p => p.id === id);
@@ -19,51 +50,50 @@ function BracketView({ bracket, participants, onMatchResult, readOnly = false }:
   const groupMatchesByRound = (matches: Match[]) => {
     const rounds: { [key: number]: Match[] } = {};
     matches.forEach(match => {
-      if (!rounds[match.roundNumber]) {
-        rounds[match.roundNumber] = [];
-      }
+      if (!rounds[match.roundNumber]) rounds[match.roundNumber] = [];
       rounds[match.roundNumber].push(match);
     });
     return rounds;
   };
 
   const winnerRounds = groupMatchesByRound(bracket.winnerBracket);
-  const loserRounds = groupMatchesByRound(bracket.loserBracket);
+  const loserRounds  = groupMatchesByRound(bracket.loserBracket);
+  const totalWinnerRounds = Object.keys(winnerRounds).length;
+  const totalLoserRounds  = Object.keys(loserRounds).length;
 
-  return (
-    <div className="bracket-view">
-      {/* Winner Bracket */}
-      <div className="bracket-section">
-        <h2 className="bracket-title">Winner Bracket</h2>
-        <div className="bracket-rounds">
-          {Object.entries(winnerRounds).map(([roundNum, matches]) => (
-            <div key={`winner-${roundNum}`} className="bracket-round">
-              <div className="round-header">Round {roundNum}</div>
-              <div className="round-matches">
-                {matches.map(match => (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    participant1Name={getParticipantName(match.participant1Id)}
-                    participant2Name={getParticipantName(match.participant2Id)}
-                    onSelectWinner={onMatchResult}
-                    readOnly={readOnly}
-                  />
-                ))}
-              </div>
+  const renderSection = (
+    roundsMap: { [key: number]: Match[] },
+    getRoundName: (n: number, total: number) => string,
+    totalRounds: number,
+    keyPrefix: string,
+    headerRef: React.RefObject<HTMLDivElement | null>,
+    scrollRef: React.RefObject<HTMLDivElement | null>
+  ) => {
+    const entries = Object.entries(roundsMap);
+    return (
+      <>
+        {/* Sticky round-name row — outside scroll container so position:sticky works */}
+        <div
+          className="round-headers-row"
+          ref={headerRef}
+          onScroll={() => syncScroll(headerRef, scrollRef)}
+        >
+          {entries.map(([roundNum]) => (
+            <div key={`${keyPrefix}-hdr-${roundNum}`} className="round-header-cell">
+              {getRoundName(Number(roundNum), totalRounds)}
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Loser Bracket */}
-      {bracket.loserBracket.length > 0 && (
-        <div className="bracket-section loser-bracket">
-          <h2 className="bracket-title">Loser Bracket</h2>
+        {/* Horizontally scrollable match columns */}
+        <div
+          className="bracket-scroll-container"
+          ref={scrollRef}
+          onScroll={() => syncScroll(scrollRef, headerRef)}
+        >
           <div className="bracket-rounds">
-            {Object.entries(loserRounds).map(([roundNum, matches]) => (
-              <div key={`loser-${roundNum}`} className="bracket-round">
-                <div className="round-header">Round {roundNum}</div>
+            {entries.map(([roundNum, matches]) => (
+              <div key={`${keyPrefix}-${roundNum}`} className="bracket-round">
                 <div className="round-matches">
                   {matches.map(match => (
                     <MatchCard
@@ -80,9 +110,27 @@ function BracketView({ bracket, participants, onMatchResult, readOnly = false }:
             ))}
           </div>
         </div>
+      </>
+    );
+  };
+
+  return (
+    <div className="bracket-view">
+      {/* Winner Bracket */}
+      <div className="bracket-section">
+        <h2 className="bracket-title">Winner Bracket</h2>
+        {renderSection(winnerRounds, getWinnerRoundName, totalWinnerRounds, 'winner', winnerHeaderRef, winnerScrollRef)}
+      </div>
+
+      {/* Loser Bracket */}
+      {bracket.loserBracket.length > 0 && (
+        <div className="bracket-section loser-bracket">
+          <h2 className="bracket-title">Loser Bracket</h2>
+          {renderSection(loserRounds, getLoserRoundName, totalLoserRounds, 'loser', loserHeaderRef, loserScrollRef)}
+        </div>
       )}
 
-      {/* Grand Finals */}
+      {/* Grand Final */}
       {bracket.grandFinal && (
         <div className="bracket-section grand-final">
           <h2 className="bracket-title">Grand Final</h2>
@@ -95,7 +143,6 @@ function BracketView({ bracket, participants, onMatchResult, readOnly = false }:
               readOnly={readOnly}
               isGrandFinal={true}
             />
-            
             {bracket.grandFinalReset && (
               <div className="reset-final">
                 <div className="reset-label">Bracket Reset</div>
