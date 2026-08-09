@@ -28,6 +28,31 @@
   text-align: center;
 }
 
+/* Final position badge */
+.participant-position {
+  font-weight: 700;
+  font-size: 0.95rem;
+  min-width: 56px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Highlight top 3 rows */
+.participant-item.position-first {
+  background: linear-gradient(to right, #fef9c3, var(--bg-primary));
+  border-left: 4px solid #ca8a04;
+}
+
+.participant-item.position-second {
+  background: linear-gradient(to right, #f1f5f9, var(--bg-primary));
+  border-left: 4px solid #94a3b8;
+}
+
+.participant-item.position-third {
+  background: linear-gradient(to right, #fff7ed, var(--bg-primary));
+  border-left: 4px solid #c2410c;
+}
+
 .participant-name {
   flex: 1;
   font-weight: 500;

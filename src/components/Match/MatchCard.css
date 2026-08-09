@@ -162,6 +162,76 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+/* ── Pending-winner highlight ────────────────────────────────────────── */
+.participant.pending-winner {
+  background-color: #fef9c3;
+  border-left: 3px solid #ca8a04;
+}
+
+.pending-badge {
+  background-color: #ca8a04;
+  color: white;
+  padding: 0.1rem 0.3rem;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+}
+
+/* Card outline when confirming */
+.match-card.confirming {
+  border-color: #ca8a04;
+  box-shadow: 0 0 0 2px #fef08a;
+}
+
+/* ── Confirmation bar ────────────────────────────────────────────────── */
+.confirm-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  border-top: 1px solid #ca8a04;
+  background-color: #fefce8;
+}
+
+.confirm-label {
+  font-size: 0.7rem;
+  color: #92400e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.confirm-btn {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.confirm-btn:hover { opacity: 0.85; }
+
+.confirm-yes {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.confirm-no {
+  background-color: var(--danger-color);
+  color: white;
+}
+
 /* ── hint text ───────────────────────────────────────────────────────── */
 .match-hint {
   font-size: 0.65rem;

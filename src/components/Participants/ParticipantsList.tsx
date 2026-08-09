@@ -9,6 +9,18 @@ interface ParticipantsListProps {
   onMoveUp?: (id: string) => void;
   onMoveDown?: (id: string) => void;
   readOnly?: boolean;
+  showFinalPosition?: boolean;
+}
+
+function getPositionLabel(pos: number): string {
+  if (pos === 1) return '🥇 1st';
+  if (pos === 2) return '🥈 2nd';
+  if (pos === 3) return '🥉 3rd';
+  const suffix = pos % 10 === 1 && pos !== 11 ? 'st'
+    : pos % 10 === 2 && pos !== 12 ? 'nd'
+    : pos % 10 === 3 && pos !== 13 ? 'rd'
+    : 'th';
+  return `${pos}${suffix}`;
 }
 
 function ParticipantsList({ 
@@ -17,7 +29,8 @@ function ParticipantsList({
   onUpdate,
   onMoveUp,
   onMoveDown,
-  readOnly = false 
+  readOnly = false,
+  showFinalPosition = false,
 }: ParticipantsListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -60,8 +73,12 @@ function ParticipantsList({
   return (
     <div className="participants-list">
       {participants.map((participant, index) => (
-        <div key={participant.id} className="participant-item card">
-          <div className="participant-seed">#{participant.seed || index + 1}</div>
+        <div key={participant.id} className={`participant-item card ${participant.finalPosition === 1 ? 'position-first' : participant.finalPosition === 2 ? 'position-second' : participant.finalPosition === 3 ? 'position-third' : ''}`}>
+          {showFinalPosition && participant.finalPosition ? (
+            <div className="participant-position">{getPositionLabel(participant.finalPosition)}</div>
+          ) : (
+            <div className="participant-seed">#{participant.seed || index + 1}</div>
+          )}
           
           {editingId === participant.id ? (
             <div className="participant-edit">

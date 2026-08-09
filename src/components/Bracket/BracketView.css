@@ -58,7 +58,7 @@
   background-color: var(--bg-tertiary);
   border-radius: var(--border-radius);
   /* width synced with .bracket-round */
-  width: 200px;
+  width: 320px;
   flex-shrink: 0;
   box-sizing: border-box;
 }
@@ -78,7 +78,7 @@
 .bracket-round {
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 320px;
   flex-shrink: 0;
 }
 
@@ -121,6 +121,6 @@
 
   .bracket-round,
   .round-header-cell {
-    width: 170px;
+    width: 220px;
   }
 }

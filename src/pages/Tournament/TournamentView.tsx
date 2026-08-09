@@ -143,10 +143,17 @@ function TournamentView() {
               <div className="participants-view">
                 <h2>Participants</h2>
                 <ParticipantsList
-                  participants={tournament.participants}
+                  participants={
+                    tournament.status === 'completed'
+                      ? [...tournament.participants].sort(
+                          (a, b) => (a.finalPosition ?? 9999) - (b.finalPosition ?? 9999)
+                        )
+                      : tournament.participants
+                  }
                   onRemove={() => {}}
                   onUpdate={() => {}}
                   readOnly={true}
+                  showFinalPosition={tournament.status === 'completed'}
                 />
               </div>
             )}
