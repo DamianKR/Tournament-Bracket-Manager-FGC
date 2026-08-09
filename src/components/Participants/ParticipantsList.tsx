@@ -6,6 +6,8 @@ interface ParticipantsListProps {
   participants: Participant[];
   onRemove: (id: string) => void;
   onUpdate: (id: string, newName: string) => void;
+  onMoveUp?: (id: string) => void;
+  onMoveDown?: (id: string) => void;
   readOnly?: boolean;
 }
 
@@ -13,6 +15,8 @@ function ParticipantsList({
   participants, 
   onRemove, 
   onUpdate,
+  onMoveUp,
+  onMoveDown,
   readOnly = false 
 }: ParticipantsListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -94,6 +98,26 @@ function ParticipantsList({
                   >
                     ✏️
                   </button>
+                  {onMoveUp && (
+                    <button
+                      className="btn-icon"
+                      onClick={() => onMoveUp(participant.id)}
+                      disabled={index === 0}
+                      title="Move up"
+                    >
+                      ⬆️
+                    </button>
+                  )}
+                  {onMoveDown && (
+                    <button
+                      className="btn-icon"
+                      onClick={() => onMoveDown(participant.id)}
+                      disabled={index === participants.length - 1}
+                      title="Move down"
+                    >
+                      ⬇️
+                    </button>
+                  )}
                   <button
                     className="btn-icon btn-danger"
                     onClick={() => onRemove(participant.id)}

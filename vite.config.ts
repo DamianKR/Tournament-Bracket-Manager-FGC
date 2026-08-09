@@ -7,11 +7,11 @@ export default defineConfig({
   plugins: [react()],
   base: './',
   server: {
-    port: 5173,
-    strictPort: true, // No cambiar de puerto si está ocupado
+    port: 5174, // Puerto para desarrollo
+    strictPort: true,
   },
   preview: {
-    port: 5173,
+    port: 5173, // Puerto para producción
     strictPort: true,
   },
   resolve: {

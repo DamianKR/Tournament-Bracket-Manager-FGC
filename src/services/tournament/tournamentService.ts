@@ -42,7 +42,7 @@ export function addParticipant(
   }
 
   // Check for duplicate names
-  if (tournament.participants.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+  if (tournament.participants.some((p: Participant) => p.name.toLowerCase() === name.toLowerCase())) {
     throw new Error('Participant name already exists');
   }
 
@@ -77,7 +77,7 @@ export function removeParticipant(
     throw new Error('Cannot remove participants from a tournament in progress');
   }
 
-  tournament.participants = tournament.participants.filter(p => p.id !== participantId);
+  tournament.participants = tournament.participants.filter((p: Participant) => p.id !== participantId);
   
   // Reassign seeds
   tournament.participants = assignSeeds(tournament.participants);
@@ -100,19 +100,59 @@ export function updateParticipantName(
     throw new Error('Tournament not found');
   }
 
-  const participant = tournament.participants.find(p => p.id === participantId);
+  const participant = tournament.participants.find((p: Participant) => p.id === participantId);
   if (!participant) {
     throw new Error('Participant not found');
   }
 
   // Check for duplicate names
   if (tournament.participants.some(
-    p => p.id !== participantId && p.name.toLowerCase() === newName.toLowerCase()
+    (p: Participant) => p.id !== participantId && p.name.toLowerCase() === newName.toLowerCase()
   )) {
     throw new Error('Participant name already exists');
   }
 
   participant.name = newName;
+  tournament.updatedAt = new Date().toISOString();
+  
+  saveTournament(tournament);
+  return tournament;
+}
+
+/**
+ * Move a participant up or down in the list
+ */
+export function moveParticipant(
+  tournamentId: string,
+  participantId: string,
+  direction: 'up' | 'down'
+): Tournament {
+  const tournament = loadTournament(tournamentId);
+  if (!tournament) {
+    throw new Error('Tournament not found');
+  }
+
+  if (tournament.status !== 'setup') {
+    throw new Error('Cannot reorder participants in a tournament in progress');
+  }
+
+  const index = tournament.participants.findIndex(p => p.id === participantId);
+  if (index === -1) {
+    throw new Error('Participant not found');
+  }
+
+  const newIndex = direction === 'up' ? index - 1 : index + 1;
+  if (newIndex < 0 || newIndex >= tournament.participants.length) {
+    return tournament; // Can't move beyond boundaries
+  }
+
+  // Swap participants
+  const temp = tournament.participants[index];
+  tournament.participants[index] = tournament.participants[newIndex];
+  tournament.participants[newIndex] = temp;
+
+  // Reassign seeds based on new order
+  tournament.participants = assignSeeds(tournament.participants);
   tournament.updatedAt = new Date().toISOString();
   
   saveTournament(tournament);

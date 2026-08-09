@@ -6,6 +6,7 @@ import {
   addParticipant, 
   removeParticipant,
   updateParticipantName,
+  moveParticipant,
   shuffleParticipants,
   startTournament,
   getTournament
@@ -99,6 +100,18 @@ function CreateTournament() {
 
     try {
       const tournament = updateParticipantName(tournamentId, participantId, newName);
+      setParticipants(tournament.participants);
+      setError('');
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleMoveParticipant = (participantId: string, direction: 'up' | 'down') => {
+    if (!tournamentId) return;
+
+    try {
+      const tournament = moveParticipant(tournamentId, participantId, direction);
       setParticipants(tournament.participants);
       setError('');
     } catch (err: any) {
@@ -255,6 +268,8 @@ function CreateTournament() {
                     participants={participants}
                     onRemove={handleRemoveParticipant}
                     onUpdate={handleUpdateParticipant}
+                    onMoveUp={(id: string) => handleMoveParticipant(id, 'up')}
+                    onMoveDown={(id: string) => handleMoveParticipant(id, 'down')}
                   />
 
                   <div className="form-actions">
