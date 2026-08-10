@@ -51,3 +51,24 @@ export interface TournamentHistory {
   currentState: Tournament;
   previousState: Tournament | null; // For undo functionality
 }
+
+// ── Global Participant ─────────────────────────────────────────────────
+// A participant that exists independently of any tournament.
+// Can be reused across multiple tournaments.
+
+export interface GlobalParticipantStats {
+  tournamentsPlayed: number;
+  wins: number;        // Tournament wins (1st place)
+  matchWins: number;
+  matchLosses: number;
+}
+
+export interface GlobalParticipant {
+  id: string;
+  name: string;
+  alias: string;       // Optional gamertag / short name
+  avatarUrl: string | null;
+  stats: GlobalParticipantStats;
+  createdAt: string;
+  updatedAt: string;
+}

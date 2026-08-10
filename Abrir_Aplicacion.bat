@@ -1,21 +1,45 @@
 @echo off
 REM Script para abrir la aplicacion de torneos
-REM Abre un servidor local para evitar errores de CORS al abrir el archivo HTML directamente
+REM Arranca el servidor de almacenamiento local (puerto 3001) y el preview de Vite (puerto 5173)
 
 cd /d "%~dp0"
-echo Iniciando servidor local para Bracket Tournament Manager...
+echo ============================================
+echo  Bracket Tournament Manager
+echo ============================================
 echo.
-echo Espera unos segundos mientras carga la aplicacion...
+echo Iniciando servidor de almacenamiento local...
 
-REM Iniciar servidor Vite preview en segundo plano usando node directamente
-start "Servidor Bracket Tournament Manager" node "node_modules\vite\bin\vite.js" preview --port 5173
+REM Crear tournaments.json si no existe
+if not exist "tournaments.json" (
+  echo [] > tournaments.json
+  echo [OK] tournaments.json creado
+)
 
-REM Esperar a que el servidor inicie
-timeout /t 5 /nobreak >nul
+REM Iniciar servidor Express (almacenamiento en tournaments.json)
+start "Storage Server - Bracket" node server.js
 
-REM Abrir el navegador en la URL local
+REM Esperar a que el servidor de almacenamiento inicie
+timeout /t 2 /nobreak >nul
+
+echo Iniciando servidor de la aplicacion...
+
+REM Iniciar servidor Vite preview
+start "App Server - Bracket" node "node_modules\vite\bin\vite.js" preview --port 5173
+
+REM Esperar a que el servidor de la app inicie
+timeout /t 4 /nobreak >nul
+
+REM Abrir el navegador
 start http://localhost:5173
 
 echo.
-echo Puedes cerrar esta ventana cuando termines. El servidor se cerrara al cerrar la ventana negra.
+echo ============================================
+echo  Servidores activos:
+echo   App:          http://localhost:5173
+echo   Almacenamiento: http://localhost:3001
+echo   Datos en:     tournaments.json
+echo ============================================
+echo.
+echo Puedes cerrar esta ventana. Los servidores
+echo se cerraran al cerrar sus ventanas negras.
 pause
