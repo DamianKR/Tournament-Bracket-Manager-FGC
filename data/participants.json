@@ -135,14 +135,69 @@
     "updatedAt": "2026-08-10T19:58:12.402Z"
   },
   {
+    "gameId": "ssbu",
+    "mainCharacterId": "hero",
     "id": "gp_1786391936937_anlwmxy",
     "name": "Jose Enrique",
     "alias": "Eknd3las",
     "avatarUrl": null,
     "tournamentIds": [],
-    "gameId": "ssbu",
-    "mainCharacterId": "hero",
     "createdAt": "2026-08-10T19:58:56.937Z",
     "updatedAt": "2026-08-10T19:58:56.937Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "byleth",
+    "id": "gp_1786393655444_41zyrro",
+    "name": "Olimak",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T20:27:35.444Z",
+    "updatedAt": "2026-08-10T20:27:35.444Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "lucas",
+    "id": "gp_1786393670067_xild06i",
+    "name": "Sementino",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T20:27:50.067Z",
+    "updatedAt": "2026-08-10T20:27:50.067Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "link",
+    "id": "gp_1786393783053_ztfg99d",
+    "name": "Livan",
+    "alias": "LiokLiok18",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T20:29:43.053Z",
+    "updatedAt": "2026-08-10T20:29:43.053Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "steve",
+    "id": "gp_1786393834683_lievrvf",
+    "name": "AmorAltras",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T20:30:34.683Z",
+    "updatedAt": "2026-08-10T20:30:34.683Z"
+  },
+  {
+    "id": "gp_1786393850039_1imzf6x",
+    "name": "Dionisio",
+    "alias": "Dio",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "steve",
+    "createdAt": "2026-08-10T20:30:50.039Z",
+    "updatedAt": "2026-08-10T20:30:50.039Z"
   }
 ]

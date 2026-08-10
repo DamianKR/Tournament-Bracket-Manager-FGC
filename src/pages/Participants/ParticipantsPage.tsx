@@ -147,7 +147,7 @@ function ParticipantsPage() {
 
         <div className="pp-header">
           <div>
-            <h1>Participants</h1>
+            <h1>Participants <span className="pp-count">{participants.length}</span></h1>
             <p className="text-secondary">Global roster — reusable across all tournaments</p>
           </div>
           <button className="btn-primary" onClick={() => { setShowCreateForm(true); setError(''); }}>

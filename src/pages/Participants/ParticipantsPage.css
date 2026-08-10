@@ -10,6 +10,22 @@
   margin-bottom: 1.5rem;
 }
 
+.pp-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 0.5rem;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  background-color: var(--primary-color);
+  border-radius: 99px;
+  vertical-align: middle;
+}
+
 /* Create form */
 .pp-create-form {
   margin-bottom: 1.5rem;
