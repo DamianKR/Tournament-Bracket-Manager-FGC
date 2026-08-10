@@ -16,7 +16,7 @@ import {
   findGlobalParticipantByName,
   searchGlobalParticipants,
 } from '@/services/storage/localStorage';
-import { loadTournaments } from '@/services/storage/localStorage';
+import { loadTournaments, saveTournaments } from '@/services/storage/localStorage';
 
 // ── ID generator ─────────────────────────────────────────────────────────
 
@@ -93,6 +93,28 @@ export async function updateParticipant(
   participant.updatedAt = new Date().toISOString();
 
   await saveGlobalParticipant(participant);
+
+  // Sync name/alias changes back to every tournament that references this player
+  if (updates.name !== undefined || updates.alias !== undefined) {
+    const tAlias = participant.alias?.trim() || undefined;
+    let changed = false;
+    const allTournaments = loadTournaments().map((t) => {
+      const tps = t.participants;
+      if (!tps.some((tp) => tp.globalParticipantId === participant.id)) return t;
+      const updatedParticipants = tps.map((tp) => {
+        if (tp.globalParticipantId !== participant.id) return tp;
+        if (tp.name === participant.name && tp.alias === tAlias) return tp;
+        return { ...tp, name: participant.name, alias: tAlias };
+      });
+      if (updatedParticipants.some((tp, i) => tp !== tps[i])) {
+        changed = true;
+        return { ...t, participants: updatedParticipants };
+      }
+      return t;
+    });
+    if (changed) saveTournaments(allTournaments);
+  }
+
   return participant;
 }
 

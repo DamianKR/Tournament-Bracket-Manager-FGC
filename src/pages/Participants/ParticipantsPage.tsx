@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GlobalParticipant, ComputedStats } from '@/models/types';
-import { getCharacter } from '@/data/games';
+import { getCharacter, getGame } from '@/data/games';
 import {
   getAllParticipants,
   getAllParticipantsAsync,
@@ -12,6 +12,7 @@ import {
 } from '@/services/participants/participantService';
 import { saveGlobalParticipants } from '@/services/storage/localStorage';
 import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
+import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './ParticipantsPage.css';
 
 type SortKey = 'name' | 'wins' | 'tournamentsPlayed' | 'winRate';
@@ -36,6 +37,8 @@ function ParticipantsPage() {
   const [editName, setEditName] = useState('');
   const [editAlias, setEditAlias] = useState('');
   const editInputRef = useRef<HTMLInputElement>(null);
+
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => { loadAll(); }, []);
   useEffect(() => { if (editingId && editInputRef.current) editInputRef.current.focus(); }, [editingId]);
@@ -118,13 +121,22 @@ function ParticipantsPage() {
 
   // ── Delete ────────────────────────────────────────────────────────────
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`Delete "${name}" from the participant roster?`)) return;
+  function requestDelete(id: string, name: string) {
+    setDeleteTarget({ id, name });
+  }
+
+  function cancelDelete() {
+    setDeleteTarget(null);
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
     try {
-      await removeParticipant(id);
-      const next = participants.filter((p) => p.id !== id);
+      await removeParticipant(deleteTarget.id);
+      const next = participants.filter((p) => p.id !== deleteTarget.id);
       setParticipants(next); refreshStats(next);
     } catch (err: any) { setError(err.message); }
+    setDeleteTarget(null);
   }
 
   // ── Render ────────────────────────────────────────────────────────────
@@ -227,12 +239,17 @@ function ParticipantsPage() {
                           {initials(p.name)}
                         </div>
                         <div className="pp-item-name-block">
-                          <span className="pp-item-name">{p.name}</span>
-                          {p.alias && <span className="pp-item-alias">{p.alias}</span>}
+                          <div className="pp-item-name-row">
+                            <span className="pp-item-name">{p.name}</span>
+                            {p.alias && <span className="pp-item-alias">{p.alias}</span>}
+                          </div>
                           {p.gameId && p.mainCharacterId && (
-                            <span className="pp-item-character">
-                              {getCharacter(p.gameId, p.mainCharacterId)?.name}
-                            </span>
+                            <div className="pp-item-tags">
+                              <span className="pp-item-tag pp-item-tag-game">{getGame(p.gameId)?.shortName}</span>
+                              <span className="pp-item-tag pp-item-tag-char">
+                                {getCharacter(p.gameId, p.mainCharacterId)?.name}
+                              </span>
+                            </div>
                           )}
                         </div>
                         <div className="pp-item-stats">
@@ -252,7 +269,7 @@ function ParticipantsPage() {
                       </div>
                       <div className="pp-item-actions">
                         <button className="btn-icon" onClick={() => startEdit(p)} title="Edit">✏️</button>
-                        <button className="btn-icon btn-danger" onClick={() => handleDelete(p.id, p.name)} title="Delete">🗑️</button>
+                        <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title="Delete">🗑️</button>
                       </div>
                     </>
                   )}
@@ -262,6 +279,15 @@ function ParticipantsPage() {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={deleteTarget !== null}
+        title="Delete participant"
+        message={deleteTarget ? `Remove "${deleteTarget.name}" from the global roster? This will keep tournaments they played in, but the participant profile will be removed.` : ''}
+        onCancel={cancelDelete}
+        onConfirm={confirmDelete}
+        confirmText="Delete"
+      />
     </div>
   );
 }

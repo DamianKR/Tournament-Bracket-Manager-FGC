@@ -9,54 +9,57 @@
       "1786388372329-y5rm3kzqo",
       "1786388606781-jyh9v2prl",
       "1786388748055-8yrbvigzm",
-      "1786389730065-my9udy77t"
+      "1786389730065-my9udy77t",
+      "1786390635324-f1ht0g9nm"
     ],
     "id": "gp_1786387087046_wnwtadb",
     "name": "Damiam",
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-08-10T19:23:03.780Z"
+    "updatedAt": "2026-08-10T19:37:20.026Z"
   },
   {
-    "gameId": null,
-    "mainCharacterId": null,
+    "gameId": "ssbu",
+    "mainCharacterId": "link",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
       "1786387486477-i7xydjcqb",
       "1786388372329-y5rm3kzqo",
       "1786388606781-jyh9v2prl",
       "1786388748055-8yrbvigzm",
-      "1786389730065-my9udy77t"
+      "1786389730065-my9udy77t",
+      "1786390635324-f1ht0g9nm"
     ],
     "id": "gp_1786387234567_aoe1z95",
     "name": "Gino",
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-08-10T19:22:42.435Z"
+    "updatedAt": "2026-08-10T19:54:04.211Z"
   },
   {
-    "gameId": null,
-    "mainCharacterId": null,
+    "gameId": "ssbu",
+    "mainCharacterId": "mario",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
       "1786387486477-i7xydjcqb",
       "1786388372329-y5rm3kzqo",
       "1786388606781-jyh9v2prl",
       "1786388748055-8yrbvigzm",
-      "1786389730065-my9udy77t"
+      "1786389730065-my9udy77t",
+      "1786390635324-f1ht0g9nm"
     ],
     "id": "gp_1786387243524_6er0c9u",
     "name": "Ale",
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-08-10T19:22:44.611Z"
+    "updatedAt": "2026-08-10T19:55:02.493Z"
   },
   {
-    "gameId": null,
-    "mainCharacterId": null,
+    "gameId": "ssbu",
+    "mainCharacterId": "luigi",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
       "1786387486477-i7xydjcqb",
@@ -64,70 +67,19 @@
       "1786388372329-y5rm3kzqo",
       "1786388606781-jyh9v2prl",
       "1786388748055-8yrbvigzm",
-      "1786389730065-my9udy77t"
+      "1786389730065-my9udy77t",
+      "1786390635324-f1ht0g9nm"
     ],
     "id": "gp_1786387250178_ac5thmv",
     "name": "Alexis",
-    "alias": "",
+    "alias": "Adecty",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-08-10T19:22:46.921Z"
+    "updatedAt": "2026-08-10T19:39:07.401Z"
   },
   {
-    "gameId": null,
-    "mainCharacterId": null,
-    "id": "gp_1786388764411_ms829ci",
-    "name": "Mario",
-    "alias": "",
-    "avatarUrl": null,
-    "tournamentIds": [
-      "1786388748055-8yrbvigzm"
-    ],
-    "createdAt": "2026-08-10T19:06:04.411Z",
-    "updatedAt": "2026-08-10T19:06:04.415Z"
-  },
-  {
-    "gameId": null,
-    "mainCharacterId": null,
-    "id": "gp_1786388767692_nshqo5f",
-    "name": "Yoe",
-    "alias": "",
-    "avatarUrl": null,
-    "tournamentIds": [
-      "1786388748055-8yrbvigzm"
-    ],
-    "createdAt": "2026-08-10T19:06:07.692Z",
-    "updatedAt": "2026-08-10T19:06:07.697Z"
-  },
-  {
-    "gameId": null,
-    "mainCharacterId": null,
-    "id": "gp_1786388780759_krc58ym",
-    "name": "Manuel",
-    "alias": "",
-    "avatarUrl": null,
-    "tournamentIds": [
-      "1786388748055-8yrbvigzm"
-    ],
-    "createdAt": "2026-08-10T19:06:20.759Z",
-    "updatedAt": "2026-08-10T19:06:20.764Z"
-  },
-  {
-    "gameId": null,
-    "mainCharacterId": null,
-    "id": "gp_1786388784317_htgu1sm",
-    "name": "Luis",
-    "alias": "",
-    "avatarUrl": null,
-    "tournamentIds": [
-      "1786388748055-8yrbvigzm"
-    ],
-    "createdAt": "2026-08-10T19:06:24.317Z",
-    "updatedAt": "2026-08-10T19:06:24.323Z"
-  },
-  {
-    "gameId": null,
-    "mainCharacterId": null,
+    "gameId": "ssbu",
+    "mainCharacterId": "terry",
     "id": "gp_1786388790209_sr4ldku",
     "name": "Brian",
     "alias": "",
@@ -136,6 +88,61 @@
       "1786388748055-8yrbvigzm"
     ],
     "createdAt": "2026-08-10T19:06:30.209Z",
-    "updatedAt": "2026-08-10T19:06:30.215Z"
+    "updatedAt": "2026-08-10T19:56:56.110Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "yoshi",
+    "id": "gp_1786391754729_ma3zmky",
+    "name": "LuisEnrique",
+    "alias": "Oby",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T19:55:54.729Z",
+    "updatedAt": "2026-08-10T19:55:54.729Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "donkey_kong",
+    "id": "gp_1786391783115_87zwx03",
+    "name": "Tails",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T19:56:23.115Z",
+    "updatedAt": "2026-08-10T19:56:23.115Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "inkling",
+    "id": "gp_1786391850317_8z5itq7",
+    "name": "Lyam",
+    "alias": "Shiro",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T19:57:30.317Z",
+    "updatedAt": "2026-08-10T19:57:30.317Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "bowser",
+    "id": "gp_1786391892402_8intsz3",
+    "name": "Delvi",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T19:58:12.402Z",
+    "updatedAt": "2026-08-10T19:58:12.402Z"
+  },
+  {
+    "id": "gp_1786391936937_anlwmxy",
+    "name": "Jose Enrique",
+    "alias": "Eknd3las",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "hero",
+    "createdAt": "2026-08-10T19:58:56.937Z",
+    "updatedAt": "2026-08-10T19:58:56.937Z"
   }
 ]

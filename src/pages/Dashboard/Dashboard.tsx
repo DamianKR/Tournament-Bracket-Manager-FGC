@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Tournament } from '@/models/types';
 import { getAllTournaments, removeTournament } from '@/services/tournament/tournamentService';
 import { loadTournamentsAsync, saveTournaments } from '@/services/storage/localStorage';
+import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './Dashboard.css';
 
 function Dashboard() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,13 +46,19 @@ function Dashboard() {
     }
   };
 
-  const handleDeleteTournament = (id: string, e: React.MouseEvent) => {
+  const requestDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to delete this tournament?')) {
-      removeTournament(id);
-      // Update UI immediately from localStorage (already updated by removeTournament)
-      applySort(getAllTournaments());
-    }
+    const t = tournaments.find((t2) => t2.id === id);
+    if (t) setDeleteTarget({ id, name: t.name });
+  };
+
+  const cancelDelete = () => setDeleteTarget(null);
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    removeTournament(deleteTarget.id);
+    applySort(getAllTournaments());
+    setDeleteTarget(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -135,7 +143,7 @@ function Dashboard() {
                   </button>
                   <button
                     className="btn-danger btn-sm"
-                    onClick={(e) => handleDeleteTournament(tournament.id, e)}
+                    onClick={(e) => requestDelete(tournament.id, e)}
                   >
                     Delete
                   </button>
@@ -145,6 +153,15 @@ function Dashboard() {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={deleteTarget !== null}
+        title="Delete tournament"
+        message={deleteTarget ? `Are you sure you want to delete "${deleteTarget.name}"? This cannot be undone.` : ''}
+        onCancel={cancelDelete}
+        onConfirm={confirmDelete}
+        confirmText="Delete"
+      />
     </div>
   );
 }

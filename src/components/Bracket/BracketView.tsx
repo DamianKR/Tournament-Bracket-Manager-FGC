@@ -1,6 +1,7 @@
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { Bracket, Participant, Match } from '@/models/types';
 import MatchCard from '@/components/Match/MatchCard';
+import { loadGlobalParticipants } from '@/services/storage/localStorage';
 import './BracketView.css';
 
 interface BracketViewProps {
@@ -41,11 +42,25 @@ function BracketView({ bracket, participants, onMatchResult, readOnly = false }:
     }
   };
 
+  // Resolve names from the global roster live — never use the tournament snapshot
+  const globalParticipants = useMemo(() => loadGlobalParticipants(), []);
+  const globalMap = useMemo(() => {
+    const map = new Map<string, typeof globalParticipants[0]>();
+    globalParticipants.forEach((p) => map.set(p.id, p));
+    return map;
+  }, [globalParticipants]);
+
   const getParticipantName = (id: string | null): string => {
     if (!id) return 'TBD';
-    const participant = participants.find(p => p.id === id);
+    const participant = participants.find((p) => p.id === id);
     if (!participant) return 'Unknown';
-    // Show alias (gamertag) if set, otherwise fall back to full name
+    if (participant.globalParticipantId) {
+      const global = globalMap.get(participant.globalParticipantId);
+      if (global) {
+        return global.alias?.trim() || global.name;
+      }
+    }
+    // Fallback to the tournament snapshot
     return participant.alias?.trim() || participant.name;
   };
 
