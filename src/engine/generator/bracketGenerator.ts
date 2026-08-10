@@ -25,6 +25,56 @@ export function generateDoubleEliminationBracket(
 }
 
 /**
+ * Distribute players across bracket slots preserving order, with BYEs spread.
+ *
+ * Strategy: fill matches one by one. The first match always gets 2 players
+ * (they face each other). Each subsequent match gets 1 player + 1 BYE until
+ * byes run out, then pairs remaining players.
+ *
+ * Examples (brackets of 8):
+ *   5 players → [P1,P2, P3,null, P4,null, P5,null]
+ *     M1: P1vP2  M2: P3vBYE  M3: P4vBYE  M4: P5vBYE
+ *
+ *   6 players → [P1,P2, P3,null, P4,null, P5,P6]
+ *     M1: P1vP2  M2: P3vBYE  M3: P4vBYE  M4: P5vP6
+ *
+ *   7 players → [P1,P2, P3,null, P4,P5, P6,P7]
+ *     M1: P1vP2  M2: P3vBYE  M3: P4vP5  M4: P6vP7
+ */
+function distributeByes(
+  players: Participant[],
+  bracketSize: number
+): (Participant | null)[] {
+  const numMatches = bracketSize / 2;
+  const numByes = bracketSize - players.length;
+  const slots: (Participant | null)[] = [];
+
+  let playerIdx = 0;
+  let byesLeft = numByes;
+
+  for (let match = 0; match < numMatches; match++) {
+    const p1 = playerIdx < players.length ? players[playerIdx++] : null;
+
+    let p2: Participant | null;
+    if (match === 0) {
+      // First match: always pair two players together
+      p2 = playerIdx < players.length ? players[playerIdx++] : null;
+    } else if (byesLeft > 0 && playerIdx < players.length) {
+      // Has byes remaining: give this player a BYE
+      p2 = null;
+      byesLeft--;
+    } else {
+      // No byes left (or no player for p1): pair normally
+      p2 = playerIdx < players.length ? players[playerIdx++] : null;
+    }
+
+    slots.push(p1, p2);
+  }
+
+  return slots;
+}
+
+/**
  * Generate winner bracket matches
  */
 function generateWinnerBracket(participants: Participant[]): Match[] {
@@ -33,14 +83,10 @@ function generateWinnerBracket(participants: Participant[]): Match[] {
   const rounds = calculateWinnerRounds(participants.length);
   
   // Use participants in the exact order the user arranged them (by seed).
-  // Seeds were already assigned to reflect the user's manual order, so we
-  // simply sort by seed and fill BYE slots at the end — no cross-placement.
+  // BYEs are distributed evenly so players get spread across the bracket
+  // instead of being clumped at the top with all BYEs at the bottom.
   const sortedParticipants = [...participants].sort((a, b) => a.seed - b.seed);
-  // Pad to bracketSize with nulls (BYEs)
-  const seededParticipants: (Participant | null)[] = [
-    ...sortedParticipants,
-    ...Array(bracketSize - sortedParticipants.length).fill(null),
-  ];
+  const seededParticipants = distributeByes(sortedParticipants, bracketSize);
 
   // Generate first round matches
   const firstRoundMatches = bracketSize / 2;
@@ -128,26 +174,59 @@ function linkWinnerBracketMatches(matches: Match[], totalRounds: number): void {
  * Process BYE matches and advance winners automatically
  */
 function processByeMatches(matches: Match[]): void {
-  // Advance winners from completed BYE matches
   let changed = true;
   let iterations = 0;
   const maxIterations = 10;
-  
+
   while (changed && iterations < maxIterations) {
     changed = false;
     iterations++;
-    
+
     matches.forEach((match: Match) => {
-      // If match is completed (BYE) and has a winner, advance them
+      if (match.status !== 'pending') return;
+
+      // Double-BYE in winner bracket: both slots are null and no pending feeder
+      // can ever fill them → mark completed with no winner (ghost match)
+      const isDoubleBye = match.participant1Id === null && match.participant2Id === null;
+      if (isDoubleBye) {
+        const feeders = matches.filter((m: Match) => m.nextWinnerMatchId === match.id);
+        const allFeedersResolved = feeders.length === 0 ||
+          feeders.every((m: Match) => m.status === 'completed');
+        if (allFeedersResolved) {
+          match.status = 'completed';
+          // No winnerId — this slot is empty throughout the bracket
+          changed = true;
+        }
+        return;
+      }
+
+      // Single-BYE: one participant present, no pending feeder for the empty slot
+      const singleByeWinner = match.participant1Id && !match.participant2Id
+        ? match.participant1Id
+        : !match.participant1Id && match.participant2Id
+          ? match.participant2Id
+          : null;
+
+      if (singleByeWinner) {
+        const emptySlotFeeders = matches.filter((m: Match) => m.nextWinnerMatchId === match.id);
+        const allResolved = emptySlotFeeders.length === 0 ||
+          emptySlotFeeders.every((m: Match) => m.status === 'completed');
+        if (allResolved) {
+          match.winnerId = singleByeWinner;
+          match.status = 'completed';
+          changed = true;
+        }
+      }
+    });
+
+    // Advance winners from completed BYE matches with a winner
+    matches.forEach((match: Match) => {
       if (match.status === 'completed' && match.winnerId && match.nextWinnerMatchId) {
         const nextMatch = matches.find((m: Match) => m.id === match.nextWinnerMatchId);
         if (nextMatch) {
-          // Check if winner is already in the next match
-          const alreadyPlaced = nextMatch.participant1Id === match.winnerId || 
-                               nextMatch.participant2Id === match.winnerId;
-          
+          const alreadyPlaced = nextMatch.participant1Id === match.winnerId ||
+            nextMatch.participant2Id === match.winnerId;
           if (!alreadyPlaced) {
-            // Place winner in next match
             if (nextMatch.participant1Id === null) {
               nextMatch.participant1Id = match.winnerId;
               changed = true;
@@ -156,8 +235,6 @@ function processByeMatches(matches: Match[]): void {
               changed = true;
             }
           }
-          
-          // If both participants are present in next match, set it to in_progress
           if (nextMatch.participant1Id && nextMatch.participant2Id) {
             nextMatch.status = 'in_progress';
           }

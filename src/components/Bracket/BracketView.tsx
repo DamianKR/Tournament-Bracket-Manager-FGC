@@ -44,7 +44,9 @@ function BracketView({ bracket, participants, onMatchResult, readOnly = false }:
   const getParticipantName = (id: string | null): string => {
     if (!id) return 'TBD';
     const participant = participants.find(p => p.id === id);
-    return participant?.name || 'Unknown';
+    if (!participant) return 'Unknown';
+    // Show alias (gamertag) if set, otherwise fall back to full name
+    return participant.alias?.trim() || participant.name;
   };
 
   const groupMatchesByRound = (matches: Match[]) => {

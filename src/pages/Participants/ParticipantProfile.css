@@ -80,6 +80,31 @@
   font-weight: 500;
 }
 
+.profile-character {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.125rem;
+}
+
+.profile-character-game {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+  background-color: rgba(0,0,0,0.35);
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.profile-character-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
 .profile-since {
   font-size: 0.75rem;
   color: var(--text-tertiary);

@@ -57,7 +57,8 @@ export async function addParticipant(
 
   const participant: Participant = {
     id: generateId(),
-    name: global.name, // use canonical name from global record
+    name: global.name,
+    alias: global.alias?.trim() || undefined, // copy gamertag for bracket display
     seed: tournament.participants.length + 1,
     eliminated: false,
     lossCount: 0,

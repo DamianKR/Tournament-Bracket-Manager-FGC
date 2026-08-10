@@ -31,10 +31,6 @@ function Dashboard() {
     setTournaments(sorted);
   };
 
-  const loadTournaments = () => {
-    loadTournamentsAsync().then(applySort);
-  };
-
   const handleCreateNew = () => {
     navigate('/create');
   };

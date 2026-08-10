@@ -7,7 +7,7 @@
  * even if tournament results are edited after the fact.
  */
 
-import { GlobalParticipant, ComputedStats, PlacementEntry, Tournament } from '@/models/types';
+import { GlobalParticipant, ComputedStats, PlacementEntry } from '@/models/types';
 import {
   loadGlobalParticipants,
   loadGlobalParticipantsAsync,
@@ -38,7 +38,12 @@ export function getParticipant(id: string): GlobalParticipant | null {
   return loadGlobalParticipants().find((p) => p.id === id) ?? null;
 }
 
-export async function createParticipant(name: string, alias = ''): Promise<GlobalParticipant> {
+export async function createParticipant(
+  name: string,
+  alias = '',
+  gameId: string | null = null,
+  mainCharacterId: string | null = null
+): Promise<GlobalParticipant> {
   const trimmedName = name.trim();
   if (!trimmedName) throw new Error('Participant name is required');
   if (findGlobalParticipantByName(trimmedName)) {
@@ -51,6 +56,8 @@ export async function createParticipant(name: string, alias = ''): Promise<Globa
     alias: alias.trim(),
     avatarUrl: null,
     tournamentIds: [],
+    gameId,
+    mainCharacterId,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -67,7 +74,7 @@ export async function findOrCreateParticipant(name: string): Promise<GlobalParti
 
 export async function updateParticipant(
   id: string,
-  updates: { name?: string; alias?: string; avatarUrl?: string | null }
+  updates: { name?: string; alias?: string; avatarUrl?: string | null; gameId?: string | null; mainCharacterId?: string | null }
 ): Promise<GlobalParticipant> {
   const all = loadGlobalParticipants();
   const participant = all.find((p) => p.id === id);
@@ -81,6 +88,8 @@ export async function updateParticipant(
   }
   if (updates.alias !== undefined) participant.alias = updates.alias.trim();
   if (updates.avatarUrl !== undefined) participant.avatarUrl = updates.avatarUrl;
+  if (updates.gameId !== undefined) participant.gameId = updates.gameId;
+  if (updates.mainCharacterId !== undefined) participant.mainCharacterId = updates.mainCharacterId;
   participant.updatedAt = new Date().toISOString();
 
   await saveGlobalParticipant(participant);

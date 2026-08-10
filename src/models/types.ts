@@ -8,6 +8,7 @@ export type MatchStatus = 'pending' | 'in_progress' | 'completed';
 export interface Participant {
   id: string;
   name: string;
+  alias?: string;    // Gamertag shown in bracket instead of full name
   seed: number;
   eliminated: boolean;
   finalPosition?: number;
@@ -60,9 +61,11 @@ export interface TournamentHistory {
 export interface GlobalParticipant {
   id: string;
   name: string;
-  alias: string;           // Optional gamertag / short name
+  alias: string;            // Optional gamertag / short name
   avatarUrl: string | null;
-  tournamentIds: string[]; // FK references — all tournaments this player joined
+  tournamentIds: string[];  // FK references — all tournaments this player joined
+  gameId: string | null;    // e.g. 'ssbu' — which game this player competes in
+  mainCharacterId: string | null; // e.g. 'kirby' — their main character
   createdAt: string;
   updatedAt: string;
 }

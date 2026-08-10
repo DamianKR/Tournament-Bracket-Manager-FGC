@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GlobalParticipant, ComputedStats } from '@/models/types';
+import { getCharacter } from '@/data/games';
 import {
   getAllParticipants,
   getAllParticipantsAsync,
@@ -10,6 +11,7 @@ import {
   computeAllStats,
 } from '@/services/participants/participantService';
 import { saveGlobalParticipants } from '@/services/storage/localStorage';
+import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import './ParticipantsPage.css';
 
 type SortKey = 'name' | 'wins' | 'tournamentsPlayed' | 'winRate';
@@ -26,6 +28,8 @@ function ParticipantsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newName, setNewName] = useState('');
   const [newAlias, setNewAlias] = useState('');
+  const [newGameId, setNewGameId] = useState<string | null>(null);
+  const [newCharacterId, setNewCharacterId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -86,10 +90,11 @@ function ParticipantsPage() {
     if (!newName.trim()) { setError('Name is required'); return; }
     setCreating(true); setError('');
     try {
-      const p = await createParticipant(newName, newAlias);
+      const p = await createParticipant(newName, newAlias, newGameId, newCharacterId);
       const next = [...participants, p];
       setParticipants(next); refreshStats(next);
-      setNewName(''); setNewAlias(''); setShowCreateForm(false);
+      setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null);
+      setShowCreateForm(false);
     } catch (err: any) { setError(err.message); }
     finally { setCreating(false); }
   }
@@ -157,6 +162,12 @@ function ParticipantsPage() {
                   placeholder="Optional short name" />
               </div>
             </div>
+            <CharacterSelect
+              gameId={newGameId}
+              characterId={newCharacterId}
+              onGameChange={setNewGameId}
+              onCharacterChange={setNewCharacterId}
+            />
             <div className="pp-create-actions">
               <button className="btn-outline" onClick={() => setShowCreateForm(false)}>Cancel</button>
               <button className="btn-primary" onClick={handleCreate} disabled={creating}>
@@ -218,6 +229,11 @@ function ParticipantsPage() {
                         <div className="pp-item-name-block">
                           <span className="pp-item-name">{p.name}</span>
                           {p.alias && <span className="pp-item-alias">{p.alias}</span>}
+                          {p.gameId && p.mainCharacterId && (
+                            <span className="pp-item-character">
+                              {getCharacter(p.gameId, p.mainCharacterId)?.name}
+                            </span>
+                          )}
                         </div>
                         <div className="pp-item-stats">
                           <span className="pp-stat">

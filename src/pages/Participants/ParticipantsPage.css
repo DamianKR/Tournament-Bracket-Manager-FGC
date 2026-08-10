@@ -139,6 +139,12 @@
   border-radius: 12px;
 }
 
+.pp-item-character {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
 .pp-item-stats {
   display: flex;
   gap: 1.5rem;

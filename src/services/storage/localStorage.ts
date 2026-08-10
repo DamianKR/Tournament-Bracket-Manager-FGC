@@ -187,8 +187,13 @@ function lsReadParticipants(): GlobalParticipant[] {
     const raw = localStorage.getItem(STORAGE_KEYS.PARTICIPANTS);
     if (!raw) return [];
     const data = JSON.parse(raw) as GlobalParticipant[];
-    // Migrate old records that don't have tournamentIds
-    return data.map((p) => ({ tournamentIds: [], ...p }));
+    // Migrate old records missing new fields
+    return data.map((p) => ({
+      gameId: null,
+      mainCharacterId: null,
+      ...p,
+      tournamentIds: p.tournamentIds ?? [],
+    }));
   } catch {
     return [];
   }

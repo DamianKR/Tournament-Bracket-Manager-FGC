@@ -7,6 +7,8 @@ import {
   updateParticipant,
 } from '@/services/participants/participantService';
 import { initials, avatarColor } from './ParticipantsPage';
+import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
+import { getCharacter, getGame } from '@/data/games';
 import './ParticipantProfile.css';
 
 type Tab = 'overview' | 'results' | 'edit';
@@ -31,6 +33,8 @@ function ParticipantProfile() {
   // Edit state
   const [editName, setEditName] = useState('');
   const [editAlias, setEditAlias] = useState('');
+  const [editGameId, setEditGameId] = useState<string | null>(null);
+  const [editCharacterId, setEditCharacterId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
 
@@ -42,13 +46,20 @@ function ParticipantProfile() {
     setStats(computeStats(p));
     setEditName(p.name);
     setEditAlias(p.alias ?? '');
+    setEditGameId(p.gameId ?? null);
+    setEditCharacterId(p.mainCharacterId ?? null);
   }, [id]);
 
   async function handleSave() {
     if (!participant) return;
     setSaving(true); setEditError('');
     try {
-      const updated = await updateParticipant(participant.id, { name: editName, alias: editAlias });
+      const updated = await updateParticipant(participant.id, {
+        name: editName,
+        alias: editAlias,
+        gameId: editGameId,
+        mainCharacterId: editCharacterId,
+      });
       setParticipant(updated);
       setStats(computeStats(updated));
       setTab('overview');
@@ -100,6 +111,16 @@ function ParticipantProfile() {
               <h1 className="profile-name">{participant.name}</h1>
               {participant.alias && (
                 <span className="profile-alias">{participant.alias}</span>
+              )}
+              {participant.gameId && participant.mainCharacterId && (
+                <span className="profile-character">
+                  <span className="profile-character-game">
+                    {getGame(participant.gameId)?.shortName}
+                  </span>
+                  <span className="profile-character-name">
+                    {getCharacter(participant.gameId, participant.mainCharacterId)?.name}
+                  </span>
+                </span>
               )}
               <span className="profile-since">
                 Member since {new Date(participant.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
@@ -250,6 +271,12 @@ function ParticipantProfile() {
                 onKeyDown={(e) => e.key === 'Enter' && handleSave()}
                 placeholder="Optional short name" />
             </div>
+            <CharacterSelect
+              gameId={editGameId}
+              characterId={editCharacterId}
+              onGameChange={setEditGameId}
+              onCharacterChange={setEditCharacterId}
+            />
             <div className="form-actions">
               <button className="btn-outline" onClick={() => setTab('overview')}>Cancel</button>
               <button className="btn-primary" onClick={handleSave} disabled={saving}>
