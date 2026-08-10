@@ -22,7 +22,7 @@ import participantsRouter from './server/routes/participants.js';
 const PORT = 3001;
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
 app.use(express.json({ limit: '10mb' }));
 
 // ── Health ──────────────────────────────────────────────────────────────

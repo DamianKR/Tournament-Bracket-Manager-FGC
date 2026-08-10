@@ -1,1 +1,95 @@
-﻿[]
+[
+  {
+    "tournamentIds": [
+      "1786387227586-8u2hb04zk",
+      "1786387486477-i7xydjcqb"
+    ],
+    "id": "gp_1786387087046_wnwtadb",
+    "name": "Damiam",
+    "alias": "KruzX",
+    "avatarUrl": null,
+    "createdAt": "2026-08-10T18:38:07.046Z",
+    "updatedAt": "2026-08-10T18:45:04.859Z"
+  },
+  {
+    "tournamentIds": [
+      "1786387227586-8u2hb04zk",
+      "1786387486477-i7xydjcqb"
+    ],
+    "id": "gp_1786387234567_aoe1z95",
+    "name": "Gino",
+    "alias": "",
+    "avatarUrl": null,
+    "createdAt": "2026-08-10T18:40:34.567Z",
+    "updatedAt": "2026-08-10T18:45:16.068Z"
+  },
+  {
+    "tournamentIds": [
+      "1786387227586-8u2hb04zk"
+    ],
+    "id": "gp_1786387237486_957szxj",
+    "name": "Mario",
+    "alias": "",
+    "avatarUrl": null,
+    "createdAt": "2026-08-10T18:40:37.486Z",
+    "updatedAt": "2026-08-10T18:40:37.491Z"
+  },
+  {
+    "tournamentIds": [
+      "1786387227586-8u2hb04zk",
+      "1786387486477-i7xydjcqb"
+    ],
+    "id": "gp_1786387240075_71g1a0c",
+    "name": "Yoe",
+    "alias": "",
+    "avatarUrl": null,
+    "createdAt": "2026-08-10T18:40:40.075Z",
+    "updatedAt": "2026-08-10T18:45:20.093Z"
+  },
+  {
+    "tournamentIds": [
+      "1786387227586-8u2hb04zk",
+      "1786387486477-i7xydjcqb"
+    ],
+    "id": "gp_1786387243524_6er0c9u",
+    "name": "Ale",
+    "alias": "",
+    "avatarUrl": null,
+    "createdAt": "2026-08-10T18:40:43.524Z",
+    "updatedAt": "2026-08-10T18:45:09.314Z"
+  },
+  {
+    "tournamentIds": [
+      "1786387227586-8u2hb04zk",
+      "1786387486477-i7xydjcqb"
+    ],
+    "id": "gp_1786387250178_ac5thmv",
+    "name": "Alexis",
+    "alias": "",
+    "avatarUrl": null,
+    "createdAt": "2026-08-10T18:40:50.178Z",
+    "updatedAt": "2026-08-10T18:45:12.995Z"
+  },
+  {
+    "tournamentIds": [
+      "1786387227586-8u2hb04zk"
+    ],
+    "id": "gp_1786387258771_xppctms",
+    "name": "Luis",
+    "alias": "",
+    "avatarUrl": null,
+    "createdAt": "2026-08-10T18:40:58.771Z",
+    "updatedAt": "2026-08-10T18:40:58.777Z"
+  },
+  {
+    "tournamentIds": [
+      "1786387227586-8u2hb04zk"
+    ],
+    "id": "gp_1786387264071_6lci0u0",
+    "name": "Manuel",
+    "alias": "",
+    "avatarUrl": null,
+    "createdAt": "2026-08-10T18:41:04.071Z",
+    "updatedAt": "2026-08-10T18:41:04.078Z"
+  }
+]

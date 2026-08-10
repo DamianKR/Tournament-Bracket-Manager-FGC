@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tournament } from '@/models/types';
 import { getAllTournaments, removeTournament } from '@/services/tournament/tournamentService';
+import { loadTournamentsAsync, saveTournaments } from '@/services/storage/localStorage';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -9,16 +10,29 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadTournaments();
+    // Show localStorage immediately (instant), then refresh from server
+    const cached = getAllTournaments();
+    applySort(cached);
+    loadTournamentsAsync().then((serverData) => {
+      // If server returned empty but localStorage has data → push localStorage to server
+      if (serverData.length === 0 && cached.length > 0) {
+        saveTournaments(cached);
+        applySort(cached);
+      } else {
+        applySort(serverData);
+      }
+    });
   }, []);
 
-  const loadTournaments = () => {
-    const allTournaments = getAllTournaments();
-    // Sort by most recent first
-    allTournaments.sort((a: Tournament, b: Tournament) => 
+  const applySort = (data: Tournament[]) => {
+    const sorted = [...data].sort((a, b) =>
       new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
-    setTournaments(allTournaments);
+    setTournaments(sorted);
+  };
+
+  const loadTournaments = () => {
+    loadTournamentsAsync().then(applySort);
   };
 
   const handleCreateNew = () => {
@@ -36,10 +50,10 @@ function Dashboard() {
 
   const handleDeleteTournament = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    
     if (confirm('Are you sure you want to delete this tournament?')) {
       removeTournament(id);
-      loadTournaments();
+      // Update UI immediately from localStorage (already updated by removeTournament)
+      applySort(getAllTournaments());
     }
   };
 

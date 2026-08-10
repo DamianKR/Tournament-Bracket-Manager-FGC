@@ -2,7 +2,8 @@ import { Tournament, Participant, TournamentMode } from '@/models/types';
 import { generateDoubleEliminationBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult } from '@/engine/progression/matchProgression';
-import { saveTournament, loadTournament, deleteTournament, loadTournaments } from '@/services/storage/localStorage';
+import { saveTournament, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
+import { findOrCreateParticipant } from '@/services/participants/participantService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
 
 /**
@@ -26,38 +27,51 @@ export function createTournament(name: string, mode: TournamentMode): Tournament
 }
 
 /**
- * Add a participant to a tournament
+ * Add a participant to a tournament.
+ * Automatically creates (or links) a GlobalParticipant for the given name.
+ * Returns the updated tournament synchronously from cache; the global
+ * participant upsert happens in the background.
  */
-export function addParticipant(
+export async function addParticipant(
   tournamentId: string,
   name: string
-): Tournament {
+): Promise<Tournament> {
   const tournament = loadTournament(tournamentId);
-  if (!tournament) {
-    throw new Error('Tournament not found');
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'setup') throw new Error('Cannot add participants to a tournament in progress');
+
+  const trimmed = name.trim();
+
+  // Duplicate check within this tournament
+  if (tournament.participants.some((p: Participant) => p.name.toLowerCase() === trimmed.toLowerCase())) {
+    throw new Error('Participant name already exists in this tournament');
   }
 
-  if (tournament.status !== 'setup') {
-    throw new Error('Cannot add participants to a tournament in progress');
-  }
+  // Find existing GlobalParticipant or create a new one
+  const global = await findOrCreateParticipant(trimmed);
 
-  // Check for duplicate names
-  if (tournament.participants.some((p: Participant) => p.name.toLowerCase() === name.toLowerCase())) {
-    throw new Error('Participant name already exists');
+  // Check if this GlobalParticipant is already in the tournament
+  if (tournament.participants.some((p: Participant) => p.globalParticipantId === global.id)) {
+    throw new Error('Participant name already exists in this tournament');
   }
 
   const participant: Participant = {
     id: generateId(),
-    name,
+    name: global.name, // use canonical name from global record
     seed: tournament.participants.length + 1,
     eliminated: false,
     lossCount: 0,
+    globalParticipantId: global.id,
   };
 
   tournament.participants.push(participant);
   tournament.updatedAt = new Date().toISOString();
-  
+
   saveTournament(tournament);
+
+  // Bidirectional link: GlobalParticipant knows about this tournament
+  linkParticipantToTournament(global.id, tournament.id);
+
   return tournament;
 }
 
@@ -69,26 +83,19 @@ export function removeParticipant(
   participantId: string
 ): Tournament {
   const tournament = loadTournament(tournamentId);
-  if (!tournament) {
-    throw new Error('Tournament not found');
-  }
-
-  if (tournament.status !== 'setup') {
-    throw new Error('Cannot remove participants from a tournament in progress');
-  }
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'setup') throw new Error('Cannot remove participants from a tournament in progress');
 
   tournament.participants = tournament.participants.filter((p: Participant) => p.id !== participantId);
-  
-  // Reassign seeds
   tournament.participants = assignSeeds(tournament.participants);
   tournament.updatedAt = new Date().toISOString();
-  
+
   saveTournament(tournament);
   return tournament;
 }
 
 /**
- * Update participant name
+ * Update participant name in tournament (does NOT rename the GlobalParticipant)
  */
 export function updateParticipantName(
   tournamentId: string,
@@ -96,16 +103,11 @@ export function updateParticipantName(
   newName: string
 ): Tournament {
   const tournament = loadTournament(tournamentId);
-  if (!tournament) {
-    throw new Error('Tournament not found');
-  }
+  if (!tournament) throw new Error('Tournament not found');
 
   const participant = tournament.participants.find((p: Participant) => p.id === participantId);
-  if (!participant) {
-    throw new Error('Participant not found');
-  }
+  if (!participant) throw new Error('Participant not found');
 
-  // Check for duplicate names
   if (tournament.participants.some(
     (p: Participant) => p.id !== participantId && p.name.toLowerCase() === newName.toLowerCase()
   )) {
@@ -114,7 +116,7 @@ export function updateParticipantName(
 
   participant.name = newName;
   tournament.updatedAt = new Date().toISOString();
-  
+
   saveTournament(tournament);
   return tournament;
 }
@@ -128,33 +130,22 @@ export function moveParticipant(
   direction: 'up' | 'down'
 ): Tournament {
   const tournament = loadTournament(tournamentId);
-  if (!tournament) {
-    throw new Error('Tournament not found');
-  }
-
-  if (tournament.status !== 'setup') {
-    throw new Error('Cannot reorder participants in a tournament in progress');
-  }
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'setup') throw new Error('Cannot reorder participants in a tournament in progress');
 
   const index = tournament.participants.findIndex(p => p.id === participantId);
-  if (index === -1) {
-    throw new Error('Participant not found');
-  }
+  if (index === -1) throw new Error('Participant not found');
 
   const newIndex = direction === 'up' ? index - 1 : index + 1;
-  if (newIndex < 0 || newIndex >= tournament.participants.length) {
-    return tournament; // Can't move beyond boundaries
-  }
+  if (newIndex < 0 || newIndex >= tournament.participants.length) return tournament;
 
-  // Swap participants
   const temp = tournament.participants[index];
   tournament.participants[index] = tournament.participants[newIndex];
   tournament.participants[newIndex] = temp;
 
-  // Reassign seeds based on new order
   tournament.participants = assignSeeds(tournament.participants);
   tournament.updatedAt = new Date().toISOString();
-  
+
   saveTournament(tournament);
   return tournament;
 }
@@ -164,17 +155,12 @@ export function moveParticipant(
  */
 export function shuffleParticipants(tournamentId: string): Tournament {
   const tournament = loadTournament(tournamentId);
-  if (!tournament) {
-    throw new Error('Tournament not found');
-  }
-
-  if (tournament.status !== 'setup') {
-    throw new Error('Cannot shuffle participants in a tournament in progress');
-  }
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'setup') throw new Error('Cannot shuffle participants in a tournament in progress');
 
   tournament.participants = randomizeParticipants(tournament.participants);
   tournament.updatedAt = new Date().toISOString();
-  
+
   saveTournament(tournament);
   return tournament;
 }
@@ -184,22 +170,14 @@ export function shuffleParticipants(tournamentId: string): Tournament {
  */
 export function startTournament(tournamentId: string): Tournament {
   const tournament = loadTournament(tournamentId);
-  if (!tournament) {
-    throw new Error('Tournament not found');
-  }
-
-  if (tournament.status !== 'setup') {
-    throw new Error('Tournament already started');
-  }
-
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'setup') throw new Error('Tournament already started');
   if (tournament.participants.length < MIN_PARTICIPANTS) {
     throw new Error(`Minimum ${MIN_PARTICIPANTS} participants required`);
   }
 
-  // Ensure participants have seeds
   tournament.participants = assignSeeds(tournament.participants);
 
-  // Generate bracket based on mode
   if (tournament.mode === 'double_elimination') {
     tournament.bracket = generateDoubleEliminationBracket(tournament.participants);
   } else {
@@ -208,7 +186,7 @@ export function startTournament(tournamentId: string): Tournament {
 
   tournament.status = 'in_progress';
   tournament.updatedAt = new Date().toISOString();
-  
+
   saveTournament(tournament);
   return tournament;
 }
@@ -222,17 +200,11 @@ export function setMatchWinner(
   winnerId: string
 ): Tournament {
   const tournament = loadTournament(tournamentId);
-  if (!tournament) {
-    throw new Error('Tournament not found');
-  }
-
-  if (tournament.status !== 'in_progress') {
-    throw new Error('Tournament is not in progress');
-  }
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'in_progress') throw new Error('Tournament is not in progress');
 
   const updatedTournament = recordMatchResult(tournament, matchId, winnerId);
   saveTournament(updatedTournament);
-  
   return updatedTournament;
 }
 
@@ -244,13 +216,10 @@ export function undoMatchResult(
   matchId: string
 ): Tournament {
   const tournament = loadTournament(tournamentId);
-  if (!tournament) {
-    throw new Error('Tournament not found');
-  }
+  if (!tournament) throw new Error('Tournament not found');
 
   const updatedTournament = revertMatchResult(tournament, matchId);
   saveTournament(updatedTournament);
-  
   return updatedTournament;
 }
 

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { TournamentMode } from '@/models/types';
-import { 
-  createTournament, 
-  addParticipant, 
+import { TournamentMode, GlobalParticipant } from '@/models/types';
+import {
+  createTournament,
+  addParticipant,
   removeParticipant,
   updateParticipantName,
   moveParticipant,
@@ -11,6 +11,7 @@ import {
   startTournament,
   getTournament
 } from '@/services/tournament/tournamentService';
+import { searchParticipants } from '@/services/participants/participantService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
@@ -30,17 +31,38 @@ function CreateTournament() {
   const [newParticipantName, setNewParticipantName] = useState('');
   const [error, setError] = useState('');
   const [isCreated, setIsCreated] = useState(false);
+  const [adding, setAdding] = useState(false);
+
+  // Autocomplete state
+  const [suggestions, setSuggestions] = useState<GlobalParticipant[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIdx, setHighlightedIdx] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (tournamentId) {
-      loadTournament();
+      loadTournamentData();
       setViewMode('participants');
     }
   }, [tournamentId]);
 
-  const loadTournament = () => {
+  // Close suggestions on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        inputRef.current && !inputRef.current.contains(e.target as Node) &&
+        suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const loadTournamentData = () => {
     if (!tournamentId) return;
-    
     const tournament = getTournament(tournamentId);
     if (tournament) {
       setTournamentName(tournament.name);
@@ -50,12 +72,67 @@ function CreateTournament() {
     }
   };
 
+  // ── Autocomplete ──────────────────────────────────────────────────────
+
+  const handleNameInput = (value: string) => {
+    setNewParticipantName(value);
+    setHighlightedIdx(-1);
+    if (value.trim().length >= 1) {
+      // Filter out participants already in this tournament
+      const alreadyAdded = new Set(participants.map((p: any) => p.name.toLowerCase()));
+      const results = searchParticipants(value).filter(
+        (s) => !alreadyAdded.has(s.name.toLowerCase())
+      );
+      setSuggestions(results);
+      setShowSuggestions(results.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const selectSuggestion = (suggestion: GlobalParticipant) => {
+    setNewParticipantName(suggestion.name);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    // Immediately add
+    doAddParticipant(suggestion.name);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (showSuggestions && suggestions.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setHighlightedIdx((i) => Math.min(i + 1, suggestions.length - 1));
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setHighlightedIdx((i) => Math.max(i - 1, -1));
+        return;
+      }
+      if (e.key === 'Enter' && highlightedIdx >= 0) {
+        e.preventDefault();
+        selectSuggestion(suggestions[highlightedIdx]);
+        return;
+      }
+      if (e.key === 'Escape') {
+        setShowSuggestions(false);
+        return;
+      }
+    }
+    if (e.key === 'Enter') {
+      handleAddParticipant();
+    }
+  };
+
+  // ── Handlers ──────────────────────────────────────────────────────────
+
   const handleCreateTournament = () => {
     if (!tournamentName.trim()) {
       setError('Please enter a tournament name');
       return;
     }
-
     try {
       const tournament = createTournament(tournamentName, mode);
       setTournamentId(tournament.id);
@@ -66,26 +143,30 @@ function CreateTournament() {
     }
   };
 
-  const handleAddParticipant = () => {
-    if (!tournamentId) return;
-    if (!newParticipantName.trim()) {
-      setError('Please enter a participant name');
-      return;
-    }
-
+  const doAddParticipant = async (name: string) => {
+    if (!tournamentId || !name.trim()) return;
+    setAdding(true);
+    setError('');
+    setSuggestions([]);
+    setShowSuggestions(false);
     try {
-      const tournament = addParticipant(tournamentId, newParticipantName.trim());
+      const tournament = await addParticipant(tournamentId, name.trim());
       setParticipants(tournament.participants);
       setNewParticipantName('');
-      setError('');
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setAdding(false);
+      inputRef.current?.focus();
     }
+  };
+
+  const handleAddParticipant = () => {
+    doAddParticipant(newParticipantName);
   };
 
   const handleRemoveParticipant = (participantId: string) => {
     if (!tournamentId) return;
-
     try {
       const tournament = removeParticipant(tournamentId, participantId);
       setParticipants(tournament.participants);
@@ -97,7 +178,6 @@ function CreateTournament() {
 
   const handleUpdateParticipant = (participantId: string, newName: string) => {
     if (!tournamentId) return;
-
     try {
       const tournament = updateParticipantName(tournamentId, participantId, newName);
       setParticipants(tournament.participants);
@@ -109,7 +189,6 @@ function CreateTournament() {
 
   const handleMoveParticipant = (participantId: string, direction: 'up' | 'down') => {
     if (!tournamentId) return;
-
     try {
       const tournament = moveParticipant(tournamentId, participantId, direction);
       setParticipants(tournament.participants);
@@ -121,7 +200,6 @@ function CreateTournament() {
 
   const handleShuffleParticipants = () => {
     if (!tournamentId) return;
-
     try {
       const tournament = shuffleParticipants(tournamentId);
       setParticipants(tournament.participants);
@@ -133,12 +211,10 @@ function CreateTournament() {
 
   const handleStartTournament = () => {
     if (!tournamentId) return;
-
     if (participants.length < MIN_PARTICIPANTS) {
       setError(`Minimum ${MIN_PARTICIPANTS} participants required`);
       return;
     }
-
     try {
       startTournament(tournamentId);
       navigate(`/tournament/${tournamentId}`);
@@ -147,16 +223,10 @@ function CreateTournament() {
     }
   };
 
-  const handleCancel = () => {
-    navigate('/');
-  };
+  const handleCancel = () => navigate('/');
 
   const sidebarItems = [
-    {
-      id: 'setup',
-      label: 'Tournament Setup',
-      active: !isCreated,
-    },
+    { id: 'setup', label: 'Tournament Setup', active: !isCreated },
     {
       id: 'participants',
       label: 'Participants',
@@ -176,15 +246,15 @@ function CreateTournament() {
   return (
     <div className="create-tournament">
       <Sidebar items={sidebarItems} />
-      
+
       <div className="create-tournament-content">
         <div className="container">
           {!isCreated ? (
             <div className="setup-form card">
               <h2>Create New Tournament</h2>
-              
+
               {error && <div className="error-message">{error}</div>}
-              
+
               <div className="form-group">
                 <label>Tournament Name</label>
                 <input
@@ -211,9 +281,7 @@ function CreateTournament() {
               </div>
 
               <div className="form-actions">
-                <button className="btn-outline" onClick={handleCancel}>
-                  Cancel
-                </button>
+                <button className="btn-outline" onClick={handleCancel}>Cancel</button>
                 <button className="btn-primary" onClick={handleCreateTournament}>
                   Create Tournament
                 </button>
@@ -235,27 +303,60 @@ function CreateTournament() {
                   {error && <div className="error-message">{error}</div>}
 
                   <div className="add-participant-form card">
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={newParticipantName}
-                        onChange={(e) => setNewParticipantName(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddParticipant()}
-                        placeholder="Enter participant name"
-                        className="flex-1"
-                      />
-                      <button className="btn-primary" onClick={handleAddParticipant}>
-                        Add Participant
-                      </button>
+                    <div className="autocomplete-wrapper">
+                      <div className="flex gap-2">
+                        <div className="autocomplete-input-wrap flex-1">
+                          <input
+                            ref={inputRef}
+                            type="text"
+                            value={newParticipantName}
+                            onChange={(e) => handleNameInput(e.target.value)}
+                            onKeyDown={handleInputKeyDown}
+                            onFocus={() => {
+                              if (suggestions.length > 0) setShowSuggestions(true);
+                            }}
+                            placeholder="Enter or search participant name…"
+                            className="w-full"
+                            disabled={adding}
+                            autoComplete="off"
+                          />
+                          {showSuggestions && suggestions.length > 0 && (
+                            <div className="autocomplete-dropdown" ref={suggestionsRef}>
+                              {suggestions.map((s, idx) => (
+                                <div
+                                  key={s.id}
+                                  className={`autocomplete-item ${idx === highlightedIdx ? 'highlighted' : ''}`}
+                                  onMouseDown={() => selectSuggestion(s)}
+                                >
+                                  <span className="autocomplete-item-name">{s.name}</span>
+                                  {s.alias && (
+                                    <span className="autocomplete-item-alias">{s.alias}</span>
+                                  )}
+                                  <span className="autocomplete-item-stats">
+                                    {(s.tournamentIds ?? []).length} played
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          className="btn-primary"
+                          onClick={handleAddParticipant}
+                          disabled={adding}
+                        >
+                          {adding ? '…' : 'Add'}
+                        </button>
+                      </div>
+                      <p className="autocomplete-hint text-secondary text-sm">
+                        Type to search existing participants, or enter a new name to create one
+                      </p>
                     </div>
                   </div>
 
                   {participants.length > 0 && (
                     <div className="participants-actions card">
-                      <button 
-                        className="btn-outline"
-                        onClick={handleShuffleParticipants}
-                      >
+                      <button className="btn-outline" onClick={handleShuffleParticipants}>
                         Randomize Order
                       </button>
                       <span className="text-secondary">
@@ -273,9 +374,7 @@ function CreateTournament() {
                   />
 
                   <div className="form-actions">
-                    <button className="btn-outline" onClick={handleCancel}>
-                      Cancel
-                    </button>
+                    <button className="btn-outline" onClick={handleCancel}>Cancel</button>
                     <button
                       className="btn-primary"
                       onClick={handleStartTournament}
@@ -293,14 +392,11 @@ function CreateTournament() {
                   <p className="text-secondary mb-3">
                     Preview how the bracket will look with current participants
                   </p>
-                  
+
                   <BracketPreview participants={participants} />
 
                   <div className="form-actions mt-3">
-                    <button 
-                      className="btn-outline" 
-                      onClick={() => setViewMode('participants')}
-                    >
+                    <button className="btn-outline" onClick={() => setViewMode('participants')}>
                       Back to Participants
                     </button>
                     <button

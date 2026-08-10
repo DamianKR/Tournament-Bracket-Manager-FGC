@@ -6,6 +6,7 @@ export const MAX_PARTICIPANTS = 256; // Reasonable limit
 export const STORAGE_KEYS = {
   TOURNAMENTS: 'bracket_tournaments',
   ACTIVE_TOURNAMENT: 'bracket_active_tournament',
+  PARTICIPANTS: 'bracket_global_participants',
 } as const;
 
 export const TOURNAMENT_MODES = {

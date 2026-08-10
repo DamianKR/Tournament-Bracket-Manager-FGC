@@ -51,40 +51,59 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/participants — create
+// POST /api/participants
+// - Array body  → replace full collection (bulk sync)
+// - Object body → upsert single participant
 router.post('/', async (req, res) => {
   try {
-    const { name, alias } = req.body;
-
-    if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'name is required' });
+    if (Array.isArray(req.body)) {
+      await participants.replaceAll(req.body);
+      return res.json({ ok: true, count: req.body.length });
     }
 
-    // Check for duplicate name (case-insensitive)
-    const all = await participants.getAll();
-    const duplicate = all.find(
-      (p) => p.name.toLowerCase() === name.trim().toLowerCase()
-    );
-    if (duplicate) {
-      return res.status(409).json({ error: 'A participant with that name already exists', existing: duplicate });
-    }
+    // Single object upsert
+    const body = req.body;
+    const { valid, errors } = validateParticipant(body);
+    if (!valid) return res.status(400).json({ error: 'Invalid participant data', details: errors });
 
-    const newParticipant = participantShape(generateId(), name.trim(), alias?.trim() ?? '');
-    await participants.upsert(newParticipant);
-    res.status(201).json(newParticipant);
+    if (!body.stats) {
+      body.stats = { tournamentsPlayed: 0, wins: 0, matchWins: 0, matchLosses: 0 };
+    }
+    body.createdAt = body.createdAt ?? new Date().toISOString();
+    body.updatedAt = new Date().toISOString();
+
+    await participants.upsert(body);
+    return res.status(201).json(body);
   } catch (err) {
     console.error('[Participants] POST / error:', err);
-    res.status(500).json({ error: 'Failed to create participant' });
+    res.status(500).json({ error: 'Failed to save participants' });
   }
 });
 
-// PUT /api/participants/:id — update editable fields
+// PUT /api/participants/:id — upsert (create if not exists, update if exists)
 router.put('/:id', async (req, res) => {
   try {
     const existing = await participants.findById(req.params.id);
-    if (!existing) return res.status(404).json({ error: 'Participant not found' });
 
-    const { name, alias, avatarUrl } = req.body;
+    if (!existing) {
+      // CREATE: body must contain the full participant object from the frontend
+      const body = { ...req.body, id: req.params.id };
+      const { valid, errors } = validateParticipant(body);
+      if (!valid) return res.status(400).json({ error: 'Invalid data', details: errors });
+
+      // Ensure stats block exists
+      if (!body.stats) {
+        body.stats = { tournamentsPlayed: 0, wins: 0, matchWins: 0, matchLosses: 0 };
+      }
+      body.createdAt = body.createdAt ?? new Date().toISOString();
+      body.updatedAt = new Date().toISOString();
+
+      await participants.upsert(body);
+      return res.status(201).json(body);
+    }
+
+    // UPDATE: merge editable fields only
+    const { name, alias, avatarUrl, stats } = req.body;
 
     // Check for duplicate name if name is changing
     if (name && name.trim().toLowerCase() !== existing.name.toLowerCase()) {
@@ -102,6 +121,8 @@ router.put('/:id', async (req, res) => {
       name: name?.trim() ?? existing.name,
       alias: alias !== undefined ? alias.trim() : existing.alias,
       avatarUrl: avatarUrl !== undefined ? avatarUrl : existing.avatarUrl,
+      // Allow stats to be overwritten if sent (for full sync)
+      stats: stats ?? existing.stats,
       updatedAt: new Date().toISOString(),
     };
 
@@ -132,7 +153,8 @@ router.delete('/:id', async (req, res) => {
 router.post('/:id/stats', async (req, res) => {
   try {
     const existing = await participants.findById(req.params.id);
-    if (!existing) return res.status(404).json({ error: 'Participant not found' });
+    // If participant doesn't exist in JSON yet (was only in localStorage), skip silently
+    if (!existing) return res.json({ ok: true, skipped: true });
 
     const { tournamentsPlayed = 0, wins = 0, matchWins = 0, matchLosses = 0 } = req.body;
 

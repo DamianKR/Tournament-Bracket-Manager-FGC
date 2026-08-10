@@ -12,6 +12,7 @@ export interface Participant {
   eliminated: boolean;
   finalPosition?: number;
   lossCount: number; // Track number of losses (0, 1, or 2 for double elimination)
+  globalParticipantId?: string; // Links to a GlobalParticipant if added from the global list
 }
 
 export interface Match {
@@ -54,21 +55,33 @@ export interface TournamentHistory {
 
 // ── Global Participant ─────────────────────────────────────────────────
 // A participant that exists independently of any tournament.
-// Can be reused across multiple tournaments.
-
-export interface GlobalParticipantStats {
-  tournamentsPlayed: number;
-  wins: number;        // Tournament wins (1st place)
-  matchWins: number;
-  matchLosses: number;
-}
+// Stats are computed at runtime by reading tournaments — never stored.
 
 export interface GlobalParticipant {
   id: string;
   name: string;
-  alias: string;       // Optional gamertag / short name
+  alias: string;           // Optional gamertag / short name
   avatarUrl: string | null;
-  stats: GlobalParticipantStats;
+  tournamentIds: string[]; // FK references — all tournaments this player joined
   createdAt: string;
   updatedAt: string;
+}
+
+// Computed at runtime from tournaments — not persisted
+export interface ComputedStats {
+  tournamentsPlayed: number;
+  wins: number;            // 1st place finishes
+  top3: number;            // top 3 finishes
+  matchWins: number;
+  matchLosses: number;
+  winRate: number;         // 0-100
+  placements: PlacementEntry[];
+}
+
+export interface PlacementEntry {
+  tournamentId: string;
+  tournamentName: string;
+  position: number;        // 1 = champion
+  totalParticipants: number;
+  date: string;            // tournament updatedAt
 }

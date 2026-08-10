@@ -12,57 +12,69 @@
  *
  * The local server is optional — the app works fine without it,
  * falling back to localStorage automatically.
+ *
+ * Covers two collections:
+ *   - Tournaments       (STORAGE_KEYS.TOURNAMENTS  / /api/tournaments)
+ *   - GlobalParticipants (STORAGE_KEYS.PARTICIPANTS / /api/participants)
  */
 
-import { Tournament } from '@/models/types';
+import { Tournament, GlobalParticipant } from '@/models/types';
 import { STORAGE_KEYS } from '@/constants/tournament';
 
 const LOCAL_SERVER = 'http://localhost:3001';
-const HEALTH_TIMEOUT_MS = 800;
+const HEALTH_TIMEOUT_MS = 1500;
 
 // ── Local server detection ──────────────────────────────────────────────
+// Single shared Promise so concurrent callers don't fire multiple health checks.
 
-let _serverAvailable: boolean | null = null; // cached per session
+let _healthPromise: Promise<boolean> | null = null;
 
-async function isLocalServerAvailable(): Promise<boolean> {
-  if (_serverAvailable !== null) return _serverAvailable;
-
-  try {
-    const res = await fetch(`${LOCAL_SERVER}/api/health`, {
-      signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
+function isLocalServerAvailable(): Promise<boolean> {
+  if (_healthPromise) return _healthPromise;
+  _healthPromise = fetch(`${LOCAL_SERVER}/api/health`, {
+    signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
+  })
+    .then((res) => {
+      const ok = res.ok;
+      console.log(`[Storage] Local server ${ok ? 'available' : 'returned error'}`);
+      return ok;
+    })
+    .catch(() => {
+      console.log('[Storage] Local server not available, using localStorage only');
+      return false;
     });
-    _serverAvailable = res.ok;
-  } catch {
-    _serverAvailable = false;
-  }
-
-  return _serverAvailable;
+  return _healthPromise;
 }
 
-// Reset cache so next call re-checks (called on save failures)
 function resetServerCache() {
-  _serverAvailable = null;
+  _healthPromise = null;
 }
 
 // ── Supabase slot ───────────────────────────────────────────────────────
-// Not implemented yet. Add VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY
-// to a .env file and implement these two functions when ready.
 
-async function _supabaseLoad(): Promise<Tournament[] | null> {
+async function _supabaseLoadTournaments(): Promise<Tournament[] | null> {
   // TODO: implement with @supabase/supabase-js
   return null;
 }
-
-async function _supabaseSync(_tournaments: Tournament[]): Promise<void> {
+async function _supabaseSyncTournaments(_data: Tournament[]): Promise<void> {
+  // TODO: implement with @supabase/supabase-js
+}
+async function _supabaseLoadParticipants(): Promise<GlobalParticipant[] | null> {
+  // TODO: implement with @supabase/supabase-js
+  return null;
+}
+async function _supabaseSyncParticipants(_data: GlobalParticipant[]): Promise<void> {
   // TODO: implement with @supabase/supabase-js
 }
 
 const hasSupabase = () =>
   !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
 
-// ── localStorage helpers ────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+//  TOURNAMENTS
+// ══════════════════════════════════════════════════════════════════════════
 
-function lsRead(): Tournament[] {
+function lsReadTournaments(): Tournament[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.TOURNAMENTS);
     return raw ? (JSON.parse(raw) as Tournament[]) : [];
@@ -71,119 +83,216 @@ function lsRead(): Tournament[] {
   }
 }
 
-function lsWrite(tournaments: Tournament[]): void {
+function lsWriteTournaments(data: Tournament[]): void {
   try {
-    localStorage.setItem(STORAGE_KEYS.TOURNAMENTS, JSON.stringify(tournaments));
+    localStorage.setItem(STORAGE_KEYS.TOURNAMENTS, JSON.stringify(data));
   } catch (err) {
-    console.error('[Storage] localStorage write failed:', err);
+    console.error('[Storage] localStorage tournaments write failed:', err);
   }
 }
 
-// ── Core read/write ─────────────────────────────────────────────────────
-
-async function readAll(): Promise<Tournament[]> {
-  // 1. Try local JSON server
+async function readAllTournaments(): Promise<Tournament[]> {
   if (await isLocalServerAvailable()) {
     try {
       const res = await fetch(`${LOCAL_SERVER}/api/tournaments`);
       if (res.ok) {
         const data = (await res.json()) as Tournament[];
-        // Keep localStorage in sync so offline fallback is fresh
-        lsWrite(data);
-        return data;
+        // Only overwrite localStorage if server has data OR localStorage is also empty.
+        // This prevents wiping localStorage on a fresh server with no data yet.
+        if (data.length > 0 || lsReadTournaments().length === 0) {
+          lsWriteTournaments(data);
+        }
+        return data.length > 0 ? data : lsReadTournaments();
       }
     } catch (err) {
-      console.warn('[Storage] Local server read failed, falling back:', err);
+      console.warn('[Storage] Local server tournaments read failed:', err);
       resetServerCache();
     }
   }
-
-  // 2. Try Supabase (future)
   if (hasSupabase()) {
-    const data = await _supabaseLoad();
-    if (data) {
-      lsWrite(data);
-      return data;
-    }
+    const data = await _supabaseLoadTournaments();
+    if (data) { lsWriteTournaments(data); return data; }
   }
-
-  // 3. Fallback: localStorage
-  return lsRead();
+  return lsReadTournaments();
 }
 
-async function writeAll(tournaments: Tournament[]): Promise<void> {
-  // 1. localStorage — always first, synchronous, never fails
-  lsWrite(tournaments);
-
-  // 2. Local JSON server — fire and forget
+async function writeAllTournaments(data: Tournament[]): Promise<void> {
+  lsWriteTournaments(data);
   if (await isLocalServerAvailable()) {
     fetch(`${LOCAL_SERVER}/api/tournaments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(tournaments),
-    }).catch((err) => {
-      console.warn('[Storage] Local server write failed:', err);
-      resetServerCache();
-    });
+      body: JSON.stringify(data),
+    }).catch((err) => { console.warn('[Storage] Local server tournaments write failed:', err); resetServerCache(); });
   }
-
-  // 3. Supabase sync — fire and forget (future)
   if (hasSupabase()) {
-    _supabaseSync(tournaments).catch((err) =>
-      console.warn('[Storage] Supabase sync failed:', err)
+    _supabaseSyncTournaments(data).catch((err) =>
+      console.warn('[Storage] Supabase tournaments sync failed:', err)
     );
   }
 }
 
-// ── Public API (same interface as before — no changes needed upstream) ──
+// ── Tournaments public API ──────────────────────────────────────────────
 
 export function loadTournaments(): Tournament[] {
-  // Sync façade: returns localStorage immediately.
-  // Components that need fresh data should call loadTournamentsAsync.
-  return lsRead();
+  return lsReadTournaments();
 }
 
 export async function loadTournamentsAsync(): Promise<Tournament[]> {
-  return readAll();
+  return readAllTournaments();
 }
 
 export function saveTournaments(tournaments: Tournament[]): void {
-  // Sync façade: writes localStorage immediately, async layers in background.
-  lsWrite(tournaments);
-  writeAll(tournaments).catch((err) =>
-    console.warn('[Storage] Background write error:', err)
+  lsWriteTournaments(tournaments);
+  writeAllTournaments(tournaments).catch((err) =>
+    console.warn('[Storage] Background tournaments write error:', err)
   );
 }
 
 export function saveTournament(tournament: Tournament): void {
-  const all = lsRead();
+  const all = lsReadTournaments();
   const idx = all.findIndex((t) => t.id === tournament.id);
-  if (idx >= 0) {
-    all[idx] = tournament;
-  } else {
-    all.push(tournament);
-  }
+  if (idx >= 0) { all[idx] = tournament; } else { all.push(tournament); }
   saveTournaments(all);
 }
 
 export function loadTournament(id: string): Tournament | null {
-  return lsRead().find((t) => t.id === id) ?? null;
+  return lsReadTournaments().find((t) => t.id === id) ?? null;
 }
 
 export function deleteTournament(id: string): void {
-  const filtered = lsRead().filter((t) => t.id !== id);
+  const filtered = lsReadTournaments().filter((t) => t.id !== id);
   saveTournaments(filtered);
 }
 
 export function clearAllTournaments(): void {
   localStorage.removeItem(STORAGE_KEYS.TOURNAMENTS);
-  writeAll([]).catch(() => {});
+  writeAllTournaments([]).catch(() => {});
 }
 
 export function getTournamentCount(): number {
-  return lsRead().length;
+  return lsReadTournaments().length;
 }
 
 export function tournamentExists(id: string): boolean {
-  return lsRead().some((t) => t.id === id);
+  return lsReadTournaments().some((t) => t.id === id);
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  GLOBAL PARTICIPANTS
+// ══════════════════════════════════════════════════════════════════════════
+
+function lsReadParticipants(): GlobalParticipant[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.PARTICIPANTS);
+    if (!raw) return [];
+    const data = JSON.parse(raw) as GlobalParticipant[];
+    // Migrate old records that don't have tournamentIds
+    return data.map((p) => ({ tournamentIds: [], ...p }));
+  } catch {
+    return [];
+  }
+}
+
+function lsWriteParticipants(data: GlobalParticipant[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.PARTICIPANTS, JSON.stringify(data));
+  } catch (err) {
+    console.error('[Storage] localStorage participants write failed:', err);
+  }
+}
+
+async function readAllParticipants(): Promise<GlobalParticipant[]> {
+  if (await isLocalServerAvailable()) {
+    try {
+      const res = await fetch(`${LOCAL_SERVER}/api/participants`);
+      if (res.ok) {
+        const data = (await res.json()) as GlobalParticipant[];
+        // Only overwrite localStorage if server has data OR localStorage is also empty.
+        if (data.length > 0 || lsReadParticipants().length === 0) {
+          lsWriteParticipants(data);
+        }
+        return data.length > 0 ? data : lsReadParticipants();
+      }
+    } catch (err) {
+      console.warn('[Storage] Local server participants read failed:', err);
+      resetServerCache();
+    }
+  }
+  if (hasSupabase()) {
+    const data = await _supabaseLoadParticipants();
+    if (data) { lsWriteParticipants(data); return data; }
+  }
+  return lsReadParticipants();
+}
+
+// Exactamente igual que writeAllTournaments pero para participants
+async function writeAllParticipants(data: GlobalParticipant[]): Promise<void> {
+  lsWriteParticipants(data);
+  if (await isLocalServerAvailable()) {
+    fetch(`${LOCAL_SERVER}/api/participants`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).catch((err) => { console.warn('[Storage] Local server participants write failed:', err); resetServerCache(); });
+  }
+  if (hasSupabase()) {
+    _supabaseSyncParticipants(data).catch((err) =>
+      console.warn('[Storage] Supabase participants sync failed:', err)
+    );
+  }
+}
+
+// ── GlobalParticipants public API ───────────────────────────────────────
+
+export function loadGlobalParticipants(): GlobalParticipant[] {
+  return lsReadParticipants();
+}
+
+export async function loadGlobalParticipantsAsync(): Promise<GlobalParticipant[]> {
+  return readAllParticipants();
+}
+
+export function saveGlobalParticipants(data: GlobalParticipant[]): void {
+  lsWriteParticipants(data);
+  writeAllParticipants(data).catch((err) =>
+    console.warn('[Storage] Background participants write error:', err)
+  );
+}
+
+export async function saveGlobalParticipant(p: GlobalParticipant): Promise<void> {
+  const all = lsReadParticipants();
+  const idx = all.findIndex((x) => x.id === p.id);
+  if (idx >= 0) { all[idx] = p; } else { all.push(p); }
+  saveGlobalParticipants(all);
+}
+
+export async function deleteGlobalParticipant(id: string): Promise<void> {
+  const filtered = lsReadParticipants().filter((p) => p.id !== id);
+  saveGlobalParticipants(filtered);
+}
+
+// Adds a tournamentId to the participant's FK list (bidirectional link)
+export function linkParticipantToTournament(participantId: string, tournamentId: string): void {
+  const all = lsReadParticipants();
+  const p = all.find((x) => x.id === participantId);
+  if (p && !p.tournamentIds.includes(tournamentId)) {
+    p.tournamentIds.push(tournamentId);
+    p.updatedAt = new Date().toISOString();
+    saveGlobalParticipants(all);
+  }
+}
+
+export function findGlobalParticipantByName(name: string): GlobalParticipant | null {
+  return lsReadParticipants().find(
+    (p) => p.name.toLowerCase() === name.trim().toLowerCase()
+  ) ?? null;
+}
+
+export function searchGlobalParticipants(query: string): GlobalParticipant[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return lsReadParticipants();
+  return lsReadParticipants().filter((p) =>
+    p.name.toLowerCase().includes(q) || p.alias?.toLowerCase().includes(q)
+  );
 }
