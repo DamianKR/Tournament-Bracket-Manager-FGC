@@ -10,6 +10,11 @@
   margin-bottom: 1.5rem;
 }
 
+.pp-header h1 {
+  color: var(--primary-color);
+  text-shadow: 0 0 24px rgba(124, 58, 237, 0.2);
+}
+
 .pp-count {
   display: inline-flex;
   align-items: center;
@@ -172,7 +177,7 @@
   color: var(--text-secondary);
   background-color: var(--bg-tertiary);
   padding: 0.1rem 0.4rem;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
 }
 
 .pp-create-actions {
@@ -207,7 +212,7 @@
   background: none;
   border: 1px solid var(--border-color);
   padding: 0.25rem 0.625rem;
-  border-radius: 20px;
+  border-radius: 99px;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -300,7 +305,7 @@
   color: var(--text-secondary);
   background-color: var(--bg-tertiary);
   padding: 0.1rem 0.4rem;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -316,7 +321,7 @@
   font-size: 0.65rem;
   font-weight: 600;
   padding: 0.1rem 0.4rem;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   white-space: nowrap;
 }
 

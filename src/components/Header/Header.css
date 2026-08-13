@@ -1,10 +1,10 @@
 .app-header {
-  background-color: var(--bg-primary);
-  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 55%, #8b5cf6 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 24px rgba(91, 33, 182, 0.35);
   padding: 1rem;
 }
 
@@ -21,44 +21,62 @@
 .header-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
   cursor: pointer;
   user-select: none;
+  transition: transform 0.15s;
+}
+
+.header-logo:hover {
+  transform: scale(1.02);
 }
 
 .header-logo-icon {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
 }
 
 .header-logo-text {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--primary-color);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.25);
 }
 
 .header-nav {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.4rem;
+  background: rgba(0,0,0,0.18);
+  padding: 0.3rem;
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .header-nav-item {
-  background: none;
+  background: transparent;
   border: none;
-  padding: 0.375rem 0.875rem;
+  padding: 0.45rem 1rem;
   border-radius: var(--border-radius);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.75);
   cursor: pointer;
-  transition: background-color 0.15s, color 0.15s;
+  transition: all 0.15s;
 }
 
 .header-nav-item:hover {
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
+  background-color: rgba(255,255,255,0.1);
+  color: #fff;
 }
 
 .header-nav-item.active {
-  background-color: var(--primary-color);
-  color: white;
+  background-color: #fff;
+  color: #5b21b6;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }

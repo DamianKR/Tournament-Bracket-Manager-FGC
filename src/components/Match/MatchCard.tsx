@@ -62,7 +62,7 @@ function MatchCard({
       <div className="match-header">
         <span className="match-id">Match {match.matchNumber}</span>
         {match.status === 'completed' && !isGhostMatch && (
-          <span className="match-status completed">✓</span>
+          <span className="match-status completed"><i className="fas fa-check" /></span>
         )}
         {isGhostMatch && (
           <span className="match-status ghost">Auto-BYE</span>
@@ -111,8 +111,8 @@ function MatchCard({
           <div className="confirm-bar">
             <span className="confirm-label">Winner: <strong>{pendingName}</strong>?</span>
             <div className="confirm-actions">
-              <button className="confirm-btn confirm-yes" onClick={handleConfirm}>✓ Confirm</button>
-              <button className="confirm-btn confirm-no"  onClick={handleCancel}>✕ Cancel</button>
+              <button className="confirm-btn confirm-yes" onClick={handleConfirm}><i className="fas fa-check" /> Confirm</button>
+              <button className="confirm-btn confirm-no"  onClick={handleCancel}><i className="fas fa-xmark" /> Cancel</button>
             </div>
           </div>
         ) : (

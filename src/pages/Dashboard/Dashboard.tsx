@@ -86,11 +86,11 @@ function Dashboard() {
       <div className="container">
         <div className="dashboard-header">
           <div>
-            <h1>Tournament Manager</h1>
+            <h1><i className="fas fa-trophy" /> Tournament Manager</h1>
             <p className="text-secondary">Manage your double elimination brackets</p>
           </div>
           <button className="btn-primary" onClick={handleCreateNew}>
-            + New Tournament
+            <i className="fas fa-plus" /> New Tournament
           </button>
         </div>
 
@@ -117,19 +117,19 @@ function Dashboard() {
                 
                 <div className="tournament-card-info">
                   <div className="info-row">
-                    <span className="text-secondary">Participants:</span>
+                    <span><i className="fas fa-users" /> Participants</span>
                     <span>{tournament.participants.length}</span>
                   </div>
                   <div className="info-row">
-                    <span className="text-secondary">Mode:</span>
+                    <span><i className="fas fa-sitemap" /> Mode</span>
                     <span>
-                      {tournament.mode === 'double_elimination' 
-                        ? 'Double Elimination' 
+                      {tournament.mode === 'double_elimination'
+                        ? 'Double Elimination'
                         : 'Single Elimination'}
                     </span>
                   </div>
                   <div className="info-row">
-                    <span className="text-secondary">Last updated:</span>
+                    <span><i className="fas fa-clock" /> Last updated</span>
                     <span className="text-sm">{formatDate(tournament.updatedAt)}</span>
                   </div>
                 </div>
@@ -139,13 +139,15 @@ function Dashboard() {
                     className="btn-outline"
                     onClick={() => tournament.status === 'setup' ? navigate(`/create/${tournament.id}`) : navigate(`/tournament/${tournament.id}`)}
                   >
-                    {tournament.status === 'setup' ? 'Continue Setup' : 'View Bracket'}
+                    <i className={tournament.status === 'setup' ? 'fas fa-pen' : 'fas fa-eye'} />
+                    {tournament.status === 'setup' ? ' Continue Setup' : ' View Bracket'}
                   </button>
                   <button
                     className="btn-danger btn-sm"
                     onClick={(e) => requestDelete(tournament.id, e)}
+                    title="Delete tournament"
                   >
-                    Delete
+                    <i className="fas fa-trash" />
                   </button>
                 </div>
               </div>

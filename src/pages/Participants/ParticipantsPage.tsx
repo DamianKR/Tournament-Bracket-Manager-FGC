@@ -160,7 +160,7 @@ function ParticipantsPage() {
         {showCreateForm && (
           <div className="pp-create-form card">
             <div className="pp-create-header">
-              <span className="pp-create-icon">🙋</span>
+              <span className="pp-create-icon"><i className="fas fa-user-plus" /></span>
               <div>
                 <h3>Create New Participant</h3>
                 <p className="text-secondary">Add a new player to the global roster</p>
@@ -296,7 +296,7 @@ function ParticipantsPage() {
                             <span className="pp-stat-value">{s.tournamentsPlayed}</span>
                           </span>
                           <span className="pp-stat">
-                            <span className="pp-stat-label">🏆 Wins</span>
+                            <span className="pp-stat-label"><i className="fas fa-trophy" /> Wins</span>
                             <span className="pp-stat-value pp-stat-wins">{s.wins}</span>
                           </span>
                           <span className="pp-stat">
@@ -306,8 +306,8 @@ function ParticipantsPage() {
                         </div>
                       </div>
                       <div className="pp-item-actions">
-                        <button className="btn-icon" onClick={() => startEdit(p)} title="Edit">✏️</button>
-                        <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title="Delete">🗑️</button>
+                        <button className="btn-icon" onClick={() => startEdit(p)} title="Edit"><i className="fas fa-pen" /></button>
+                        <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title="Delete"><i className="fas fa-trash" /></button>
                       </div>
                     </>
                   )}

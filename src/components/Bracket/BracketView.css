@@ -50,13 +50,17 @@
 }
 
 .round-header-cell {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.78rem;
-  color: var(--text-secondary);
+  color: #fff;
   text-align: center;
   padding: 0.3rem 0.4rem;
-  background-color: var(--bg-tertiary);
+  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--border-radius);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
   /* width synced with .bracket-round */
   width: 320px;
   flex-shrink: 0;

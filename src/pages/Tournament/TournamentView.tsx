@@ -101,7 +101,7 @@ function TournamentView() {
                 <>
                   <span className="meta-separator">•</span>
                   <span className="meta-item champion">
-                    🏆 Champion: {tournament.participants.find(p => p.id === tournament.championId)?.name}
+                    <i className="fas fa-trophy" /> Champion: {tournament.participants.find(p => p.id === tournament.championId)?.name}
                   </span>
                 </>
               )}

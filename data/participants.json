@@ -20,8 +20,8 @@
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-08-13T18:49:16.886Z",
-    "eloPoints": 1500,
+    "updatedAt": "2026-08-13T21:18:59.039Z",
+    "eloPoints": 1511,
     "eloRank": "Diamante"
   },
   {
@@ -196,9 +196,9 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-10T20:27:35.444Z",
-    "updatedAt": "2026-08-13T18:49:16.886Z",
-    "eloPoints": 1500,
-    "eloRank": "Diamante"
+    "updatedAt": "2026-08-13T21:18:59.039Z",
+    "eloPoints": 1489,
+    "eloRank": "Platino"
   },
   {
     "gameId": "ssbu",

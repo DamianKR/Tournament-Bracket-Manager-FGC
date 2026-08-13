@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "m_1786655939039_wbj5kaa",
+    "playerAId": "gp_1786387087046_wnwtadb",
+    "playerBId": "gp_1786393655444_41zyrro",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "loserId": "gp_1786393655444_41zyrro",
+    "playerAPointsBefore": 1500,
+    "playerBPointsBefore": 1500,
+    "playerAPointsAfter": 1511,
+    "playerBPointsAfter": 1489,
+    "playerADelta": 11,
+    "playerBDelta": -11,
+    "playerARankBefore": "Diamante",
+    "playerBRankBefore": "Diamante",
+    "playerARankAfter": "Diamante",
+    "playerBRankAfter": "Platino",
+    "createdAt": "2026-08-13T21:18:59.039Z"
+  }
+]

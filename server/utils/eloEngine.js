@@ -49,7 +49,7 @@ export function getRankName(points) {
  * @returns {string}
  */
 export function getRankColor(rankName) {
-  if (rankName === 'Legend') return '#16a34a';
+  if (rankName === 'Legend') return '#10b981';
   const tier = RANK_TIERS.find((t) => t.name === rankName);
   return tier ? tier.color : '#94a3b8';
 }

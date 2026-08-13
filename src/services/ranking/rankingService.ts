@@ -87,7 +87,7 @@ const RANK_COLORS: Record<string, string> = {
   Vanquisher: '#8b5cf6',
   Master:     '#ec4899',
   Ultimate:   '#7c2d12',
-  Legend:     '#16a34a',
+  Legend:     '#10b981',
 };
 
 export function getRankColor(rank: string): string {

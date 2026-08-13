@@ -98,20 +98,24 @@ function ParticipantProfile() {
   }
 
   const color = avatarColor(participant.name);
-  const bannerGradient = `linear-gradient(135deg, ${color}cc 0%, ${color}44 60%, transparent 100%)`;
+  const bannerBg = `radial-gradient(ellipse at 15% 0%, color-mix(in srgb, ${color} 38%, transparent) 0%, transparent 55%),
+                    linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #1e1b4b 100%)`;
 
   return (
     <div className="profile-page">
 
       {/* ── Banner + avatar ── */}
-      <div className="profile-banner" style={{ background: bannerGradient }}>
+      <div className="profile-banner" style={{ background: bannerBg, '--avatar-color': color } as React.CSSProperties}>
         <div className="profile-banner-inner container">
           <button className="profile-back-btn" onClick={() => navigate('/participants')}>
             ← Roster
           </button>
           <div className="profile-banner-body">
             <div className="profile-identity">
-              <div className="profile-avatar" style={{ background: color }}>
+              <div
+                className="profile-avatar"
+                style={{ background: color, '--avatar-color': color } as React.CSSProperties}
+              >
                 {participant.avatarUrl
                   ? <img src={participant.avatarUrl} alt={participant.name} />
                   : initials(participant.name)}
@@ -159,7 +163,9 @@ function ParticipantProfile() {
 
                   {/* Center: icon + rank name */}
                   <div className="pew-center">
-                    <span className="pew-icon">{icon}</span>
+                    <span className={`pew-icon ${rank === 'Legend' ? 'pew-icon--legend' : ''}`}>
+                      {rank === 'Legend' ? <i className="fas fa-dragon" /> : icon}
+                    </span>
                     <span className="pew-rank">{rank}</span>
                   </div>
 
@@ -207,7 +213,7 @@ function ParticipantProfile() {
             <div className="profile-stat-grid">
               <div className="profile-stat-card profile-stat-card--highlight">
                 <span className="psc-value">{stats.wins}</span>
-                <span className="psc-label">🏆 Tournament Wins</span>
+                <span className="psc-label"><i className="fas fa-trophy" /> Tournament Wins</span>
               </div>
               <div className="profile-stat-card">
                 <span className="psc-value">{stats.tournamentsPlayed}</span>

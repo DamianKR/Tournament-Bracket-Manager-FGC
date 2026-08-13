@@ -14,7 +14,7 @@ function Header() {
     <header className="app-header">
       <div className="header-inner">
         <div className="header-logo" onClick={() => navigate('/')}>
-          <span className="header-logo-icon">🏆</span>
+          <span className="header-logo-icon"><i className="fas fa-trophy" aria-hidden="true" /></span>
           <span className="header-logo-text">Bracket Manager</span>
         </div>
 

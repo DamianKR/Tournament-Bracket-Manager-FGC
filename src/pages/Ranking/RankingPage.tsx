@@ -205,7 +205,7 @@ function RankingPage() {
               disabled={resetting}
               title="Regresa a cada jugador al inicio de su rango actual"
             >
-              🔄 Soft Reset
+              <i className="fas fa-rotate-left" /> Soft Reset
             </button>
             <button
               className="rk-reset-btn hard"
@@ -213,18 +213,18 @@ function RankingPage() {
               disabled={resetting}
               title="Regresa a todos los jugadores a 1500 pts y borra el historial"
             >
-              ⚠️ Hard Reset
+              <i className="fas fa-triangle-exclamation" /> Hard Reset
             </button>
           </div>
           <div className="rk-tabs">
             <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => setTab('leaderboard')}>
-              🏆 Ranking
+              <i className="fas fa-trophy" /> Ranking
             </button>
             <button className={`rk-tab ${tab === 'record' ? 'active' : ''}`} onClick={() => setTab('record')}>
-              ⚔️ Registrar Partida
+              <i className="fas fa-gamepad" /> Registrar Partida
             </button>
             <button className={`rk-tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
-              📋 Historial
+              <i className="fas fa-list" /> Historial
             </button>
           </div>
         </div>{/* rk-header-right */}
@@ -236,7 +236,7 @@ function RankingPage() {
           {loadingBoard && <p className="rk-loading">Cargando ranking...</p>}
           {boardError && (
             <div className="rk-empty">
-              <span className="rk-empty-icon">⚠️</span>
+              <span className="rk-empty-icon"><i className="fas fa-triangle-exclamation" /></span>
               <p style={{ color: 'var(--danger-color, #ef4444)', fontWeight: 600 }}>
                 No se pudo conectar con el servidor.
               </p>
@@ -252,7 +252,7 @@ function RankingPage() {
 
           {!loadingBoard && !boardError && leaderboard.length === 0 && (
             <div className="rk-empty">
-              <span className="rk-empty-icon">🏆</span>
+              <span className="rk-empty-icon"><i className="fas fa-trophy" /></span>
               <p>No hay participantes aún.</p>
               <button className="btn btn-primary" onClick={() => navigate('/participants')}>
                 Ir a Participantes
@@ -297,10 +297,12 @@ function RankingPage() {
                       </td>
                       <td className="rk-col-rank">
                         <span
-                          className="rk-rank-badge"
+                          className={`rk-rank-badge ${entry.displayRank === 'Legend' ? 'rk-rank-badge--legend' : ''}`}
                           style={{ '--rank-color': getRankColor(entry.displayRank) } as React.CSSProperties}
                         >
-                          {getRankIcon(entry.displayRank)} {entry.displayRank}
+                          {entry.displayRank === 'Legend'
+                            ? <i className="fas fa-dragon" />
+                            : getRankIcon(entry.displayRank)} {entry.displayRank}
                         </span>
                       </td>
                       <td className="rk-col-pts">
@@ -320,7 +322,7 @@ function RankingPage() {
         <div className="rk-section">
           <div className="card rk-record-card">
             <div className="rk-record-header">
-              <span className="rk-record-icon">⚔️</span>
+              <span className="rk-record-icon"><i className="fas fa-gamepad" /></span>
               <div>
                 <h3>Registrar Partida</h3>
                 <p>Selecciona dos jugadores y quién ganó. Los puntos ELO se calculan y actualizan automáticamente.</p>
@@ -402,13 +404,13 @@ function RankingPage() {
                         className={`rk-winner-btn ${winnerId === playerAId ? 'selected' : ''}`}
                         onClick={() => setWinnerId(playerAId)}
                       >
-                        🏆 {pName(playerAId)}
+                        <i className="fas fa-crown" /> {pName(playerAId)}
                       </button>
                       <button
                         className={`rk-winner-btn ${winnerId === playerBId ? 'selected' : ''}`}
                         onClick={() => setWinnerId(playerBId)}
                       >
-                        🏆 {pName(playerBId)}
+                        <i className="fas fa-crown" /> {pName(playerBId)}
                       </button>
                     </div>
                   </div>
@@ -450,7 +452,7 @@ function RankingPage() {
 
           {!loadingHistory && matchHistory.length === 0 && (
             <div className="rk-empty">
-              <span className="rk-empty-icon">📋</span>
+              <span className="rk-empty-icon"><i className="fas fa-list" /></span>
               <p>No hay partidas registradas aún.</p>
             </div>
           )}
@@ -478,7 +480,7 @@ function RankingPage() {
                   <div className="rk-history-players">
                     <div className={`rk-history-player ${m.winnerId === m.playerAId ? 'winner' : 'loser'}`}>
                       <span className="rk-history-pname">
-                        {m.winnerId === m.playerAId ? '🏆 ' : ''}{pName(m.playerAId)}
+                        {m.winnerId === m.playerAId ? <i className="fas fa-crown" /> : ''} {pName(m.playerAId)}
                       </span>
                       <span className="rk-history-pts">
                         {m.playerAPointsBefore} → {m.playerAPointsAfter} {deltaLabel(m.playerADelta)}
@@ -492,7 +494,7 @@ function RankingPage() {
                     <span className="rk-history-vs">vs</span>
                     <div className={`rk-history-player ${m.winnerId === m.playerBId ? 'winner' : 'loser'}`}>
                       <span className="rk-history-pname">
-                        {m.winnerId === m.playerBId ? '🏆 ' : ''}{pName(m.playerBId)}
+                        {m.winnerId === m.playerBId ? <i className="fas fa-crown" /> : ''} {pName(m.playerBId)}
                       </span>
                       <span className="rk-history-pts">
                         {m.playerBPointsBefore} → {m.playerBPointsAfter} {deltaLabel(m.playerBDelta)}
@@ -574,7 +576,7 @@ function EloPreview({
         <span className="rk-elo-rank-name" style={{ color: getRankColor(rank) }}>{rank}</span>
         <span className="rk-elo-pts">{pts.toLocaleString()} pts</span>
       </div>
-      {isWinner && <span className="rk-winner-crown">👑 Ganador</span>}
+      {isWinner && <span className="rk-winner-crown"><i className="fas fa-crown" /> Ganador</span>}
     </div>
   );
 }
@@ -588,7 +590,7 @@ function ResultCard({
 }) {
   return (
     <div className={`rk-result-card ${isWinner ? 'winner' : 'loser'}`}>
-      <span className="rk-result-name">{isWinner ? '🏆 ' : ''}{r.name}</span>
+      <span className="rk-result-name">{isWinner ? <i className="fas fa-crown" /> : ''} {r.name}</span>
       <span className="rk-result-pts">
         {r.pointsBefore} → <strong>{r.pointsAfter}</strong>
       </span>
