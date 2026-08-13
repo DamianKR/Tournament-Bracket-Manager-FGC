@@ -52,13 +52,42 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/participants
-// - Array body  → replace full collection (bulk sync)
+// - Array body  → merge sync (preserves ELO fields from JSON if incoming record lacks them)
 // - Object body → upsert single participant
 router.post('/', async (req, res) => {
   try {
     if (Array.isArray(req.body)) {
-      await participants.replaceAll(req.body);
-      return res.json({ ok: true, count: req.body.length });
+      // Load existing records so we can preserve ELO data that the frontend
+      // doesn't know about (e.g. updated by the ranking engine after a match).
+      const existing = await participants.getAll();
+      const existingMap = new Map(existing.map((p) => [p.id, p]));
+
+      const merged = req.body.map((incoming) => {
+        const current = existingMap.get(incoming.id);
+        if (!current) return incoming; // new record — nothing to preserve
+
+        // ELO fields are only written by the ranking engine (server-side).
+        // If the server already has eloPoints, always keep the server value —
+        // the frontend bulk-sync never has fresher ELO data because ranking
+        // writes bypass localStorage and go straight to the JSON via upsert.
+        if (current.eloPoints !== undefined) {
+          return {
+            ...incoming,
+            eloPoints: current.eloPoints,
+            eloRank:   current.eloRank,
+          };
+        }
+
+        // Server has no ELO yet (old record) — take whatever incoming has, or default.
+        return {
+          ...incoming,
+          eloPoints: incoming.eloPoints ?? 1500,
+          eloRank:   incoming.eloRank   ?? 'Diamante',
+        };
+      });
+
+      await participants.replaceAll(merged);
+      return res.json({ ok: true, count: merged.length });
     }
 
     // Single object upsert

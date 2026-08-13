@@ -12,6 +12,7 @@
 import { Router } from 'express';
 import { tournaments } from '../db/collections.js';
 import { validateTournament } from '../models/tournament.js';
+import { applyTournamentElo } from '../utils/tournamentElo.js';
 
 const router = Router();
 
@@ -66,6 +67,20 @@ router.put('/:id', async (req, res) => {
     const { valid, errors } = validateTournament(body);
     if (!valid) {
       return res.status(400).json({ error: 'Invalid tournament data', details: errors });
+    }
+
+    const existing = await tournaments.findById(req.params.id);
+
+    // When a tournament transitions to 'completed', award ELO points for placements once.
+    const becomesCompleted = body.status === 'completed' && (!existing || existing.status !== 'completed');
+    const alreadyApplied   = body.eloApplied || (existing && existing.eloApplied);
+
+    if (becomesCompleted && !alreadyApplied) {
+      const tournamentToApply = { ...body, status: 'completed' };
+      const eloUpdates = await applyTournamentElo(tournamentToApply);
+      body.eloApplied = true;
+      body.eloUpdates = eloUpdates;
+      console.log(`[Tournaments] ELO applied for ${req.params.id}: ${eloUpdates.length} participants`);
     }
 
     const saved = await tournaments.upsert(body);

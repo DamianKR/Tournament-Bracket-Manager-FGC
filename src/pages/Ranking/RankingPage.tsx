@@ -7,6 +7,8 @@ import {
   recordMatch,
   getAllMatches,
   deleteMatch,
+  hardResetRanking,
+  softResetRanking,
   getRankColor,
   getRankIcon,
   type LeaderboardEntry,
@@ -42,6 +44,13 @@ function RankingPage() {
   const [matchHistory, setMatchHistory] = useState<MatchRecord[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  // Reset modals
+  // Soft: single confirmation. Hard: two-step (first modal → second modal).
+  const [showSoftConfirm, setShowSoftConfirm]       = useState(false);
+  const [showHardConfirm1, setShowHardConfirm1]     = useState(false);
+  const [showHardConfirm2, setShowHardConfirm2]     = useState(false);
+  const [resetting, setResetting]                   = useState(false);
 
   // Participant name lookup
   const participantMap = new Map(allParticipants.map((p) => [p.id, p]));
@@ -97,6 +106,21 @@ function RankingPage() {
     try {
       const result = await recordMatch(playerAId, playerBId, winnerId);
       setLastResult(result);
+
+      // Patch the local participants list with the updated ELO values so the
+      // dropdowns reflect the new points immediately without a page refresh.
+      const pA = (result as unknown as { updatedParticipantA?: GlobalParticipant }).updatedParticipantA;
+      const pB = (result as unknown as { updatedParticipantB?: GlobalParticipant }).updatedParticipantB;
+      if (pA || pB) {
+        setAllParticipants((prev) =>
+          prev.map((p) => {
+            if (pA && p.id === pA.id) return pA;
+            if (pB && p.id === pB.id) return pB;
+            return p;
+          })
+        );
+      }
+
       // Refresh leaderboard
       await loadLeaderboard();
       // Reset form
@@ -124,6 +148,30 @@ function RankingPage() {
     }
   }
 
+  // ── Reset handlers ────────────────────────────────────────────────────────
+
+  async function handleSoftReset() {
+    setShowSoftConfirm(false);
+    setResetting(true);
+    try {
+      await softResetRanking();
+      await loadLeaderboard();
+      if (tab === 'history') await loadHistory();
+    } catch { /* silently fail */ }
+    finally { setResetting(false); }
+  }
+
+  async function handleHardReset() {
+    setShowHardConfirm2(false);
+    setResetting(true);
+    try {
+      await hardResetRanking();
+      await loadLeaderboard();
+      setMatchHistory([]);
+    } catch { /* silently fail */ }
+    finally { setResetting(false); }
+  }
+
   // ── Helpers ─────────────────────────────────────────────────────────────
 
   function pName(id: string) {
@@ -149,24 +197,58 @@ function RankingPage() {
           <h1 className="rk-title">Ranking ELO</h1>
           <p className="rk-subtitle">Sistema de puntos competitivo — inicio en 1500 pts</p>
         </div>
-        <div className="rk-tabs">
-          <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => setTab('leaderboard')}>
-            🏆 Ranking
-          </button>
-          <button className={`rk-tab ${tab === 'record' ? 'active' : ''}`} onClick={() => setTab('record')}>
-            ⚔️ Registrar Partida
-          </button>
-          <button className={`rk-tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
-            📋 Historial
-          </button>
-        </div>
-      </div>
+        <div className="rk-header-right">
+          <div className="rk-reset-btns">
+            <button
+              className="rk-reset-btn soft"
+              onClick={() => setShowSoftConfirm(true)}
+              disabled={resetting}
+              title="Regresa a cada jugador al inicio de su rango actual"
+            >
+              🔄 Soft Reset
+            </button>
+            <button
+              className="rk-reset-btn hard"
+              onClick={() => setShowHardConfirm1(true)}
+              disabled={resetting}
+              title="Regresa a todos los jugadores a 1500 pts y borra el historial"
+            >
+              ⚠️ Hard Reset
+            </button>
+          </div>
+          <div className="rk-tabs">
+            <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => setTab('leaderboard')}>
+              🏆 Ranking
+            </button>
+            <button className={`rk-tab ${tab === 'record' ? 'active' : ''}`} onClick={() => setTab('record')}>
+              ⚔️ Registrar Partida
+            </button>
+            <button className={`rk-tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
+              📋 Historial
+            </button>
+          </div>
+        </div>{/* rk-header-right */}
+      </div>{/* rk-header */}
 
       {/* ── LEADERBOARD TAB ── */}
       {tab === 'leaderboard' && (
         <div className="rk-section">
           {loadingBoard && <p className="rk-loading">Cargando ranking...</p>}
-          {boardError && <p className="rk-error">{boardError}</p>}
+          {boardError && (
+            <div className="rk-empty">
+              <span className="rk-empty-icon">⚠️</span>
+              <p style={{ color: 'var(--danger-color, #ef4444)', fontWeight: 600 }}>
+                No se pudo conectar con el servidor.
+              </p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                Asegúrate de que el servidor API esté corriendo en el puerto 3001.<br />
+                Usa <code>npm run dev</code> o abre <code>Abrir_Aplicacion.bat</code>.
+              </p>
+              <button className="btn btn-primary" onClick={() => void loadLeaderboard()}>
+                Reintentar
+              </button>
+            </div>
+          )}
 
           {!loadingBoard && !boardError && leaderboard.length === 0 && (
             <div className="rk-empty">
@@ -437,6 +519,36 @@ function RankingPage() {
         confirmText="Eliminar"
         onConfirm={() => { void handleDeleteMatch(); }}
         onCancel={() => setDeleteTarget(null)}
+      />
+
+      {/* Soft reset — single confirmation */}
+      <ConfirmModal
+        isOpen={showSoftConfirm}
+        title="Soft Reset"
+        message="Esto regresará a cada jugador al inicio de su rango actual (ej: 1699 → 1600). El historial de partidas se conserva. ¿Confirmar?"
+        confirmText="Aplicar Soft Reset"
+        onConfirm={() => { void handleSoftReset(); }}
+        onCancel={() => setShowSoftConfirm(false)}
+      />
+
+      {/* Hard reset — step 1 */}
+      <ConfirmModal
+        isOpen={showHardConfirm1}
+        title="Hard Reset — Confirmación 1/2"
+        message="Esto regresará a TODOS los jugadores a 1500 pts (Diamante) y borrará todo el historial de partidas. Esta acción es irreversible."
+        confirmText="Continuar →"
+        onConfirm={() => { setShowHardConfirm1(false); setShowHardConfirm2(true); }}
+        onCancel={() => setShowHardConfirm1(false)}
+      />
+
+      {/* Hard reset — step 2 */}
+      <ConfirmModal
+        isOpen={showHardConfirm2}
+        title="Hard Reset — Confirmación 2/2"
+        message="¿Estás COMPLETAMENTE seguro? Se perderán todos los puntos y el historial de partidas sin posibilidad de recuperación."
+        confirmText="Sí, hacer Hard Reset"
+        onConfirm={() => { void handleHardReset(); }}
+        onCancel={() => setShowHardConfirm2(false)}
       />
     </div>
   );

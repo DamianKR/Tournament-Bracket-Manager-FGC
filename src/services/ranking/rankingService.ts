@@ -2,10 +2,41 @@
  * Ranking Service — Frontend
  *
  * Communicates with the local Express API for all ELO ranking operations.
+ * After any write operation (recordMatch, reset), the server returns the
+ * updated participant objects and this service patches localStorage so both
+ * sources stay in sync.
+ *
  * All functions throw on network error; callers should handle gracefully.
  */
 
-import type { MatchRecord } from '../../models/types';
+import type { MatchRecord, GlobalParticipant } from '../../models/types';
+
+// ── localStorage sync helpers ─────────────────────────────────────────────
+
+const LS_PARTICIPANTS_KEY = 'bracket_global_participants';
+
+function lsPatchParticipants(updated: GlobalParticipant[]): void {
+  try {
+    const raw = localStorage.getItem(LS_PARTICIPANTS_KEY);
+    const all: GlobalParticipant[] = raw ? JSON.parse(raw) : [];
+    for (const u of updated) {
+      const idx = all.findIndex((p) => p.id === u.id);
+      if (idx >= 0) { all[idx] = { ...all[idx], ...u }; }
+      else { all.push(u); }
+    }
+    localStorage.setItem(LS_PARTICIPANTS_KEY, JSON.stringify(all));
+  } catch {
+    // localStorage unavailable — non-critical
+  }
+}
+
+function lsReplaceAllParticipants(updated: GlobalParticipant[]): void {
+  try {
+    localStorage.setItem(LS_PARTICIPANTS_KEY, JSON.stringify(updated));
+  } catch {
+    // non-critical
+  }
+}
 
 const API_BASE = 'http://localhost:3001/api/ranking';
 
@@ -55,8 +86,8 @@ const RANK_COLORS: Record<string, string> = {
   Diamante:   '#6366f1',
   Vanquisher: '#8b5cf6',
   Master:     '#ec4899',
-  Ultimate:   '#f97316',
-  Legend:     '#ef4444',
+  Ultimate:   '#7c2d12',
+  Legend:     '#16a34a',
 };
 
 export function getRankColor(rank: string): string {
@@ -102,9 +133,7 @@ export async function getMatchesForParticipant(participantId: string): Promise<M
 
 /**
  * Records a match and updates ELO for both players.
- * @param playerAId  - First participant ID
- * @param playerBId  - Second participant ID
- * @param winnerId   - Must be one of the two player IDs
+ * Also patches localStorage so both sources stay in sync.
  */
 export async function recordMatch(
   playerAId: string,
@@ -120,7 +149,14 @@ export async function recordMatch(
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error ?? `Failed to record match: ${res.status}`);
   }
-  return res.json();
+  const data = await res.json();
+  // Patch localStorage with the updated ELO values from the server
+  const toSync: GlobalParticipant[] = [
+    data.updatedParticipantA,
+    data.updatedParticipantB,
+  ].filter(Boolean) as GlobalParticipant[];
+  if (toSync.length) lsPatchParticipants(toSync);
+  return data as MatchResult;
 }
 
 /** Deletes a match record. Does NOT revert ELO. */
@@ -128,3 +164,27 @@ export async function deleteMatch(matchId: string): Promise<void> {
   const res = await fetch(`${API_BASE}/matches/${matchId}`, { method: 'DELETE' });
   if (!res.ok) throw new Error(`Failed to delete match: ${res.status}`);
 }
+
+/** Hard reset: all participants → 1500 pts. Clears match history. Syncs localStorage. */
+export async function hardResetRanking(): Promise<{ affectedParticipants: number }> {
+  const res = await fetch(`${API_BASE}/reset/hard`, { method: 'POST' });
+  if (!res.ok) throw new Error(`Hard reset failed: ${res.status}`);
+  const data = await res.json();
+  if (Array.isArray(data.updatedParticipants)) {
+    lsReplaceAllParticipants(data.updatedParticipants as GlobalParticipant[]);
+  }
+  return data;
+}
+
+/** Soft reset: each participant → start of their current tier. Syncs localStorage. */
+export async function softResetRanking(): Promise<{ affectedParticipants: number }> {
+  const res = await fetch(`${API_BASE}/reset/soft`, { method: 'POST' });
+  if (!res.ok) throw new Error(`Soft reset failed: ${res.status}`);
+  const data = await res.json();
+  if (Array.isArray(data.updatedParticipants)) {
+    lsReplaceAllParticipants(data.updatedParticipants as GlobalParticipant[]);
+  }
+  return data;
+}
+
+

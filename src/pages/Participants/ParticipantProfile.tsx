@@ -9,6 +9,7 @@ import {
 import { initials, avatarColor } from './ParticipantsPage';
 import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import { getCharacter, getGame } from '@/data/games';
+import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
 import './ParticipantProfile.css';
 
 type Tab = 'overview' | 'results' | 'edit';
@@ -29,6 +30,7 @@ function ParticipantProfile() {
   const [stats, setStats] = useState<ComputedStats | null>(null);
   const [tab, setTab] = useState<Tab>('overview');
   const [notFound, setNotFound] = useState(false);
+  const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
 
   // Edit state
   const [editName, setEditName] = useState('');
@@ -48,6 +50,12 @@ function ParticipantProfile() {
     setEditAlias(p.alias ?? '');
     setEditGameId(p.gameId ?? null);
     setEditCharacterId(p.mainCharacterId ?? null);
+
+    // Load ELO ranking entry (fire-and-forget — graceful if server is down)
+    getLeaderboard().then((board) => {
+      const entry = board.find((e) => e.id === id) ?? null;
+      setRankEntry(entry);
+    }).catch(() => {});
   }, [id]);
 
   async function handleSave() {
@@ -101,32 +109,80 @@ function ParticipantProfile() {
           <button className="profile-back-btn" onClick={() => navigate('/participants')}>
             ← Roster
           </button>
-          <div className="profile-identity">
-            <div className="profile-avatar" style={{ background: color }}>
-              {participant.avatarUrl
-                ? <img src={participant.avatarUrl} alt={participant.name} />
-                : initials(participant.name)}
-            </div>
-            <div className="profile-names">
-              <h1 className="profile-name">{participant.name}</h1>
-              {participant.alias && (
-                <span className="profile-alias">{participant.alias}</span>
-              )}
-              {participant.gameId && participant.mainCharacterId && (
-                <span className="profile-character">
-                  <span className="profile-character-game">
-                    {getGame(participant.gameId)?.shortName}
+          <div className="profile-banner-body">
+            <div className="profile-identity">
+              <div className="profile-avatar" style={{ background: color }}>
+                {participant.avatarUrl
+                  ? <img src={participant.avatarUrl} alt={participant.name} />
+                  : initials(participant.name)}
+              </div>
+              <div className="profile-names">
+                <h1 className="profile-name">{participant.name}</h1>
+                {participant.alias && (
+                  <span className="profile-alias">{participant.alias}</span>
+                )}
+                {participant.gameId && participant.mainCharacterId && (
+                  <span className="profile-character">
+                    <span className="profile-character-game">
+                      {getGame(participant.gameId)?.shortName}
+                    </span>
+                    <span className="profile-character-name">
+                      {getCharacter(participant.gameId, participant.mainCharacterId)?.name}
+                    </span>
                   </span>
-                  <span className="profile-character-name">
-                    {getCharacter(participant.gameId, participant.mainCharacterId)?.name}
-                  </span>
+                )}
+                <span className="profile-since">
+                  Member since {new Date(participant.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
                 </span>
-              )}
-              <span className="profile-since">
-                Member since {new Date(participant.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
-              </span>
+              </div>
             </div>
-          </div>
+
+            {/* ELO Rank widget — right side of banner */}
+            {(() => {
+              const pts   = rankEntry?.eloPoints ?? participant.eloPoints ?? 1500;
+              const rank  = rankEntry?.displayRank ?? participant.eloRank ?? 'Diamante';
+              const pos   = rankEntry?.position;
+              const col   = getRankColor(rank);
+              const icon  = getRankIcon(rank);
+              return (
+                <div
+                  className="profile-elo-widget"
+                  style={{ '--elo-color': col } as React.CSSProperties}
+                  onClick={() => navigate('/ranking')}
+                  title="Ver ranking completo"
+                >
+                  {/* Glow layer */}
+                  <div className="pew-glow" />
+
+                  {/* Top: label */}
+                  <div className="pew-label">ELO RANKING</div>
+
+                  {/* Center: icon + rank name */}
+                  <div className="pew-center">
+                    <span className="pew-icon">{icon}</span>
+                    <span className="pew-rank">{rank}</span>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="pew-divider" />
+
+                  {/* Bottom row: pts left, position right */}
+                  <div className="pew-bottom">
+                    <div className="pew-pts-block">
+                      <span className="pew-pts-value">{pts.toLocaleString()}</span>
+                      <span className="pew-pts-label">puntos</span>
+                    </div>
+                    {pos !== undefined && (
+                      <div className="pew-pos-block">
+                        <span className="pew-pos-value">#{pos}</span>
+                        <span className="pew-pos-label">ranking</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>{/* profile-banner-body */}
         </div>
       </div>
 

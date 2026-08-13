@@ -21,6 +21,55 @@
   font-size: 0.9rem;
 }
 
+/* Header right side: reset buttons + tabs stacked */
+.rk-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.625rem;
+}
+
+/* Reset buttons */
+.rk-reset-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rk-reset-btn {
+  padding: 0.4rem 0.875rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid;
+}
+
+.rk-reset-btn.soft {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.35);
+  color: #6366f1;
+}
+
+.rk-reset-btn.soft:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.18);
+}
+
+.rk-reset-btn.hard {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #ef4444;
+}
+
+.rk-reset-btn.hard:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.18);
+}
+
+.rk-reset-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* Tabs */
 .rk-tabs {
   display: flex;
