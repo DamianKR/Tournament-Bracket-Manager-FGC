@@ -31,6 +31,12 @@ function Header() {
           >
             Participants
           </button>
+          <button
+            className={`header-nav-item ${isActive('/ranking') ? 'active' : ''}`}
+            onClick={() => navigate('/ranking')}
+          >
+            Ranking
+          </button>
         </nav>
       </div>
     </header>

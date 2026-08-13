@@ -21,6 +21,8 @@ export function participantShape(id, name, alias = '') {
     alias,
     avatarUrl: null,
     tournamentIds: [],
+    eloPoints: 1500,
+    eloRank: 'Diamante',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

@@ -66,8 +66,47 @@ export interface GlobalParticipant {
   tournamentIds: string[];  // FK references — all tournaments this player joined
   gameId: string | null;    // e.g. 'ssbu' — which game this player competes in
   mainCharacterId: string | null; // e.g. 'kirby' — their main character
+  // ELO Ranking
+  eloPoints: number;        // Current ELO score (default 1500)
+  eloRank: string;          // Rank name derived from eloPoints
   createdAt: string;
   updatedAt: string;
+}
+
+// ── ELO / Ranking ──────────────────────────────────────────────────────────
+
+export type EloRankName =
+  | 'Plata'
+  | 'Oro'
+  | 'Platino'
+  | 'Diamante'
+  | 'Vanquisher'
+  | 'Master'
+  | 'Ultimate'
+  | 'Legend';
+
+export interface RankTier {
+  name: EloRankName;
+  minPoints: number;
+  maxPoints: number | null; // null = no upper limit
+  color: string;            // CSS color for UI
+}
+
+export interface MatchRecord {
+  id: string;
+  playerAId: string;
+  playerBId: string;
+  winnerId: string;
+  loserId: string;
+  playerAPointsBefore: number;
+  playerBPointsBefore: number;
+  playerAPointsAfter: number;
+  playerBPointsAfter: number;
+  playerARankBefore: string;
+  playerBRankBefore: string;
+  playerARankAfter: string;
+  playerBRankAfter: string;
+  createdAt: string;
 }
 
 // Computed at runtime from tournaments — not persisted

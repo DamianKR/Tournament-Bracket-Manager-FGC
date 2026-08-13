@@ -18,6 +18,7 @@ import express from 'express';
 import cors from 'cors';
 import tournamentsRouter from './server/routes/tournaments.js';
 import participantsRouter from './server/routes/participants.js';
+import rankingRouter from './server/routes/ranking.js';
 
 const PORT = 3001;
 
@@ -33,6 +34,7 @@ app.get('/api/health', (_req, res) => {
 // ── Routes ──────────────────────────────────────────────────────────────
 app.use('/api/tournaments', tournamentsRouter);
 app.use('/api/participants', participantsRouter);
+app.use('/api/ranking', rankingRouter);
 
 // ── 404 fallback ────────────────────────────────────────────────────────
 app.use((_req, res) => {
@@ -51,5 +53,8 @@ app.listen(PORT, () => {
   console.log(`    GET/POST   /api/participants`);
   console.log(`    GET/PUT/DEL /api/participants/:id`);
   console.log(`    POST       /api/participants/:id/stats`);
+  console.log(`    GET        /api/ranking`);
+  console.log(`    POST       /api/ranking/match`);
+  console.log(`    GET/DEL    /api/ranking/matches`);
   console.log('');
 });
