@@ -10,14 +10,15 @@
       "1786388606781-jyh9v2prl",
       "1786388748055-8yrbvigzm",
       "1786389730065-my9udy77t",
-      "1786390635324-f1ht0g9nm"
+      "1786390635324-f1ht0g9nm",
+      "1786394988044-sb88chetv"
     ],
     "id": "gp_1786387087046_wnwtadb",
     "name": "Damiam",
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-08-10T19:37:20.026Z"
+    "updatedAt": "2026-08-10T20:50:04.272Z"
   },
   {
     "gameId": "ssbu",
@@ -29,14 +30,15 @@
       "1786388606781-jyh9v2prl",
       "1786388748055-8yrbvigzm",
       "1786389730065-my9udy77t",
-      "1786390635324-f1ht0g9nm"
+      "1786390635324-f1ht0g9nm",
+      "1786394988044-sb88chetv"
     ],
     "id": "gp_1786387234567_aoe1z95",
     "name": "Gino",
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-08-10T19:54:04.211Z"
+    "updatedAt": "2026-08-10T20:50:13.378Z"
   },
   {
     "gameId": "ssbu",
@@ -48,14 +50,15 @@
       "1786388606781-jyh9v2prl",
       "1786388748055-8yrbvigzm",
       "1786389730065-my9udy77t",
-      "1786390635324-f1ht0g9nm"
+      "1786390635324-f1ht0g9nm",
+      "1786394988044-sb88chetv"
     ],
     "id": "gp_1786387243524_6er0c9u",
     "name": "Ale",
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-08-10T19:55:02.493Z"
+    "updatedAt": "2026-08-10T20:50:29.912Z"
   },
   {
     "gameId": "ssbu",
@@ -68,14 +71,15 @@
       "1786388606781-jyh9v2prl",
       "1786388748055-8yrbvigzm",
       "1786389730065-my9udy77t",
-      "1786390635324-f1ht0g9nm"
+      "1786390635324-f1ht0g9nm",
+      "1786394988044-sb88chetv"
     ],
     "id": "gp_1786387250178_ac5thmv",
     "name": "Alexis",
     "alias": "Adecty",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-08-10T19:39:07.401Z"
+    "updatedAt": "2026-08-10T20:50:10.532Z"
   },
   {
     "gameId": "ssbu",
@@ -85,10 +89,11 @@
     "alias": "",
     "avatarUrl": null,
     "tournamentIds": [
-      "1786388748055-8yrbvigzm"
+      "1786388748055-8yrbvigzm",
+      "1786394988044-sb88chetv"
     ],
     "createdAt": "2026-08-10T19:06:30.209Z",
-    "updatedAt": "2026-08-10T19:56:56.110Z"
+    "updatedAt": "2026-08-10T20:50:55.646Z"
   },
   {
     "gameId": "ssbu",
@@ -108,9 +113,11 @@
     "name": "Tails",
     "alias": "",
     "avatarUrl": null,
-    "tournamentIds": [],
+    "tournamentIds": [
+      "1786394988044-sb88chetv"
+    ],
     "createdAt": "2026-08-10T19:56:23.115Z",
-    "updatedAt": "2026-08-10T19:56:23.115Z"
+    "updatedAt": "2026-08-10T20:51:05.499Z"
   },
   {
     "gameId": "ssbu",
@@ -182,22 +189,123 @@
     "gameId": "ssbu",
     "mainCharacterId": "steve",
     "id": "gp_1786393834683_lievrvf",
-    "name": "AmorAltras",
-    "alias": "",
+    "name": "Kevin",
+    "alias": "AmorAltras",
     "avatarUrl": null,
-    "tournamentIds": [],
+    "tournamentIds": [
+      "1786394988044-sb88chetv"
+    ],
     "createdAt": "2026-08-10T20:30:34.683Z",
-    "updatedAt": "2026-08-10T20:30:34.683Z"
+    "updatedAt": "2026-08-11T04:01:02.585Z"
   },
   {
+    "gameId": "ssbu",
+    "mainCharacterId": "steve",
     "id": "gp_1786393850039_1imzf6x",
     "name": "Dionisio",
     "alias": "Dio",
     "avatarUrl": null,
     "tournamentIds": [],
-    "gameId": "ssbu",
-    "mainCharacterId": "steve",
     "createdAt": "2026-08-10T20:30:50.039Z",
     "updatedAt": "2026-08-10T20:30:50.039Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "cloud",
+    "id": "gp_1786396304199_u7v6gsb",
+    "name": "Didiangel",
+    "alias": "Didi",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T21:11:44.199Z",
+    "updatedAt": "2026-08-10T21:11:44.199Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "bayonetta",
+    "id": "gp_1786399934148_stq7jpb",
+    "name": "Pal",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T22:12:14.148Z",
+    "updatedAt": "2026-08-10T22:12:40.007Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "donkey_kong",
+    "id": "gp_1786399978250_n7msxo5",
+    "name": "Nelson",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-10T22:12:58.250Z",
+    "updatedAt": "2026-08-10T22:12:58.250Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "sonic",
+    "id": "gp_1786408686972_s4nl3vz",
+    "name": "Ismael",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-11T00:38:06.972Z",
+    "updatedAt": "2026-08-11T00:38:06.972Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "pyra_mythra",
+    "id": "gp_1786408732935_gefziig",
+    "name": "Yudiel",
+    "alias": "You",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-11T00:38:52.935Z",
+    "updatedAt": "2026-08-11T00:38:52.935Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "kirby",
+    "id": "gp_1786409261693_7dx00bm",
+    "name": "Leo",
+    "alias": "Nilo",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-11T00:47:41.693Z",
+    "updatedAt": "2026-08-11T00:47:41.693Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "meta_knight",
+    "id": "gp_1786410268124_ja1vgy5",
+    "name": "Manuel Martinez",
+    "alias": "Manuel(Z)",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-11T01:04:28.124Z",
+    "updatedAt": "2026-08-11T01:04:28.124Z"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "bayonetta",
+    "id": "gp_1786420836915_wqj6gv2",
+    "name": "Hector",
+    "alias": "negroloko_54",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-11T04:00:36.915Z",
+    "updatedAt": "2026-08-11T04:00:36.915Z"
+  },
+  {
+    "id": "gp_1786420928315_91m6kmr",
+    "name": "Ernesto",
+    "alias": "ERNE",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "cloud",
+    "createdAt": "2026-08-11T04:02:08.315Z",
+    "updatedAt": "2026-08-11T04:02:08.315Z"
   }
 ]

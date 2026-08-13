@@ -257,19 +257,21 @@ function ParticipantProfile() {
           <div className="card profile-edit-form">
             <h3>Edit Profile</h3>
             {editError && <div className="error-message">{editError}</div>}
-            <div className="form-group">
-              <label>Name *</label>
-              <input type="text" value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                placeholder="Player name" />
-            </div>
-            <div className="form-group">
-              <label>Alias / Gamertag</label>
-              <input type="text" value={editAlias}
-                onChange={(e) => setEditAlias(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                placeholder="Optional short name" />
+            <div className="profile-edit-grid">
+              <div className="form-group">
+                <label>Name *</label>
+                <input type="text" value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                  placeholder="Player name" />
+              </div>
+              <div className="form-group">
+                <label>Alias / Gamertag</label>
+                <input type="text" value={editAlias}
+                  onChange={(e) => setEditAlias(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                  placeholder="Optional short name" />
+              </div>
             </div>
             <CharacterSelect
               gameId={editGameId}

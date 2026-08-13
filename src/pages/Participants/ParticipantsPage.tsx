@@ -159,31 +159,69 @@ function ParticipantsPage() {
 
         {showCreateForm && (
           <div className="pp-create-form card">
-            <h3>New Participant</h3>
-            <div className="pp-create-fields">
-              <div className="form-group">
-                <label>Name *</label>
-                <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') setShowCreateForm(false); }}
-                  placeholder="Player name" autoFocus />
-              </div>
-              <div className="form-group">
-                <label>Alias / Gamertag</label>
-                <input type="text" value={newAlias} onChange={(e) => setNewAlias(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') setShowCreateForm(false); }}
-                  placeholder="Optional short name" />
+            <div className="pp-create-header">
+              <span className="pp-create-icon">🙋</span>
+              <div>
+                <h3>Create New Participant</h3>
+                <p className="text-secondary">Add a new player to the global roster</p>
               </div>
             </div>
-            <CharacterSelect
-              gameId={newGameId}
-              characterId={newCharacterId}
-              onGameChange={setNewGameId}
-              onCharacterChange={setNewCharacterId}
-            />
+
+            <div className="pp-create-grid">
+              <div className="pp-create-section">
+                <h4>Identity</h4>
+                <div className="form-group">
+                  <label>Name *</label>
+                  <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') setShowCreateForm(false); }}
+                    placeholder="Player name" autoFocus />
+                </div>
+                <div className="form-group">
+                  <label>Alias / Gamertag</label>
+                  <input type="text" value={newAlias} onChange={(e) => setNewAlias(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') setShowCreateForm(false); }}
+                    placeholder="Optional short name" />
+                </div>
+              </div>
+
+              <div className="pp-create-section">
+                <h4>Game & Main</h4>
+                <CharacterSelect
+                  gameId={newGameId}
+                  characterId={newCharacterId}
+                  onGameChange={setNewGameId}
+                  onCharacterChange={setNewCharacterId}
+                />
+              </div>
+            </div>
+
+            <div className="pp-create-preview">
+              <h4>Preview</h4>
+              <div className="pp-preview-item">
+                <div className="pp-preview-avatar" style={{ background: avatarColor(newName || '?') }}>
+                  {initials(newName || '?')}
+                </div>
+                <div className="pp-preview-info">
+                  <div className="pp-preview-name-row">
+                    <span className="pp-preview-name">{newName.trim() || 'Player Name'}</span>
+                    {newAlias.trim() && (
+                      <span className="pp-preview-alias">{newAlias.trim()}</span>
+                    )}
+                  </div>
+                  {newGameId && newCharacterId && (
+                    <div className="pp-item-tags">
+                      <span className="pp-item-tag pp-item-tag-game">{getGame(newGameId)?.shortName}</span>
+                      <span className="pp-item-tag pp-item-tag-char">{getCharacter(newGameId, newCharacterId)?.name}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div className="pp-create-actions">
               <button className="btn-outline" onClick={() => setShowCreateForm(false)}>Cancel</button>
               <button className="btn-primary" onClick={handleCreate} disabled={creating}>
-                {creating ? 'Creating…' : 'Create'}
+                {creating ? 'Creating…' : 'Create Participant'}
               </button>
             </div>
           </div>
