@@ -1,4 +1,7 @@
 /* ── Ranking Page ──────────────────────────────────────────────────────── */
+.page-container {
+  padding: 2rem;
+} 
 
 .rk-header {
   display: flex;

@@ -157,7 +157,10 @@ function CreateTournament() {
       setError(err.message);
     } finally {
       setAdding(false);
-      inputRef.current?.focus();
+      // Wait for React to re-enable the input before focusing.
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+      });
     }
   };
 

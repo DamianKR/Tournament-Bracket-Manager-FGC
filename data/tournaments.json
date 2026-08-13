@@ -998,34 +998,5 @@
     "championId": "1786158565219-fnti1me01",
     "createdAt": "2026-08-08T03:09:18.338Z",
     "updatedAt": "2026-08-08T17:56:17.448Z"
-  },
-  {
-    "id": "1786645309882-n8iemn0fx",
-    "name": "Smash test 8",
-    "mode": "double_elimination",
-    "status": "setup",
-    "participants": [
-      {
-        "id": "1786645318803-6r3w7tcy9",
-        "name": "Damiam",
-        "alias": "KruX",
-        "seed": 1,
-        "eliminated": false,
-        "lossCount": 0,
-        "globalParticipantId": "gp_1786387087046_wnwtadb"
-      },
-      {
-        "id": "1786645325406-5qga2t3iy",
-        "name": "Gino",
-        "seed": 2,
-        "eliminated": false,
-        "lossCount": 0,
-        "globalParticipantId": "gp_1786387234567_aoe1z95"
-      }
-    ],
-    "bracket": null,
-    "championId": null,
-    "createdAt": "2026-08-13T18:21:49.882Z",
-    "updatedAt": "2026-08-13T18:22:05.406Z"
   }
 ]

@@ -5,12 +5,13 @@
   top: 0;
   z-index: 100;
   box-shadow: var(--shadow-sm);
+  padding: 1rem;
 }
 
 .header-inner {
-  max-width: 1400px;
+  max-width: 1900px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 1rem;
   height: 56px;
   display: flex;
   align-items: center;

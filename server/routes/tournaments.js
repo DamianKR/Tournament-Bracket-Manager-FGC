@@ -40,13 +40,43 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/tournaments — replace full array (used by bulk sync)
+// Also detects any tournament that just transitioned to 'completed' and
+// applies ELO placement points automatically.
 router.post('/', async (req, res) => {
   try {
     if (!Array.isArray(req.body)) {
       return res.status(400).json({ error: 'Body must be an array of tournaments' });
     }
-    await tournaments.replaceAll(req.body);
-    res.json({ ok: true, count: req.body.length });
+
+    const existing = await tournaments.getAll();
+    const existingMap = new Map(existing.map((t) => [t.id, t]));
+
+    const updatedBody = [];
+    const eloAppliedIds = [];
+
+    for (const t of req.body) {
+      const prev = existingMap.get(t.id);
+      const becomesCompleted = t.status === 'completed' && (!prev || prev.status !== 'completed');
+      const alreadyApplied   = t.eloApplied || (prev && prev.eloApplied);
+
+      if (becomesCompleted && !alreadyApplied) {
+        const updates = await applyTournamentElo(t);
+        t.eloApplied = true;
+        t.eloUpdates = updates;
+        eloAppliedIds.push(t.id);
+        console.log(`[Tournaments] ELO applied for ${t.id}: ${updates.length} participants`);
+      }
+
+      updatedBody.push(t);
+    }
+
+    await tournaments.replaceAll(updatedBody);
+
+    res.json({
+      ok: true,
+      count: updatedBody.length,
+      eloApplied: eloAppliedIds,
+    });
   } catch (err) {
     console.error('[Tournaments] POST / error:', err);
     res.status(500).json({ error: 'Failed to save tournaments' });

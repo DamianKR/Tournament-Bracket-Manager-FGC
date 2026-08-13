@@ -12,14 +12,15 @@
       "1786389730065-my9udy77t",
       "1786390635324-f1ht0g9nm",
       "1786394988044-sb88chetv",
-      "1786645309882-n8iemn0fx"
+      "1786645309882-n8iemn0fx",
+      "1786646770004-achuyyt34"
     ],
     "id": "gp_1786387087046_wnwtadb",
     "name": "Damiam",
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-08-13T18:21:58.804Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -35,14 +36,15 @@
       "1786389730065-my9udy77t",
       "1786390635324-f1ht0g9nm",
       "1786394988044-sb88chetv",
-      "1786645309882-n8iemn0fx"
+      "1786645309882-n8iemn0fx",
+      "1786646770004-achuyyt34"
     ],
     "id": "gp_1786387234567_aoe1z95",
     "name": "Gino",
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-08-13T18:22:05.406Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -57,14 +59,16 @@
       "1786388748055-8yrbvigzm",
       "1786389730065-my9udy77t",
       "1786390635324-f1ht0g9nm",
-      "1786394988044-sb88chetv"
+      "1786394988044-sb88chetv",
+      "1786645309882-n8iemn0fx",
+      "1786646770004-achuyyt34"
     ],
     "id": "gp_1786387243524_6er0c9u",
     "name": "Ale",
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -80,14 +84,16 @@
       "1786388748055-8yrbvigzm",
       "1786389730065-my9udy77t",
       "1786390635324-f1ht0g9nm",
-      "1786394988044-sb88chetv"
+      "1786394988044-sb88chetv",
+      "1786645309882-n8iemn0fx",
+      "1786646770004-achuyyt34"
     ],
     "id": "gp_1786387250178_ac5thmv",
     "name": "Alexis",
     "alias": "Adecty",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -100,10 +106,11 @@
     "avatarUrl": null,
     "tournamentIds": [
       "1786388748055-8yrbvigzm",
-      "1786394988044-sb88chetv"
+      "1786394988044-sb88chetv",
+      "1786645309882-n8iemn0fx"
     ],
     "createdAt": "2026-08-10T19:06:30.209Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -116,7 +123,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-10T19:55:54.729Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -128,10 +135,12 @@
     "alias": "",
     "avatarUrl": null,
     "tournamentIds": [
-      "1786394988044-sb88chetv"
+      "1786394988044-sb88chetv",
+      "1786645309882-n8iemn0fx",
+      "1786646770004-achuyyt34"
     ],
     "createdAt": "2026-08-10T19:56:23.115Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -142,9 +151,11 @@
     "name": "Lyam",
     "alias": "Shiro",
     "avatarUrl": null,
-    "tournamentIds": [],
+    "tournamentIds": [
+      "1786645309882-n8iemn0fx"
+    ],
     "createdAt": "2026-08-10T19:57:30.317Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -157,7 +168,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-10T19:58:12.402Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -168,9 +179,11 @@
     "name": "Jose Enrique",
     "alias": "Eknd3las",
     "avatarUrl": null,
-    "tournamentIds": [],
+    "tournamentIds": [
+      "1786645309882-n8iemn0fx"
+    ],
     "createdAt": "2026-08-10T19:58:56.937Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -183,7 +196,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-10T20:27:35.444Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -196,7 +209,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-10T20:27:50.067Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -209,7 +222,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-10T20:29:43.053Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -221,10 +234,12 @@
     "alias": "AmorAltras",
     "avatarUrl": null,
     "tournamentIds": [
-      "1786394988044-sb88chetv"
+      "1786394988044-sb88chetv",
+      "1786645309882-n8iemn0fx",
+      "1786646770004-achuyyt34"
     ],
     "createdAt": "2026-08-10T20:30:34.683Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -235,9 +250,12 @@
     "name": "Dionisio",
     "alias": "Dio",
     "avatarUrl": null,
-    "tournamentIds": [],
+    "tournamentIds": [
+      "1786645309882-n8iemn0fx",
+      "1786646770004-achuyyt34"
+    ],
     "createdAt": "2026-08-10T20:30:50.039Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -246,11 +264,13 @@
     "mainCharacterId": "cloud",
     "id": "gp_1786396304199_u7v6gsb",
     "name": "Didiangel",
-    "alias": "Didi",
+    "alias": "Daysuke",
     "avatarUrl": null,
-    "tournamentIds": [],
+    "tournamentIds": [
+      "1786645309882-n8iemn0fx"
+    ],
     "createdAt": "2026-08-10T21:11:44.199Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T19:27:36.283Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -263,7 +283,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-10T22:12:14.148Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -276,7 +296,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-10T22:12:58.250Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -289,7 +309,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-11T00:38:06.972Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -300,9 +320,11 @@
     "name": "Yudiel",
     "alias": "You",
     "avatarUrl": null,
-    "tournamentIds": [],
+    "tournamentIds": [
+      "1786645309882-n8iemn0fx"
+    ],
     "createdAt": "2026-08-11T00:38:52.935Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -315,7 +337,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-11T00:47:41.693Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -328,7 +350,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-11T01:04:28.124Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -341,7 +363,7 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-11T04:00:36.915Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -354,7 +376,20 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-11T04:02:08.315Z",
-    "updatedAt": "2026-08-13T17:49:07.923Z",
+    "updatedAt": "2026-08-13T18:49:16.886Z",
+    "eloPoints": 1500,
+    "eloRank": "Diamante"
+  },
+  {
+    "gameId": "ssbu",
+    "mainCharacterId": "donkey_kong",
+    "id": "gp_1786648984526_6yyg6ao",
+    "name": "Fabio",
+    "alias": "ElTarket",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "createdAt": "2026-08-13T19:23:04.526Z",
+    "updatedAt": "2026-08-13T19:34:24.912Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   }

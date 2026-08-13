@@ -11,7 +11,7 @@
 /* ── Banner ──────────────────────────────────────────────────────────── */
 
 .profile-banner {
-  padding: 2.5rem 0 1.5rem;
+  padding: 1.5rem 0 1.5rem;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -28,6 +28,7 @@
   justify-content: space-between;
   gap: 1.5rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 /* ── ELO Rank widget ─────────────────────────────────────────────────── */
@@ -71,12 +72,19 @@
 
 /* Top label */
 .pew-label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--elo-color, #6366f1);
-  opacity: 0.85;
+  color: #fff;
+  text-shadow:
+    0 0 12px color-mix(in srgb, var(--elo-color) 80%, transparent),
+    0 1px 2px rgba(0,0,0,0.6);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--elo-color) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--elo-color) 35%, transparent);
+  z-index: 1;
 }
 
 /* Icon + rank name stacked */

@@ -132,6 +132,22 @@ async function writeAllTournaments(data: Tournament[]): Promise<void> {
   }
 }
 
+// Write a single tournament via PUT (more efficient than bulk POST).
+async function writeOneTournament(tournament: Tournament): Promise<void> {
+  if (await isLocalServerAvailable()) {
+    fetch(`${LOCAL_SERVER}/api/tournaments/${encodeURIComponent(tournament.id)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(tournament),
+    }).catch((err) => { console.warn('[Storage] Local server tournament write failed:', err); resetServerCache(); });
+  }
+  if (hasSupabase()) {
+    _supabaseSyncTournaments([tournament]).catch((err) =>
+      console.warn('[Storage] Supabase tournament sync failed:', err)
+    );
+  }
+}
+
 // ── Tournaments public API ──────────────────────────────────────────────
 
 export function loadTournaments(): Tournament[] {
@@ -153,7 +169,10 @@ export function saveTournament(tournament: Tournament): void {
   const all = lsReadTournaments();
   const idx = all.findIndex((t) => t.id === tournament.id);
   if (idx >= 0) { all[idx] = tournament; } else { all.push(tournament); }
-  saveTournaments(all);
+  lsWriteTournaments(all);
+  writeOneTournament(tournament).catch((err) =>
+    console.warn('[Storage] Background tournament write error:', err)
+  );
 }
 
 export function loadTournament(id: string): Tournament | null {
@@ -189,9 +208,9 @@ function lsReadParticipants(): GlobalParticipant[] {
     const data = JSON.parse(raw) as GlobalParticipant[];
     // Migrate old records missing new fields
     return data.map((p) => ({
-      gameId: null,
-      mainCharacterId: null,
       ...p,
+      gameId: p.gameId ?? null,
+      mainCharacterId: p.mainCharacterId ?? null,
       tournamentIds: p.tournamentIds ?? [],
     }));
   } catch {
