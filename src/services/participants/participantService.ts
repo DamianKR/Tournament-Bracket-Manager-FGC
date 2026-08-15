@@ -58,6 +58,8 @@ export async function createParticipant(
     tournamentIds: [],
     gameId,
     mainCharacterId,
+    eloPoints: 1500,
+    eloRank: 'Diamante',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

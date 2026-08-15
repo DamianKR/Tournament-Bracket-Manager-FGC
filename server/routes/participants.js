@@ -16,15 +16,9 @@
 
 import { Router } from 'express';
 import { participants } from '../db/collections.js';
-import { participantShape, validateParticipant } from '../models/participant.js';
+import { validateParticipant } from '../models/participant.js';
 
 const router = Router();
-
-// ── Helpers ──────────────────────────────────────────────────────────────
-
-function generateId() {
-  return `p_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-}
 
 // ── Routes ────────────────────────────────────────────────────────────────
 

@@ -42,7 +42,7 @@
   gap: 0.35rem;
   padding: 0.4rem 0.5rem;
   border-right: 1px solid rgba(255,255,255,0.12);
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
   min-width: 56px;
   flex-shrink: 0;
 }
@@ -207,7 +207,7 @@
 
 .confirm-label {
   font-size: 0.7rem;
-  color: #5b21b6;
+  color: var(--primary-dark);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

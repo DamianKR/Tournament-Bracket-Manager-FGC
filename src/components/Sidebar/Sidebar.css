@@ -3,6 +3,7 @@
   background-color: var(--bg-primary);
   border-right: 1px solid var(--border-color);
   padding: 2rem 0;
+  position: relative;
 }
 
 .sidebar-content {
@@ -10,6 +11,9 @@
   flex-direction: column;
   gap: 0.5rem;
   padding: 0 1rem;
+  position: sticky;
+  width: 100%;
+  top: 120px;
 }
 
 .sidebar-item {
@@ -29,7 +33,7 @@
 }
 
 .sidebar-item.active {
-  background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color));
   color: white;
   box-shadow: 0 3px 12px rgba(124, 58, 237, 0.3);
 }

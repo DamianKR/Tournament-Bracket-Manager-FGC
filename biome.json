@@ -1,0 +1,36 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.8/schema.json",
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "warn",
+        "noUndeclaredVariables": "error",
+        "noSelfAssign": "error",
+        "noUnreachable": "error"
+      },
+      "suspicious": {
+        "noDoubleEquals": "warn",
+        "noExplicitAny": "off",
+        "noConsole": "off"
+      }
+    }
+  },
+  "formatter": { "enabled": false },
+  "assist": {
+    "enabled": false
+  },
+  "files": {
+    "includes": [
+      "src/**",
+      "server/**",
+      "!!**/data/**",
+      "!!**/dist/**",
+      "!!**/.devin/**",
+      "!!**/DocumentationDevelopment/**",
+      "!!**/node_modules/**"
+    ]
+  }
+}

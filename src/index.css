@@ -9,6 +9,12 @@
 :root {
   --primary-color: #7c3aed;
   --primary-hover: #6d28d9;
+  --primary-dark: #5b21b6;
+  --primary-mid: #7c3aed;
+  --primary-light: #a78bfa;
+  --primary-void: #1e1b4b;
+  --primary-deep: #2e1065;
+  --primary-night: #312e81;
   --secondary-color: #64748b;
   --success-color: #10b981;
   --danger-color: #ef4444;

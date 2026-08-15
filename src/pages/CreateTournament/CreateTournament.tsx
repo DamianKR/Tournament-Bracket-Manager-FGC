@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { TournamentMode, GlobalParticipant } from '@/models/types';
+import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import {
   createTournament,
   addParticipant,
@@ -32,6 +33,7 @@ function CreateTournament() {
   const [error, setError] = useState('');
   const [isCreated, setIsCreated] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [showStartConfirm, setShowStartConfirm] = useState(false);
 
   // Autocomplete state
   const [suggestions, setSuggestions] = useState<GlobalParticipant[]>([]);
@@ -218,6 +220,12 @@ function CreateTournament() {
       setError(`Minimum ${MIN_PARTICIPANTS} participants required`);
       return;
     }
+    setShowStartConfirm(true);
+  };
+
+  const confirmStartTournament = () => {
+    if (!tournamentId) return;
+    setShowStartConfirm(false);
     try {
       startTournament(tournamentId);
       navigate(`/tournament/${tournamentId}`);
@@ -225,6 +233,8 @@ function CreateTournament() {
       setError(err.message);
     }
   };
+
+  const cancelStartTournament = () => setShowStartConfirm(false);
 
   const handleCancel = () => navigate('/');
 
@@ -416,6 +426,15 @@ function CreateTournament() {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showStartConfirm}
+        title="Start Tournament"
+        message={`Are you sure you want to start "${tournamentName}" with ${participants.length} participants? This will generate the bracket and cannot be undone.`}
+        confirmText="Start"
+        onConfirm={confirmStartTournament}
+        onCancel={cancelStartTournament}
+      />
     </div>
   );
 }

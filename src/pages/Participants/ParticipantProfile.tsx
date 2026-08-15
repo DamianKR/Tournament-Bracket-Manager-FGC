@@ -99,7 +99,7 @@ function ParticipantProfile() {
 
   const color = avatarColor(participant.name);
   const bannerBg = `radial-gradient(ellipse at 15% 0%, color-mix(in srgb, ${color} 38%, transparent) 0%, transparent 55%),
-                    linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #1e1b4b 100%)`;
+                    linear-gradient(135deg, var(--primary-void) 0%, var(--primary-night) 45%, var(--primary-void) 100%)`;
 
   return (
     <div className="profile-page">

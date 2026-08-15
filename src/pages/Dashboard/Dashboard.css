@@ -31,7 +31,7 @@
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
   border-left: 3px solid transparent;
-  background: linear-gradient(145deg, #1e1b4b 0%, #2e1065 60%, #312e81 100%);
+  background: linear-gradient(145deg, var(--primary-void) 0%, var(--primary-deep) 60%, var(--primary-night) 100%);
   color: #fff;
   border: 1px solid rgba(255,255,255,0.08);
   box-shadow: 0 8px 28px rgba(17, 24, 39, 0.45);
