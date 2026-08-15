@@ -43,10 +43,11 @@ export function recordMatchResult(
   const loser = tournament.participants.find((p: Participant) => p.id === loserId);
   if (loser) {
     loser.lossCount++;
-    
+
     // Check if eliminated (2 losses in double elimination)
     if (loser.lossCount >= 2) {
       loser.eliminated = true;
+      loser.finalPosition = undefined;
     }
   }
 
@@ -77,6 +78,9 @@ export function recordMatchResult(
 
   // Check for tournament completion
   checkTournamentCompletion(tournament);
+
+  // Assign partial final positions for eliminated participants
+  assignFinalPositions(tournament);
 
   // Update timestamp
   tournament.updatedAt = new Date().toISOString();
@@ -244,7 +248,7 @@ function checkIfMatchCanReceiveParticipants(bracket: Bracket, targetMatch: Match
 /**
  * Check if a match result can be reverted
  */
-function canRevertMatch(bracket: Bracket, matchId: string): boolean {
+export function canRevertMatch(bracket: Bracket, matchId: string): boolean {
   const match = findMatch(bracket, matchId);
   if (!match || match.status !== 'completed') return false;
 
@@ -292,6 +296,7 @@ export function revertMatchResult(
     if (loser && loser.lossCount > 0) {
       loser.lossCount--;
       loser.eliminated = false;
+      loser.finalPosition = undefined;
     }
   }
 
@@ -308,6 +313,9 @@ export function revertMatchResult(
   match.winnerId = null;
   match.loserId = null;
   match.status = 'pending';
+
+  // Recalculate partial positions after reverting
+  assignFinalPositions(tournament);
 
   tournament.updatedAt = new Date().toISOString();
 
@@ -401,7 +409,7 @@ function checkTournamentCompletion(tournament: Tournament): void {
  * Participants are grouped by the loser-bracket round in which they were eliminated.
  * Everyone eliminated in the same LB round shares the same starting position.
  */
-function assignFinalPositions(tournament: Tournament): void {
+export function assignFinalPositions(tournament: Tournament): void {
   if (!tournament.bracket) return;
 
   // 1st place — champion

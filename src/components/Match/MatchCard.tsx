@@ -7,8 +7,10 @@ interface MatchCardProps {
   participant1Name: string;
   participant2Name: string;
   onSelectWinner: (matchId: string, winnerId: string) => void;
+  onRevertMatch?: (matchId: string) => void;
   readOnly?: boolean;
   isGrandFinal?: boolean;
+  reversible?: boolean;
 }
 
 function MatchCard({
@@ -16,8 +18,10 @@ function MatchCard({
   participant1Name,
   participant2Name,
   onSelectWinner,
+  onRevertMatch,
   readOnly = false,
   isGrandFinal = false,
+  reversible = false,
 }: MatchCardProps) {
   // ID of participant pending confirmation, null = no pending selection
   const [pendingWinnerId, setPendingWinnerId] = useState<string | null>(null);
@@ -116,9 +120,14 @@ function MatchCard({
             </div>
           </div>
         ) : (
-          canSelect && (
-            <div className="match-hint">Click a player to select winner</div>
-          )
+          <div className="match-actions">
+            {match.status === 'completed' && !readOnly && reversible && onRevertMatch && (
+              <button className="revert-btn" onClick={() => onRevertMatch(match.id)}>
+                <i className="fas fa-rotate-left" /> Revert
+              </button>
+            )}
+            {canSelect && <div className="match-hint">Click a player to select winner</div>}
+          </div>
         )}
       </div>
     </div>

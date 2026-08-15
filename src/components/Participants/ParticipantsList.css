@@ -37,6 +37,19 @@
   white-space: nowrap;
 }
 
+.participant-status {
+  min-width: 56px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.participant-status.alive {
+  color: var(--primary-color);
+}
+
 /* Highlight top 3 rows */
 .participant-item.position-first {
   background: linear-gradient(to right, #fef9c3, var(--bg-primary));

@@ -241,15 +241,41 @@
   color: white;
 }
 
-/* ── hint text ───────────────────────────────────────────────────────── */
+/* ── hint text & revert button ────────────────────────────────────────── */
+.match-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
 .match-hint {
   font-size: 0.65rem;
   color: var(--text-tertiary);
-  padding: 0.2rem 0.5rem;
   font-style: italic;
   text-align: center;
-  border-top: 1px solid var(--border-color);
-  background-color: var(--bg-secondary);
+}
+
+.revert-btn {
+  background: transparent;
+  border: none;
+  color: var(--danger-color);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  padding: 0.15rem 0.35rem;
+  border-radius: var(--border-radius);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.revert-btn:hover {
+  background-color: var(--danger-color);
+  color: white;
 }
 
 /* Empty participant slots */

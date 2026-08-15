@@ -1,6 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { Bracket, Participant, Match } from '@/models/types';
 import MatchCard from '@/components/Match/MatchCard';
+import { canRevertMatch } from '@/engine/progression/matchProgression';
 import { loadGlobalParticipants } from '@/services/storage/localStorage';
 import './BracketView.css';
 
@@ -8,6 +9,7 @@ interface BracketViewProps {
   bracket: Bracket;
   participants: Participant[];
   onMatchResult: (matchId: string, winnerId: string) => void;
+  onRevertMatch?: (matchId: string) => void;
   readOnly?: boolean;
 }
 
@@ -26,7 +28,7 @@ function getLoserRoundName(roundNum: number, totalRounds: number): string {
   return `Loser Round ${roundNum}`;
 }
 
-function BracketView({ bracket, participants, onMatchResult, readOnly = false }: BracketViewProps) {
+function BracketView({ bracket, participants, onMatchResult, onRevertMatch, readOnly = false }: BracketViewProps) {
   // Refs to sync horizontal scroll between header row and matches
   const winnerHeaderRef = useRef<HTMLDivElement>(null);
   const winnerScrollRef = useRef<HTMLDivElement>(null);
@@ -119,7 +121,9 @@ function BracketView({ bracket, participants, onMatchResult, readOnly = false }:
                       participant1Name={getParticipantName(match.participant1Id)}
                       participant2Name={getParticipantName(match.participant2Id)}
                       onSelectWinner={onMatchResult}
+                      onRevertMatch={onRevertMatch}
                       readOnly={readOnly}
+                      reversible={onRevertMatch ? canRevertMatch(bracket, match.id) : false}
                     />
                   ))}
                 </div>
@@ -157,8 +161,10 @@ function BracketView({ bracket, participants, onMatchResult, readOnly = false }:
               participant1Name={getParticipantName(bracket.grandFinal.participant1Id)}
               participant2Name={getParticipantName(bracket.grandFinal.participant2Id)}
               onSelectWinner={onMatchResult}
+              onRevertMatch={onRevertMatch}
               readOnly={readOnly}
               isGrandFinal={true}
+              reversible={onRevertMatch ? canRevertMatch(bracket, bracket.grandFinal.id) : false}
             />
             {bracket.grandFinalReset && (
               <div className="reset-final">
@@ -168,8 +174,10 @@ function BracketView({ bracket, participants, onMatchResult, readOnly = false }:
                   participant1Name={getParticipantName(bracket.grandFinalReset.participant1Id)}
                   participant2Name={getParticipantName(bracket.grandFinalReset.participant2Id)}
                   onSelectWinner={onMatchResult}
+                  onRevertMatch={onRevertMatch}
                   readOnly={readOnly}
                   isGrandFinal={true}
+                  reversible={onRevertMatch ? canRevertMatch(bracket, bracket.grandFinalReset.id) : false}
                 />
               </div>
             )}

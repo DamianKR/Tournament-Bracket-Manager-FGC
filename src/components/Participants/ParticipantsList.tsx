@@ -73,8 +73,8 @@ function ParticipantsList({
   return (
     <div className="participants-list">
       {participants.map((participant, index) => (
-        <div key={participant.id} className={`participant-item card ${participant.finalPosition === 1 ? 'position-first' : participant.finalPosition === 2 ? 'position-second' : participant.finalPosition === 3 ? 'position-third' : ''}`}>
-          {showFinalPosition && participant.finalPosition ? (
+        <div key={participant.id} className={`participant-item card ${showFinalPosition && participant.finalPosition === 1 ? 'position-first' : showFinalPosition && participant.finalPosition === 2 ? 'position-second' : showFinalPosition && participant.finalPosition === 3 ? 'position-third' : ''}`}>
+          {participant.finalPosition ? (
             <div className="participant-position">{getPositionLabel(participant.finalPosition)}</div>
           ) : (
             <div className="participant-seed">#{participant.seed || index + 1}</div>

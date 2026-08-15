@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Tournament } from '@/models/types';
-import { getTournament, setMatchWinner } from '@/services/tournament/tournamentService';
+import { getTournament, setMatchWinner, undoMatchResult } from '@/services/tournament/tournamentService';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import BracketView from '@/components/Bracket/BracketView';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
@@ -37,6 +37,18 @@ function TournamentView() {
 
     try {
       const updatedTournament = setMatchWinner(id, matchId, winnerId);
+      setTournament(updatedTournament);
+      setError('');
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleRevertMatch = (matchId: string) => {
+    if (!id) return;
+
+    try {
+      const updatedTournament = undoMatchResult(id, matchId);
       setTournament(updatedTournament);
       setError('');
     } catch (err: any) {
@@ -135,6 +147,7 @@ function TournamentView() {
                 bracket={tournament.bracket}
                 participants={tournament.participants}
                 onMatchResult={handleMatchResult}
+                onRevertMatch={tournament.status !== 'completed' ? handleRevertMatch : undefined}
                 readOnly={tournament.status === 'completed'}
               />
             )}
