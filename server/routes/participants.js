@@ -15,7 +15,7 @@
  */
 
 import { Router } from 'express';
-import { participants } from '../db/collections.js';
+import { participants, tournaments } from '../db/collections.js';
 import { validateParticipant } from '../models/participant.js';
 
 const router = Router();
@@ -197,6 +197,21 @@ router.post('/:id/stats', async (req, res) => {
   } catch (err) {
     console.error('[Participants] POST /:id/stats error:', err);
     res.status(500).json({ error: 'Failed to update stats' });
+  }
+});
+
+// GET /api/participants/:id/tournaments — only tournaments this participant joined
+router.get('/:id/tournaments', async (req, res) => {
+  try {
+    const p = await participants.findById(req.params.id);
+    if (!p) return res.status(404).json({ error: 'Participant not found' });
+    const ids = new Set(p.tournamentIds ?? []);
+    const all = await tournaments.getAll();
+    const joined = all.filter((t) => ids.has(t.id));
+    res.json(joined);
+  } catch (err) {
+    console.error('[Participants] GET /:id/tournaments error:', err);
+    res.status(500).json({ error: 'Failed to read participant tournaments' });
   }
 });
 

@@ -6,6 +6,7 @@ import {
   computeStats,
   updateParticipant,
 } from '@/services/participants/participantService';
+import { loadTournamentsForParticipantAsync } from '@/services/storage/localStorage';
 import { initials, avatarColor } from './ParticipantsPage';
 import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import { getCharacter, getGame } from '@/data/games';
@@ -43,20 +44,30 @@ function ParticipantProfile() {
 
   useEffect(() => {
     if (!id) return;
-    const p = getParticipant(id);
-    if (!p) { setNotFound(true); return; }
-    setParticipant(p);
-    setStats(computeStats(p));
-    setEditName(p.name);
-    setEditAlias(p.alias ?? '');
-    setEditGameId(p.gameId ?? null);
-    setEditCharacterId(p.mainCharacterId ?? null);
+    (async () => {
+      try {
+        const tournaments = await loadTournamentsForParticipantAsync(id);
+        const p = getParticipant(id);
+        if (!p) { setNotFound(true); return; }
+        setParticipant(p);
+        setStats(computeStats(p, tournaments));
+        setEditName(p.name);
+        setEditAlias(p.alias ?? '');
+        setEditGameId(p.gameId ?? null);
+        setEditCharacterId(p.mainCharacterId ?? null);
+      } catch {
+        const p = getParticipant(id);
+        if (!p) { setNotFound(true); return; }
+        setParticipant(p);
+        setStats(computeStats(p));
+      }
 
-    // Load ELO ranking entry (fire-and-forget — graceful if server is down)
-    getLeaderboard().then((board) => {
-      const entry = board.find((e) => e.id === id) ?? null;
-      setRankEntry(entry);
-    }).catch(() => {});
+      // Load ELO ranking entry (fire-and-forget — graceful if server is down)
+      getLeaderboard().then((board) => {
+        const entry = board.find((e) => e.id === id) ?? null;
+        setRankEntry(entry);
+      }).catch(() => {});
+    })();
   }, [id]);
 
   async function handleSave() {

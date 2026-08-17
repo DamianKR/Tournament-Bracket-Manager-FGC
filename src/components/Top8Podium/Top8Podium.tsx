@@ -9,14 +9,6 @@ interface Top8PodiumProps {
   tournamentName: string;
 }
 
-function ordinal(pos: number): string {
-  if (pos % 100 >= 11 && pos % 100 <= 13) return `${pos}th`;
-  if (pos % 10 === 1) return `${pos}st`;
-  if (pos % 10 === 2) return `${pos}nd`;
-  if (pos % 10 === 3) return `${pos}rd`;
-  return `${pos}th`;
-}
-
 function getGlobal(p: Participant, globals: Map<string, GlobalParticipant>): GlobalParticipant | null {
   if (!p.globalParticipantId) return null;
   return globals.get(p.globalParticipantId) ?? null;

@@ -7,7 +7,7 @@
  * even if tournament results are edited after the fact.
  */
 
-import { GlobalParticipant, ComputedStats, PlacementEntry } from '@/models/types';
+import { GlobalParticipant, Tournament, ComputedStats, PlacementEntry } from '@/models/types';
 import {
   loadGlobalParticipants,
   loadGlobalParticipantsAsync,
@@ -136,8 +136,8 @@ export function searchParticipants(query: string): GlobalParticipant[] {
 // that include this participant and derive everything from them.
 // This means stats are always consistent with tournament results.
 
-export function computeStats(participant: GlobalParticipant): ComputedStats {
-  const allTournaments = loadTournaments();
+export function computeStats(participant: GlobalParticipant, tournaments?: Tournament[]): ComputedStats {
+  const allTournaments = tournaments ?? loadTournaments();
 
   // Only tournaments that reference this participant
   // Guard against old records that don't have tournamentIds yet

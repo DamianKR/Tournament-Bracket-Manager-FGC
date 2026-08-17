@@ -158,6 +158,22 @@ export async function loadTournamentsAsync(): Promise<Tournament[]> {
   return readAllTournaments();
 }
 
+export async function loadTournamentsForParticipantAsync(participantId: string): Promise<Tournament[]> {
+  if (await isLocalServerAvailable()) {
+    try {
+      const res = await fetch(`${LOCAL_SERVER}/api/participants/${encodeURIComponent(participantId)}/tournaments`);
+      if (res.ok) return (await res.json()) as Tournament[];
+    } catch (err) {
+      console.warn('[Storage] Local server participant tournaments read failed:', err);
+      resetServerCache();
+    }
+  }
+  const all = lsReadTournaments();
+  const p = (lsReadParticipants() as GlobalParticipant[]).find((x) => x.id === participantId);
+  const ids = new Set(p?.tournamentIds ?? []);
+  return all.filter((t) => ids.has(t.id));
+}
+
 export function saveTournaments(tournaments: Tournament[]): void {
   lsWriteTournaments(tournaments);
   writeAllTournaments(tournaments).catch((err) =>
