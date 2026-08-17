@@ -110,3 +110,23 @@
   font-size: 0.75rem;
   font-weight: 600;
 }
+
+.not-concluded-badge {
+  background-color: rgba(var(--primary-color-rgb, 109, 40, 217), 0.12);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--border-radius);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-left: 0.5rem;
+}
+
+.participant-position-dash {
+  min-width: 56px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 1.1rem;
+}

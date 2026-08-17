@@ -5,6 +5,7 @@ import { getTournament, setMatchWinner, undoMatchResult } from '@/services/tourn
 import Sidebar from '@/components/Sidebar/Sidebar';
 import BracketView from '@/components/Bracket/BracketView';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
+import Top8Podium from '@/components/Top8Podium/Top8Podium';
 import './TournamentView.css';
 
 type ViewMode = 'bracket' | 'participants';
@@ -155,18 +156,18 @@ function TournamentView() {
             {viewMode === 'participants' && (
               <div className="participants-view">
                 <h2>Participants</h2>
+                {tournament.status === 'completed' && (
+                  <Top8Podium
+                    participants={tournament.participants}
+                    tournamentName={tournament.name}
+                  />
+                )}
                 <ParticipantsList
-                  participants={
-                    tournament.status === 'completed'
-                      ? [...tournament.participants].sort(
-                          (a, b) => (a.finalPosition ?? 9999) - (b.finalPosition ?? 9999)
-                        )
-                      : tournament.participants
-                  }
+                  participants={tournament.participants}
                   onRemove={() => {}}
                   onUpdate={() => {}}
                   readOnly={true}
-                  showFinalPosition={tournament.status === 'completed'}
+                  tournamentMode={true}
                 />
               </div>
             )}

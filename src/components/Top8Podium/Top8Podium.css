@@ -1,0 +1,183 @@
+/* ── Top 8 Podium ─────────────────────────────────────────────────────── */
+.top8-podium {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #0f0a1a 100%);
+  border: 1px solid var(--primary-mid);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 24px rgba(109, 40, 217, 0.25);
+}
+
+.top8-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.top8-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.3rem;
+  color: #f0c040;
+  margin: 0;
+  text-shadow: 0 0 12px rgba(240, 192, 64, 0.5);
+}
+
+.top8-title i {
+  margin-right: 0.4rem;
+}
+
+.top8-event {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-family: 'Rajdhani', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Layout ────────────────────────────────────────────────────────────── */
+.top8-body {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.top8-champion {
+  flex-shrink: 0;
+}
+
+.top8-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.top8-row {
+  display: flex;
+  gap: 0.6rem;
+}
+
+/* ── Cards ─────────────────────────────────────────────────────────────── */
+.top8-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.6rem 0.5rem 0.5rem;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--primary-mid);
+  background: rgba(255,255,255,0.04);
+  min-width: 90px;
+  flex: 1;
+  transition: transform 0.15s;
+}
+
+.top8-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Champion card is bigger */
+.champion-card {
+  min-width: 140px;
+  width: 140px;
+  padding: 1rem 0.75rem 0.75rem;
+  border-color: #f0c040;
+  background: rgba(240, 192, 64, 0.08);
+  box-shadow: 0 0 18px rgba(240, 192, 64, 0.25);
+}
+
+/* ── Rank badge (number in corner) ─────────────────────────────────────── */
+.top8-rank-badge {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  line-height: 1;
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+.rank-1 { font-size: 1.4rem; color: #f0c040; text-shadow: 0 0 8px rgba(240,192,64,0.6); }
+.rank-2 { font-size: 1rem;   color: #c0c8d0; }
+.rank-3 { font-size: 1rem;   color: #cd7f32; }
+.rank-4 { font-size: 1rem;   color: #a78bfa; }
+.rank-5 { font-size: 0.9rem; color: #7c3aed; }
+.rank-7 { font-size: 0.9rem; color: #6d28d9; }
+
+/* ── Avatar ─────────────────────────────────────────────────────────────── */
+.top8-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(109, 40, 217, 0.2);
+  border: 2px solid var(--primary-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+  font-size: 1.3rem;
+  color: var(--primary-color);
+}
+
+.champion-avatar {
+  width: 80px;
+  height: 80px;
+  font-size: 2rem;
+  color: #f0c040;
+  border-color: #f0c040;
+  background: rgba(240, 192, 64, 0.1);
+  margin-bottom: 0.6rem;
+}
+
+/* If a character image is provided */
+.top8-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* ── Text ────────────────────────────────────────────────────────────────── */
+.top8-player-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.champion-card .top8-player-name {
+  font-size: 1rem;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.top8-place-label {
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.1rem;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .top8-body {
+    flex-direction: column;
+  }
+
+  .top8-champion {
+    align-self: center;
+  }
+
+  .top8-card {
+    min-width: 70px;
+  }
+}

@@ -396,72 +396,66 @@ function checkTournamentCompletion(tournament: Tournament): void {
 }
 
 /**
- * Assign final positions to all participants.
+ * Assign final/partial positions to all participants.
  *
- * Logic:
- *   1st  — tournament champion
- *   2nd  — grand final runner-up
- *   3rd  — loser of Loser Finals (last loser bracket match before grand final)
- *   4th  — loser of Loser Semifinals
- *   5th–6th  — losers of the round before that (shared position, alphabetical tiebreak)
- *   … and so on, doubling the group size each round going back.
+ * Same logic as Challonge / start.gg for double elimination:
  *
- * Participants are grouped by the loser-bracket round in which they were eliminated.
- * Everyone eliminated in the same LB round shares the same starting position.
+ *   The total number of LB rounds is fixed at bracket generation time.
+ *   A player eliminated in LB round R gets:
+ *     roundsFromEnd = maxLBRound - R
+ *     position      = computed from roundsFromEnd as:
+ *       roundsFromEnd  0 → 3rd  (group of 1)
+ *       roundsFromEnd  1 → 4th  (group of 1)
+ *       roundsFromEnd  2 → 5th  (group of 2)
+ *       roundsFromEnd  3 → 7th  (group of 2)
+ *       roundsFromEnd  4 → 9th  (group of 4)
+ *       roundsFromEnd  5 → 13th (group of 4)
+ *       roundsFromEnd  6 → 17th (group of 8)  …
+ *
+ *   All players eliminated in the same LB round share the same position number.
+ *   This is recalculated after every match result so it works mid-tournament.
  */
 export function assignFinalPositions(tournament: Tournament): void {
   if (!tournament.bracket) return;
 
-  // 1st place — champion
-  const champion = tournament.participants.find(
-    (p: Participant) => p.id === tournament.championId
-  );
-  if (champion) champion.finalPosition = 1;
-
-  // 2nd place — loser of the deciding grand final match
-  const decidingFinal =
-    tournament.bracket.grandFinalReset ?? tournament.bracket.grandFinal;
-  const runnerUpId = decidingFinal?.loserId;
-  const runnerUp = tournament.participants.find((p: Participant) => p.id === runnerUpId);
-  if (runnerUp) runnerUp.finalPosition = 2;
-
-  // Collect all loser-bracket matches that produced an elimination, grouped by round.
-  // The loser of a LB match is eliminated (2 losses total).
-  const loserMatches = [...(tournament.bracket.loserBracket ?? [])].sort(
-    (a, b) => b.roundNumber - a.roundNumber   // highest round first = earliest to assign
-  );
-
-  // Map roundNumber → list of eliminated participantIds
-  const eliminatedByLBRound: Map<number, string[]> = new Map();
-  for (const m of loserMatches) {
-    if (m.status === 'completed' && m.loserId) {
-      const loser = tournament.participants.find((p: Participant) => p.id === m.loserId);
-      if (loser && loser.eliminated && !loser.finalPosition) {
-        const list = eliminatedByLBRound.get(m.roundNumber) ?? [];
-        list.push(m.loserId);
-        eliminatedByLBRound.set(m.roundNumber, list);
-      }
-    }
+  // Reset all positions so the calculation is deterministic every call.
+  for (const p of tournament.participants) {
+    p.finalPosition = undefined;
   }
 
-  // Assign positions starting at 3, grouping by LB round (highest round = best placement).
-  // Participants eliminated in the same round share the same position range.
-  const rounds = [...eliminatedByLBRound.keys()].sort((a, b) => b - a); // desc
-  let nextPosition = 3;
-  for (const round of rounds) {
-    const ids = eliminatedByLBRound.get(round)!;
-    for (const pid of ids) {
-      const p = tournament.participants.find((par: Participant) => par.id === pid);
-      if (p && !p.finalPosition) p.finalPosition = nextPosition;
-    }
-    nextPosition += ids.length;
+  // 1st — champion
+  if (tournament.championId) {
+    const champ = tournament.participants.find((p: Participant) => p.id === tournament.championId);
+    if (champ) champ.finalPosition = 1;
   }
 
-  // Fallback: any still-eliminated participant without a position
-  const remaining = tournament.participants.filter(
-    (p: Participant) => p.eliminated && !p.finalPosition
-  );
-  remaining.forEach((p: Participant) => {
-    p.finalPosition = nextPosition++;
-  });
+  // 2nd — loser of the deciding grand final
+  const decidingFinal = tournament.bracket.grandFinalReset ?? tournament.bracket.grandFinal;
+  if (decidingFinal?.loserId) {
+    const runnerUp = tournament.participants.find((p: Participant) => p.id === decidingFinal.loserId);
+    if (runnerUp) runnerUp.finalPosition = 2;
+  }
+
+  const lb = tournament.bracket.loserBracket ?? [];
+  if (lb.length === 0) return;
+
+  // maxLBRound is fixed from bracket generation — use ALL LB matches, not just completed ones.
+  const maxLBRound = Math.max(...lb.map((m: Match) => m.roundNumber));
+
+  for (const m of lb) {
+    if (m.status !== 'completed' || !m.loserId) continue;
+    const loser = tournament.participants.find((p: Participant) => p.id === m.loserId);
+    if (!loser || !loser.eliminated) continue;
+
+    // Compute starting position for this LB round using Challonge formula.
+    const roundsFromEnd = maxLBRound - m.roundNumber;
+    let start = 3;
+    let groupSize = 1;
+    for (let i = 0; i < roundsFromEnd; i++) {
+      start += groupSize;
+      if (i % 2 === 1) groupSize *= 2;
+    }
+
+    loser.finalPosition = start;
+  }
 }

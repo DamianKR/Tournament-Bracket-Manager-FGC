@@ -9,28 +9,33 @@ interface ParticipantsListProps {
   onMoveUp?: (id: string) => void;
   onMoveDown?: (id: string) => void;
   readOnly?: boolean;
-  showFinalPosition?: boolean;
+  /** When true: show finalPosition, hide seed, sort by placement */
+  tournamentMode?: boolean;
+}
+
+function ordinal(pos: number): string {
+  if (pos % 100 >= 11 && pos % 100 <= 13) return `${pos}th`;
+  if (pos % 10 === 1) return `${pos}st`;
+  if (pos % 10 === 2) return `${pos}nd`;
+  if (pos % 10 === 3) return `${pos}rd`;
+  return `${pos}th`;
 }
 
 function getPositionLabel(pos: number): string {
   if (pos === 1) return '🥇 1st';
   if (pos === 2) return '🥈 2nd';
   if (pos === 3) return '🥉 3rd';
-  const suffix = pos % 10 === 1 && pos !== 11 ? 'st'
-    : pos % 10 === 2 && pos !== 12 ? 'nd'
-    : pos % 10 === 3 && pos !== 13 ? 'rd'
-    : 'th';
-  return `${pos}${suffix}`;
+  return ordinal(pos);
 }
 
-function ParticipantsList({ 
-  participants, 
-  onRemove, 
+function ParticipantsList({
+  participants,
+  onRemove,
   onUpdate,
   onMoveUp,
   onMoveDown,
   readOnly = false,
-  showFinalPosition = false,
+  tournamentMode = false,
 }: ParticipantsListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -70,16 +75,35 @@ function ParticipantsList({
     );
   }
 
+  // In tournament mode: sort alive first (no position), then by finalPosition asc.
+  const sorted = tournamentMode
+    ? [...participants].sort((a, b) => {
+        if (!a.finalPosition && !b.finalPosition) return 0;
+        if (!a.finalPosition) return -1;
+        if (!b.finalPosition) return 1;
+        return a.finalPosition - b.finalPosition;
+      })
+    : participants;
+
   return (
     <div className="participants-list">
-      {participants.map((participant, index) => (
-        <div key={participant.id} className={`participant-item card ${showFinalPosition && participant.finalPosition === 1 ? 'position-first' : showFinalPosition && participant.finalPosition === 2 ? 'position-second' : showFinalPosition && participant.finalPosition === 3 ? 'position-third' : ''}`}>
-          {participant.finalPosition ? (
-            <div className="participant-position">{getPositionLabel(participant.finalPosition)}</div>
+      {sorted.map((participant, index) => {
+        const alive = tournamentMode && !participant.finalPosition;
+        const posClass = tournamentMode && participant.finalPosition === 1 ? 'position-first'
+          : tournamentMode && participant.finalPosition === 2 ? 'position-second'
+          : tournamentMode && participant.finalPosition === 3 ? 'position-third'
+          : '';
+
+        return (
+        <div key={participant.id} className={`participant-item card ${posClass}`}>
+          {tournamentMode ? (
+            participant.finalPosition
+              ? <div className="participant-position">{getPositionLabel(participant.finalPosition)}</div>
+              : <div className="participant-position-dash">—</div>
           ) : (
             <div className="participant-seed">#{participant.seed || index + 1}</div>
           )}
-          
+
           {editingId === participant.id ? (
             <div className="participant-edit">
               <input
@@ -93,12 +117,17 @@ function ParticipantsList({
               />
             </div>
           ) : (
-            <div 
+            <div
               className="participant-name"
               onDoubleClick={() => handleStartEdit(participant)}
             >
               {participant.name}
-              {participant.eliminated && (
+              {tournamentMode && alive && (
+                <span className="not-concluded-badge">
+                  <i className="fas fa-hourglass-half" /> Not Concluded
+                </span>
+              )}
+              {tournamentMode && participant.eliminated && (
                 <span className="eliminated-badge">Eliminated</span>
               )}
             </div>
@@ -129,7 +158,7 @@ function ParticipantsList({
                     <button
                       className="btn-icon"
                       onClick={() => onMoveDown(participant.id)}
-                      disabled={index === participants.length - 1}
+                      disabled={index === sorted.length - 1}
                       title="Move down"
                     >
                       ⬇️
@@ -147,7 +176,8 @@ function ParticipantsList({
             </div>
           )}
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

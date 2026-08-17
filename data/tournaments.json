@@ -19,7 +19,7 @@
         "seed": 2,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 3
+        "finalPosition": 9
       },
       {
         "id": "1786196008550-tkoa1m7hn",
@@ -27,7 +27,7 @@
         "seed": 3,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 4
+        "finalPosition": 17
       },
       {
         "id": "1786196066214-0r33atnbo",
@@ -35,7 +35,7 @@
         "seed": 4,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 5
+        "finalPosition": 9
       },
       {
         "id": "1786158646449-fhkfsysa2",
@@ -43,7 +43,7 @@
         "seed": 5,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 6
+        "finalPosition": 13
       },
       {
         "id": "1786196027441-qqsf7n80e",
@@ -51,7 +51,7 @@
         "seed": 6,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 7
+        "finalPosition": 17
       },
       {
         "id": "1786158563128-8vtf1pwki",
@@ -59,7 +59,7 @@
         "seed": 7,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 8
+        "finalPosition": 4
       },
       {
         "id": "1786158638003-a7lp64fwl",
@@ -67,7 +67,7 @@
         "seed": 8,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 9
+        "finalPosition": 13
       },
       {
         "id": "1786161720117-o41nkhw6s",
@@ -75,7 +75,7 @@
         "seed": 9,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 10
+        "finalPosition": 9
       },
       {
         "id": "1786196071601-w6ytca16y",
@@ -83,7 +83,7 @@
         "seed": 10,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 11
+        "finalPosition": 5
       },
       {
         "id": "1786195998865-x4237fdil",
@@ -91,7 +91,7 @@
         "seed": 11,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 12
+        "finalPosition": 7
       },
       {
         "id": "1786158670338-d28bk9fdm",
@@ -99,7 +99,7 @@
         "seed": 12,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 13
+        "finalPosition": 5
       },
       {
         "id": "1786163008021-ui2pyowmi",
@@ -107,7 +107,7 @@
         "seed": 13,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 14
+        "finalPosition": 17
       },
       {
         "id": "1786195955602-uipqru0w2",
@@ -115,7 +115,7 @@
         "seed": 14,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 15
+        "finalPosition": 13
       },
       {
         "id": "1786160095402-ifovork17",
@@ -123,7 +123,7 @@
         "seed": 15,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 16
+        "finalPosition": 13
       },
       {
         "id": "1786165706296-duo59g8f3",
@@ -139,7 +139,7 @@
         "seed": 17,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 18
+        "finalPosition": 3
       },
       {
         "id": "1786196179560-r6wuvmdee",
@@ -147,7 +147,7 @@
         "seed": 18,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 19
+        "finalPosition": 17
       },
       {
         "id": "1786196205567-4uf764r00",
@@ -155,7 +155,7 @@
         "seed": 19,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 20
+        "finalPosition": 9
       },
       {
         "id": "1786196273385-8xp9e5p6c",
@@ -163,7 +163,7 @@
         "seed": 20,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 21
+        "finalPosition": 7
       },
       {
         "id": "1786196298561-1v3djwtd1",
@@ -171,7 +171,7 @@
         "seed": 21,
         "eliminated": true,
         "lossCount": 2,
-        "finalPosition": 22
+        "finalPosition": 17
       },
       {
         "id": "1786158565219-fnti1me01",
@@ -1012,7 +1012,8 @@
         "seed": 1,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786409261693_7dx00bm"
+        "globalParticipantId": "gp_1786409261693_7dx00bm",
+        "finalPosition": 17
       },
       {
         "id": "1786802856410-8sj0a0oc6",
@@ -1030,7 +1031,8 @@
         "seed": 3,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786756661811_fa5pg74"
+        "globalParticipantId": "gp_1786756661811_fa5pg74",
+        "finalPosition": 13
       },
       {
         "id": "1786802929824-kkesdxqdn",
@@ -1038,7 +1040,8 @@
         "seed": 4,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786758755895_bgdf2b9"
+        "globalParticipantId": "gp_1786758755895_bgdf2b9",
+        "finalPosition": 17
       },
       {
         "id": "1786802944833-3hv0a9e73",
@@ -1046,7 +1049,8 @@
         "seed": 5,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786393670067_xild06i"
+        "globalParticipantId": "gp_1786393670067_xild06i",
+        "finalPosition": 5
       },
       {
         "id": "1786802923672-j6tyf22uf",
@@ -1054,7 +1058,8 @@
         "seed": 6,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786391783115_87zwx03"
+        "globalParticipantId": "gp_1786391783115_87zwx03",
+        "finalPosition": 13
       },
       {
         "id": "1786802873118-l0jegpvid",
@@ -1063,7 +1068,8 @@
         "seed": 7,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786393834683_lievrvf"
+        "globalParticipantId": "gp_1786393834683_lievrvf",
+        "finalPosition": 7
       },
       {
         "id": "1786802852787-pjz04haav",
@@ -1079,15 +1085,18 @@
         "seed": 9,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786399934148_stq7jpb"
+        "globalParticipantId": "gp_1786399934148_stq7jpb",
+        "finalPosition": 17
       },
       {
         "id": "1786802965693-hr19l4ia5",
-        "name": "Talia",
+        "name": "Talianna",
         "seed": 10,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786808135517_vfoni2a"
+        "globalParticipantId": "gp_1786808135517_vfoni2a",
+        "alias": "Sybau",
+        "finalPosition": 7
       },
       {
         "id": "1786802940293-31hz20grk",
@@ -1095,7 +1104,8 @@
         "seed": 11,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786393655444_41zyrro"
+        "globalParticipantId": "gp_1786393655444_41zyrro",
+        "finalPosition": 9
       },
       {
         "id": "1786802967512-mczr7q5wg",
@@ -1104,7 +1114,8 @@
         "seed": 12,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786420928315_91m6kmr"
+        "globalParticipantId": "gp_1786420928315_91m6kmr",
+        "finalPosition": 25
       },
       {
         "id": "1786802990750-tems78z7y",
@@ -1113,7 +1124,8 @@
         "seed": 13,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786756707267_xybm206"
+        "globalParticipantId": "gp_1786756707267_xybm206",
+        "finalPosition": 9
       },
       {
         "id": "1786802935475-46xcdxz3h",
@@ -1121,7 +1133,8 @@
         "seed": 14,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786399978250_n7msxo5"
+        "globalParticipantId": "gp_1786399978250_n7msxo5",
+        "finalPosition": 5
       },
       {
         "id": "1786802979137-e8bc2r2rj",
@@ -1130,7 +1143,8 @@
         "seed": 15,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786757329455_8ijcyo8"
+        "globalParticipantId": "gp_1786757329455_8ijcyo8",
+        "finalPosition": 17
       },
       {
         "id": "1786802995999-4g5vrs5io",
@@ -1139,7 +1153,8 @@
         "seed": 16,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786802617779_nnibxrr"
+        "globalParticipantId": "gp_1786802617779_nnibxrr",
+        "finalPosition": 13
       },
       {
         "id": "1786802874844-h94aif9mv",
@@ -1148,7 +1163,8 @@
         "seed": 17,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786758906647_1ib85c1"
+        "globalParticipantId": "gp_1786758906647_1ib85c1",
+        "finalPosition": 25
       },
       {
         "id": "1786802854456-2t17mnthg",
@@ -1165,7 +1181,8 @@
         "seed": 19,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786408732935_gefziig"
+        "globalParticipantId": "gp_1786408732935_gefziig",
+        "finalPosition": 25
       },
       {
         "id": "1786802866873-nwil5kzcx",
@@ -1174,7 +1191,8 @@
         "seed": 20,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786396304199_u7v6gsb"
+        "globalParticipantId": "gp_1786396304199_u7v6gsb",
+        "finalPosition": 9
       },
       {
         "id": "1786802861194-whsfblna9",
@@ -1183,7 +1201,8 @@
         "seed": 21,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786393850039_1imzf6x"
+        "globalParticipantId": "gp_1786393850039_1imzf6x",
+        "finalPosition": 13
       },
       {
         "id": "1786802870138-sv0y0hnqx",
@@ -1192,7 +1211,8 @@
         "seed": 22,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786802386624_ficm2tl"
+        "globalParticipantId": "gp_1786802386624_ficm2tl",
+        "finalPosition": 9
       },
       {
         "id": "1786802887696-ul33wtj10",
@@ -1201,7 +1221,8 @@
         "seed": 23,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786648984526_6yyg6ao"
+        "globalParticipantId": "gp_1786648984526_6yyg6ao",
+        "finalPosition": 17
       },
       {
         "id": "1786803100420-z1yvvpzce",
@@ -1210,7 +1231,8 @@
         "seed": 24,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786391850317_8z5itq7"
+        "globalParticipantId": "gp_1786391850317_8z5itq7",
+        "finalPosition": 25
       },
       {
         "id": "1786802848706-woluijw8t",
@@ -1219,7 +1241,8 @@
         "seed": 25,
         "eliminated": true,
         "lossCount": 2,
-        "globalParticipantId": "gp_1786387087046_wnwtadb"
+        "globalParticipantId": "gp_1786387087046_wnwtadb",
+        "finalPosition": 4
       }
     ],
     "bracket": {
