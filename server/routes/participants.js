@@ -15,7 +15,7 @@
  */
 
 import { Router } from 'express';
-import { participants, tournaments } from '../db/collections.js';
+import { participants, tournaments, leagues, leagueMatches } from '../db/collections.js';
 import { validateParticipant } from '../models/participant.js';
 
 const router = Router();
@@ -212,6 +212,104 @@ router.get('/:id/tournaments', async (req, res) => {
   } catch (err) {
     console.error('[Participants] GET /:id/tournaments error:', err);
     res.status(500).json({ error: 'Failed to read participant tournaments' });
+  }
+});
+
+// GET /api/participants/:id/league-stats — league results and match record
+router.get('/:id/league-stats', async (req, res) => {
+  try {
+    const p = await participants.findById(req.params.id);
+    if (!p) return res.status(404).json({ error: 'Participant not found' });
+
+    const allLeagues = await leagues.getAll();
+    const allLeagueMatches = await leagueMatches.getAll();
+    const myLeagueIds = new Set();
+
+    const results = [];
+
+    for (const league of allLeagues) {
+      if (!league.participantIds?.includes(req.params.id)) continue;
+      myLeagueIds.add(league.id);
+
+      const leagueMatchList = allLeagueMatches.filter((m) => m.leagueId === league.id);
+      const myMatches = leagueMatchList.filter(
+        (m) => m.participant1Id === req.params.id || m.participant2Id === req.params.id
+      );
+
+      let wins = 0;
+      let losses = 0;
+      let noShows = 0;
+      let eloChange = 0;
+
+      for (const m of myMatches) {
+        if (m.status !== 'completed' && m.status !== 'no_show') continue;
+
+        if (m.status === 'no_show') {
+          if (m.noShowParticipantId === req.params.id) {
+            losses++;
+            noShows++;
+            eloChange += (m.participant1Id === req.params.id ? m.participant1EloChange : m.participant2EloChange) ?? 0;
+          } else {
+            wins++;
+          }
+        } else {
+          if (m.winnerId === req.params.id) {
+            wins++;
+          } else {
+            losses++;
+          }
+          eloChange += (m.participant1Id === req.params.id ? m.participant1EloChange : m.participant2EloChange) ?? 0;
+        }
+      }
+
+      // Rank by current ELO within the league (recompute simple standings)
+      const standings = [];
+      for (const pid of league.participantIds) {
+        const playerMatches = leagueMatchList.filter(
+          (m) => (m.participant1Id === pid || m.participant2Id === pid) &&
+                 (m.status === 'completed' || m.status === 'no_show')
+        );
+        let playerEloChange = 0;
+        for (const m of playerMatches) {
+          playerEloChange += (m.participant1Id === pid ? m.participant1EloChange : m.participant2EloChange) ?? 0;
+        }
+        const baseElo = (await participants.findById(pid))?.eloPoints ?? 1500;
+        standings.push({ participantId: pid, currentElo: baseElo + playerEloChange });
+      }
+      standings.sort((a, b) => b.currentElo - a.currentElo);
+      const rank = standings.findIndex((s) => s.participantId === req.params.id) + 1;
+
+      results.push({
+        leagueId: league.id,
+        leagueName: league.name,
+        rank,
+        matchesPlayed: wins + losses,
+        wins,
+        losses,
+        noShows,
+        eloChange,
+        gamesPerMatch: league.gamesPerMatch,
+        date: league.updatedAt,
+      });
+    }
+
+    const totalLeagueMatches = results.reduce((sum, r) => sum + r.matchesPlayed, 0);
+    const totalLeagueWins = results.reduce((sum, r) => sum + r.wins, 0);
+    const totalLeagueLosses = results.reduce((sum, r) => sum + r.losses, 0);
+    const leagueWinRate = totalLeagueMatches > 0
+      ? Math.round((totalLeagueWins / totalLeagueMatches) * 100)
+      : 0;
+
+    res.json({
+      leagues: results,
+      totalMatches: totalLeagueMatches,
+      totalWins: totalLeagueWins,
+      totalLosses: totalLeagueLosses,
+      winRate: leagueWinRate,
+    });
+  } catch (err) {
+    console.error('[Participants] GET /:id/league-stats error:', err);
+    res.status(500).json({ error: 'Failed to read league stats' });
   }
 });
 

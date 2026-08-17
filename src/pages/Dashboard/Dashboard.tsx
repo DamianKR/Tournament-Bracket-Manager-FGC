@@ -87,7 +87,7 @@ function Dashboard() {
         <div className="dashboard-header">
           <div>
             <h1><i className="fas fa-trophy" /> Tournament Manager</h1>
-            <p className="text-secondary">Manage your double elimination brackets</p>
+            <p className="text-secondary">Create and manage brackets — double elimination, single elimination and group stages supported</p>
           </div>
           <button className="btn-primary" onClick={handleCreateNew}>
             <i className="fas fa-plus" /> New Tournament

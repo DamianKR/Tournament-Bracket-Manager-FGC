@@ -15,7 +15,7 @@ export interface League {
   
   // Formato
   roundsPerOpponent: 1 | 2 | 3;
-  gamesPerMatch: 3 | 5;
+  gamesPerMatch: 3 | 5 | 7 | 9;
   
   // Calendario
   matchesPerPlayerPerPeriod: number;

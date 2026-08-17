@@ -15,7 +15,7 @@ function CreateLeague() {
   const [name, setName] = useState('');
   const [gameId, setGameId] = useState('ssbu');
   const [roundsPerOpponent, setRoundsPerOpponent] = useState<1 | 2 | 3>(2);
-  const [gamesPerMatch, setGamesPerMatch] = useState<3 | 5>(3);
+  const [gamesPerMatch, setGamesPerMatch] = useState<3 | 5 | 7 | 9>(3);
   const [matchesPerPeriod, setMatchesPerPeriod] = useState(2);
   const [periodDays, setPeriodDays] = useState<7 | 14>(7);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
@@ -143,7 +143,7 @@ function CreateLeague() {
           <div className="participants-selector">
             <div className="participants-actions">
               <button className="btn-outline btn-sm" onClick={selectAll}>
-                📋 Add All ({allParticipants.length})
+                <i className="fas fa-users" /> Add All ({allParticipants.length})
               </button>
               <button className="btn-outline btn-sm" onClick={clearAll}>
                 Clear
@@ -198,22 +198,16 @@ function CreateLeague() {
           <div className="form-section">
             <label>Games per match</label>
             <div className="radio-group">
-              <label>
-                <input
-                  type="radio"
-                  checked={gamesPerMatch === 3}
-                  onChange={() => setGamesPerMatch(3)}
-                />
-                Best of 3
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  checked={gamesPerMatch === 5}
-                  onChange={() => setGamesPerMatch(5)}
-                />
-                Best of 5
-              </label>
+              {[3, 5, 7, 9].map((n) => (
+                <label key={n}>
+                  <input
+                    type="radio"
+                    checked={gamesPerMatch === n}
+                    onChange={() => setGamesPerMatch(n as 3 | 5 | 7 | 9)}
+                  />
+                  Best of {n}
+                </label>
+              ))}
             </div>
           </div>
 
@@ -265,7 +259,7 @@ function CreateLeague() {
 
           {estimate && (
             <div className="estimate-box">
-              <div className="estimate-title">📊 Estimated Duration</div>
+              <div className="estimate-title"><i className="fas fa-chart-bar" /> Estimated Duration</div>
               <div className="estimate-stats">
                 <div className="estimate-stat">
                   <span className="estimate-value">{estimate.weeks}</span>
@@ -281,7 +275,7 @@ function CreateLeague() {
                 </div>
               </div>
               <div className="estimate-end">
-                📅 Estimated end: <strong>{new Date(estimate.endDate).toLocaleDateString()}</strong>
+                <i className="fas fa-calendar" /> Estimated end: <strong>{new Date(estimate.endDate).toLocaleDateString()}</strong>
               </div>
             </div>
           )}

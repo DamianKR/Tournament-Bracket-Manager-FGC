@@ -96,16 +96,16 @@ export function getRankColor(rank: string): string {
 
 export function getRankIcon(rank: string): string {
   const icons: Record<string, string> = {
-    Plata:      '🥈',
-    Oro:        '🥇',
-    Platino:    '💎',
-    Diamante:   '💠',
-    Vanquisher: '⚔️',
-    Master:     '👑',
-    Ultimate:   '🔥',
-    Legend:     '⭐',
+    Plata:      'fas fa-medal',
+    Oro:        'fas fa-medal',
+    Platino:    'fas fa-gem',
+    Diamante:   'fas fa-gem',
+    Vanquisher: 'fas fa-shield-alt',
+    Master:     'fas fa-crown',
+    Ultimate:   'fas fa-fire',
+    Legend:     'fas fa-dragon',
   };
-  return icons[rank] ?? '🎮';
+  return icons[rank] ?? 'fas fa-gamepad';
 }
 
 // ── API calls ─────────────────────────────────────────────────────────────

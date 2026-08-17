@@ -300,9 +300,8 @@ function RankingPage() {
                           className={`rk-rank-badge ${entry.displayRank === 'Legend' ? 'rk-rank-badge--legend' : ''}`}
                           style={{ '--rank-color': getRankColor(entry.displayRank) } as React.CSSProperties}
                         >
-                          {entry.displayRank === 'Legend'
-                            ? <i className="fas fa-dragon" />
-                            : getRankIcon(entry.displayRank)} {entry.displayRank}
+                          <i className={entry.displayRank === 'Legend' ? 'fas fa-dragon' : getRankIcon(entry.displayRank)} />
+                          {' '}{entry.displayRank}
                         </span>
                       </td>
                       <td className="rk-col-pts">
@@ -571,7 +570,7 @@ function EloPreview({
   const rank = participant.eloRank ?? 'Diamante';
   return (
     <div className={`rk-elo-preview ${isWinner ? 'winner-preview' : ''}`} onClick={onSetWinner}>
-      <span className="rk-elo-rank-icon">{getRankIcon(rank)}</span>
+      <span className="rk-elo-rank-icon"><i className={getRankIcon(rank)} /></span>
       <div>
         <span className="rk-elo-rank-name" style={{ color: getRankColor(rank) }}>{rank}</span>
         <span className="rk-elo-pts">{pts.toLocaleString()} pts</span>

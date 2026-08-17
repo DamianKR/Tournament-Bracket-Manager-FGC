@@ -55,6 +55,8 @@ app.listen(PORT, () => {
   console.log(`    GET/POST   /api/participants`);
   console.log(`    GET/PUT/DEL /api/participants/:id`);
   console.log(`    POST       /api/participants/:id/stats`);
+  console.log(`    GET        /api/participants/:id/tournaments`);
+  console.log(`    GET        /api/participants/:id/league-stats`);
   console.log(`    GET        /api/ranking`);
   console.log(`    POST       /api/ranking/match`);
   console.log(`    GET/DEL    /api/ranking/matches`);

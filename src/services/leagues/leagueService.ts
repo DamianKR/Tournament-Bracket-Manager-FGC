@@ -64,7 +64,7 @@ export async function createLeague(config: {
   gameId: string;
   participantIds: string[];
   roundsPerOpponent: 1 | 2 | 3;
-  gamesPerMatch: 3 | 5;
+  gamesPerMatch: 3 | 5 | 7 | 9;
   matchesPerPlayerPerPeriod: number;
   periodDays: 7 | 14;
   startDate: string;

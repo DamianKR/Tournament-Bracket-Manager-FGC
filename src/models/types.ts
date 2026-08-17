@@ -130,3 +130,16 @@ export interface PlacementEntry {
   totalParticipants: number;
   date: string;            // tournament updatedAt
 }
+
+export interface LeagueResultEntry {
+  leagueId: string;
+  leagueName: string;
+  rank: number;
+  matchesPlayed: number;
+  wins: number;
+  losses: number;
+  noShows: number;
+  eloChange: number;
+  gamesPerMatch: number;
+  date: string;
+}

@@ -142,7 +142,7 @@ function ParticipantsList({
                     onClick={() => handleStartEdit(participant)}
                     title="Edit name"
                   >
-                    ✏️
+                    <i className="fas fa-pencil-alt" />
                   </button>
                   {onMoveUp && (
                     <button
@@ -151,7 +151,7 @@ function ParticipantsList({
                       disabled={index === 0}
                       title="Move up"
                     >
-                      ⬆️
+                      <i className="fas fa-arrow-up" />
                     </button>
                   )}
                   {onMoveDown && (
@@ -161,7 +161,7 @@ function ParticipantsList({
                       disabled={index === sorted.length - 1}
                       title="Move down"
                     >
-                      ⬇️
+                      <i className="fas fa-arrow-down" />
                     </button>
                   )}
                   <button
@@ -169,7 +169,7 @@ function ParticipantsList({
                     onClick={() => onRemove(participant.id)}
                     title="Remove participant"
                   >
-                    🗑️
+                    <i className="fas fa-trash-alt" />
                   </button>
                 </>
               )}

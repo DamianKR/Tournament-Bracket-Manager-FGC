@@ -181,13 +181,16 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Invalid league configuration' });
     }
     
+    const validGamesPerMatch = [3, 5, 7, 9].includes(gamesPerMatch) ? gamesPerMatch : 3;
+    const validRoundsPerOpponent = [1, 2, 3].includes(roundsPerOpponent) ? roundsPerOpponent : 1;
+    
     const league = {
       id: generateId('league'),
       name,
       gameId,
       participantIds,
-      roundsPerOpponent: roundsPerOpponent || 1,
-      gamesPerMatch: gamesPerMatch || 3,
+      roundsPerOpponent: validRoundsPerOpponent,
+      gamesPerMatch: validGamesPerMatch,
       matchesPerPlayerPerPeriod: matchesPerPlayerPerPeriod || 2,
       periodDays: periodDays || 7,
       startDate: startDate || new Date().toISOString(),

@@ -87,6 +87,21 @@
   background-color: var(--bg-secondary);
 }
 
+.match-row.future {
+  opacity: 0.7;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.match-locked {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 .match-status-icon {
   font-size: 1.2rem;
   flex-shrink: 0;

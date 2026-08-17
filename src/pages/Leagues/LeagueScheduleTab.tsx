@@ -46,7 +46,7 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
             <option value="all">All Weeks</option>
             {weeks.map((w) => (
               <option key={w} value={w}>
-                Week {w}
+                Week {w}{w > league.currentWeek ? ' (future)' : w === league.currentWeek ? ' (current)' : ' (past)'}
               </option>
             ))}
           </select>
@@ -71,11 +71,12 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                 const isCompleted = match.status === 'completed' || match.status === 'no_show';
                 const isNoShow = match.status === 'no_show';
                 const winner = match.winnerId;
+                const isFutureWeek = match.week > league.currentWeek;
 
                 return (
-                  <div key={match.id} className={`match-row ${isCompleted ? 'completed' : 'pending'}`}>
+                  <div key={match.id} className={`match-row ${isCompleted ? 'completed' : isFutureWeek ? 'pending future' : 'pending'}`}>
                     <div className="match-status-icon">
-                      {isCompleted ? '✅' : '⏳'}
+                      {isCompleted ? <i className="fas fa-check" /> : <i className="fas fa-clock" />}
                     </div>
 
                     <div className="match-players">
@@ -109,7 +110,13 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                       </div>
                     )}
 
-                    {!isCompleted && (
+                    {!isCompleted && isFutureWeek && (
+                      <span className="match-locked" title={`Locked until Week ${match.week}`}>
+                        <i className="fas fa-lock" /> Week {match.week}
+                      </span>
+                    )}
+
+                    {!isCompleted && !isFutureWeek && (
                       <button
                         className="btn-primary btn-sm"
                         onClick={() => setSelectedMatch(match)}

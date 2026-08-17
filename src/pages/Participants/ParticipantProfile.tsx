@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { GlobalParticipant, ComputedStats } from '@/models/types';
+import { GlobalParticipant, ComputedStats, LeagueResultEntry } from '@/models/types';
 import {
   getParticipant,
   computeStats,
   updateParticipant,
+  getParticipantLeagueStats,
+  type LeagueStatsSummary,
 } from '@/services/participants/participantService';
 import { loadTournamentsForParticipantAsync } from '@/services/storage/localStorage';
 import { initials, avatarColor } from './ParticipantsPage';
@@ -30,9 +32,14 @@ function ParticipantProfile() {
 
   const [participant, setParticipant] = useState<GlobalParticipant | null>(null);
   const [stats, setStats] = useState<ComputedStats | null>(null);
+  const [leagueStats, setLeagueStats] = useState<LeagueStatsSummary | null>(null);
   const [tab, setTab] = useState<Tab>('overview');
+  const [resultsSubTab, setResultsSubTab] = useState<'tournaments' | 'leagues'>('tournaments');
   const [notFound, setNotFound] = useState(false);
   const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
+
+  const leagueFirstPlaces = leagueStats?.leagues.filter((l) => l.rank === 1).length ?? 0;
+  const leagueTop3 = leagueStats?.leagues.filter((l) => l.rank <= 3).length ?? 0;
 
   // Edit state
   const [editName, setEditName] = useState('');
@@ -46,11 +53,15 @@ function ParticipantProfile() {
     if (!id) return;
     (async () => {
       try {
-        const tournaments = await loadTournamentsForParticipantAsync(id);
+        const [tournaments, ls] = await Promise.all([
+          loadTournamentsForParticipantAsync(id),
+          getParticipantLeagueStats(id),
+        ]);
         const p = getParticipant(id);
         if (!p) { setNotFound(true); return; }
         setParticipant(p);
         setStats(computeStats(p, tournaments));
+        setLeagueStats(ls);
         setEditName(p.name);
         setEditAlias(p.alias ?? '');
         setEditGameId(p.gameId ?? null);
@@ -60,6 +71,7 @@ function ParticipantProfile() {
         if (!p) { setNotFound(true); return; }
         setParticipant(p);
         setStats(computeStats(p));
+        setLeagueStats({ leagues: [], totalMatches: 0, totalWins: 0, totalLosses: 0, winRate: 0 });
       }
 
       // Load ELO ranking entry (fire-and-forget — graceful if server is down)
@@ -177,7 +189,7 @@ function ParticipantProfile() {
                   {/* Center: icon + rank name */}
                   <div className="pew-center">
                     <span className={`pew-icon ${rank === 'Legend' ? 'pew-icon--legend' : ''}`}>
-                      {rank === 'Legend' ? <i className="fas fa-dragon" /> : icon}
+                      <i className={rank === 'Legend' ? 'fas fa-dragon' : icon} />
                     </span>
                     <span className="pew-rank">{rank}</span>
                   </div>
@@ -220,7 +232,7 @@ function ParticipantProfile() {
           {(['overview', 'results', 'edit'] as Tab[]).map((t) => (
             <button key={t} className={`profile-tab ${tab === t ? 'active' : ''}`}
               onClick={() => setTab(t)}>
-              {t === 'overview' ? 'Overview' : t === 'results' ? `Results (${stats.placements.length})` : 'Edit'}
+              {t === 'overview' ? 'Overview' : t === 'results' ? `Results (${stats.placements.length + (leagueStats?.leagues.length ?? 0)})` : 'Edit'}
             </button>
           ))}
         </div>
@@ -259,11 +271,11 @@ function ParticipantProfile() {
               </div>
             </div>
 
-            {/* Win rate bar */}
+            {/* Tournament Match Record */}
             {(stats.matchWins + stats.matchLosses) > 0 && (
               <div className="card profile-winrate-card">
                 <div className="profile-winrate-header">
-                  <span>Match Record</span>
+                  <span><i className="fas fa-trophy" /> Tournament Match Record</span>
                   <span>{stats.matchWins}W – {stats.matchLosses}L</span>
                 </div>
                 <div className="profile-winrate-bar">
@@ -272,37 +284,46 @@ function ParticipantProfile() {
               </div>
             )}
 
-            {/* Recent results preview */}
-            {stats.placements.length > 0 && (
-              <div className="card">
-                <div className="profile-section-header">
-                  <h3>Recent Results</h3>
-                  <button className="btn-link" onClick={() => setTab('results')}>See all →</button>
+            {/* League Stats */}
+            {leagueStats && (
+              <div className="profile-stat-grid">
+                <div className="profile-stat-card profile-stat-card--highlight">
+                  <span className="psc-value">{leagueFirstPlaces}</span>
+                  <span className="psc-label"><i className="fas fa-trophy" /> League Wins</span>
                 </div>
-                <div className="profile-results-list">
-                  {stats.placements.slice(0, 3).map((pl) => (
-                    <div key={pl.tournamentId} className="profile-result-row"
-                      onClick={() => navigate(`/tournament/${pl.tournamentId}`)}>
-                      <span className="prr-medal">{PLACEMENT_MEDAL[pl.position] ?? '🎮'}</span>
-                      <div className="prr-info">
-                        <span className="prr-name">{pl.tournamentName}</span>
-                        <span className="prr-meta text-secondary text-sm">
-                          {pl.totalParticipants} players · {new Date(pl.date).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <span className={`prr-placement ${pl.position === 1 ? 'gold' : pl.position <= 3 ? 'podium' : ''}`}>
-                        {ordinal(pl.position)}
-                      </span>
-                    </div>
-                  ))}
+                <div className="profile-stat-card">
+                  <span className="psc-value">{leagueStats.leagues.length}</span>
+                  <span className="psc-label">Leagues Played</span>
+                </div>
+                <div className="profile-stat-card">
+                  <span className="psc-value">{leagueTop3}</span>
+                  <span className="psc-label">Top 3 in Leagues</span>
+                </div>
+                <div className="profile-stat-card">
+                  <span className="psc-value">{leagueStats.winRate > 0 ? `${leagueStats.winRate}%` : '—'}</span>
+                  <span className="psc-label">League Match Win Rate</span>
+                </div>
+                <div className="profile-stat-card">
+                  <span className="psc-value">{leagueStats.totalWins}</span>
+                  <span className="psc-label">League Match Wins</span>
+                </div>
+                <div className="profile-stat-card">
+                  <span className="psc-value">{leagueStats.totalLosses}</span>
+                  <span className="psc-label">League Match Losses</span>
                 </div>
               </div>
             )}
 
-            {stats.placements.length === 0 && (
-              <div className="card profile-no-results">
-                <p className="text-secondary">No tournament results yet.</p>
-                <p className="text-secondary text-sm">Add this player to a tournament to start tracking results.</p>
+            {/* League Match Record */}
+            {leagueStats && (
+              <div className="card profile-winrate-card profile-winrate-card--league">
+                <div className="profile-winrate-header">
+                  <span><i className="fas fa-trophy" /> League Match Record</span>
+                  <span>{leagueStats.totalWins}W – {leagueStats.totalLosses}L</span>
+                </div>
+                <div className="profile-winrate-bar">
+                  <div className="profile-winrate-fill" style={{ width: `${leagueStats.winRate}%` }} />
+                </div>
               </div>
             )}
           </>
@@ -310,28 +331,76 @@ function ParticipantProfile() {
 
         {/* ── Results tab ── */}
         {tab === 'results' && (
-          <div className="card">
-            <h3 className="mb-3">Tournament Results</h3>
-            {stats.placements.length === 0 ? (
-              <p className="text-secondary">No results yet.</p>
-            ) : (
-              <div className="profile-results-list">
-                {stats.placements.map((pl) => (
-                  <div key={pl.tournamentId} className="profile-result-row"
-                    onClick={() => navigate(`/tournament/${pl.tournamentId}`)}>
-                    <span className="prr-medal">{PLACEMENT_MEDAL[pl.position] ?? '🎮'}</span>
-                    <div className="prr-info">
-                      <span className="prr-name">{pl.tournamentName}</span>
-                      <span className="prr-meta text-secondary text-sm">
-                        {pl.totalParticipants} players · {new Date(pl.date).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <span className={`prr-placement ${pl.position === 1 ? 'gold' : pl.position <= 3 ? 'podium' : ''}`}>
-                      {ordinal(pl.position)}
-                    </span>
+          <div className="card results-tab">
+            <div className="results-subtabs">
+              <button
+                className={`results-subtab ${resultsSubTab === 'tournaments' ? 'active' : ''}`}
+                onClick={() => setResultsSubTab('tournaments')}
+              >
+                <i className="fas fa-trophy" /> Tournaments ({stats.placements.length})
+              </button>
+              <button
+                className={`results-subtab ${resultsSubTab === 'leagues' ? 'active' : ''}`}
+                onClick={() => setResultsSubTab('leagues')}
+              >
+                <i className="fas fa-trophy" /> Leagues ({leagueStats?.leagues.length ?? 0})
+              </button>
+            </div>
+
+            {resultsSubTab === 'tournaments' && (
+              <>
+                <h3 className="mb-3">Tournament Results</h3>
+                {stats.placements.length === 0 ? (
+                  <p className="text-secondary">No tournament results yet.</p>
+                ) : (
+                  <div className="profile-results-list">
+                    {stats.placements.map((pl) => (
+                      <div key={pl.tournamentId} className="profile-result-row"
+                        onClick={() => navigate(`/tournament/${pl.tournamentId}`)}>
+                        <span className="prr-medal">{PLACEMENT_MEDAL[pl.position] ?? <i className="fas fa-gamepad" />}</span>
+                        <div className="prr-info">
+                          <span className="prr-name">{pl.tournamentName}</span>
+                          <span className="prr-meta text-secondary text-sm">
+                            {pl.totalParticipants} players · {new Date(pl.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <span className={`prr-placement ${pl.position === 1 ? 'gold' : pl.position <= 3 ? 'podium' : ''}`}>
+                          {ordinal(pl.position)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                )}
+              </>
+            )}
+
+            {resultsSubTab === 'leagues' && (
+              <>
+                <h3 className="mb-3">League Results</h3>
+                {(leagueStats?.leagues.length ?? 0) === 0 ? (
+                  <p className="text-secondary">No league results yet.</p>
+                ) : (
+                  <div className="profile-results-list">
+                    {leagueStats!.leagues.map((pl: LeagueResultEntry) => (
+                      <div key={pl.leagueId} className="profile-result-row"
+                        onClick={() => navigate(`/leagues/${pl.leagueId}`)}>
+                        <span className={`prr-medal prr-rank rank-${pl.rank}`}>
+                          {pl.rank <= 3 ? PLACEMENT_MEDAL[pl.rank] : pl.rank}
+                        </span>
+                        <div className="prr-info">
+                          <span className="prr-name">{pl.leagueName}</span>
+                          <span className="prr-meta text-secondary text-sm">
+                            {pl.wins}W – {pl.losses}L · {pl.matchesPlayed} matches · ELO {pl.eloChange >= 0 ? '+' : ''}{pl.eloChange}
+                          </span>
+                        </div>
+                        <span className={`prr-placement ${pl.rank === 1 ? 'gold' : pl.rank <= 3 ? 'podium' : ''}`}>
+                          {ordinal(pl.rank)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

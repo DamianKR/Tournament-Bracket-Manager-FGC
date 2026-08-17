@@ -7,7 +7,7 @@
  * even if tournament results are edited after the fact.
  */
 
-import { GlobalParticipant, Tournament, ComputedStats, PlacementEntry } from '@/models/types';
+import { GlobalParticipant, Tournament, ComputedStats, PlacementEntry, LeagueResultEntry } from '@/models/types';
 import {
   loadGlobalParticipants,
   loadGlobalParticipantsAsync,
@@ -263,4 +263,27 @@ export function computeAllStats(
   }
 
   return result;
+}
+
+// ── League stats ─────────────────────────────────────────────────────────
+
+const LOCAL_SERVER = 'http://localhost:3001';
+
+export interface LeagueStatsSummary {
+  leagues: LeagueResultEntry[];
+  totalMatches: number;
+  totalWins: number;
+  totalLosses: number;
+  winRate: number;
+}
+
+export async function getParticipantLeagueStats(participantId: string): Promise<LeagueStatsSummary> {
+  try {
+    const res = await fetch(`${LOCAL_SERVER}/api/participants/${participantId}/league-stats`);
+    if (!res.ok) throw new Error('Failed to fetch league stats');
+    return await res.json();
+  } catch (err) {
+    console.error('[ParticipantService] getParticipantLeagueStats error:', err);
+    return { leagues: [], totalMatches: 0, totalWins: 0, totalLosses: 0, winRate: 0 };
+  }
 }

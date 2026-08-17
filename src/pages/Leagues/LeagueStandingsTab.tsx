@@ -27,7 +27,7 @@ function LeagueStandingsTab({ standings, participants, playoffsEnabled }: League
         <div className="standings-header">
           <h3>Standings</h3>
           {playoffsEnabled && (
-            <span className="playoffs-note">🏆 Top 8 qualify for playoffs</span>
+            <span className="playoffs-note"><i className="fas fa-trophy" /> Top 8 qualify for playoffs</span>
           )}
         </div>
 
@@ -66,7 +66,7 @@ function LeagueStandingsTab({ standings, participants, playoffsEnabled }: League
                         <span className="player-name">{getParticipantName(s.participantId)}</span>
                         {s.noShows > 0 && (
                           <span className="no-show-badge" title={`${s.noShows} no-shows`}>
-                            ⚠️ {s.noShows}
+                            <i className="fas fa-exclamation-triangle" /> {s.noShows}
                           </span>
                         )}
                       </div>

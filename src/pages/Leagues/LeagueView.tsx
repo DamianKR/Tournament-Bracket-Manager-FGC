@@ -11,9 +11,10 @@ import { getAllParticipants } from '@/services/participants/participantService';
 import LeagueStandingsTab from './LeagueStandingsTab';
 import LeagueScheduleTab from './LeagueScheduleTab';
 import LeagueMyMatchesTab from './LeagueMyMatchesTab';
+import LeagueOptionsTab from './LeagueOptionsTab';
 import './LeagueView.css';
 
-type Tab = 'standings' | 'schedule' | 'my-matches';
+type Tab = 'standings' | 'schedule' | 'my-matches' | 'options';
 
 function LeagueView() {
   const { id } = useParams<{ id: string }>();
@@ -93,7 +94,7 @@ function LeagueView() {
             ← Leagues
           </button>
           <div className="league-header-content">
-            <h1 className="league-title">🏆 {league.name}</h1>
+            <h1 className="league-title"><i className="fas fa-trophy" /> {league.name}</h1>
             <div className="league-meta">
               <span>Week {league.currentWeek}</span>
               <span>•</span>
@@ -129,6 +130,12 @@ function LeagueView() {
           >
             My Matches
           </button>
+          <button
+            className={`league-tab ${tab === 'options' ? 'active' : ''}`}
+            onClick={() => setTab('options')}
+          >
+            Options
+          </button>
         </div>
       </div>
 
@@ -158,6 +165,7 @@ function LeagueView() {
             onMatchUpdated={loadData}
           />
         )}
+        {tab === 'options' && <LeagueOptionsTab league={league} />}
       </div>
     </div>
   );

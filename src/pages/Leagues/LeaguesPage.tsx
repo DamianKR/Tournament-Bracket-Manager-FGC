@@ -35,25 +35,28 @@ function LeaguesPage() {
     <div className="leagues-page">
       <div className="container">
         <div className="leagues-header">
-          <h1>🏆 Leagues</h1>
+          <div>
+            <h1><i className="fas fa-trophy" /> Leagues</h1>
+            <p className="text-secondary">Seasons of round-robin matches spread across multiple weeks</p>
+          </div>
           <button className="btn-primary" onClick={() => navigate('/leagues/create')}>
-            + Create League
+            <i className="fas fa-plus" /> New League
           </button>
         </div>
 
         {leagues.length === 0 ? (
           <div className="empty-state card">
             <h3>No leagues yet</h3>
-            <p className="text-secondary">Create your first league to start tracking matches and rankings.</p>
+            <p className="text-secondary">Create a round-robin league and track weekly matches and ELO standings.</p>
             <button className="btn-primary mt-2" onClick={() => navigate('/leagues/create')}>
-              + Create League
+              <i className="fas fa-plus" /> New League
             </button>
           </div>
         ) : (
           <div className="leagues-grid">
             {leagues.map((league) => {
               const game = getGame(league.gameId);
-              const statusColor = league.status === 'active' ? 'var(--primary-color)' : 'var(--text-tertiary)';
+              const statusClass = league.status === 'active' ? 'status-active' : 'status-completed';
 
               return (
                 <div
@@ -63,29 +66,36 @@ function LeaguesPage() {
                 >
                   <div className="league-card-header">
                     <h3 className="league-card-title">{league.name}</h3>
-                    <span className="league-card-status" style={{ color: statusColor }}>
-                      {league.status === 'active' ? '● Active' : '○ Completed'}
+                    <span className={`league-card-status ${statusClass}`}>
+                      {league.status === 'active' ? 'Active' : 'Completed'}
                     </span>
                   </div>
 
                   <div className="league-card-meta">
-                    <div className="league-card-meta-item">
-                      <span className="meta-label">Game</span>
-                      <span className="meta-value">{game?.shortName || league.gameId}</span>
+                    <div className="info-row">
+                      <span>Game</span>
+                      <span>{game?.shortName || league.gameId}</span>
                     </div>
-                    <div className="league-card-meta-item">
-                      <span className="meta-label">Players</span>
-                      <span className="meta-value">{league.participantIds.length}</span>
+                    <div className="info-row">
+                      <span>Players</span>
+                      <span>{league.participantIds.length}</span>
                     </div>
-                    <div className="league-card-meta-item">
-                      <span className="meta-label">Week</span>
-                      <span className="meta-value">{league.currentWeek}</span>
+                    <div className="info-row">
+                      <span>Week</span>
+                      <span>{league.currentWeek}</span>
+                    </div>
+                    <div className="info-row">
+                      <span>Format</span>
+                      <span>Best of {league.gamesPerMatch}</span>
                     </div>
                   </div>
 
                   <div className="league-card-footer">
                     <span className="league-card-date">
-                      Started {new Date(league.startDate).toLocaleDateString()}
+                      <i className="fas fa-calendar" /> Started {new Date(league.startDate).toLocaleDateString()}
+                    </span>
+                    <span className="league-card-date">
+                      <i className="fas fa-sync" /> Week {league.currentWeek}
                     </span>
                   </div>
                 </div>

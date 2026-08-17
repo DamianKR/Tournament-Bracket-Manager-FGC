@@ -25,11 +25,11 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
   const p1Name = p1 ? (p1.alias?.trim() || p1.name) : 'Unknown';
   const p2Name = p2 ? (p2.alias?.trim() || p2.name) : 'Unknown';
 
-  const maxGames = Math.ceil(league.gamesPerMatch / 2);
+  const winScore = Math.ceil(league.gamesPerMatch / 2);
 
   async function handleSubmit() {
-    if (!isNoShow && (score1 < maxGames && score2 < maxGames)) {
-      setError(`One player must win ${maxGames} games (Best of ${league.gamesPerMatch})`);
+    if (!isNoShow && (score1 < winScore && score2 < winScore)) {
+      setError(`One player must win ${winScore} games (Best of ${league.gamesPerMatch})`);
       return;
     }
 
@@ -56,15 +56,20 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
   function handleScoreChange(player: 1 | 2, value: number) {
     if (player === 1) {
       setScore1(value);
-      if (value === maxGames) {
-        setScore2(Math.min(score2, maxGames - 1));
+      if (value === winScore) {
+        setScore2(Math.min(score2, winScore - 1));
         setWinnerId(match.participant1Id);
+      } else if (score2 === winScore && value > score2) {
+        // If p2 was already at winning score, p1 can't pass it
+        setScore1(Math.min(value, score2 - 1));
       }
     } else {
       setScore2(value);
-      if (value === maxGames) {
-        setScore1(Math.min(score1, maxGames - 1));
+      if (value === winScore) {
+        setScore1(Math.min(score1, winScore - 1));
         setWinnerId(match.participant2Id);
+      } else if (score1 === winScore && value > score1) {
+        setScore2(Math.min(value, score1 - 1));
       }
     }
   }
@@ -157,7 +162,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
                   <div className="score-input-group">
                     <span className="score-player-name">{p1Name}</span>
                     <select value={score1} onChange={(e) => handleScoreChange(1, Number(e.target.value))}>
-                      {Array.from({ length: maxGames + 1 }, (_, i) => (
+                      {Array.from({ length: winScore + 1 }, (_, i) => (
                         <option key={i} value={i}>{i}</option>
                       ))}
                     </select>
@@ -166,7 +171,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
                   <div className="score-input-group">
                     <span className="score-player-name">{p2Name}</span>
                     <select value={score2} onChange={(e) => handleScoreChange(2, Number(e.target.value))}>
-                      {Array.from({ length: maxGames + 1 }, (_, i) => (
+                      {Array.from({ length: winScore + 1 }, (_, i) => (
                         <option key={i} value={i}>{i}</option>
                       ))}
                     </select>
