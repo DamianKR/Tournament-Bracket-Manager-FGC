@@ -1,0 +1,149 @@
+.standings-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.standings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.standings-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.playoffs-note {
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.standings-table-wrapper {
+  overflow-x: auto;
+}
+
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.standings-table thead {
+  background-color: var(--bg-tertiary);
+}
+
+.standings-table th {
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.standings-table td {
+  padding: 0.875rem 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.standing-row {
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.standing-row:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.standing-row.playoff-qualified {
+  background-color: rgba(139, 92, 246, 0.05);
+}
+
+.col-rank {
+  width: 60px;
+  text-align: center;
+}
+
+.col-player {
+  min-width: 180px;
+}
+
+.col-stat {
+  width: 80px;
+  text-align: center;
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.rank-1, .rank-2, .rank-3 {
+  font-size: 1.5rem;
+}
+
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.no-show-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-success {
+  color: #10b981;
+}
+
+.text-danger {
+  color: #ef4444;
+}
+
+.empty-standings {
+  padding: 3rem;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .standings-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .col-player {
+    min-width: 120px;
+  }
+  
+  .col-stat {
+    width: 60px;
+  }
+}

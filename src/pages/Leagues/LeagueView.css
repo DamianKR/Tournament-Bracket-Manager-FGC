@@ -1,0 +1,128 @@
+.league-view-page {
+  min-height: 100vh;
+  background-color: var(--bg-secondary);
+}
+
+.loading-state {
+  padding: 4rem 0;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* Header */
+.league-header {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #0f0a1a 100%);
+  border-bottom: 1px solid var(--primary-mid);
+  padding: 1.5rem 0;
+}
+
+.league-back-btn {
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  transition: all 0.15s;
+}
+
+.league-back-btn:hover {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.8);
+}
+
+.league-header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.league-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+}
+
+.league-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.league-progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.league-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), #818cf8);
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+/* Tabs */
+.league-tabs-bar {
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 56px;
+  z-index: 10;
+}
+
+.league-tabs {
+  display: flex;
+  gap: 0;
+}
+
+.league-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.league-tab:hover {
+  color: var(--text-primary);
+}
+
+.league-tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Content */
+.league-content {
+  padding: 2rem 0;
+}
+
+@media (max-width: 640px) {
+  .league-title {
+    font-size: 1.5rem;
+  }
+  
+  .league-meta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}

@@ -19,6 +19,7 @@ import cors from 'cors';
 import tournamentsRouter from './server/routes/tournaments.js';
 import participantsRouter from './server/routes/participants.js';
 import rankingRouter from './server/routes/ranking.js';
+import leaguesRouter from './server/routes/leagues.js';
 
 const PORT = 3001;
 
@@ -35,6 +36,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/tournaments', tournamentsRouter);
 app.use('/api/participants', participantsRouter);
 app.use('/api/ranking', rankingRouter);
+app.use('/api/leagues', leaguesRouter);
 
 // ── 404 fallback ────────────────────────────────────────────────────────
 app.use((_req, res) => {
@@ -56,5 +58,10 @@ app.listen(PORT, () => {
   console.log(`    GET        /api/ranking`);
   console.log(`    POST       /api/ranking/match`);
   console.log(`    GET/DEL    /api/ranking/matches`);
+  console.log(`    GET/POST   /api/leagues`);
+  console.log(`    GET/DEL    /api/leagues/:id`);
+  console.log(`    GET        /api/leagues/:id/matches`);
+  console.log(`    GET        /api/leagues/:id/standings`);
+  console.log(`    POST       /api/leagues/:id/matches/:matchId/result`);
   console.log('');
 });

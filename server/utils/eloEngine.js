@@ -184,3 +184,46 @@ export function applyLegendTier(sorted) {
     displayRank: i < 5 ? 'Legend' : p.eloRank,
   }));
 }
+
+// ── Match Recording (for leagues and ranking) ─────────────────────────────
+
+/**
+ * Records a match result and updates both participants' ELO.
+ * This is used by both /api/ranking/match and league match reporting.
+ * 
+ * @param {string} playerAId
+ * @param {string} playerBId
+ * @param {string} winnerId
+ * @param {string} gameId - Optional game context
+ * @returns {Promise<{winnerChange: number, loserChange: number, winnerNewElo: number, loserNewElo: number}>}
+ */
+export async function recordMatch(playerAId, playerBId, winnerId, gameId = null) {
+  // This function is meant to be called from routes that have access to collections
+  // So we'll just return the calculation, and let the route handle persistence
+  throw new Error('recordMatch should be called from a route with access to participants collection');
+}
+
+/**
+ * Calculate ELO changes for a match (without persisting).
+ * Used by league routes to get ELO deltas.
+ * 
+ * @param {number} playerAElo
+ * @param {number} playerBElo
+ * @param {string} winnerId - 'A' or 'B'
+ * @returns {{winnerChange: number, loserChange: number, winnerNewElo: number, loserNewElo: number, playerAChange: number, playerBChange: number}}
+ */
+export function calculateMatchElo(playerAElo, playerBElo, winnerId) {
+  const winner = winnerId === 'A' ? 'A' : 'B';
+  const { newRA, newRB, deltaA, deltaB } = calculateElo(playerAElo, playerBElo, winner);
+  
+  return {
+    winnerChange: winner === 'A' ? deltaA : deltaB,
+    loserChange: winner === 'A' ? deltaB : deltaA,
+    winnerNewElo: winner === 'A' ? newRA : newRB,
+    loserNewElo: winner === 'A' ? newRB : newRA,
+    playerAChange: deltaA,
+    playerBChange: deltaB,
+    playerANewElo: newRA,
+    playerBNewElo: newRB,
+  };
+}

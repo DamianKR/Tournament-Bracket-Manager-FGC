@@ -20,10 +20,16 @@ function Header() {
 
         <nav className="header-nav">
           <button
-            className={`header-nav-item ${isActive('/') && !isActive('/participants') ? 'active' : ''}`}
+            className={`header-nav-item ${isActive('/') && !isActive('/participants') && !isActive('/leagues') ? 'active' : ''}`}
             onClick={() => navigate('/')}
           >
             Tournaments
+          </button>
+          <button
+            className={`header-nav-item ${isActive('/leagues') ? 'active' : ''}`}
+            onClick={() => navigate('/leagues')}
+          >
+            Leagues
           </button>
           <button
             className={`header-nav-item ${isActive('/participants') ? 'active' : ''}`}

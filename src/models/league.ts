@@ -1,0 +1,94 @@
+/**
+ * League System Types
+ * 
+ * Leagues use the existing ranking engine for ELO calculations.
+ * Each league match is processed through POST /api/ranking/match.
+ */
+
+export interface League {
+  id: string;
+  name: string;
+  gameId: string;
+  
+  // Participantes
+  participantIds: string[]; // GlobalParticipant IDs
+  
+  // Formato
+  roundsPerOpponent: 1 | 2 | 3;
+  gamesPerMatch: 3 | 5;
+  
+  // Calendario
+  matchesPerPlayerPerPeriod: number;
+  periodDays: 7 | 14;
+  startDate: string;
+  
+  // No-shows
+  maxNoShowsBeforeKick: number;
+  
+  // Playoffs
+  playoffsEnabled: boolean;
+  playoffsEloMultiplier: number;
+  
+  // Estado
+  status: 'draft' | 'active' | 'completed';
+  currentWeek: number;
+  
+  // Metadata
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LeagueMatch {
+  id: string;
+  leagueId: string;
+  
+  // Jornada
+  round: number;
+  week: number;
+  
+  // Participantes
+  participant1Id: string;
+  participant2Id: string;
+  
+  // Estado
+  status: 'scheduled' | 'completed' | 'no_show';
+  
+  // Resultado
+  winnerId?: string;
+  score?: string; // "2-1", "2-0", etc.
+  noShowParticipantId?: string;
+  
+  // ELO changes (copiados del ranking engine después de procesar)
+  participant1EloChange?: number;
+  participant2EloChange?: number;
+  
+  // Fechas
+  scheduledDate?: string;
+  completedDate?: string;
+}
+
+export interface LeagueStanding {
+  participantId: string;
+  rank: number;
+  
+  matchesPlayed: number;
+  wins: number;
+  losses: number;
+  noShows: number;
+  
+  currentElo: number;
+  eloChange: number; // Cambio total desde el inicio de la liga
+  
+  // Para desempate
+  headToHead: Record<string, 'W' | 'L'>; // vs otros participantes
+}
+
+export interface LeagueStats {
+  totalMatches: number;
+  completedMatches: number;
+  pendingMatches: number;
+  noShowMatches: number;
+  
+  estimatedWeeks: number;
+  estimatedEndDate: string;
+}

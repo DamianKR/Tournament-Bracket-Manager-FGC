@@ -1,5 +1,8 @@
 // Core data models for the tournament system
 
+// Re-export league types
+export type { League, LeagueMatch, LeagueStanding, LeagueStats } from './league';
+
 export type TournamentStatus = 'setup' | 'in_progress' | 'completed';
 export type TournamentMode = 'single_elimination' | 'double_elimination';
 export type BracketType = 'winner' | 'loser' | 'grand_final';

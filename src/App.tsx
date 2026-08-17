@@ -6,6 +6,9 @@ import TournamentView from './pages/Tournament/TournamentView';
 import ParticipantsPage from './pages/Participants/ParticipantsPage';
 import ParticipantProfile from './pages/Participants/ParticipantProfile';
 import RankingPage from './pages/Ranking/RankingPage';
+import LeaguesPage from './pages/Leagues/LeaguesPage';
+import CreateLeague from './pages/Leagues/CreateLeague';
+import LeagueView from './pages/Leagues/LeagueView';
 
 function App() {
   return (
@@ -19,6 +22,9 @@ function App() {
         <Route path="/participants" element={<ParticipantsPage />} />
         <Route path="/participants/:id" element={<ParticipantProfile />} />
         <Route path="/ranking" element={<RankingPage />} />
+        <Route path="/leagues" element={<LeaguesPage />} />
+        <Route path="/leagues/create" element={<CreateLeague />} />
+        <Route path="/leagues/:id" element={<LeagueView />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
