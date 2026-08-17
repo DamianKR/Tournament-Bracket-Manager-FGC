@@ -9,6 +9,7 @@ import {
 import { initials, avatarColor } from './ParticipantsPage';
 import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import { getCharacter, getGame } from '@/data/games';
+import { getCharacterImageUrl } from '@/utils/characterImage';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
 import './ParticipantProfile.css';
 
@@ -100,6 +101,7 @@ function ParticipantProfile() {
   const color = avatarColor(participant.name);
   const bannerBg = `radial-gradient(ellipse at 15% 0%, color-mix(in srgb, ${color} 38%, transparent) 0%, transparent 55%),
                     linear-gradient(135deg, var(--primary-void) 0%, var(--primary-night) 45%, var(--primary-void) 100%)`;
+  const characterImg = getCharacterImageUrl(participant.gameId, participant.mainCharacterId);
 
   return (
     <div className="profile-page">
@@ -190,6 +192,15 @@ function ParticipantProfile() {
             })()}
           </div>{/* profile-banner-body */}
         </div>
+        {characterImg && (
+          <div className="profile-character-render" aria-hidden="true">
+            <img
+              src={characterImg}
+              alt={getCharacter(participant.gameId ?? '', participant.mainCharacterId ?? '')?.name ?? 'main'}
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+            />
+          </div>
+        )}
       </div>
 
       {/* ── Tabs ── */}

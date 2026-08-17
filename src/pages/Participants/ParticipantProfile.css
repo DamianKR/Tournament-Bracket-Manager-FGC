@@ -11,14 +11,42 @@
 /* ── Banner ──────────────────────────────────────────────────────────── */
 
 .profile-banner {
+  position: relative;
   padding: 1.5rem 0 1.5rem;
   border-bottom: 1px solid var(--border-color);
+  overflow: hidden;
 }
 
 .profile-banner-inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+.profile-character-render {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  max-width: 45%;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.6) 20%, black 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.6) 20%, black 100%);
+}
+
+.profile-character-render img {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: right bottom;
+}
+
+@media (max-width: 640px) {
+  .profile-character-render { display: none; }
 }
 
 /* Row that holds identity (left) + ELO widget (right) */

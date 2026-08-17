@@ -36,6 +36,7 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.3",
     "concurrently": "^9.1.2",
+    "smash-ultimate-assets": "^0.1.1",
     "typescript": "^6.0.3"
   }
 }

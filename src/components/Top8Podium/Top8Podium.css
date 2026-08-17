@@ -10,6 +10,7 @@
 
 .top8-header {
   display: flex;
+  justify-content: space-between;
   align-items: baseline;
   gap: 1rem;
   margin-bottom: 1.25rem;
@@ -28,8 +29,8 @@
 }
 
 .top8-event {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+  font-size: 1.85rem;
+  color: var(--text-tertiary);
   font-family: 'Rajdhani', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -39,11 +40,13 @@
 .top8-body {
   display: flex;
   gap: 1rem;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .top8-champion {
   flex-shrink: 0;
+  display: flex;
+  min-height: 100%;
 }
 
 .top8-grid {
@@ -64,7 +67,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   padding: 0.6rem 0.5rem 0.5rem;
   border-radius: var(--border-radius);
   border: 2px solid var(--primary-mid);
@@ -80,12 +83,13 @@
 
 /* Champion card is bigger */
 .champion-card {
-  min-width: 140px;
-  width: 140px;
+  min-width: 280px;
+  min-height: 100%;
   padding: 1rem 0.75rem 0.75rem;
   border-color: #f0c040;
   background: rgba(240, 192, 64, 0.08);
   box-shadow: 0 0 18px rgba(240, 192, 64, 0.25);
+  flex: 1;
 }
 
 /* ── Rank badge (number in corner) ─────────────────────────────────────── */
@@ -94,23 +98,24 @@
   top: 4px;
   left: 6px;
   font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
   font-weight: 900;
   line-height: 1;
   border-radius: 3px;
   padding: 1px 4px;
 }
 
-.rank-1 { font-size: 1.4rem; color: #f0c040; text-shadow: 0 0 8px rgba(240,192,64,0.6); }
-.rank-2 { font-size: 1rem;   color: #c0c8d0; }
-.rank-3 { font-size: 1rem;   color: #cd7f32; }
-.rank-4 { font-size: 1rem;   color: #a78bfa; }
-.rank-5 { font-size: 0.9rem; color: #7c3aed; }
-.rank-7 { font-size: 0.9rem; color: #6d28d9; }
+.rank-1 { font-size: 2.4rem; color: #f0c040; text-shadow: 0 0 8px rgba(240,192,64,0.6); }
+.rank-2 { font-size: 2rem;   color: #c0c8d0; }
+.rank-3 { font-size: 2rem;   color: #cd7f32; }
+.rank-4 { font-size: 2rem;   color: #a78bfa; }
+.rank-5 { font-size: 1.5rem; color: #7c3aed; }
+.rank-7 { font-size: 1.5rem; color: #6d28d9; }
 
 /* ── Avatar ─────────────────────────────────────────────────────────────── */
 .top8-avatar {
-  width: 54px;
-  height: 54px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   background: rgba(109, 40, 217, 0.2);
   border: 2px solid var(--primary-mid);
@@ -123,8 +128,8 @@
 }
 
 .champion-avatar {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   font-size: 2rem;
   color: #f0c040;
   border-color: #f0c040;
@@ -144,7 +149,7 @@
 .top8-player-name {
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 1.85rem;
   color: #fff;
   text-align: center;
   white-space: nowrap;
@@ -154,7 +159,7 @@
 }
 
 .champion-card .top8-player-name {
-  font-size: 1rem;
+  font-size: 2rem;
   font-family: 'Orbitron', sans-serif;
 }
 

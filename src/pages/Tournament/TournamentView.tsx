@@ -131,6 +131,13 @@ function TournamentView() {
           </div>
         )}
 
+        {tournament.status === 'completed' && (
+          <Top8Podium
+            participants={tournament.participants}
+            tournamentName={tournament.name}
+          />
+        )}
+
         {tournament.status === 'setup' ? (
           <div className="setup-notice card">
             <h3>Tournament Not Started</h3>
@@ -156,12 +163,6 @@ function TournamentView() {
             {viewMode === 'participants' && (
               <div className="participants-view">
                 <h2>Participants</h2>
-                {tournament.status === 'completed' && (
-                  <Top8Podium
-                    participants={tournament.participants}
-                    tournamentName={tournament.name}
-                  />
-                )}
                 <ParticipantsList
                   participants={tournament.participants}
                   onRemove={() => {}}
