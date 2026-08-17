@@ -135,6 +135,7 @@ function TournamentView() {
           <Top8Podium
             participants={tournament.participants}
             tournamentName={tournament.name}
+            gameId={tournament.gameId ?? undefined}
           />
         )}
 

@@ -7,22 +7,23 @@ import './Top8Podium.css';
 interface Top8PodiumProps {
   participants: Participant[];
   tournamentName: string;
+  gameId?: string;
 }
 
-function getGlobal(p: Participant, globals: Map<string, GlobalParticipant>): GlobalParticipant | null {
-  if (!p.globalParticipantId) return null;
-  return globals.get(p.globalParticipantId) ?? null;
+function getGlobal(p: Participant, globals: Map<string, GlobalParticipant>, names: Map<string, GlobalParticipant>): GlobalParticipant | null {
+  if (p.globalParticipantId) return globals.get(p.globalParticipantId) ?? null;
+  return names.get(p.name.toLowerCase()) ?? null;
 }
 
-function getDisplayName(p: Participant, globals: Map<string, GlobalParticipant>): string {
-  const g = getGlobal(p, globals);
+function getDisplayName(p: Participant, globals: Map<string, GlobalParticipant>, names: Map<string, GlobalParticipant>): string {
+  const g = getGlobal(p, globals, names);
   if (g) return g.alias?.trim() || g.name;
   return p.alias?.trim() || p.name;
 }
 
-function Avatar({ global, fallbackIcon, large = false }: { global: GlobalParticipant | null; fallbackIcon: string; large?: boolean }) {
+function Avatar({ global, gameId, fallbackIcon, large = false }: { global: GlobalParticipant | null; gameId?: string; fallbackIcon: string; large?: boolean }) {
   const [broken, setBroken] = useState(false);
-  const imgUrl = global ? getCharacterImageUrl(global.gameId, global.mainCharacterId) : null;
+  const imgUrl = getCharacterImageUrl(global?.gameId ?? gameId, global?.mainCharacterId ?? null);
   const icon = <i className={`fas ${fallbackIcon}`} />;
   return (
     <div className={`top8-avatar ${large ? 'champion-avatar' : ''}`}>
@@ -33,11 +34,15 @@ function Avatar({ global, fallbackIcon, large = false }: { global: GlobalPartici
   );
 }
 
-function Top8Podium({ participants, tournamentName }: Top8PodiumProps) {
-  const globals = useMemo(() => {
-    const map = new Map<string, GlobalParticipant>();
-    loadGlobalParticipants().forEach(g => map.set(g.id, g));
-    return map;
+function Top8Podium({ participants, tournamentName, gameId }: Top8PodiumProps) {
+  const { globals, names } = useMemo(() => {
+    const globals = new Map<string, GlobalParticipant>();
+    const names = new Map<string, GlobalParticipant>();
+    loadGlobalParticipants().forEach(g => {
+      globals.set(g.id, g);
+      names.set(g.name.toLowerCase(), g);
+    });
+    return { globals, names };
   }, []);
 
   // Positions 1–8 grouped by their finalPosition value (ties share same slot).
@@ -80,8 +85,8 @@ function Top8Podium({ participants, tournamentName }: Top8PodiumProps) {
           <div className="top8-champion">
             <div className="top8-card champion-card">
               <div className="top8-rank-badge rank-1">1</div>
-              <Avatar global={getGlobal(champion.p, globals)} fallbackIcon="fa-crown" large={true} />
-              <div className="top8-player-name">{getDisplayName(champion.p, globals)}</div>
+              <Avatar global={getGlobal(champion.p, globals, names)} gameId={gameId} fallbackIcon="fa-crown" large={true} />
+              <div className="top8-player-name">{getDisplayName(champion.p, globals, names)}</div>
             </div>
           </div>
         )}
@@ -92,8 +97,8 @@ function Top8Podium({ participants, tournamentName }: Top8PodiumProps) {
             {row1.map(({ pos, p }) => (
               <div key={p.id} className={`top8-card rank-${pos}-card`}>
                 <div className={`top8-rank-badge rank-${pos}`}>{pos}</div>
-                <Avatar global={getGlobal(p, globals)} fallbackIcon="fa-gamepad" />
-                <div className="top8-player-name">{getDisplayName(p, globals)}</div>
+                <Avatar global={getGlobal(p, globals, names)} gameId={gameId} fallbackIcon="fa-gamepad" />
+                <div className="top8-player-name">{getDisplayName(p, globals, names)}</div>
               </div>
             ))}
           </div>
@@ -102,8 +107,8 @@ function Top8Podium({ participants, tournamentName }: Top8PodiumProps) {
               {row2.map(({ pos, p }) => (
                 <div key={p.id} className={`top8-card rank-${pos}-card`}>
                   <div className={`top8-rank-badge rank-${pos}`}>{pos}</div>
-                  <Avatar global={getGlobal(p, globals)} fallbackIcon="fa-gamepad" />
-                  <div className="top8-player-name">{getDisplayName(p, globals)}</div>
+                  <Avatar global={getGlobal(p, globals, names)} gameId={gameId} fallbackIcon="fa-gamepad" />
+                  <div className="top8-player-name">{getDisplayName(p, globals, names)}</div>
                 </div>
               ))}
             </div>

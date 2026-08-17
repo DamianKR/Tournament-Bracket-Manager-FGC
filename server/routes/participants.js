@@ -282,6 +282,7 @@ router.get('/:id/league-stats', async (req, res) => {
       results.push({
         leagueId: league.id,
         leagueName: league.name,
+        status: league.status,
         rank,
         matchesPlayed: wins + losses,
         wins,

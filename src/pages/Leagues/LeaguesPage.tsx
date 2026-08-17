@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { League } from '@/models/league';
-import { getAllLeagues } from '@/services/leagues/leagueService';
+import { getAllLeagues, deleteLeague } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
+import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './LeaguesPage.css';
 
 function LeaguesPage() {
   const navigate = useNavigate();
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     loadLeagues();
@@ -19,6 +21,13 @@ function LeaguesPage() {
     const data = await getAllLeagues();
     setLeagues(data);
     setLoading(false);
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    const ok = await deleteLeague(deleteTarget.id);
+    setDeleteTarget(null);
+    if (ok) loadLeagues();
   }
 
   if (loading) {
@@ -94,9 +103,16 @@ function LeaguesPage() {
                     <span className="league-card-date">
                       <i className="fas fa-calendar" /> Started {new Date(league.startDate).toLocaleDateString()}
                     </span>
-                    <span className="league-card-date">
-                      <i className="fas fa-sync" /> Week {league.currentWeek}
-                    </span>
+                    <button
+                      className="league-card-delete"
+                      title="Delete league"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteTarget({ id: league.id, name: league.name });
+                      }}
+                    >
+                      <i className="fas fa-trash-alt" />
+                    </button>
                   </div>
                 </div>
               );
@@ -104,6 +120,15 @@ function LeaguesPage() {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete League"
+        message={`Are you sure you want to delete "${deleteTarget?.name ?? ''}"? This cannot be undone.`}
+        confirmText="Delete"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

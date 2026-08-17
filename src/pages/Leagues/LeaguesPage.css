@@ -141,6 +141,22 @@
   gap: 0.4rem;
 }
 
+.league-card-delete {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 4px;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.league-card-delete:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
 @media (max-width: 640px) {
   .leagues-header {
     flex-direction: column;

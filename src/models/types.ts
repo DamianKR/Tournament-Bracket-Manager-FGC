@@ -45,6 +45,7 @@ export interface Tournament {
   name: string;
   mode: TournamentMode;
   status: TournamentStatus;
+  gameId?: string | null;
   participants: Participant[];
   bracket: Bracket | null;
   championId: string | null;
@@ -134,6 +135,7 @@ export interface PlacementEntry {
 export interface LeagueResultEntry {
   leagueId: string;
   leagueName: string;
+  status: string;
   rank: number;
   matchesPlayed: number;
   wins: number;

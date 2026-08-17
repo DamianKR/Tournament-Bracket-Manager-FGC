@@ -38,8 +38,10 @@ function ParticipantProfile() {
   const [notFound, setNotFound] = useState(false);
   const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
 
-  const leagueFirstPlaces = leagueStats?.leagues.filter((l) => l.rank === 1).length ?? 0;
-  const leagueTop3 = leagueStats?.leagues.filter((l) => l.rank <= 3).length ?? 0;
+  const completedLeagues = leagueStats?.leagues.filter((l) => l.status === 'completed') ?? [];
+  const leagueFirstPlaces = completedLeagues.filter((l) => l.rank === 1).length;
+  const leagueTop5 = completedLeagues.filter((l) => l.rank <= 5).length;
+  const leaguesWithMatches = leagueStats?.leagues.filter((l) => l.matchesPlayed > 0).length ?? 0;
 
   // Edit state
   const [editName, setEditName] = useState('');
@@ -292,12 +294,12 @@ function ParticipantProfile() {
                   <span className="psc-label"><i className="fas fa-trophy" /> League Wins</span>
                 </div>
                 <div className="profile-stat-card">
-                  <span className="psc-value">{leagueStats.leagues.length}</span>
+                  <span className="psc-value">{leaguesWithMatches}</span>
                   <span className="psc-label">Leagues Played</span>
                 </div>
                 <div className="profile-stat-card">
-                  <span className="psc-value">{leagueTop3}</span>
-                  <span className="psc-label">Top 3 in Leagues</span>
+                  <span className="psc-value">{leagueTop5}</span>
+                  <span className="psc-label">Top 5 in Leagues</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{leagueStats.winRate > 0 ? `${leagueStats.winRate}%` : '—'}</span>
