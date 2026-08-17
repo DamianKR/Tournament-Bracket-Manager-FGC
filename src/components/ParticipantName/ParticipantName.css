@@ -1,0 +1,12 @@
+.participant-link {
+  cursor: pointer;
+  transition: color 0.15s, text-decoration 0.15s;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+}
+
+.participant-link:hover {
+  color: var(--primary-color);
+  text-decoration-color: var(--primary-color);
+}

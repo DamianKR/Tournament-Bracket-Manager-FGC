@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Participant } from '@/models/types';
 import './ParticipantsList.css';
 
@@ -37,6 +38,7 @@ function ParticipantsList({
   readOnly = false,
   tournamentMode = false,
 }: ParticipantsListProps) {
+  const navigate = useNavigate();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
 
@@ -120,6 +122,11 @@ function ParticipantsList({
             <div
               className="participant-name"
               onDoubleClick={() => handleStartEdit(participant)}
+              onClick={() => {
+                if (readOnly && participant.globalParticipantId) {
+                  navigate(`/participants/${participant.globalParticipantId}`);
+                }
+              }}
             >
               {participant.name}
               {tournamentMode && alive && (

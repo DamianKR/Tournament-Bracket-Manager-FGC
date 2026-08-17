@@ -1,20 +1,21 @@
 /* ── Ranking Page ──────────────────────────────────────────────────────── */
-.page-container {
-  padding: 2rem;
+.ranking-page {
+  min-height: 100vh;
+  padding: 2rem 0;
 }
 
 .rk-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 2rem;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
 .rk-title {
-  margin: 0 0 0.25rem;
-  font-size: 1.75rem;
+  margin: 0 0 0.35rem;
+  font-size: 2rem;
   font-weight: 900;
   color: var(--primary-color);
   text-shadow: 0 0 24px rgba(124, 58, 237, 0.2);
@@ -22,8 +23,8 @@
 
 .rk-subtitle {
   margin: 0;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
 }
 
 /* Header right side: reset buttons + tabs stacked */

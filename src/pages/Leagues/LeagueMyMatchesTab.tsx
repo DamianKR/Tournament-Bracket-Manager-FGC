@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { League, LeagueMatch, LeagueStanding, GlobalParticipant } from '@/models/types';
+import ParticipantName from '@/components/ParticipantName/ParticipantName';
 import ReportMatchModal from './ReportMatchModal';
 import './LeagueMyMatchesTab.css';
 
@@ -51,7 +52,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
       <div key={match.id} className={`my-match-row ${isCompleted ? 'completed' : 'pending'}`}>
         <div className="my-match-opponent">
           <span className="my-match-vs">vs</span>
-          <span className="opponent-name">{getParticipantName(opponentId)}</span>
+          <ParticipantName id={opponentId} name={getParticipantName(opponentId)} className="opponent-name" />
         </div>
 
         {isCompleted ? (
@@ -167,7 +168,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
               <div className="remaining-opponents">
                 {remainingOpponents.map((pid) => (
                   <span key={pid} className="opponent-chip">
-                    {getParticipantName(pid)}
+                    <ParticipantName id={pid} name={getParticipantName(pid)} />
                   </span>
                 ))}
               </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
+import ParticipantName from '@/components/ParticipantName/ParticipantName';
 import ReportMatchModal from './ReportMatchModal';
 import './LeagueScheduleTab.css';
 
@@ -81,14 +82,14 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
 
                     <div className="match-players">
                       <div className={`match-player ${winner === match.participant1Id ? 'winner' : ''}`}>
-                        {getParticipantName(match.participant1Id)}
+                        <ParticipantName id={match.participant1Id} name={getParticipantName(match.participant1Id)} className="match-player-name" />
                         {isNoShow && match.noShowParticipantId === match.participant1Id && (
                           <span className="no-show-tag">No-show</span>
                         )}
                       </div>
                       <span className="match-vs">vs</span>
                       <div className={`match-player ${winner === match.participant2Id ? 'winner' : ''}`}>
-                        {getParticipantName(match.participant2Id)}
+                        <ParticipantName id={match.participant2Id} name={getParticipantName(match.participant2Id)} className="match-player-name" />
                         {isNoShow && match.noShowParticipantId === match.participant2Id && (
                           <span className="no-show-tag">No-show</span>
                         )}

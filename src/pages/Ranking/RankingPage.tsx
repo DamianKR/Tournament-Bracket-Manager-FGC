@@ -16,9 +16,10 @@ import {
 } from '@/services/ranking/rankingService';
 import type { MatchRecord } from '@/models/types';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import RankingInfo from './RankingInfo';
 import './RankingPage.css';
 
-type Tab = 'leaderboard' | 'record' | 'history';
+type Tab = 'leaderboard' | 'record' | 'history' | 'info';
 
 function RankingPage() {
   const navigate = useNavigate();
@@ -191,8 +192,9 @@ function RankingPage() {
   // ── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className="page-container">
-      <div className="rk-header">
+    <div className="ranking-page">
+      <div className="container">
+        <div className="rk-header">
         <div>
           <h1 className="rk-title">Ranking ELO</h1>
           <p className="rk-subtitle">Sistema de puntos competitivo — inicio en 1500 pts</p>
@@ -225,6 +227,9 @@ function RankingPage() {
             </button>
             <button className={`rk-tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
               <i className="fas fa-list" /> Historial
+            </button>
+            <button className={`rk-tab ${tab === 'info' ? 'active' : ''}`} onClick={() => setTab('info')}>
+              <i className="fas fa-info-circle" /> Info
             </button>
           </div>
         </div>{/* rk-header-right */}
@@ -512,6 +517,13 @@ function RankingPage() {
         </div>
       )}
 
+      {/* ── INFO TAB ── */}
+      {tab === 'info' && (
+        <div className="rk-section">
+          <RankingInfo />
+        </div>
+      )}
+
       {/* Delete match confirm */}
       <ConfirmModal
         isOpen={!!deleteTarget}
@@ -551,6 +563,7 @@ function RankingPage() {
         onConfirm={() => { void handleHardReset(); }}
         onCancel={() => setShowHardConfirm2(false)}
       />
+      </div>
     </div>
   );
 }
