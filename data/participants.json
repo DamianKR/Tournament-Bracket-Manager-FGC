@@ -618,5 +618,31 @@
     "eloRank": "Diamante",
     "createdAt": "2026-08-15T15:35:35.517Z",
     "updatedAt": "2026-08-18T04:00:24.263Z"
+  },
+  {
+    "id": "gp_1787060528167_2mzmy24",
+    "name": "Julio Cesar",
+    "alias": "Verne",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "captain_falcon",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-18T13:42:08.167Z",
+    "updatedAt": "2026-08-18T13:42:08.167Z"
+  },
+  {
+    "id": "gp_1787060569919_ov80gcy",
+    "name": "DeathFrost",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "link",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-18T13:42:49.919Z",
+    "updatedAt": "2026-08-18T13:42:49.919Z"
   }
 ]
