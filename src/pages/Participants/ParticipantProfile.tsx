@@ -180,7 +180,7 @@ function ParticipantProfile() {
                   className="profile-elo-widget"
                   style={{ '--elo-color': col } as React.CSSProperties}
                   onClick={() => navigate('/ranking')}
-                  title="Ver ranking completo"
+                  title="View full ranking"
                 >
                   {/* Glow layer */}
                   <div className="pew-glow" />
@@ -203,7 +203,7 @@ function ParticipantProfile() {
                   <div className="pew-bottom">
                     <div className="pew-pts-block">
                       <span className="pew-pts-value">{pts.toLocaleString()}</span>
-                      <span className="pew-pts-label">puntos</span>
+                      <span className="pew-pts-label">points</span>
                     </div>
                     {pos !== undefined && (
                       <div className="pew-pos-block">

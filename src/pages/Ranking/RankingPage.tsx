@@ -63,7 +63,7 @@ function RankingPage() {
       const data = await getLeaderboard();
       setLeaderboard(data);
     } catch {
-      setBoardError('No se pudo cargar el ranking. ¿Está el servidor corriendo?');
+      setBoardError('Could not load the ranking. Is the server running?');
     } finally {
       setLoadingBoard(false);
     }
@@ -97,9 +97,9 @@ function RankingPage() {
   // ── Record match ────────────────────────────────────────────────────────
 
   async function handleRecord() {
-    if (!playerAId || !playerBId) { setRecordError('Selecciona ambos participantes.'); return; }
-    if (playerAId === playerBId) { setRecordError('Un participante no puede enfrentarse a sí mismo.'); return; }
-    if (!winnerId) { setRecordError('Selecciona quién ganó.'); return; }
+    if (!playerAId || !playerBId) { setRecordError('Select both participants.'); return; }
+    if (playerAId === playerBId) { setRecordError('A participant cannot face itself.'); return; }
+    if (!winnerId) { setRecordError('Select who won.'); return; }
 
     setRecording(true);
     setRecordError('');
@@ -129,7 +129,7 @@ function RankingPage() {
       setPlayerBId('');
       setWinnerId('');
     } catch (err: unknown) {
-      setRecordError(err instanceof Error ? err.message : 'Error al registrar partida.');
+      setRecordError(err instanceof Error ? err.message : 'Error recording match.');
     } finally {
       setRecording(false);
     }
@@ -186,7 +186,7 @@ function RankingPage() {
   }
 
   function formatDate(iso: string) {
-    return new Date(iso).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(iso).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' });
   }
 
   // ── Render ──────────────────────────────────────────────────────────────
@@ -197,7 +197,7 @@ function RankingPage() {
         <div className="rk-header">
         <div>
           <h1 className="rk-title">Ranking ELO</h1>
-          <p className="rk-subtitle">Sistema de puntos competitivo — inicio en 1500 pts</p>
+          <p className="rk-subtitle">Competitive scoring system — start at 1500 pts</p>
         </div>
         <div className="rk-header-right">
           <div className="rk-reset-btns">
@@ -205,7 +205,7 @@ function RankingPage() {
               className="rk-reset-btn soft"
               onClick={() => setShowSoftConfirm(true)}
               disabled={resetting}
-              title="Regresa a cada jugador al inicio de su rango actual"
+              title="Returns each player to the start of their current tier"
             >
               <i className="fas fa-rotate-left" /> Soft Reset
             </button>
@@ -213,7 +213,7 @@ function RankingPage() {
               className="rk-reset-btn hard"
               onClick={() => setShowHardConfirm1(true)}
               disabled={resetting}
-              title="Regresa a todos los jugadores a 1500 pts y borra el historial"
+              title="Returns all players to 1500 pts and clears history"
             >
               <i className="fas fa-triangle-exclamation" /> Hard Reset
             </button>
@@ -223,10 +223,10 @@ function RankingPage() {
               <i className="fas fa-trophy" /> Ranking
             </button>
             <button className={`rk-tab ${tab === 'record' ? 'active' : ''}`} onClick={() => setTab('record')}>
-              <i className="fas fa-gamepad" /> Registrar Partida
+              <i className="fas fa-gamepad" /> Record Match
             </button>
             <button className={`rk-tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
-              <i className="fas fa-list" /> Historial
+              <i className="fas fa-list" /> History
             </button>
             <button className={`rk-tab ${tab === 'info' ? 'active' : ''}`} onClick={() => setTab('info')}>
               <i className="fas fa-info-circle" /> Info
@@ -238,19 +238,19 @@ function RankingPage() {
       {/* ── LEADERBOARD TAB ── */}
       {tab === 'leaderboard' && (
         <div className="rk-section">
-          {loadingBoard && <p className="rk-loading">Cargando ranking...</p>}
+          {loadingBoard && <p className="rk-loading">Loading ranking...</p>}
           {boardError && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-triangle-exclamation" /></span>
               <p style={{ color: 'var(--danger-color, #ef4444)', fontWeight: 600 }}>
-                No se pudo conectar con el servidor.
+                Could not connect to the server.
               </p>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                Asegúrate de que el servidor API esté corriendo en el puerto 3001.<br />
-                Usa <code>npm run dev</code> o abre <code>Abrir_Aplicacion.bat</code>.
+                Make sure the API server is running on port 3001.<br />
+                Use <code>npm run dev</code> or open <code>Abrir_Aplicacion.bat</code>.
               </p>
               <button className="btn btn-primary" onClick={() => void loadLeaderboard()}>
-                Reintentar
+                Retry
               </button>
             </div>
           )}
@@ -258,9 +258,9 @@ function RankingPage() {
           {!loadingBoard && !boardError && leaderboard.length === 0 && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-trophy" /></span>
-              <p>No hay participantes aún.</p>
+              <p>No participants yet.</p>
               <button className="btn btn-primary" onClick={() => navigate('/participants')}>
-                Ir a Participantes
+                Go to Participants
               </button>
             </div>
           )}
@@ -271,9 +271,9 @@ function RankingPage() {
                 <thead>
                   <tr>
                     <th className="rk-col-pos">#</th>
-                    <th className="rk-col-player">Jugador</th>
-                    <th className="rk-col-rank">Rango</th>
-                    <th className="rk-col-pts">Puntos</th>
+                    <th className="rk-col-player">Player</th>
+                    <th className="rk-col-rank">Rank</th>
+                    <th className="rk-col-pts">Points</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -328,16 +328,16 @@ function RankingPage() {
             <div className="rk-record-header">
               <span className="rk-record-icon"><i className="fas fa-gamepad" /></span>
               <div>
-                <h3>Registrar Partida</h3>
-                <p>Selecciona dos jugadores y quién ganó. Los puntos ELO se calculan y actualizan automáticamente.</p>
+                <h3>Record Match</h3>
+                <p>Select two players and who won. ELO points are calculated and updated automatically.</p>
               </div>
             </div>
 
             {allParticipants.length < 2 && (
               <div className="rk-warn">
-                Necesitas al menos 2 participantes para registrar una partida.{' '}
+                You need at least 2 participants to record a match.{' '}
                 <button className="btn-link" onClick={() => navigate('/participants')}>
-                  Ir a Participantes →
+                  Go to Participants →
                 </button>
               </div>
             )}
@@ -347,13 +347,13 @@ function RankingPage() {
                 <div className="rk-matchup">
                   {/* Player A */}
                   <div className="rk-player-slot">
-                    <label className="rk-slot-label">Jugador 1</label>
+                    <label className="rk-slot-label">Player 1</label>
                     <select
                       className="rk-select"
                       value={playerAId}
                       onChange={(e) => { setPlayerAId(e.target.value); setWinnerId(''); setLastResult(null); }}
                     >
-                      <option value="">— Selecciona jugador —</option>
+                      <option value="">— Select player —</option>
                       {allParticipants
                         .filter((p) => p.id !== playerBId)
                         .map((p) => (
@@ -375,13 +375,13 @@ function RankingPage() {
 
                   {/* Player B */}
                   <div className="rk-player-slot">
-                    <label className="rk-slot-label">Jugador 2</label>
+                    <label className="rk-slot-label">Player 2</label>
                     <select
                       className="rk-select"
                       value={playerBId}
                       onChange={(e) => { setPlayerBId(e.target.value); setWinnerId(''); setLastResult(null); }}
                     >
-                      <option value="">— Selecciona jugador —</option>
+                      <option value="">— Select player —</option>
                       {allParticipants
                         .filter((p) => p.id !== playerAId)
                         .map((p) => (
@@ -402,7 +402,7 @@ function RankingPage() {
 
                 {playerAId && playerBId && (
                   <div className="rk-winner-prompt">
-                    <p>¿Quién ganó?</p>
+                    <p>Who won?</p>
                     <div className="rk-winner-btns">
                       <button
                         className={`rk-winner-btn ${winnerId === playerAId ? 'selected' : ''}`}
@@ -428,14 +428,14 @@ function RankingPage() {
                     onClick={handleRecord}
                     disabled={recording || !playerAId || !playerBId || !winnerId}
                   >
-                    {recording ? 'Calculando...' : 'Confirmar Resultado'}
+                    {recording ? 'Calculating...' : 'Confirm Result'}
                   </button>
                 </div>
 
                 {/* Result feedback */}
                 {lastResult && (
                   <div className="rk-result-box">
-                    <h4>¡Resultado registrado!</h4>
+                    <h4>Result recorded!</h4>
                     <div className="rk-result-row">
                       <ResultCard r={lastResult.playerA} isWinner={lastResult.playerA.id === lastResult.match.winnerId} />
                       <span className="rk-result-vs">vs</span>
@@ -452,12 +452,12 @@ function RankingPage() {
       {/* ── HISTORY TAB ── */}
       {tab === 'history' && (
         <div className="rk-section">
-          {loadingHistory && <p className="rk-loading">Cargando historial...</p>}
+          {loadingHistory && <p className="rk-loading">Loading history...</p>}
 
           {!loadingHistory && matchHistory.length === 0 && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-list" /></span>
-              <p>No hay partidas registradas aún.</p>
+              <p>No matches recorded yet.</p>
             </div>
           )}
 
@@ -475,7 +475,7 @@ function RankingPage() {
                     <span className="rk-history-date">{formatDate(m.createdAt)}</span>
                     <button
                       className="rk-history-delete"
-                      title="Eliminar registro (no revierte ELO)"
+                      title="Delete record (does not revert ELO)"
                       onClick={() => setDeleteTarget(m.id)}
                     >
                       🗑
@@ -527,9 +527,9 @@ function RankingPage() {
       {/* Delete match confirm */}
       <ConfirmModal
         isOpen={!!deleteTarget}
-        title="Eliminar registro"
-        message="¿Eliminar este registro de partida? Esta acción no revierte los puntos ELO aplicados."
-        confirmText="Eliminar"
+        title="Delete record"
+        message="Delete this match record? This action does not revert the applied ELO points."
+        confirmText="Delete"
         onConfirm={() => { void handleDeleteMatch(); }}
         onCancel={() => setDeleteTarget(null)}
       />
@@ -538,8 +538,8 @@ function RankingPage() {
       <ConfirmModal
         isOpen={showSoftConfirm}
         title="Soft Reset"
-        message="Esto regresará a cada jugador al inicio de su rango actual (ej: 1699 → 1600). El historial de partidas se conserva. ¿Confirmar?"
-        confirmText="Aplicar Soft Reset"
+        message="This will return each player to the start of their current tier (e.g., 1699 → 1600). The match history will be preserved. Confirm?"
+        confirmText="Apply Soft Reset"
         onConfirm={() => { void handleSoftReset(); }}
         onCancel={() => setShowSoftConfirm(false)}
       />
@@ -547,9 +547,9 @@ function RankingPage() {
       {/* Hard reset — step 1 */}
       <ConfirmModal
         isOpen={showHardConfirm1}
-        title="Hard Reset — Confirmación 1/2"
-        message="Esto regresará a TODOS los jugadores a 1500 pts (Diamante) y borrará todo el historial de partidas. Esta acción es irreversible."
-        confirmText="Continuar →"
+        title="Hard Reset — Confirmation 1/2"
+        message="This will return ALL players to 1500 pts (Diamante) and clear all match history. This action is irreversible."
+        confirmText="Continue →"
         onConfirm={() => { setShowHardConfirm1(false); setShowHardConfirm2(true); }}
         onCancel={() => setShowHardConfirm1(false)}
       />
@@ -557,9 +557,9 @@ function RankingPage() {
       {/* Hard reset — step 2 */}
       <ConfirmModal
         isOpen={showHardConfirm2}
-        title="Hard Reset — Confirmación 2/2"
-        message="¿Estás COMPLETAMENTE seguro? Se perderán todos los puntos y el historial de partidas sin posibilidad de recuperación."
-        confirmText="Sí, hacer Hard Reset"
+        title="Hard Reset — Confirmation 2/2"
+        message="Are you COMPLETELY sure? All points and match history will be lost with no possibility of recovery."
+        confirmText="Yes, perform Hard Reset"
         onConfirm={() => { void handleHardReset(); }}
         onCancel={() => setShowHardConfirm2(false)}
       />
@@ -588,7 +588,7 @@ function EloPreview({
         <span className="rk-elo-rank-name" style={{ color: getRankColor(rank) }}>{rank}</span>
         <span className="rk-elo-pts">{pts.toLocaleString()} pts</span>
       </div>
-      {isWinner && <span className="rk-winner-crown"><i className="fas fa-crown" /> Ganador</span>}
+      {isWinner && <span className="rk-winner-crown"><i className="fas fa-crown" /> Winner</span>}
     </div>
   );
 }

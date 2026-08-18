@@ -16,7 +16,7 @@ function ParticipantName({ id, name, className = '' }: ParticipantNameProps) {
         e.stopPropagation();
         navigate(`/participants/${id}`);
       }}
-      title="Ver perfil"
+      title="View profile"
     >
       {name}
     </span>

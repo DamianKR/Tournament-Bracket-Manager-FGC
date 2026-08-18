@@ -73,7 +73,7 @@ function ExampleCard({ ex }: { ex: Example }) {
         </div>
       </div>
       <div className="info-example-result">
-        <span className="info-example-winner"><i className="fas fa-crown" /> {winnerName} gana</span>
+        <span className="info-example-winner"><i className="fas fa-crown" /> {winnerName} wins</span>
         <span className="info-example-delta">
           {ex.p1Name}: <span className={res.deltaA >= 0 ? 'positive' : 'negative'}>{res.deltaA >= 0 ? '+' : ''}{res.deltaA}</span>
           {' · '}
@@ -148,7 +148,7 @@ function RankingInfo() {
       <div className="rk-info-block">
         <h3>Examples</h3>
         <p className="rk-info-subtitle">
-          These examples show the same ELO engine used by “Registrar partida” and league matches.
+          These examples show the same ELO engine used by “Record Match” and league matches.
         </p>
       </div>
 
