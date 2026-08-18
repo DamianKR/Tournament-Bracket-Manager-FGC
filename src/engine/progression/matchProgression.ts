@@ -44,8 +44,11 @@ export function recordMatchResult(
   if (loser) {
     loser.lossCount++;
 
-    // Check if eliminated (2 losses in double elimination)
-    if (loser.lossCount >= 2) {
+    // Check if eliminated
+    // Single elimination: 1 loss = eliminated
+    // Double elimination: 2 losses = eliminated
+    const maxLosses = tournament.mode === 'single_elimination' ? 1 : 2;
+    if (loser.lossCount >= maxLosses) {
       loser.eliminated = true;
       loser.finalPosition = undefined;
     }
@@ -353,6 +356,22 @@ function removeParticipantFromMatch(
 function checkTournamentCompletion(tournament: Tournament): void {
   if (!tournament.bracket) return;
 
+  // ── Single Elimination: Check if final match is completed ────────────
+  if (tournament.mode === 'single_elimination') {
+    const wb = tournament.bracket.winnerBracket;
+    if (wb.length === 0) return;
+    
+    // The final match is the last match in the winner bracket
+    const finalMatch = wb[wb.length - 1];
+    if (finalMatch.status === 'completed' && finalMatch.winnerId) {
+      tournament.championId = finalMatch.winnerId;
+      tournament.status = 'completed';
+      assignFinalPositions(tournament);
+    }
+    return;
+  }
+
+  // ── Double Elimination logic ─────────────────────────────────────────
   const grandFinal      = tournament.bracket.grandFinal;
   const grandFinalReset = tournament.bracket.grandFinalReset;
 
@@ -398,22 +417,13 @@ function checkTournamentCompletion(tournament: Tournament): void {
 /**
  * Assign final/partial positions to all participants.
  *
- * Same logic as Challonge / start.gg for double elimination:
+ * For single elimination:
+ *   - Players eliminated in the same round share the same position
+ *   - Position is based on round of elimination (later rounds = better placement)
  *
- *   The total number of LB rounds is fixed at bracket generation time.
- *   A player eliminated in LB round R gets:
- *     roundsFromEnd = maxLBRound - R
- *     position      = computed from roundsFromEnd as:
- *       roundsFromEnd  0 → 3rd  (group of 1)
- *       roundsFromEnd  1 → 4th  (group of 1)
- *       roundsFromEnd  2 → 5th  (group of 2)
- *       roundsFromEnd  3 → 7th  (group of 2)
- *       roundsFromEnd  4 → 9th  (group of 4)
- *       roundsFromEnd  5 → 13th (group of 4)
- *       roundsFromEnd  6 → 17th (group of 8)  …
- *
- *   All players eliminated in the same LB round share the same position number.
- *   This is recalculated after every match result so it works mid-tournament.
+ * For double elimination:
+ *   - Same logic as Challonge / start.gg
+ *   - LB round determines placement with Challonge formula
  */
 export function assignFinalPositions(tournament: Tournament): void {
   if (!tournament.bracket) return;
@@ -429,6 +439,43 @@ export function assignFinalPositions(tournament: Tournament): void {
     if (champ) champ.finalPosition = 1;
   }
 
+  // ── Single Elimination positioning ───────────────────────────────────
+  if (tournament.mode === 'single_elimination') {
+    const wb = tournament.bracket.winnerBracket;
+    if (wb.length === 0) return;
+
+    // 2nd — loser of the final match
+    const finalMatch = wb[wb.length - 1];
+    if (finalMatch?.loserId) {
+      const runnerUp = tournament.participants.find((p: Participant) => p.id === finalMatch.loserId);
+      if (runnerUp) runnerUp.finalPosition = 2;
+    }
+
+    // Remaining positions based on round of elimination
+    const maxRound = Math.max(...wb.map((m: Match) => m.roundNumber));
+    
+    for (const m of wb) {
+      if (m.status !== 'completed' || !m.loserId) continue;
+      const loser = tournament.participants.find((p: Participant) => p.id === m.loserId);
+      if (!loser || loser.finalPosition) continue; // Skip if already assigned (e.g., 2nd place)
+
+      // Calculate position based on round of elimination
+      // Round 1 losers get worst positions, final loser gets 2nd
+      const roundsFromEnd = maxRound - m.roundNumber;
+      let position = 2; // Start after champion
+      let groupSize = 1;
+      
+      for (let i = 0; i < roundsFromEnd; i++) {
+        position += groupSize;
+        groupSize *= 2;
+      }
+
+      loser.finalPosition = position;
+    }
+    return;
+  }
+
+  // ── Double Elimination positioning ───────────────────────────────────
   // 2nd — loser of the deciding grand final
   const decidingFinal = tournament.bracket.grandFinalReset ?? tournament.bracket.grandFinal;
   if (decidingFinal?.loserId) {

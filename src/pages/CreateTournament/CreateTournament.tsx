@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { TournamentMode, GlobalParticipant } from '@/models/types';
+import { TournamentMode, TournamentType, GlobalParticipant, TeamSize } from '@/models/types';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import {
   createTournament,
   addParticipant,
+  addTeam,
   removeParticipant,
   updateParticipantName,
   moveParticipant,
@@ -17,6 +18,7 @@ import { MIN_PARTICIPANTS } from '@/constants/tournament';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
 import BracketPreview from '@/components/Bracket/BracketPreview';
+import AddTeamModal from '@/components/AddTeamModal/AddTeamModal';
 import './CreateTournament.css';
 
 type ViewMode = 'participants' | 'bracket';
@@ -27,6 +29,8 @@ function CreateTournament() {
   const [tournamentId, setTournamentId] = useState<string | null>(id || null);
   const [tournamentName, setTournamentName] = useState('');
   const [mode, setMode] = useState<TournamentMode>('double_elimination');
+  const [type, setType] = useState<TournamentType>('singles');
+  const [teamSize, setTeamSize] = useState<TeamSize>(2);
   const [viewMode, setViewMode] = useState<ViewMode>('participants');
   const [participants, setParticipants] = useState<any[]>([]);
   const [newParticipantName, setNewParticipantName] = useState('');
@@ -34,6 +38,7 @@ function CreateTournament() {
   const [isCreated, setIsCreated] = useState(false);
   const [adding, setAdding] = useState(false);
   const [showStartConfirm, setShowStartConfirm] = useState(false);
+  const [showAddTeamModal, setShowAddTeamModal] = useState(false);
 
   // Autocomplete state
   const [suggestions, setSuggestions] = useState<GlobalParticipant[]>([]);
@@ -69,6 +74,8 @@ function CreateTournament() {
     if (tournament) {
       setTournamentName(tournament.name);
       setMode(tournament.mode);
+      setType(tournament.type || 'singles');
+      setTeamSize(tournament.teamSize || 2);
       setParticipants(tournament.participants);
       setIsCreated(true);
     }
@@ -136,7 +143,12 @@ function CreateTournament() {
       return;
     }
     try {
-      const tournament = createTournament(tournamentName, mode);
+      const tournament = createTournament(
+        tournamentName, 
+        mode, 
+        type,
+        type === 'teams' ? teamSize : undefined
+      );
       setTournamentId(tournament.id);
       setIsCreated(true);
       setError('');
@@ -168,6 +180,21 @@ function CreateTournament() {
 
   const handleAddParticipant = () => {
     doAddParticipant(newParticipantName);
+  };
+
+  const handleAddTeam = async (teamName: string, memberNames: string[]) => {
+    if (!tournamentId) return;
+    setAdding(true);
+    setError('');
+    setShowAddTeamModal(false);
+    try {
+      const tournament = await addTeam(tournamentId, teamName, memberNames);
+      setParticipants(tournament.participants);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setAdding(false);
+    }
   };
 
   const handleRemoveParticipant = (participantId: string) => {
@@ -236,6 +263,14 @@ function CreateTournament() {
 
   const cancelStartTournament = () => setShowStartConfirm(false);
 
+  const getExcludedTeamMemberNames = (): string[] => {
+    // Names of all players already in other teams in this tournament
+    return participants
+      .filter((p) => p.members && p.members.length > 0)
+      .flatMap((p) => p.members.map((m: { name?: string }) => m.name))
+      .filter(Boolean);
+  };
+
   const handleCancel = () => navigate('/');
 
   const sidebarItems = [
@@ -280,16 +315,50 @@ function CreateTournament() {
               </div>
 
               <div className="form-group">
-                <label>Mode</label>
+                <label>Type</label>
+                <select
+                  value={type}
+                  onChange={(e) => setType(e.target.value as TournamentType)}
+                  className="w-full"
+                >
+                  <option value="singles">Singles</option>
+                  <option value="teams">Teams</option>
+                </select>
+                <p className="text-secondary text-sm mt-1">
+                  {type === 'singles' 
+                    ? 'Individual players compete' 
+                    : 'Teams of multiple players compete together'}
+                </p>
+              </div>
+
+              {type === 'teams' && (
+                <div className="form-group">
+                  <label>Team Size</label>
+                  <select
+                    value={teamSize}
+                    onChange={(e) => setTeamSize(Number(e.target.value) as TeamSize)}
+                    className="w-full"
+                  >
+                    <option value={2}>2v2 (Doubles)</option>
+                    <option value={3}>3v3 (Triples)</option>
+                    <option value={4}>4v4 (Squads)</option>
+                    <option value={5}>5v5 (Teams)</option>
+                  </select>
+                  <p className="text-secondary text-sm mt-1">
+                    Each team will have {teamSize} players
+                  </p>
+                </div>
+              )}
+
+              <div className="form-group">
+                <label>Bracket Mode</label>
                 <select
                   value={mode}
                   onChange={(e) => setMode(e.target.value as TournamentMode)}
                   className="w-full"
                 >
                   <option value="double_elimination">Double Elimination</option>
-                  <option value="single_elimination" disabled>
-                    Single Elimination (Coming Soon)
-                  </option>
+                  <option value="single_elimination">Single Elimination</option>
                 </select>
               </div>
 
@@ -315,57 +384,72 @@ function CreateTournament() {
 
                   {error && <div className="error-message">{error}</div>}
 
-                  <div className="add-participant-form card">
-                    <div className="autocomplete-wrapper">
-                      <div className="flex gap-2">
-                        <div className="autocomplete-input-wrap flex-1">
-                          <input
-                            ref={inputRef}
-                            type="text"
-                            value={newParticipantName}
-                            onChange={(e) => handleNameInput(e.target.value)}
-                            onKeyDown={handleInputKeyDown}
-                            onFocus={() => {
-                              if (suggestions.length > 0) setShowSuggestions(true);
-                            }}
-                            placeholder="Enter or search participant name…"
-                            className="w-full"
+                  {type === 'singles' ? (
+                    <div className="add-participant-form card">
+                      <div className="autocomplete-wrapper">
+                        <div className="flex gap-2">
+                          <div className="autocomplete-input-wrap flex-1">
+                            <input
+                              ref={inputRef}
+                              type="text"
+                              value={newParticipantName}
+                              onChange={(e) => handleNameInput(e.target.value)}
+                              onKeyDown={handleInputKeyDown}
+                              onFocus={() => {
+                                if (suggestions.length > 0) setShowSuggestions(true);
+                              }}
+                              placeholder="Enter or search participant name…"
+                              className="w-full"
+                              disabled={adding}
+                              autoComplete="off"
+                            />
+                            {showSuggestions && suggestions.length > 0 && (
+                              <div className="autocomplete-dropdown" ref={suggestionsRef}>
+                                {suggestions.map((s, idx) => (
+                                  <div
+                                    key={s.id}
+                                    className={`autocomplete-item ${idx === highlightedIdx ? 'highlighted' : ''}`}
+                                    onMouseDown={() => selectSuggestion(s)}
+                                  >
+                                    <span className="autocomplete-item-name">{s.name}</span>
+                                    {s.alias && (
+                                      <span className="autocomplete-item-alias">{s.alias}</span>
+                                    )}
+                                    <span className="autocomplete-item-stats">
+                                      {(s.tournamentIds ?? []).length} played
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            className="btn-primary"
+                            onClick={handleAddParticipant}
                             disabled={adding}
-                            autoComplete="off"
-                          />
-                          {showSuggestions && suggestions.length > 0 && (
-                            <div className="autocomplete-dropdown" ref={suggestionsRef}>
-                              {suggestions.map((s, idx) => (
-                                <div
-                                  key={s.id}
-                                  className={`autocomplete-item ${idx === highlightedIdx ? 'highlighted' : ''}`}
-                                  onMouseDown={() => selectSuggestion(s)}
-                                >
-                                  <span className="autocomplete-item-name">{s.name}</span>
-                                  {s.alias && (
-                                    <span className="autocomplete-item-alias">{s.alias}</span>
-                                  )}
-                                  <span className="autocomplete-item-stats">
-                                    {(s.tournamentIds ?? []).length} played
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                          >
+                            {adding ? '…' : 'Add'}
+                          </button>
                         </div>
-                        <button
-                          className="btn-primary"
-                          onClick={handleAddParticipant}
-                          disabled={adding}
-                        >
-                          {adding ? '…' : 'Add'}
-                        </button>
+                        <p className="autocomplete-hint text-secondary text-sm">
+                          Type to search existing participants, or enter a new name to create one
+                        </p>
                       </div>
-                      <p className="autocomplete-hint text-secondary text-sm">
-                        Type to search existing participants, or enter a new name to create one
+                    </div>
+                  ) : (
+                    <div className="add-participant-form card">
+                      <button
+                        className="btn-primary w-full"
+                        onClick={() => setShowAddTeamModal(true)}
+                        disabled={adding}
+                      >
+                        <i className="fas fa-users"></i> Add Team
+                      </button>
+                      <p className="text-secondary text-sm mt-2">
+                        Click to add a team of {teamSize} players
                       </p>
                     </div>
-                  </div>
+                  )}
 
                   {participants.length > 0 && (
                     <div className="participants-actions card">
@@ -434,6 +518,14 @@ function CreateTournament() {
         confirmText="Start"
         onConfirm={confirmStartTournament}
         onCancel={cancelStartTournament}
+      />
+
+      <AddTeamModal
+        isOpen={showAddTeamModal}
+        teamSize={teamSize}
+        excludedNames={getExcludedTeamMemberNames()}
+        onConfirm={handleAddTeam}
+        onCancel={() => setShowAddTeamModal(false)}
       />
     </div>
   );

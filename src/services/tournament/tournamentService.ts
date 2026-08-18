@@ -1,5 +1,5 @@
-import { Tournament, Participant, TournamentMode } from '@/models/types';
-import { generateDoubleEliminationBracket } from '@/engine/generator/bracketGenerator';
+import { Tournament, Participant, TournamentMode, TournamentType, TeamSize } from '@/models/types';
+import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult } from '@/engine/progression/matchProgression';
 import { saveTournament, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
@@ -9,18 +9,30 @@ import { MIN_PARTICIPANTS } from '@/constants/tournament';
 /**
  * Create a new tournament
  */
-export function createTournament(name: string, mode: TournamentMode): Tournament {
+export function createTournament(
+  name: string, 
+  mode: TournamentMode, 
+  type: TournamentType = 'singles',
+  teamSize?: TeamSize
+): Tournament {
   const tournament: Tournament = {
     id: generateId(),
     name,
     mode,
+    type,
     status: 'setup',
+    gameId: null,
     participants: [],
     bracket: null,
     championId: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+
+  // Only add teamSize for team tournaments
+  if (type === 'teams' && teamSize) {
+    tournament.teamSize = teamSize;
+  }
 
   saveTournament(tournament);
   return tournament;
@@ -62,7 +74,7 @@ export async function addParticipant(
     seed: tournament.participants.length + 1,
     eliminated: false,
     lossCount: 0,
-    globalParticipantId: global.id,
+    globalParticipantId: global.id, // Links to GlobalParticipant for singles tournaments
   };
 
   tournament.participants.push(participant);
@@ -72,6 +84,68 @@ export async function addParticipant(
 
   // Bidirectional link: GlobalParticipant knows about this tournament
   linkParticipantToTournament(global.id, tournament.id);
+
+  return tournament;
+}
+
+/**
+ * Add a team to a tournament.
+ * Creates a team participant with multiple members.
+ */
+export async function addTeam(
+  tournamentId: string,
+  teamName: string,
+  memberNames: string[]
+): Promise<Tournament> {
+  const tournament = loadTournament(tournamentId);
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'setup') throw new Error('Cannot add teams to a tournament in progress');
+  if (tournament.type !== 'teams') throw new Error('Can only add teams to team tournaments');
+
+  const trimmedTeamName = teamName.trim();
+  
+  // Duplicate check
+  if (tournament.participants.some((p: Participant) => p.name.toLowerCase() === trimmedTeamName.toLowerCase())) {
+    throw new Error('Team name already exists in this tournament');
+  }
+
+  // Validate team size
+  if (tournament.teamSize && memberNames.length !== tournament.teamSize) {
+    throw new Error(`Team must have exactly ${tournament.teamSize} members`);
+  }
+
+  // Find or create GlobalParticipants for each member
+  const members = await Promise.all(
+    memberNames.map(async (name) => {
+      const global = await findOrCreateParticipant(name.trim());
+      return {
+        globalParticipantId: global.id,
+        name: global.name,
+        alias: global.alias?.trim() || undefined,
+      };
+    })
+  );
+
+  const participant: Participant = {
+    id: generateId(),
+    name: trimmedTeamName,
+    seed: tournament.participants.length + 1,
+    eliminated: false,
+    lossCount: 0,
+    members,
+  };
+
+  tournament.participants.push(participant);
+  tournament.updatedAt = new Date().toISOString();
+
+  saveTournament(tournament);
+
+  // Link all team members to this tournament
+  for (const member of members) {
+    if (member.globalParticipantId) {
+      linkParticipantToTournament(member.globalParticipantId, tournament.id);
+    }
+  }
 
   return tournament;
 }
@@ -179,11 +253,8 @@ export function startTournament(tournamentId: string): Tournament {
 
   tournament.participants = assignSeeds(tournament.participants);
 
-  if (tournament.mode === 'double_elimination') {
-    tournament.bracket = generateDoubleEliminationBracket(tournament.participants);
-  } else {
-    throw new Error('Single elimination not yet implemented');
-  }
+  // Generate bracket based on tournament mode
+  tournament.bracket = generateBracket(tournament.participants, tournament.mode);
 
   tournament.status = 'in_progress';
   tournament.updatedAt = new Date().toISOString();

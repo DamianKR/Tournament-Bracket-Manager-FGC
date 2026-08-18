@@ -5,18 +5,33 @@ export type { League, LeagueMatch, LeagueStanding, LeagueStats } from './league'
 
 export type TournamentStatus = 'setup' | 'in_progress' | 'completed';
 export type TournamentMode = 'single_elimination' | 'double_elimination';
+export type TournamentType = 'singles' | 'teams';
 export type BracketType = 'winner' | 'loser' | 'grand_final';
 export type MatchStatus = 'pending' | 'in_progress' | 'completed';
+export type TeamSize = 1 | 2 | 3 | 4 | 5;
 
-export interface Participant {
-  id: string;
+// Representa un jugador individual dentro de un equipo
+export interface TeamMember {
+  globalParticipantId?: string; // Links to a GlobalParticipant if added from the global list
   name: string;
   alias?: string;    // Gamertag shown in bracket instead of full name
+}
+
+// Participante puede ser individual (singles) o equipo (teams)
+export interface Participant {
+  id: string;
+  name: string;      // Player name for singles, Team name for teams
+  alias?: string;    // Player alias for singles, Team tag for teams
   seed: number;
   eliminated: boolean;
   finalPosition?: number;
   lossCount: number; // Track number of losses (0, 1, or 2 for double elimination)
-  globalParticipantId?: string; // Links to a GlobalParticipant if added from the global list
+  
+  // For singles tournaments: links to GlobalParticipant
+  globalParticipantId?: string;
+  
+  // For team tournaments: array of team members
+  members?: TeamMember[];
 }
 
 export interface Match {
@@ -43,9 +58,11 @@ export interface Bracket {
 export interface Tournament {
   id: string;
   name: string;
-  mode: TournamentMode;
+  mode: TournamentMode;        // single_elimination | double_elimination
+  type: TournamentType;         // singles | teams
   status: TournamentStatus;
   gameId?: string | null;
+  teamSize?: TeamSize;          // Only for team tournaments: 2, 3, 4, or 5
   participants: Participant[];
   bracket: Bracket | null;
   championId: string | null;
