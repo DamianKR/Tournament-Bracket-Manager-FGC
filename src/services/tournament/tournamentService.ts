@@ -83,7 +83,7 @@ export async function addParticipant(
   saveTournament(tournament);
 
   // Bidirectional link: GlobalParticipant knows about this tournament
-  linkParticipantToTournament(global.id, tournament.id);
+  await linkParticipantToTournament(global.id, tournament.id);
 
   return tournament;
 }
@@ -114,17 +114,17 @@ export async function addTeam(
     throw new Error(`Team must have exactly ${tournament.teamSize} members`);
   }
 
-  // Find or create GlobalParticipants for each member
-  const members = await Promise.all(
-    memberNames.map(async (name) => {
-      const global = await findOrCreateParticipant(name.trim());
-      return {
-        globalParticipantId: global.id,
-        name: global.name,
-        alias: global.alias?.trim() || undefined,
-      };
-    })
-  );
+  // Find or create GlobalParticipants for each member (sequential to avoid
+  // concurrent JSON writes)
+  const members = [];
+  for (const name of memberNames) {
+    const global = await findOrCreateParticipant(name.trim());
+    members.push({
+      globalParticipantId: global.id,
+      name: global.name,
+      alias: global.alias?.trim() || undefined,
+    });
+  }
 
   const participant: Participant = {
     id: generateId(),
@@ -143,7 +143,7 @@ export async function addTeam(
   // Link all team members to this tournament
   for (const member of members) {
     if (member.globalParticipantId) {
-      linkParticipantToTournament(member.globalParticipantId, tournament.id);
+      await linkParticipantToTournament(member.globalParticipantId, tournament.id);
     }
   }
 

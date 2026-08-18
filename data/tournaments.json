@@ -1158,7 +1158,7 @@
       },
       {
         "id": "1786802874844-h94aif9mv",
-        "name": "Kevin2",
+        "name": "KevinT",
         "alias": "Yoko",
         "seed": 17,
         "eliminated": true,
@@ -2061,5 +2061,198 @@
     "championId": null,
     "createdAt": "2026-08-15T14:07:24.864Z",
     "updatedAt": "2026-08-15T18:30:52.816Z"
+  },
+  {
+    "id": "1787069005182-knkndcjgv",
+    "name": "Smash SC Team 3v3 - 1",
+    "mode": "double_elimination",
+    "type": "teams",
+    "status": "setup",
+    "gameId": null,
+    "participants": [
+      {
+        "id": "1787069757014-dlsrhl0op",
+        "name": "Crusaders",
+        "seed": 1,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786391892402_8intsz3",
+            "name": "Delvi"
+          },
+          {
+            "globalParticipantId": "gp_1787069564643_5pithds",
+            "name": "Neuthor"
+          },
+          {
+            "globalParticipantId": "gp_1786648984526_6yyg6ao",
+            "name": "Fabio",
+            "alias": "ElTarket"
+          }
+        ]
+      },
+      {
+        "id": "1787072607889-b7klomxgf",
+        "name": "I.A.L Phantom Smash",
+        "seed": 2,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786387243524_6er0c9u",
+            "name": "Ale"
+          },
+          {
+            "globalParticipantId": "gp_1786408686972_s4nl3vz",
+            "name": "Ismael"
+          },
+          {
+            "globalParticipantId": "gp_1786391754729_ma3zmky",
+            "name": "LuisEnrique",
+            "alias": "Oby"
+          }
+        ]
+      },
+      {
+        "id": "1787083673514-q0wpgz4n4",
+        "name": "Chorizo",
+        "seed": 3,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786387250178_ac5thmv",
+            "name": "Alexis",
+            "alias": "Adecty"
+          },
+          {
+            "globalParticipantId": "gp_1786399978250_n7msxo5",
+            "name": "Nelson"
+          },
+          {
+            "globalParticipantId": "gp_1786399934148_stq7jpb",
+            "name": "Pal"
+          }
+        ]
+      },
+      {
+        "id": "1787086866327-ro90l52tw",
+        "name": "Me froto con tu foto",
+        "seed": 4,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786387234567_aoe1z95",
+            "name": "Gino"
+          },
+          {
+            "globalParticipantId": "gp_1786393655444_41zyrro",
+            "name": "Olimak"
+          },
+          {
+            "globalParticipantId": "gp_1786391783115_87zwx03",
+            "name": "Tails"
+          }
+        ]
+      },
+      {
+        "id": "1787087929977-tu92i8dyk",
+        "name": "Smash Yupisote",
+        "seed": 5,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1787060569919_ov80gcy",
+            "name": "DeathFrost"
+          },
+          {
+            "globalParticipantId": "gp_1787087495865_2esi76p",
+            "name": "Poke"
+          },
+          {
+            "globalParticipantId": "gp_1787087788652_q2n124j",
+            "name": "WiikiFox"
+          }
+        ]
+      },
+      {
+        "id": "1787088512604-a57c39fuz",
+        "name": "Eyaculatis",
+        "seed": 6,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786396304199_u7v6gsb",
+            "name": "Dianger",
+            "alias": "Daysuke"
+          },
+          {
+            "globalParticipantId": "gp_1786808135517_vfoni2a",
+            "name": "Talianna",
+            "alias": "Sybau"
+          },
+          {
+            "globalParticipantId": "gp_1786393670067_xild06i",
+            "name": "Sementino"
+          }
+        ]
+      },
+      {
+        "id": "1787089335034-01yn2or1f",
+        "name": "Carried",
+        "seed": 7,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786756707267_xybm206",
+            "name": "Jackson",
+            "alias": "Soru-san"
+          },
+          {
+            "globalParticipantId": "gp_1786756661811_fa5pg74",
+            "name": "Brayan",
+            "alias": "el pepe"
+          },
+          {
+            "globalParticipantId": "gp_1786387087046_wnwtadb",
+            "name": "Damiam",
+            "alias": "KruX"
+          }
+        ]
+      },
+      {
+        "id": "1787092639728-p3zahlfn8",
+        "name": "Ratata",
+        "seed": 8,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786758906647_1ib85c1",
+            "name": "Kevin2",
+            "alias": "Yoko"
+          },
+          {
+            "globalParticipantId": "gp_1786757329455_8ijcyo8",
+            "name": "Yoenis",
+            "alias": "Akuma"
+          },
+          {
+            "globalParticipantId": "gp_1786758755895_bgdf2b9",
+            "name": "Yoeeee"
+          }
+        ]
+      }
+    ],
+    "bracket": null,
+    "championId": null,
+    "createdAt": "2026-08-18T16:03:25.182Z",
+    "updatedAt": "2026-08-18T22:37:19.728Z",
+    "teamSize": 3
   }
 ]

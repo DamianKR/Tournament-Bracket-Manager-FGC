@@ -293,33 +293,35 @@ export async function loadGlobalParticipantsAsync(): Promise<GlobalParticipant[]
   return readAllParticipants();
 }
 
-export function saveGlobalParticipants(data: GlobalParticipant[]): void {
+export async function saveGlobalParticipants(data: GlobalParticipant[]): Promise<void> {
   lsWriteParticipants(data);
-  writeAllParticipants(data).catch((err) =>
-    console.warn('[Storage] Background participants write error:', err)
-  );
+  try {
+    await writeAllParticipants(data);
+  } catch (err) {
+    console.warn('[Storage] Background participants write error:', err);
+  }
 }
 
 export async function saveGlobalParticipant(p: GlobalParticipant): Promise<void> {
   const all = lsReadParticipants();
   const idx = all.findIndex((x) => x.id === p.id);
   if (idx >= 0) { all[idx] = p; } else { all.push(p); }
-  saveGlobalParticipants(all);
+  await saveGlobalParticipants(all);
 }
 
 export async function deleteGlobalParticipant(id: string): Promise<void> {
   const filtered = lsReadParticipants().filter((p) => p.id !== id);
-  saveGlobalParticipants(filtered);
+  await saveGlobalParticipants(filtered);
 }
 
 // Adds a tournamentId to the participant's FK list (bidirectional link)
-export function linkParticipantToTournament(participantId: string, tournamentId: string): void {
+export async function linkParticipantToTournament(participantId: string, tournamentId: string): Promise<void> {
   const all = lsReadParticipants();
   const p = all.find((x) => x.id === participantId);
   if (p && !p.tournamentIds.includes(tournamentId)) {
     p.tournamentIds.push(tournamentId);
     p.updatedAt = new Date().toISOString();
-    saveGlobalParticipants(all);
+    await saveGlobalParticipants(all);
   }
 }
 

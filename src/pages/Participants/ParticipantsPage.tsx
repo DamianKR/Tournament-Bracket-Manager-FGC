@@ -76,7 +76,12 @@ function ParticipantsPage() {
     .filter((p) => {
       if (!searchQuery) return true;
       const q = searchQuery.toLowerCase();
-      return p.name.toLowerCase().includes(q) || p.alias?.toLowerCase().includes(q);
+      const charName = p.gameId && p.mainCharacterId
+        ? getCharacter(p.gameId, p.mainCharacterId)?.name.toLowerCase()
+        : '';
+      return p.name.toLowerCase().includes(q)
+        || p.alias?.toLowerCase().includes(q)
+        || charName?.includes(q);
     })
     .sort((a, b) => {
       if (sortBy === 'name') return a.name.localeCompare(b.name);
