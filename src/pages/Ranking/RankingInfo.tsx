@@ -2,7 +2,8 @@ import { getRankColor, getRankIcon } from '@/services/ranking/rankingService';
 import './RankingInfo.css';
 
 const RANK_TIERS = [
-  { name: 'Plata',      min: 0,    max: 1299, kFactor: 40, color: '#94a3b8' },
+  { name: 'Bronce',     min: 0,    max: 1199, kFactor: 44, color: '#8b5a2b' },
+  { name: 'Plata',      min: 1200, max: 1299, kFactor: 40, color: '#94a3b8' },
   { name: 'Oro',        min: 1300, max: 1399, kFactor: 34, color: '#f59e0b' },
   { name: 'Platino',    min: 1400, max: 1499, kFactor: 28, color: '#06b6d4' },
   { name: 'Diamante',   min: 1500, max: 1599, kFactor: 22, color: '#6366f1' },

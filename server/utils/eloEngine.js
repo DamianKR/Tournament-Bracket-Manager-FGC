@@ -20,7 +20,8 @@
 
 /** @type {Array<{name: string, min: number, max: number|null, color: string}>} */
 export const RANK_TIERS = [
-  { name: 'Plata',      min: 0,    max: 1299, color: '#94a3b8' },
+  { name: 'Bronce',     min: 0,    max: 1199, color: '#8b5a2b' },
+  { name: 'Plata',      min: 1200, max: 1299, color: '#94a3b8' },
   { name: 'Oro',        min: 1300, max: 1399, color: '#f59e0b' },
   { name: 'Platino',    min: 1400, max: 1499, color: '#06b6d4' },
   { name: 'Diamante',   min: 1500, max: 1599, color: '#6366f1' },
@@ -61,18 +62,20 @@ export function getRankColor(rankName) {
  * Higher K at low ranks = faster movement.
  * Lower K at high ranks = more stable top.
  *
- * Plata      (0–1299)    → 40
- * Oro        (1300–1399) → 34
- * Platino    (1400–1499) → 28
- * Diamante   (1500–1599) → 22
- * Vanquisher (1600–1699) → 18
- * Master     (1700–1849) → 14
- * Ultimate   (1850+)     → 10
+ * Bronce     (0–1199)     → 44
+ * Plata      (1200–1299)  → 40
+ * Oro        (1300–1399)  → 34
+ * Platino    (1400–1499)  → 28
+ * Diamante   (1500–1599)  → 22
+ * Vanquisher (1600–1699)  → 18
+ * Master     (1700–1849)  → 14
+ * Ultimate   (1850+)      → 10
  *
  * @param {number} points
  * @returns {number}
  */
 export function getKFactor(points) {
+  if (points < 1200) return 44;  // Bronce
   if (points < 1300) return 40;  // Plata
   if (points < 1400) return 34;  // Oro
   if (points < 1500) return 28;  // Platino

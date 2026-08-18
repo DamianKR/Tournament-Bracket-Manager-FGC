@@ -80,6 +80,7 @@ export interface MatchResult {
 // ── Rank color helper (mirrors server-side) ───────────────────────────────
 
 const RANK_COLORS: Record<string, string> = {
+  Bronce:     '#8b5a2b',
   Plata:      '#94a3b8',
   Oro:        '#f59e0b',
   Platino:    '#06b6d4',
@@ -96,6 +97,7 @@ export function getRankColor(rank: string): string {
 
 export function getRankIcon(rank: string): string {
   const icons: Record<string, string> = {
+    Bronce:     'fas fa-medal',
     Plata:      'fas fa-medal',
     Oro:        'fas fa-medal',
     Platino:    'fas fa-gem',
