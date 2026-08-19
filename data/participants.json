@@ -219,10 +219,11 @@
     "alias": "Eknd3las",
     "avatarUrl": null,
     "tournamentIds": [
-      "1786645309882-n8iemn0fx"
+      "1786645309882-n8iemn0fx",
+      "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:58:56.937Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z",
+    "updatedAt": "2026-08-19T14:41:47.627Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -381,9 +382,11 @@
     "name": "Ismael",
     "alias": "",
     "avatarUrl": null,
-    "tournamentIds": [],
+    "tournamentIds": [
+      "1787069005182-knkndcjgv"
+    ],
     "createdAt": "2026-08-11T00:38:06.972Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z",
+    "updatedAt": "2026-08-19T22:02:40.559Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -607,14 +610,15 @@
     "avatarUrl": null,
     "tournamentIds": [
       "1786759219748-qzufrr9ky",
-      "1786802844864-5bjdz2hif"
+      "1786802844864-5bjdz2hif",
+      "1787069005182-knkndcjgv"
     ],
     "gameId": "ssbu",
     "mainCharacterId": "min_min",
     "eloPoints": 1500,
     "eloRank": "Diamante",
     "createdAt": "2026-08-15T14:03:37.779Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z"
+    "updatedAt": "2026-08-19T04:13:16.552Z"
   },
   {
     "id": "gp_1786808135517_vfoni2a",
@@ -704,5 +708,95 @@
     "eloRank": "Diamante",
     "createdAt": "2026-08-18T21:16:28.652Z",
     "updatedAt": "2026-08-18T21:18:49.978Z"
+  },
+  {
+    "id": "gp_1787112645165_cj7eik8",
+    "name": "Maidiel",
+    "alias": "Ghost",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1787069005182-knkndcjgv"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": "dark_pit",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-19T04:10:45.165Z",
+    "updatedAt": "2026-08-19T04:13:16.553Z"
+  },
+  {
+    "id": "gp_1787112745370_2zahvg8",
+    "name": "Frank",
+    "alias": "Pollo",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1787069005182-knkndcjgv"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": "mario",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-19T04:12:25.370Z",
+    "updatedAt": "2026-08-19T04:13:16.553Z"
+  },
+  {
+    "id": "gp_1787150405263_dyjmu7b",
+    "name": "Maher",
+    "alias": "Daeron",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1787069005182-knkndcjgv"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": "isabelle",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-19T14:40:05.263Z",
+    "updatedAt": "2026-08-19T14:41:47.629Z"
+  },
+  {
+    "id": "gp_1787150448285_vlvxdb2",
+    "name": "Javier",
+    "alias": "Dante",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1787069005182-knkndcjgv"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": "terry",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-19T14:40:48.285Z",
+    "updatedAt": "2026-08-19T14:41:47.628Z"
+  },
+  {
+    "id": "gp_1787176726649_m106rr7",
+    "name": "Kira",
+    "alias": "Ev",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1787069005182-knkndcjgv"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": "king_dedede",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-19T21:58:46.649Z",
+    "updatedAt": "2026-08-19T22:01:21.795Z"
+  },
+  {
+    "id": "gp_1787176804167_dgzm0z9",
+    "name": "Miguel",
+    "alias": "Virutica JR",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1787069005182-knkndcjgv"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": "sora",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-19T22:00:04.167Z",
+    "updatedAt": "2026-08-19T22:01:21.795Z"
   }
 ]
