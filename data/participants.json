@@ -293,10 +293,11 @@
       "1786759219748-qzufrr9ky",
       "1786802844864-5bjdz2hif",
       "1786977122065-rrypq1js6",
-      "1787009908365-98h5rq54m"
+      "1787009908365-98h5rq54m",
+      "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T20:30:34.683Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z",
+    "updatedAt": "2026-08-20T02:32:06.197Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -314,10 +315,11 @@
       "1786759219748-qzufrr9ky",
       "1786763010204-fwzepsyo7",
       "1786802844864-5bjdz2hif",
-      "1786977122065-rrypq1js6"
+      "1786977122065-rrypq1js6",
+      "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T20:30:50.039Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z",
+    "updatedAt": "2026-08-20T02:32:06.199Z",
     "eloPoints": 1500,
     "eloRank": "Diamante"
   },
@@ -578,14 +580,15 @@
     "avatarUrl": null,
     "tournamentIds": [
       "1786759219748-qzufrr9ky",
-      "1786802844864-5bjdz2hif"
+      "1786802844864-5bjdz2hif",
+      "1787069005182-knkndcjgv"
     ],
     "gameId": "ssbu",
     "mainCharacterId": "sephiroth",
     "eloPoints": 1500,
     "eloRank": "Diamante",
     "createdAt": "2026-08-15T02:46:21.144Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z"
+    "updatedAt": "2026-08-20T02:32:06.198Z"
   },
   {
     "id": "gp_1786802386624_ficm2tl",
@@ -594,14 +597,15 @@
     "avatarUrl": null,
     "tournamentIds": [
       "1786759219748-qzufrr9ky",
-      "1786802844864-5bjdz2hif"
+      "1786802844864-5bjdz2hif",
+      "1787069005182-knkndcjgv"
     ],
     "gameId": "ssbu",
     "mainCharacterId": "dark_pit",
     "eloPoints": 1500,
     "eloRank": "Diamante",
     "createdAt": "2026-08-15T13:59:46.624Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z"
+    "updatedAt": "2026-08-20T05:13:52.570Z"
   },
   {
     "id": "gp_1786802617779_nnibxrr",
@@ -798,5 +802,35 @@
     "eloRank": "Diamante",
     "createdAt": "2026-08-19T22:00:04.167Z",
     "updatedAt": "2026-08-19T22:01:21.795Z"
+  },
+  {
+    "id": "gp_1787202759812_b30336h",
+    "name": "Slendy",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1787069005182-knkndcjgv"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": "cloud",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-20T05:12:39.812Z",
+    "updatedAt": "2026-08-20T05:13:52.569Z"
+  },
+  {
+    "id": "gp_1787202786652_4bme4ih",
+    "name": "Pokred",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1787069005182-knkndcjgv"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": "mr_game_and_watch",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
+    "createdAt": "2026-08-20T05:13:06.652Z",
+    "updatedAt": "2026-08-20T05:13:52.569Z"
   }
 ]

@@ -2114,9 +2114,30 @@
         ]
       },
       {
+        "id": "1787087929977-tu92i8dyk",
+        "name": "Smash Yupisote",
+        "seed": 3,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1787060569919_ov80gcy",
+            "name": "DeathFrost"
+          },
+          {
+            "globalParticipantId": "gp_1787087495865_2esi76p",
+            "name": "Poke"
+          },
+          {
+            "globalParticipantId": "gp_1787087788652_q2n124j",
+            "name": "WiikiFox"
+          }
+        ]
+      },
+      {
         "id": "1787083673514-q0wpgz4n4",
         "name": "Chorizo",
-        "seed": 3,
+        "seed": 4,
         "eliminated": false,
         "lossCount": 0,
         "members": [
@@ -2132,27 +2153,6 @@
           {
             "globalParticipantId": "gp_1786399934148_stq7jpb",
             "name": "Pal"
-          }
-        ]
-      },
-      {
-        "id": "1787087929977-tu92i8dyk",
-        "name": "Smash Yupisote",
-        "seed": 4,
-        "eliminated": false,
-        "lossCount": 0,
-        "members": [
-          {
-            "globalParticipantId": "gp_1787060569919_ov80gcy",
-            "name": "DeathFrost"
-          },
-          {
-            "globalParticipantId": "gp_1787087495865_2esi76p",
-            "name": "Poke"
-          },
-          {
-            "globalParticipantId": "gp_1787087788652_q2n124j",
-            "name": "WiikiFox"
           }
         ]
       },
@@ -2228,7 +2228,7 @@
       },
       {
         "id": "1787150507627-cwvbw5ynq",
-        "name": "Esquizofrenia pro max",
+        "name": "Esquizofrenia Pro Max",
         "seed": 8,
         "eliminated": false,
         "lossCount": 0,
@@ -2251,9 +2251,77 @@
         ]
       },
       {
+        "id": "1787176960558-p8z1eodn2",
+        "name": "I.A.J Phantom Smash",
+        "seed": 9,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786387243524_6er0c9u",
+            "name": "Ale"
+          },
+          {
+            "globalParticipantId": "gp_1786408686972_s4nl3vz",
+            "name": "Ismael"
+          },
+          {
+            "globalParticipantId": "gp_1786756707267_xybm206",
+            "name": "Jackson",
+            "alias": "Soru-san"
+          }
+        ]
+      },
+      {
+        "id": "1787193126197-ca5ubxtlp",
+        "name": "Tung Tung Tung Pinghurs",
+        "seed": 10,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786393834683_lievrvf",
+            "name": "Kevin",
+            "alias": "AmorAltras"
+          },
+          {
+            "globalParticipantId": "gp_1786761981144_462dv5s",
+            "name": "Samuel",
+            "alias": "Grimmjo"
+          },
+          {
+            "globalParticipantId": "gp_1786393850039_1imzf6x",
+            "name": "Dionisio",
+            "alias": "Dio"
+          }
+        ]
+      },
+      {
+        "id": "1787202832568-v25m1giar",
+        "name": "Talla Dura",
+        "seed": 11,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1787202759812_b30336h",
+            "name": "Slendy"
+          },
+          {
+            "globalParticipantId": "gp_1787202786652_4bme4ih",
+            "name": "Pokred"
+          },
+          {
+            "globalParticipantId": "gp_1786802386624_ficm2tl",
+            "name": "Yokai",
+            "alias": "Yokai"
+          }
+        ]
+      },
+      {
         "id": "1787176881794-tjt4f5us2",
         "name": "Carried",
-        "seed": 9,
+        "seed": 12,
         "eliminated": false,
         "lossCount": 0,
         "members": [
@@ -2273,34 +2341,12 @@
             "alias": "Virutica JR"
           }
         ]
-      },
-      {
-        "id": "1787176960558-p8z1eodn2",
-        "name": "I.A.J Phantom Smash",
-        "seed": 10,
-        "eliminated": false,
-        "lossCount": 0,
-        "members": [
-          {
-            "globalParticipantId": "gp_1786387243524_6er0c9u",
-            "name": "Ale"
-          },
-          {
-            "globalParticipantId": "gp_1786408686972_s4nl3vz",
-            "name": "Ismael"
-          },
-          {
-            "globalParticipantId": "gp_1786756707267_xybm206",
-            "name": "Jackson",
-            "alias": "Soru-san"
-          }
-        ]
       }
     ],
     "bracket": null,
     "championId": null,
     "createdAt": "2026-08-18T16:03:25.182Z",
-    "updatedAt": "2026-08-19T22:35:09.250Z",
+    "updatedAt": "2026-08-20T05:14:38.243Z",
     "teamSize": 3
   }
 ]
