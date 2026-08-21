@@ -1,4 +1,4 @@
-import { Tournament, Participant, TournamentMode, TournamentType, TeamSize } from '@/models/types';
+import { Tournament, Participant, TournamentMode, TournamentType, TeamSize, SeedingMode, PartialSeedCount } from '@/models/types';
 import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult } from '@/engine/progression/matchProgression';
@@ -13,7 +13,9 @@ export function createTournament(
   name: string, 
   mode: TournamentMode, 
   type: TournamentType = 'singles',
-  teamSize?: TeamSize
+  teamSize?: TeamSize,
+  seedingMode?: SeedingMode,
+  partialSeedCount?: PartialSeedCount
 ): Tournament {
   const tournament: Tournament = {
     id: generateId(),
@@ -22,6 +24,7 @@ export function createTournament(
     type,
     status: 'setup',
     gameId: null,
+    seedingMode: seedingMode || 'none',
     participants: [],
     bracket: null,
     championId: null,
@@ -32,6 +35,10 @@ export function createTournament(
   // Only add teamSize for team tournaments
   if (type === 'teams' && teamSize) {
     tournament.teamSize = teamSize;
+  }
+
+  if (seedingMode === 'partial' && partialSeedCount) {
+    tournament.partialSeedCount = partialSeedCount;
   }
 
   saveTournament(tournament);
@@ -241,6 +248,33 @@ export function shuffleParticipants(tournamentId: string): Tournament {
 }
 
 /**
+ * Update tournament participants order (for seeding preview)
+ */
+export function updateTournamentParticipants(
+  tournamentId: string,
+  participants: Participant[],
+  bracketSeeded = false
+): Tournament {
+  console.log('=== UPDATE TOURNAMENT PARTICIPANTS ===');
+  console.log('Participants received:', participants.map(p => `${p.name} (seed ${p.seed})`));
+  console.log('Bracket seeded flag:', bracketSeeded);
+  
+  const tournament = loadTournament(tournamentId);
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'setup') throw new Error('Cannot update participants in a tournament in progress');
+
+  tournament.participants = participants;
+  tournament.bracketSeeded = bracketSeeded;
+  tournament.updatedAt = new Date().toISOString();
+
+  saveTournament(tournament);
+  
+  console.log('Tournament participants after save:', tournament.participants.map(p => `${p.name} (seed ${p.seed})`));
+  
+  return tournament;
+}
+
+/**
  * Start the tournament and generate bracket
  */
 export function startTournament(tournamentId: string): Tournament {
@@ -251,7 +285,19 @@ export function startTournament(tournamentId: string): Tournament {
     throw new Error(`Minimum ${MIN_PARTICIPANTS} participants required`);
   }
 
-  tournament.participants = assignSeeds(tournament.participants);
+  console.log('=== START TOURNAMENT ===');
+  console.log('Bracket seeded?', tournament.bracketSeeded);
+  console.log('Participants before assignSeeds:', tournament.participants.map(p => `${p.name} (seed ${p.seed})`));
+
+  // Only assign seeds if bracket seeding was not already applied
+  if (!tournament.bracketSeeded) {
+    tournament.participants = assignSeeds(tournament.participants);
+    console.log('Assigned seeds (no bracket seeding)');
+  } else {
+    console.log('Skipping assignSeeds (bracket seeding already applied)');
+  }
+
+  console.log('Participants before bracket generation:', tournament.participants.map(p => `${p.name} (seed ${p.seed})`));
 
   // Generate bracket based on tournament mode
   tournament.bracket = generateBracket(tournament.participants, tournament.mode);

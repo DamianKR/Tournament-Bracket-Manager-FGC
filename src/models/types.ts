@@ -9,6 +9,8 @@ export type TournamentType = 'singles' | 'teams';
 export type BracketType = 'winner' | 'loser' | 'grand_final';
 export type MatchStatus = 'pending' | 'in_progress' | 'completed';
 export type TeamSize = 1 | 2 | 3 | 4 | 5;
+export type SeedingMode = 'none' | 'full' | 'partial';
+export type PartialSeedCount = 4 | 8 | 16;
 
 // Representa un jugador individual dentro de un equipo
 export interface TeamMember {
@@ -63,6 +65,9 @@ export interface Tournament {
   status: TournamentStatus;
   gameId?: string | null;
   teamSize?: TeamSize;          // Only for team tournaments: 2, 3, 4, or 5
+  seedingMode?: SeedingMode;    // How participants were seeded
+  partialSeedCount?: PartialSeedCount; // If seedingMode is 'partial', how many top seeds
+  bracketSeeded?: boolean;      // True if applyBracketSeeding was applied (participants in bracket order)
   participants: Participant[];
   bracket: Bracket | null;
   championId: string | null;

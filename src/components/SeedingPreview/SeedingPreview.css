@@ -1,0 +1,91 @@
+.seeding-preview {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.seeding-header {
+  margin-bottom: 1.5rem;
+}
+
+.seeding-header h2 {
+  margin-bottom: 0.5rem;
+}
+
+.seeding-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.seeding-list {
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.seeding-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  cursor: move;
+  transition: background-color 0.15s;
+}
+
+.seeding-item:last-child {
+  border-bottom: none;
+}
+
+.seeding-item:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.seeding-item.dragging {
+  opacity: 0.5;
+}
+
+.seeding-item.top-seed {
+  background-color: rgba(var(--primary-color-rgb, 109, 40, 217), 0.05);
+}
+
+.seeding-rank {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 60px;
+}
+
+.seed-number {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.seed-star {
+  color: var(--primary-color);
+  font-size: 0.75rem;
+}
+
+.seeding-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.seeding-alias {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.seeding-drag-handle {
+  color: var(--text-tertiary);
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+.seeding-item:hover .seeding-drag-handle {
+  opacity: 1;
+}

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { TournamentMode, TournamentType, GlobalParticipant, TeamSize } from '@/models/types';
+import { TournamentMode, TournamentType, GlobalParticipant, TeamSize, SeedingMode, PartialSeedCount } from '@/models/types';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import {
   createTournament,
@@ -11,7 +11,7 @@ import {
   moveParticipant,
   shuffleParticipants,
   startTournament,
-  getTournament
+  getTournament,
 } from '@/services/tournament/tournamentService';
 import { searchParticipants } from '@/services/participants/participantService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
@@ -19,9 +19,10 @@ import Sidebar from '@/components/Sidebar/Sidebar';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
 import BracketPreview from '@/components/Bracket/BracketPreview';
 import AddTeamModal from '@/components/AddTeamModal/AddTeamModal';
+import SeedingPreview from '@/components/SeedingPreview/SeedingPreview';
 import './CreateTournament.css';
 
-type ViewMode = 'participants' | 'bracket';
+type ViewMode = 'participants' | 'bracket' | 'seeding-preview';
 
 function CreateTournament() {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ function CreateTournament() {
   const [mode, setMode] = useState<TournamentMode>('double_elimination');
   const [type, setType] = useState<TournamentType>('singles');
   const [teamSize, setTeamSize] = useState<TeamSize>(2);
+  const [seedingMode, setSeedingMode] = useState<SeedingMode>('none');
+  const [partialSeedCount, setPartialSeedCount] = useState<PartialSeedCount>(8);
   const [viewMode, setViewMode] = useState<ViewMode>('participants');
   const [participants, setParticipants] = useState<any[]>([]);
   const [newParticipantName, setNewParticipantName] = useState('');
@@ -147,7 +150,9 @@ function CreateTournament() {
         tournamentName, 
         mode, 
         type,
-        type === 'teams' ? teamSize : undefined
+        type === 'teams' ? teamSize : undefined,
+        type === 'singles' ? seedingMode : undefined,
+        type === 'singles' && seedingMode === 'partial' ? partialSeedCount : undefined
       );
       setTournamentId(tournament.id);
       setIsCreated(true);
@@ -247,6 +252,13 @@ function CreateTournament() {
       setError(`Minimum ${MIN_PARTICIPANTS} participants required`);
       return;
     }
+    
+    // If seeding is enabled for singles, show preview
+    if (type === 'singles' && seedingMode !== 'none') {
+      setViewMode('seeding-preview');
+      return;
+    }
+    
     setShowStartConfirm(true);
   };
 
@@ -361,6 +373,40 @@ function CreateTournament() {
                   <option value="single_elimination">Single Elimination</option>
                 </select>
               </div>
+
+              {type === 'singles' && (
+                <div className="form-group">
+                  <label>Seeding</label>
+                  <select
+                    value={seedingMode}
+                    onChange={(e) => setSeedingMode(e.target.value as SeedingMode)}
+                    className="w-full"
+                  >
+                    <option value="none">Manual (current order)</option>
+                    <option value="full">Full ranking seeding</option>
+                    <option value="partial">Partial seeding (top seeds only)</option>
+                  </select>
+                  {seedingMode === 'partial' && (
+                    <div className="mt-2">
+                      <label className="text-sm">Top seeds to place:</label>
+                      <select
+                        value={partialSeedCount}
+                        onChange={(e) => setPartialSeedCount(Number(e.target.value) as PartialSeedCount)}
+                        className="w-full mt-1"
+                      >
+                        <option value={4}>Top 4</option>
+                        <option value={8}>Top 8</option>
+                        <option value={16}>Top 16</option>
+                      </select>
+                    </div>
+                  )}
+                  <p className="text-secondary text-sm mt-1">
+                    {seedingMode === 'none' && 'Participants stay in the order you add them'}
+                    {seedingMode === 'full' && 'All participants ranked by ELO + win rate'}
+                    {seedingMode === 'partial' && `Top ${partialSeedCount} ranked, rest randomized`}
+                  </p>
+                </div>
+              )}
 
               <div className="form-actions">
                 <button className="btn-outline" onClick={handleCancel}>Cancel</button>
@@ -481,6 +527,18 @@ function CreateTournament() {
                     </button>
                   </div>
                 </div>
+              )}
+
+              {viewMode === 'seeding-preview' && (
+                <SeedingPreview
+                  tournamentId={tournamentId!}
+                  participants={participants}
+                  seedingMode={seedingMode}
+                  partialSeedCount={partialSeedCount}
+                  onBack={() => setViewMode('participants')}
+                  onConfirm={() => setShowStartConfirm(true)}
+                  onParticipantsChange={setParticipants}
+                />
               )}
 
               {viewMode === 'bracket' && (

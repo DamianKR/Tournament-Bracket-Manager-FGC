@@ -77,16 +77,58 @@ function distributeByes(
 /**
  * Generate winner bracket matches
  */
+/**
+ * Generate standard bracket order (same algorithm as seeding service)
+ */
+function generateStandardBracketOrder(bracketSize: number): number[] {
+  if (bracketSize === 1) return [1];
+  if (bracketSize === 2) return [1, 2];
+
+  const half = bracketSize / 2;
+  const prevOrder = generateStandardBracketOrder(half);
+
+  const result: number[] = [];
+  for (const seed of prevOrder) {
+    result.push(seed);
+    result.push(bracketSize + 1 - seed);
+  }
+
+  return result;
+}
+
 function generateWinnerBracket(participants: Participant[]): Match[] {
   const matches: Match[] = [];
   const bracketSize = nextPowerOfTwo(participants.length);
   const rounds = calculateWinnerRounds(participants.length);
   
-  // Use participants in the exact order the user arranged them (by seed).
-  // BYEs are distributed evenly so players get spread across the bracket
-  // instead of being clumped at the top with all BYEs at the bottom.
-  const sortedParticipants = [...participants].sort((a, b) => a.seed - b.seed);
-  const seededParticipants = distributeByes(sortedParticipants, bracketSize);
+  console.log('=== DOUBLE ELIMINATION WINNER BRACKET GENERATION ===');
+  console.log('Input participants:', participants.map(p => `${p.name} (seed ${p.seed})`));
+  console.log('Bracket size:', bracketSize);
+  
+  // Check if participants are already in bracket-seeded order
+  // (seeds are NOT in sequential order 1,2,3,4...)
+  const isSequential = participants.every((p, i) => i === 0 || p.seed === participants[i - 1].seed + 1);
+  console.log('Is sequential?', isSequential);
+  
+  let seededParticipants: (Participant | null)[];
+  
+  if (!isSequential) {
+    // Already bracket-seeded: reconstruct bracket order with nulls
+    const bracketOrder = generateStandardBracketOrder(bracketSize);
+    console.log('Bracket order:', bracketOrder);
+    
+    const participantMap = new Map<number, Participant>();
+    participants.forEach(p => participantMap.set(p.seed, p));
+    console.log('Participant map:', Array.from(participantMap.entries()).map(([seed, p]) => `${seed}: ${p.name}`));
+    
+    seededParticipants = bracketOrder.map(seedNum => participantMap.get(seedNum) || null);
+    console.log('Final seeded array:', seededParticipants.map((p, i) => `[${i}] ${p ? `${p.name} (seed ${p.seed})` : 'BYE'}`));
+  } else {
+    // Sequential seeds: sort and distribute byes
+    const sortedParticipants = [...participants].sort((a, b) => a.seed - b.seed);
+    seededParticipants = distributeByes(sortedParticipants, bracketSize);
+    console.log('Final seeded array (distributed):', seededParticipants.map((p, i) => `[${i}] ${p ? `${p.name} (seed ${p.seed})` : 'BYE'}`));
+  }
 
   // Generate first round matches
   const firstRoundMatches = bracketSize / 2;
