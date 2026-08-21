@@ -1,0 +1,135 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { League } from '@/models/league';
+import { getAllLeagues, deleteLeague } from '@/services/leagues/leagueService';
+import { getGame } from '@/data/games';
+import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import './LeaguesTab.css';
+
+function LeaguesTab() {
+  const navigate = useNavigate();
+  const [leagues, setLeagues] = useState<League[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+
+  useEffect(() => {
+    loadLeagues();
+  }, []);
+
+  async function loadLeagues() {
+    setLoading(true);
+    const data = await getAllLeagues();
+    setLeagues(data);
+    setLoading(false);
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    const ok = await deleteLeague(deleteTarget.id);
+    setDeleteTarget(null);
+    if (ok) loadLeagues();
+  }
+
+  if (loading) {
+    return (
+      <div className="leagues-tab">
+        <div className="loading-state">Loading leagues...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="leagues-tab">
+      <div className="leagues-header">
+        <div>
+          <h1><i className="fas fa-shield-alt" /> Leagues</h1>
+          <p className="text-secondary">Seasons of round-robin matches spread across multiple weeks</p>
+        </div>
+        <button className="btn-primary" onClick={() => navigate('/events/leagues/create')}>
+          <i className="fas fa-plus" /> New League
+        </button>
+      </div>
+
+      {leagues.length === 0 ? (
+        <div className="empty-state card">
+          <h3>No leagues yet</h3>
+          <p className="text-secondary">Create a round-robin league and track weekly matches and ELO standings.</p>
+          <button className="btn-primary mt-2" onClick={() => navigate('/events/leagues/create')}>
+            <i className="fas fa-plus" /> New League
+          </button>
+        </div>
+      ) : (
+        <div className="leagues-grid">
+          {leagues.map((league) => {
+            const game = getGame(league.gameId);
+            const statusClass = league.status === 'active' ? 'status-active' : 'status-completed';
+
+            return (
+              <div
+                key={league.id}
+                className="league-card card"
+                onClick={() => navigate(`/events/leagues/${league.id}`)}
+              >
+                <div className="league-card-header">
+                  <h3 className="league-card-title">{league.name}</h3>
+                  <span className={`league-card-status ${statusClass}`}>
+                    {league.status === 'active' ? 'Active' : 'Completed'}
+                  </span>
+                </div>
+
+                <div className="league-card-meta">
+                  <div className="info-row">
+                    <span>Game</span>
+                    <span>{game?.shortName || league.gameId}</span>
+                  </div>
+                  <div className="info-row">
+                    <span>Players</span>
+                    <span>{league.participantIds.length}</span>
+                  </div>
+                  <div className="info-row">
+                    <span>Week</span>
+                    <span>{league.currentWeek}</span>
+                  </div>
+                  <div className="info-row">
+                    <span>Format</span>
+                    <span>Best of {league.gamesPerMatch}</span>
+                  </div>
+                </div>
+
+                <div className="league-card-actions">
+                  <button
+                    className="btn-outline"
+                    onClick={() => navigate(`/events/leagues/${league.id}`)}
+                  >
+                    <i className="fas fa-eye" /> View League
+                  </button>
+                  <button
+                    className="btn-danger btn-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteTarget({ id: league.id, name: league.name });
+                    }}
+                    title="Delete league"
+                  >
+                    <i className="fas fa-trash" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <ConfirmModal
+        isOpen={deleteTarget !== null}
+        title="Delete league"
+        message={deleteTarget ? `Are you sure you want to delete "${deleteTarget.name}"? This cannot be undone.` : ''}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        confirmText="Delete"
+      />
+    </div>
+  );
+}
+
+export default LeaguesTab;

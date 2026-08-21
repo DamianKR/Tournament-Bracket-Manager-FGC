@@ -3,6 +3,19 @@
 // Re-export league types
 export type { League, LeagueMatch, LeagueStanding, LeagueStats } from './league';
 
+// Re-export ranked match types
+export type { RankedMatch, RankedMatchType, RankedMatchResult } from './rankedMatch';
+
+// Re-export duel types
+export type { 
+  DuelChallenge, 
+  DuelChallengeStatus, 
+  DuelSettings, 
+  DuelValidationResult,
+  DuelStats 
+} from './duel';
+export { DEFAULT_DUEL_SETTINGS } from './duel';
+
 export type TournamentStatus = 'setup' | 'in_progress' | 'completed';
 export type TournamentMode = 'single_elimination' | 'double_elimination';
 export type TournamentType = 'singles' | 'teams';

@@ -667,3 +667,54 @@
 .profile-edit-form .form-actions {
   margin-top: 1.5rem;
 }
+
+/* -- Ranked Duels Card -------------------------------------------------- */
+
+.profile-duels-card {
+  margin-top: 2rem;
+  padding: 1.5rem;
+}
+
+.profile-duels-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.profile-duels-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-color);
+}
+
+.profile-duels-header h3 i {
+  color: var(--primary-color);
+  margin-right: 0.5rem;
+}
+
+.profile-stat-card--duel {
+  background: linear-gradient(135deg, var(--primary-void) 0%, var(--primary-deep) 100%);
+  border: 1px solid var(--primary-color);
+}
+
+.profile-stat-card--duel .psc-value {
+  color: var(--primary-color);
+  text-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+}
+
+.psc-sublabel {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .profile-duels-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

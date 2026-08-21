@@ -21,3 +21,6 @@ export const participants   = createCollection(path.join(DATA_DIR, 'participants
 export const matches        = createCollection(path.join(DATA_DIR, 'matches.json'));
 export const leagues        = createCollection(path.join(DATA_DIR, 'leagues.json'));
 export const leagueMatches  = createCollection(path.join(DATA_DIR, 'league_matches.json'));
+export const duels          = createCollection(path.join(DATA_DIR, 'duels.json'));
+export const rankedMatches  = createCollection(path.join(DATA_DIR, 'ranked_matches.json'));
+export const duelSettings   = createCollection(path.join(DATA_DIR, 'duel_settings.json'));

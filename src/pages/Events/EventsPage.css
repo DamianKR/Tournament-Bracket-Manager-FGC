@@ -1,0 +1,21 @@
+.events-page {
+  display: flex;
+  min-height: calc(100vh - 60px);
+  background: var(--background-color);
+}
+
+.events-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .events-page {
+    flex-direction: column;
+  }
+
+  .events-content {
+    padding: 1rem;
+  }
+}

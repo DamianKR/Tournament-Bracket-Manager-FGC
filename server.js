@@ -20,6 +20,8 @@ import tournamentsRouter from './server/routes/tournaments.js';
 import participantsRouter from './server/routes/participants.js';
 import rankingRouter from './server/routes/ranking.js';
 import leaguesRouter from './server/routes/leagues.js';
+import duelsRouter from './server/routes/duels.js';
+import rankedMatchesRouter from './server/routes/rankedMatches.js';
 
 const PORT = 3001;
 
@@ -37,6 +39,8 @@ app.use('/api/tournaments', tournamentsRouter);
 app.use('/api/participants', participantsRouter);
 app.use('/api/ranking', rankingRouter);
 app.use('/api/leagues', leaguesRouter);
+app.use('/api/duels', duelsRouter);
+app.use('/api/ranked-matches', rankedMatchesRouter);
 
 // ── 404 fallback ────────────────────────────────────────────────────────
 app.use((_req, res) => {

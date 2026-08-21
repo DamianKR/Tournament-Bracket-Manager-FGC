@@ -1,0 +1,45 @@
+.history-tab {
+  width: 100%;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.history-header h1 {
+  color: var(--primary-color);
+  text-shadow: 0 0 24px rgba(124, 58, 237, 0.2);
+}
+
+.coming-soon {
+  text-align: center;
+  padding: 4rem 2rem;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.coming-soon h2 {
+  margin: 1rem 0;
+  color: var(--text-color);
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 0;
+  text-align: left;
+  display: inline-block;
+}
+
+.feature-list li {
+  padding: 0.5rem 0;
+  color: var(--text-secondary);
+}
+
+.feature-list i {
+  color: var(--success-color);
+  margin-right: 0.5rem;
+}

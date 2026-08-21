@@ -61,16 +61,11 @@ function SeedingPreview({
   };
 
   const handleConfirm = () => {
-    console.log('=== SEEDING PREVIEW CONFIRM ===');
-    console.log('Seeded participants (input):', seededParticipants.map(p => `${p.name} (seed ${p.seed})`));
-    
     // Apply bracket seeding positions (includes nulls for byes)
     const bracketSeededWithByes = applyBracketSeeding(seededParticipants);
-    console.log('Bracket seeded with byes:', bracketSeededWithByes.map((p, i) => `[${i}] ${p ? `${p.name} (seed ${p.seed})` : 'null'}`));
     
     // Filter out nulls for tournament participants array
     const bracketSeeded = bracketSeededWithByes.filter((p): p is Participant => p !== null);
-    console.log('Bracket seeded (filtered):', bracketSeeded.map(p => `${p.name} (seed ${p.seed})`));
     
     // Mark tournament as bracket-seeded so engine knows not to re-sort
     updateTournamentParticipants(tournamentId, bracketSeeded, true);

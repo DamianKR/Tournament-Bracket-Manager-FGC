@@ -1,0 +1,476 @@
+/**
+ * Duel Service — 3-layer persistence (JSON first + localStorage cache)
+ *
+ * Priority for READS:
+ *   1. Local JSON server (http://localhost:3001/api/duels)
+ *   2. localStorage cache
+ *
+ * Priority for WRITES:
+ *   1. localStorage (synchronous, instant)
+ *   2. Local JSON server (async, fire-and-forget)
+ */
+
+import { DuelChallenge, DuelSettings, DuelValidationResult, DuelStats, DEFAULT_DUEL_SETTINGS } from '@/models/duel';
+import { getParticipant } from '@/services/participants/participantService';
+
+const API_BASE = 'http://localhost:3001/api/duels';
+const LS_KEY_CHALLENGES = 'bracket_duel_challenges';
+const LS_KEY_SETTINGS = 'bracket_duel_settings';
+const HEALTH_TIMEOUT_MS = 1500;
+
+let _healthPromise: Promise<boolean> | null = null;
+
+function isLocalServerAvailable(): Promise<boolean> {
+  if (_healthPromise) return _healthPromise;
+  _healthPromise = fetch(`${API_BASE}/settings`, {
+    signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
+  })
+    .then((res) => res.ok)
+    .catch(() => false);
+  return _healthPromise;
+}
+
+function resetServerCache() {
+  _healthPromise = null;
+}
+
+// ── localStorage helpers ──────────────────────────────────────────────────
+
+function lsReadChallenges(): DuelChallenge[] {
+  try {
+    const raw = localStorage.getItem(LS_KEY_CHALLENGES);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function lsWriteChallenges(data: DuelChallenge[]): void {
+  try {
+    localStorage.setItem(LS_KEY_CHALLENGES, JSON.stringify(data));
+  } catch (err) {
+    console.error('[Duels] localStorage challenges write failed:', err);
+  }
+}
+
+function lsReadSettings(): DuelSettings {
+  try {
+    const raw = localStorage.getItem(LS_KEY_SETTINGS);
+    return raw ? JSON.parse(raw) : { ...DEFAULT_DUEL_SETTINGS };
+  } catch {
+    return { ...DEFAULT_DUEL_SETTINGS };
+  }
+}
+
+function lsWriteSettings(data: DuelSettings): void {
+  try {
+    localStorage.setItem(LS_KEY_SETTINGS, JSON.stringify(data));
+  } catch (err) {
+    console.error('[Duels] localStorage settings write failed:', err);
+  }
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────
+
+/**
+ * Get duel settings (sync from localStorage)
+ */
+export function getDuelSettings(): DuelSettings {
+  return lsReadSettings();
+}
+
+/**
+ * Get duel settings (async from server, fallback to localStorage)
+ */
+export async function getDuelSettingsAsync(): Promise<DuelSettings> {
+  if (await isLocalServerAvailable()) {
+    try {
+      const res = await fetch(`${API_BASE}/settings`);
+      if (res.ok) {
+        const data = await res.json();
+        lsWriteSettings(data);
+        return data;
+      }
+    } catch (err) {
+      console.warn('[Duels] Server settings read failed:', err);
+      resetServerCache();
+    }
+  }
+  return lsReadSettings();
+}
+
+/**
+ * Update duel settings (write to localStorage + server)
+ */
+export async function updateDuelSettings(newSettings: Partial<DuelSettings>): Promise<DuelSettings> {
+  const current = lsReadSettings();
+  const updated = { ...current, ...newSettings };
+  
+  // Write to localStorage first (instant)
+  lsWriteSettings(updated);
+  
+  // Sync to server (fire-and-forget)
+  if (await isLocalServerAvailable()) {
+    fetch(`${API_BASE}/settings`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated),
+    }).catch((err) => {
+      console.warn('[Duels] Server settings write failed:', err);
+      resetServerCache();
+    });
+  }
+  
+  return updated;
+}
+
+// ── Challenges ────────────────────────────────────────────────────────────
+
+/**
+ * Get all challenges (sync from localStorage)
+ */
+export function getAllChallenges(): DuelChallenge[] {
+  return lsReadChallenges();
+}
+
+/**
+ * Get all challenges (async from server, fallback to localStorage)
+ */
+export async function getAllChallengesAsync(): Promise<DuelChallenge[]> {
+  if (await isLocalServerAvailable()) {
+    try {
+      const res = await fetch(API_BASE);
+      if (res.ok) {
+        const data = await res.json();
+        // Only overwrite cache if server has data OR cache is empty
+        if (data.length > 0 || lsReadChallenges().length === 0) {
+          lsWriteChallenges(data);
+        }
+        return data.length > 0 ? data : lsReadChallenges();
+      }
+    } catch (err) {
+      console.warn('[Duels] Server challenges read failed:', err);
+      resetServerCache();
+    }
+  }
+  return lsReadChallenges();
+}
+
+/**
+ * Get active challenges (pending/accepted)
+ */
+export async function getActiveChallenges(): Promise<DuelChallenge[]> {
+  const all = await getAllChallengesAsync();
+  return all.filter(c => c.status === 'pending' || c.status === 'accepted');
+}
+
+/**
+ * Get a single challenge by ID
+ */
+export async function getDuelChallenge(id: string): Promise<DuelChallenge | null> {
+  const all = await getAllChallengesAsync();
+  return all.find(c => c.id === id) ?? null;
+}
+
+/**
+ * Get challenges created this week by a player
+ */
+export async function getChallengesThisWeek(challengerId: string): Promise<DuelChallenge[]> {
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  
+  const all = await getAllChallengesAsync();
+  return all.filter(
+    c => c.challengerId === challengerId && new Date(c.createdAt) > weekAgo
+  );
+}
+
+/**
+ * Get duel stats for a player
+ */
+export async function getDuelStats(participantId: string): Promise<DuelStats> {
+  const challengesThisWeek = (await getChallengesThisWeek(participantId)).length;
+  const settings = await getDuelSettingsAsync();
+  
+  const all = await getAllChallengesAsync();
+  const pending = all.filter(
+    c => (c.challengerId === participantId || c.challengedId === participantId) && 
+         c.status === 'pending'
+  ).length;
+  
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  const completedThisWeek = all.filter(
+    c => (c.challengerId === participantId || c.challengedId === participantId) && 
+         c.status === 'completed' &&
+         c.completedAt && new Date(c.completedAt) > weekAgo
+  ).length;
+  
+  return {
+    challengesThisWeek,
+    maxChallengesPerWeek: settings.maxChallengesPerWeek,
+    pendingChallenges: pending,
+    completedThisWeek,
+  };
+}
+
+/**
+ * Validate if a player can challenge another
+ */
+export async function validateDuelChallenge(
+  challengerId: string,
+  challengedId: string
+): Promise<DuelValidationResult> {
+  // 1. Can't challenge yourself
+  if (challengerId === challengedId) {
+    return { valid: false, error: 'Cannot challenge yourself' };
+  }
+
+  const settings = await getDuelSettingsAsync();
+  const challenger = getParticipant(challengerId);
+  const challenged = getParticipant(challengedId);
+
+  if (!challenger || !challenged) {
+    return { valid: false, error: 'One or both participants not found' };
+  }
+
+  // 2. Check weekly limit
+  const challengesThisWeek = await getChallengesThisWeek(challengerId);
+  if (challengesThisWeek.length >= settings.maxChallengesPerWeek) {
+    return {
+      valid: false,
+      error: `You have reached your weekly limit of ${settings.maxChallengesPerWeek} challenges`,
+    };
+  }
+
+  // 3. Check ELO restriction (can't challenge someone too far below)
+  const challengerElo = challenger.eloPoints ?? 1500;
+  const challengedElo = challenged.eloPoints ?? 1500;
+  const eloDiff = challengerElo - challengedElo;
+
+  if (eloDiff > settings.eloRestriction) {
+    return {
+      valid: false,
+      error: `Cannot challenge a player more than ${settings.eloRestriction} ELO points below you`,
+    };
+  }
+
+  // 4. Check if already challenged this week
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  
+  const all = await getAllChallengesAsync();
+  const alreadyChallenged = all.some(
+    c =>
+      c.challengerId === challengerId &&
+      c.challengedId === challengedId &&
+      new Date(c.createdAt) > weekAgo &&
+      c.status !== 'declined' &&
+      c.status !== 'expired'
+  );
+
+  if (alreadyChallenged) {
+    return {
+      valid: false,
+      error: 'You have already challenged this player this week',
+    };
+  }
+
+  // 5. Check for pending duplicate
+  const pendingDuplicate = all.some(
+    c =>
+      c.challengerId === challengerId &&
+      c.challengedId === challengedId &&
+      c.status === 'pending'
+  );
+
+  if (pendingDuplicate) {
+    return {
+      valid: false,
+      error: 'You already have a pending challenge with this player',
+    };
+  }
+
+  // All checks passed
+  const warnings: string[] = [];
+  if (eloDiff < -settings.eloRestriction) {
+    warnings.push(`This player is ${Math.abs(eloDiff)} ELO points above you`);
+  }
+
+  return { valid: true, warnings };
+}
+
+/**
+ * Write challenges to localStorage + server
+ */
+async function writeChallenges(challenges: DuelChallenge[]): Promise<void> {
+  // Write to localStorage first (instant)
+  lsWriteChallenges(challenges);
+  
+  // Sync to server (fire-and-forget)
+  if (await isLocalServerAvailable()) {
+    fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(challenges),
+    }).catch((err) => {
+      console.warn('[Duels] Server challenges write failed:', err);
+      resetServerCache();
+    });
+  }
+}
+
+/**
+ * Create a new duel challenge
+ */
+export async function createDuelChallenge(
+  challengerId: string,
+  challengedId: string
+): Promise<DuelChallenge | null> {
+  // Validate first
+  const validation = await validateDuelChallenge(challengerId, challengedId);
+  if (!validation.valid) {
+    console.error('Challenge validation failed:', validation.error);
+    return null;
+  }
+
+  const settings = await getDuelSettingsAsync();
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + settings.challengeExpirationDays);
+
+  const challenge: DuelChallenge = {
+    id: `duel_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    challengerId,
+    challengedId,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    expiresAt: expiresAt.toISOString(),
+  };
+
+  // Add to localStorage cache
+  const all = lsReadChallenges();
+  all.push(challenge);
+  lsWriteChallenges(all);
+
+  // Sync to server
+  if (await isLocalServerAvailable()) {
+    try {
+      const res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(challenge),
+      });
+      if (!res.ok) throw new Error('Server rejected challenge');
+    } catch (err) {
+      console.warn('[Duels] Server challenge create failed:', err);
+      resetServerCache();
+    }
+  }
+
+  return challenge;
+}
+
+/**
+ * Accept a duel challenge
+ */
+export async function acceptDuelChallenge(challengeId: string): Promise<DuelChallenge | null> {
+  const all = lsReadChallenges();
+  const challenge = all.find(c => c.id === challengeId);
+  if (!challenge || challenge.status !== 'pending') return null;
+
+  challenge.status = 'accepted';
+  challenge.acceptedAt = new Date().toISOString();
+  
+  // Update localStorage
+  lsWriteChallenges(all);
+
+  // Sync to server
+  if (await isLocalServerAvailable()) {
+    fetch(`${API_BASE}/${challengeId}/accept`, {
+      method: 'PUT',
+    }).catch((err) => {
+      console.warn('[Duels] Server accept failed:', err);
+      resetServerCache();
+    });
+  }
+
+  return challenge;
+}
+
+/**
+ * Decline a duel challenge
+ */
+export async function declineDuelChallenge(challengeId: string): Promise<DuelChallenge | null> {
+  const all = lsReadChallenges();
+  const challenge = all.find(c => c.id === challengeId);
+  if (!challenge || challenge.status !== 'pending') return null;
+
+  challenge.status = 'declined';
+  challenge.declinedAt = new Date().toISOString();
+  
+  // Update localStorage
+  lsWriteChallenges(all);
+
+  // Sync to server
+  if (await isLocalServerAvailable()) {
+    fetch(`${API_BASE}/${challengeId}/decline`, {
+      method: 'PUT',
+    }).catch((err) => {
+      console.warn('[Duels] Server decline failed:', err);
+      resetServerCache();
+    });
+  }
+
+  return challenge;
+}
+
+/**
+ * Complete a duel challenge (called after match is recorded)
+ */
+export async function completeDuelChallenge(challengeId: string, matchId: string): Promise<DuelChallenge | null> {
+  const all = lsReadChallenges();
+  const challenge = all.find(c => c.id === challengeId);
+  if (!challenge) return null;
+
+  challenge.status = 'completed';
+  challenge.matchId = matchId;
+  challenge.completedAt = new Date().toISOString();
+  
+  // Update localStorage
+  lsWriteChallenges(all);
+
+  // Sync to server
+  if (await isLocalServerAvailable()) {
+    fetch(`${API_BASE}/${challengeId}/complete`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ matchId }),
+    }).catch((err) => {
+      console.warn('[Duels] Server complete failed:', err);
+      resetServerCache();
+    });
+  }
+
+  return challenge;
+}
+
+/**
+ * Check and expire old challenges
+ */
+export async function expireOldChallenges(): Promise<void> {
+  const all = lsReadChallenges();
+  const now = new Date();
+  let changed = false;
+
+  all.forEach(challenge => {
+    if (challenge.status === 'pending' && new Date(challenge.expiresAt) < now) {
+      challenge.status = 'expired';
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    lsWriteChallenges(all);
+    await writeChallenges(all);
+  }
+}

@@ -14,6 +14,7 @@ import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import { getCharacter, getGame } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
+import { getDuelStats } from '@/services/duels/duelService';
 import './ParticipantProfile.css';
 
 type Tab = 'overview' | 'results' | 'edit';
@@ -37,6 +38,7 @@ function ParticipantProfile() {
   const [resultsSubTab, setResultsSubTab] = useState<'tournaments' | 'leagues'>('tournaments');
   const [notFound, setNotFound] = useState(false);
   const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
+  const [duelStats, setDuelStats] = useState({ challengesThisWeek: 0, maxChallengesPerWeek: 10, pendingChallenges: 0, completedThisWeek: 0 });
 
   const completedLeagues = leagueStats?.leagues.filter((l) => l.status === 'completed') ?? [];
   const leagueFirstPlaces = completedLeagues.filter((l) => l.rank === 1).length;
@@ -81,6 +83,11 @@ function ParticipantProfile() {
         const entry = board.find((e) => e.id === id) ?? null;
         setRankEntry(entry);
       }).catch(() => {});
+
+      // Load duel stats
+      getDuelStats(id).then(dStats => {
+        setDuelStats(dStats);
+      });
     })();
   }, [id]);
 
@@ -328,6 +335,40 @@ function ParticipantProfile() {
                 </div>
               </div>
             )}
+
+            {/* Ranked Duels Stats */}
+            <div className="card profile-duels-card">
+              <div className="profile-duels-header">
+                <h3><i className="fas fa-swords" /> Ranked Duels</h3>
+                <button 
+                  className="btn-outline btn-sm"
+                  onClick={() => navigate('/events?tab=ranked')}
+                >
+                  Challenge Players →
+                </button>
+              </div>
+              <div className="profile-stat-grid">
+                <div className="profile-stat-card profile-stat-card--duel">
+                  <span className="psc-value">
+                    {duelStats.maxChallengesPerWeek - duelStats.challengesThisWeek}
+                  </span>
+                  <span className="psc-label">
+                    <i className="fas fa-fire" /> Duels Available This Week
+                  </span>
+                  <span className="psc-sublabel">
+                    {duelStats.challengesThisWeek} / {duelStats.maxChallengesPerWeek} used
+                  </span>
+                </div>
+                <div className="profile-stat-card">
+                  <span className="psc-value">{duelStats.pendingChallenges}</span>
+                  <span className="psc-label">Pending Challenges</span>
+                </div>
+                <div className="profile-stat-card">
+                  <span className="psc-value">{duelStats.completedThisWeek}</span>
+                  <span className="psc-label">Duels This Week</span>
+                </div>
+              </div>
+            </div>
           </>
         )}
 
