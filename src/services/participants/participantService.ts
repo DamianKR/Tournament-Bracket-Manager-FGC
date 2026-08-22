@@ -151,8 +151,11 @@ export function computeStats(participant: GlobalParticipant, tournaments?: Tourn
   let matchLosses = 0;
 
   for (const t of joined) {
-    // Find this participant's entry in the tournament
-    const tp = t.participants.find((p) => p.globalParticipantId === participant.id);
+    // Find this participant's entry in the tournament (singles or team member)
+    const tp = t.participants.find((p) =>
+      p.globalParticipantId === participant.id ||
+      (p.members && p.members.some((m: any) => m.globalParticipantId === participant.id))
+    );
     if (!tp) continue;
 
     // Placement from finalPosition (set by the engine when eliminated/wins)
@@ -169,7 +172,7 @@ export function computeStats(participant: GlobalParticipant, tournaments?: Tourn
       if (tp.finalPosition <= 3) top3++;
     }
 
-    // Match W/L from the bracket
+    // Match W/L from the bracket (team wins/losses are counted for each member)
     if (t.bracket) {
       const allMatches = [
         ...t.bracket.winnerBracket,
@@ -218,7 +221,10 @@ export function computeAllStats(
     const placements: PlacementEntry[] = [];
 
     for (const t of joined) {
-      const tp = t.participants.find((tp2) => tp2.globalParticipantId === p.id);
+      const tp = t.participants.find((tp2) =>
+        tp2.globalParticipantId === p.id ||
+        (tp2.members && tp2.members.some((m: any) => m.globalParticipantId === p.id))
+      );
       if (!tp) continue;
 
       if (tp.finalPosition !== undefined) {

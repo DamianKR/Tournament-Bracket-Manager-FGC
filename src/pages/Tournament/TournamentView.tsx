@@ -33,11 +33,11 @@ function TournamentView() {
     setTournament(loadedTournament);
   };
 
-  const handleMatchResult = (matchId: string, winnerId: string) => {
+  const handleMatchResult = async (matchId: string, winnerId: string) => {
     if (!id) return;
 
     try {
-      const updatedTournament = setMatchWinner(id, matchId, winnerId);
+      const updatedTournament = await setMatchWinner(id, matchId, winnerId);
       setTournament(updatedTournament);
       setError('');
     } catch (err: any) {
@@ -45,11 +45,11 @@ function TournamentView() {
     }
   };
 
-  const handleRevertMatch = (matchId: string) => {
+  const handleRevertMatch = async (matchId: string) => {
     if (!id) return;
 
     try {
-      const updatedTournament = undoMatchResult(id, matchId);
+      const updatedTournament = await undoMatchResult(id, matchId);
       setTournament(updatedTournament);
       setError('');
     } catch (err: any) {

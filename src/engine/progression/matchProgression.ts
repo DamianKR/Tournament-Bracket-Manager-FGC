@@ -94,7 +94,7 @@ export function recordMatchResult(
 /**
  * Find a match by ID in the bracket
  */
-function findMatch(bracket: Bracket, matchId: string): Match | null {
+export function findMatch(bracket: Bracket, matchId: string): Match | null {
   // Check winner bracket
   const winnerMatch = bracket.winnerBracket.find((m: Match) => m.id === matchId);
   if (winnerMatch) return winnerMatch;

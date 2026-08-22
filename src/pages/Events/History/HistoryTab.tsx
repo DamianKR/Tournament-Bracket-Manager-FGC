@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllMatches } from '@/services/ranking/rankingService';
+import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
 import { getAllRankedMatchesAsync } from '@/services/ranked/rankedMatchService';
 import { getAllParticipants } from '@/services/participants/participantService';
-import { RankedMatch, MatchRecord, GlobalParticipant } from '@/models/types';
+import { getAllParticipantsAsync } from '@/services/participants/participantService';
+import { RankedMatch, GlobalParticipant } from '@/models/types';
 import './HistoryTab.css';
 
 type HistoryFilter = 'all' | 'tournament' | 'league' | 'duel' | 'matchmaking';
@@ -39,37 +40,35 @@ function HistoryTab() {
   const loadHistory = async () => {
     setLoading(true);
     try {
-      // Load from 3 separate sources
-      const [tournamentMatches, rankedMatches] = await Promise.all([
-        getAllMatches(), // This now reads from tournament_matches.json
-        getAllRankedMatchesAsync(), // This reads from ranked_matches.json (duels/matchmaking)
-        // TODO: Add league matches when needed
+      const [tournamentMatches, rankedMatches, allParticipants] = await Promise.all([
+        getAllTournamentMatchesAsync(),
+        getAllRankedMatchesAsync(),
+        getAllParticipantsAsync().then(data => data.length > 0 ? data : getAllParticipants()),
       ]);
 
-      const allParticipants = getAllParticipants();
-
       // Convert tournament matches
-      const unifiedTournament: UnifiedMatch[] = tournamentMatches.map((m: MatchRecord) => ({
+      const unifiedTournament: UnifiedMatch[] = tournamentMatches.map((m: any) => ({
         id: m.id,
-        type: 'tournament',
-        player1Id: m.playerAId,
-        player2Id: m.playerBId,
+        type: 'tournament' as const,
+        player1Id: m.player1Id,
+        player2Id: m.player2Id,
         winnerId: m.winnerId,
-        player1Name: getParticipantName(m.playerAId, allParticipants),
-        player2Name: getParticipantName(m.playerBId, allParticipants),
-        player1EloBefore: (m as any).playerAPointsBefore ?? 0,
-        player2EloBefore: (m as any).playerBPointsBefore ?? 0,
-        player1EloAfter: (m as any).playerAPointsAfter ?? 0,
-        player2EloAfter: (m as any).playerBPointsAfter ?? 0,
-        player1EloChange: (m as any).playerADelta ?? 0,
-        player2EloChange: (m as any).playerBDelta ?? 0,
+        player1Name: m.player1Name || getParticipantName(m.player1Id, allParticipants),
+        player2Name: m.player2Name || getParticipantName(m.player2Id, allParticipants),
+        player1EloBefore: 0,
+        player2EloBefore: 0,
+        player1EloAfter: 0,
+        player2EloAfter: 0,
+        player1EloChange: 0,
+        player2EloChange: 0,
         date: m.createdAt,
+        context: m.tournamentName,
       }));
 
       // Convert ranked matches (duel/matchmaking)
       const unifiedRanked: UnifiedMatch[] = rankedMatches.map((m: RankedMatch) => ({
         id: m.id,
-        type: m.type, // 'duel' or 'matchmaking'
+        type: m.type as 'duel' | 'matchmaking',
         player1Id: m.player1Id,
         player2Id: m.player2Id,
         winnerId: m.winnerId,
@@ -83,6 +82,8 @@ function HistoryTab() {
         player2EloChange: m.player2EloChange,
         date: m.date,
       }));
+
+      // TODO: Add league matches
 
       // Combine all sources and sort by date (newest first)
       const all = [...unifiedTournament, ...unifiedRanked].sort(
@@ -204,15 +205,20 @@ function HistoryTab() {
         <div className="history-list">
           {filteredMatches.map(match => (
             <div key={match.id} className="history-match-card card">
-              <div className="match-header">
-                <span 
-                  className="match-type-badge" 
-                  style={{ backgroundColor: getTypeColor(match.type) }}
-                >
-                  <i className={`fas ${getTypeIcon(match.type)}`} />
-                  {' '}{match.type}
-                </span>
-                <span className="match-date">{formatDate(match.date)}</span>
+              <div className="match-banner" style={{ backgroundColor: getTypeColor(match.type) }}>
+                <div className="match-banner-top">
+                  <span className="match-banner-type">
+                    <i className={`fas ${getTypeIcon(match.type)}`} />
+                    {' '}{match.type}
+                  </span>
+                  <span className="match-banner-date">{formatDate(match.date)}</span>
+                </div>
+                {match.context && (
+                  <div className="match-banner-context">
+                  
+                    {match.context}
+                  </div>
+                )}
               </div>
 
               <div className="match-players">
@@ -221,14 +227,16 @@ function HistoryTab() {
                     {match.winnerId === match.player1Id && <i className="fas fa-crown winner-icon" />}
                     <span className="player-name">{match.player1Name}</span>
                   </div>
-                  <div className="player-elo">
-                    <span className="elo-before">{match.player1EloBefore}</span>
-                    <i className="fas fa-arrow-right" />
-                    <span className="elo-after">{match.player1EloAfter}</span>
-                    <span className={`elo-change ${match.player1EloChange >= 0 ? 'positive' : 'negative'}`}>
-                      {match.player1EloChange >= 0 ? '+' : ''}{match.player1EloChange}
-                    </span>
-                  </div>
+                  {match.type !== 'tournament' && (
+                    <div className="player-elo">
+                      <span className="elo-before">{match.player1EloBefore}</span>
+                      <i className="fas fa-arrow-right" />
+                      <span className="elo-after">{match.player1EloAfter}</span>
+                      <span className={`elo-change ${match.player1EloChange >= 0 ? 'positive' : 'negative'}`}>
+                        {match.player1EloChange >= 0 ? '+' : ''}{match.player1EloChange}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="match-vs">VS</div>
@@ -238,14 +246,16 @@ function HistoryTab() {
                     {match.winnerId === match.player2Id && <i className="fas fa-crown winner-icon" />}
                     <span className="player-name">{match.player2Name}</span>
                   </div>
-                  <div className="player-elo">
-                    <span className="elo-before">{match.player2EloBefore}</span>
-                    <i className="fas fa-arrow-right" />
-                    <span className="elo-after">{match.player2EloAfter}</span>
-                    <span className={`elo-change ${match.player2EloChange >= 0 ? 'positive' : 'negative'}`}>
-                      {match.player2EloChange >= 0 ? '+' : ''}{match.player2EloChange}
-                    </span>
-                  </div>
+                  {match.type !== 'tournament' && (
+                    <div className="player-elo">
+                      <span className="elo-before">{match.player2EloBefore}</span>
+                      <i className="fas fa-arrow-right" />
+                      <span className="elo-after">{match.player2EloAfter}</span>
+                      <span className={`elo-change ${match.player2EloChange >= 0 ? 'positive' : 'negative'}`}>
+                        {match.player2EloChange >= 0 ? '+' : ''}{match.player2EloChange}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

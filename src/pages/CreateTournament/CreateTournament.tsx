@@ -140,13 +140,13 @@ function CreateTournament() {
 
   // ── Handlers ──────────────────────────────────────────────────────────
 
-  const handleCreateTournament = () => {
+  const handleCreateTournament = async () => {
     if (!tournamentName.trim()) {
       setError('Please enter a tournament name');
       return;
     }
     try {
-      const tournament = createTournament(
+      const tournament = await createTournament(
         tournamentName, 
         mode, 
         type,

@@ -10,7 +10,7 @@
  */
 
 import { Router } from 'express';
-import { tournaments } from '../db/collections.js';
+import { tournaments, tournamentMatches } from '../db/collections.js';
 import { validateTournament } from '../models/tournament.js';
 import { applyTournamentElo } from '../utils/tournamentElo.js';
 
@@ -141,6 +141,46 @@ router.delete('/', async (_req, res) => {
   } catch (err) {
     console.error('[Tournaments] DELETE / error:', err);
     res.status(500).json({ error: 'Failed to clear tournaments' });
+  }
+});
+
+// ── Tournament Match records (for history) ────────────────────────────────
+
+// GET /api/tournament-matches
+router.get('/matches', async (_req, res) => {
+  try {
+    const all = await tournamentMatches.getAll();
+    res.json(all);
+  } catch (err) {
+    console.error('[Tournaments] GET /matches error:', err);
+    res.status(500).json({ error: 'Failed to read tournament matches' });
+  }
+});
+
+// GET /api/tournaments/:id/matches
+router.get('/:id/matches', async (req, res) => {
+  try {
+    const all = await tournamentMatches.getAll();
+    const filtered = all.filter(m => m.tournamentId === req.params.id);
+    res.json(filtered);
+  } catch (err) {
+    console.error('[Tournaments] GET /:id/matches error:', err);
+    res.status(500).json({ error: 'Failed to read tournament matches' });
+  }
+});
+
+// POST /api/tournaments/:id/matches
+router.post('/:id/matches', async (req, res) => {
+  try {
+    const match = req.body;
+    if (!match.tournamentId || !match.player1Id || !match.player2Id || !match.winnerId) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    await tournamentMatches.upsert(match);
+    res.status(201).json(match);
+  } catch (err) {
+    console.error('[Tournaments] POST /:id/matches error:', err);
+    res.status(500).json({ error: 'Failed to record tournament match' });
   }
 });
 

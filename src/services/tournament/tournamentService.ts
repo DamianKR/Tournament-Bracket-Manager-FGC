@@ -1,22 +1,26 @@
 import { Tournament, Participant, TournamentMode, TournamentType, TeamSize, SeedingMode, PartialSeedCount } from '@/models/types';
 import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
-import { recordMatchResult, revertMatchResult } from '@/engine/progression/matchProgression';
+import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progression/matchProgression';
 import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
 import { findOrCreateParticipant } from '@/services/participants/participantService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
 
+const LOCAL_SERVER = 'http://localhost:3001';
+const TM_LS_KEY = 'bracket_tournament_matches';
+const HEALTH_TIMEOUT_MS = 1500;
+
 /**
  * Create a new tournament
  */
-export function createTournament(
+export async function createTournament(
   name: string, 
   mode: TournamentMode, 
   type: TournamentType = 'singles',
   teamSize?: TeamSize,
   seedingMode?: SeedingMode,
   partialSeedCount?: PartialSeedCount
-): Tournament {
+): Promise<Tournament> {
   const tournament: Tournament = {
     id: generateId(),
     name,
@@ -41,7 +45,7 @@ export function createTournament(
     tournament.partialSeedCount = partialSeedCount;
   }
 
-  saveTournament(tournament);
+  await saveTournamentAsync(tournament);
   return tournament;
 }
 
@@ -87,7 +91,7 @@ export async function addParticipant(
   tournament.participants.push(participant);
   tournament.updatedAt = new Date().toISOString();
 
-  saveTournament(tournament);
+  await saveTournamentAsync(tournament);
 
   // Bidirectional link: GlobalParticipant knows about this tournament
   await linkParticipantToTournament(global.id, tournament.id);
@@ -145,7 +149,7 @@ export async function addTeam(
   tournament.participants.push(participant);
   tournament.updatedAt = new Date().toISOString();
 
-  saveTournament(tournament);
+  await saveTournamentAsync(tournament);
 
   // Link all team members to this tournament
   for (const member of members) {
@@ -296,32 +300,79 @@ export async function startTournament(tournamentId: string): Promise<Tournament>
 /**
  * Record a match result
  */
-export function setMatchWinner(
+export async function setMatchWinner(
   tournamentId: string,
   matchId: string,
   winnerId: string
-): Tournament {
+): Promise<Tournament> {
   const tournament = loadTournament(tournamentId);
   if (!tournament) throw new Error('Tournament not found');
   if (tournament.status !== 'in_progress') throw new Error('Tournament is not in progress');
 
   const updatedTournament = recordMatchResult(tournament, matchId, winnerId);
-  saveTournament(updatedTournament);
+
+  // Save tournament match record for history (singles only, no ELO)
+  // type is undefined for old tournaments — treat anything that is not 'teams' as singles.
+  if (updatedTournament.type !== 'teams' && updatedTournament.bracket) {
+    const match = findMatch(updatedTournament.bracket, matchId);
+    if (match && match.participant1Id && match.participant2Id) {
+      const p1 = updatedTournament.participants.find(p => p.id === match.participant1Id);
+      const p2 = updatedTournament.participants.find(p => p.id === match.participant2Id);
+      
+      const matchRecord = {
+        id: `tm_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        tournamentId,
+        tournamentName: updatedTournament.name,
+        player1Id: match.participant1Id,
+        player2Id: match.participant2Id,
+        player1Name: p1?.name ?? 'Unknown',
+        player2Name: p2?.name ?? 'Unknown',
+        winnerId,
+        round: match.roundNumber,
+        matchNumber: match.matchNumber,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Update localStorage cache
+      const lsKey = 'bracket_tournament_matches';
+      try {
+        const raw = localStorage.getItem(lsKey);
+        const all: any[] = raw ? JSON.parse(raw) : [];
+        all.push(matchRecord);
+        localStorage.setItem(lsKey, JSON.stringify(all));
+      } catch (err) {
+        console.warn('[Tournament] Failed to cache match:', err);
+      }
+
+      // Sync to server
+      try {
+        await fetch(`http://localhost:3001/api/tournaments/${tournamentId}/matches`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(matchRecord),
+        });
+      } catch (err) {
+        console.warn('[Tournament] Failed to sync match to server:', err);
+      }
+    }
+  }
+
+  await saveTournamentAsync(updatedTournament);
   return updatedTournament;
 }
 
 /**
  * Revert a match result
  */
-export function undoMatchResult(
+export async function undoMatchResult(
   tournamentId: string,
   matchId: string
-): Tournament {
+): Promise<Tournament> {
   const tournament = loadTournament(tournamentId);
   if (!tournament) throw new Error('Tournament not found');
 
   const updatedTournament = revertMatchResult(tournament, matchId);
-  saveTournament(updatedTournament);
+  await saveTournamentAsync(updatedTournament);
   return updatedTournament;
 }
 
@@ -351,4 +402,70 @@ export function removeTournament(id: string): void {
  */
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// ── Tournament Match Records (for History) ────────────────────────────────
+
+let _healthPromise: Promise<boolean> | null = null;
+
+function isLocalServerAvailable(): Promise<boolean> {
+  if (_healthPromise) return _healthPromise;
+  _healthPromise = fetch(`${LOCAL_SERVER}/api/tournaments`, {
+    signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
+  })
+    .then((res) => res.ok)
+    .catch(() => false);
+  return _healthPromise;
+}
+
+function resetServerCache() {
+  _healthPromise = null;
+}
+
+export interface TournamentMatchRecord {
+  id: string;
+  tournamentId: string;
+  tournamentName: string;
+  player1Id: string;
+  player2Id: string;
+  player1Name: string;
+  player2Name: string;
+  winnerId: string;
+  round: number;
+  matchNumber: number;
+  createdAt: string;
+}
+
+export function getAllTournamentMatches(): TournamentMatchRecord[] {
+  try {
+    const raw = localStorage.getItem(TM_LS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+export async function getAllTournamentMatchesAsync(): Promise<TournamentMatchRecord[]> {
+  if (await isLocalServerAvailable()) {
+    try {
+      const res = await fetch(`${LOCAL_SERVER}/api/tournaments/matches`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.length > 0 || getAllTournamentMatches().length === 0) {
+          localStorage.setItem(TM_LS_KEY, JSON.stringify(data));
+        }
+        return data.length > 0 ? data : getAllTournamentMatches();
+      }
+    } catch (err) {
+      console.warn('[TournamentMatches] Server read failed:', err);
+      resetServerCache();
+    }
+  }
+  return getAllTournamentMatches();
+}
+
+export function getTournamentMatchesForTournament(tournamentId: string): TournamentMatchRecord[] {
+  return getAllTournamentMatches().filter(m => m.tournamentId === tournamentId);
+}
+
+export function getTournamentMatchesForPlayer(playerId: string): TournamentMatchRecord[] {
+  return getAllTournamentMatches().filter(m => m.player1Id === playerId || m.player2Id === playerId);
 }
