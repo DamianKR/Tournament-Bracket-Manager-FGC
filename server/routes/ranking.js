@@ -13,7 +13,7 @@
  */
 
 import { Router } from 'express';
-import { participants, matches } from '../db/collections.js';
+import { participants, tournamentMatches } from '../db/collections.js';
 import { calculateElo, getRankName, applyLegendTier, RANK_TIERS } from '../utils/eloEngine.js';
 
 const router = Router();
@@ -67,7 +67,7 @@ router.get('/', async (_req, res) => {
 
 router.get('/matches', async (_req, res) => {
   try {
-    const all = await matches.getAll();
+    const all = await tournamentMatches.getAll();
     const sorted = [...all].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json(sorted);
   } catch (err) {
@@ -134,10 +134,10 @@ router.post('/match', async (req, res) => {
     // IMPORTANT: upsert(A) and upsert(B) must be sequential — both read+write
     // the same JSON file, so running them in parallel causes a race condition
     // where the second write overwrites the first (loser stays at old ELO).
-    // matches.upsert is safe in parallel because it uses a different file.
+    // tournamentMatches.upsert is safe in parallel because it uses a different file.
     await participants.upsert(updatedA);
     await participants.upsert(updatedB);
-    await matches.upsert(matchRecord);
+    await tournamentMatches.upsert(matchRecord);
 
     // Return full updated participant objects so the frontend can sync localStorage
     res.status(201).json({
@@ -170,7 +170,7 @@ router.post('/reset/hard', async (req, res) => {
     }));
 
     await participants.replaceAll(updated);
-    await matches.clear();
+    await tournamentMatches.clear();
 
     res.json({
       ok: true,
@@ -221,7 +221,7 @@ router.post('/reset/soft', async (req, res) => {
 router.get('/matches/:participantId', async (req, res) => {
   try {
     const { participantId } = req.params;
-    const all = await matches.getAll();
+    const all = await tournamentMatches.getAll();
     const filtered = all
       .filter((m) => m.playerAId === participantId || m.playerBId === participantId)
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -236,7 +236,7 @@ router.get('/matches/:participantId', async (req, res) => {
 
 router.delete('/matches/:matchId', async (req, res) => {
   try {
-    const deleted = await matches.remove(req.params.matchId);
+    const deleted = await tournamentMatches.remove(req.params.matchId);
     if (!deleted) return res.status(404).json({ error: 'Match not found' });
     res.json({ ok: true });
   } catch (err) {

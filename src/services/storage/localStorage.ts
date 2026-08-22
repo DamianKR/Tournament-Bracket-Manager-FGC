@@ -191,6 +191,14 @@ export function saveTournament(tournament: Tournament): void {
   );
 }
 
+export async function saveTournamentAsync(tournament: Tournament): Promise<void> {
+  const all = lsReadTournaments();
+  const idx = all.findIndex((t) => t.id === tournament.id);
+  if (idx >= 0) { all[idx] = tournament; } else { all.push(tournament); }
+  lsWriteTournaments(all);
+  await writeOneTournament(tournament);
+}
+
 export function loadTournament(id: string): Tournament | null {
   return lsReadTournaments().find((t) => t.id === id) ?? null;
 }

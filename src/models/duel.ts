@@ -11,12 +11,18 @@ export interface DuelSettings {
   maxChallengesPerWeek: number; // 1-50, configurable
   eloRestriction: number; // Default: 300 (can't challenge 300+ ELO below you)
   challengeExpirationDays: number; // Default: 7 days to accept/complete
+  weeklyResetDay: number; // 0=Sunday, 1=Monday, ..., 6=Saturday
+  weeklyResetHour: number; // 0-23, default 0 (midnight)
+  weeklyResetMinute: number; // 0-59, default 0
 }
 
 export const DEFAULT_DUEL_SETTINGS: DuelSettings = {
   maxChallengesPerWeek: 10,
   eloRestriction: 300,
   challengeExpirationDays: 7,
+  weeklyResetDay: 1, // Monday
+  weeklyResetHour: 0, // Midnight
+  weeklyResetMinute: 0,
 };
 
 export type DuelChallengeStatus = 'pending' | 'accepted' | 'completed' | 'expired' | 'declined';

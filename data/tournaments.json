@@ -2092,9 +2092,33 @@
         ]
       },
       {
+        "id": "1787193126197-ca5ubxtlp",
+        "name": "Tung Tung Tung Pinghurs",
+        "seed": 2,
+        "eliminated": false,
+        "lossCount": 0,
+        "members": [
+          {
+            "globalParticipantId": "gp_1786393834683_lievrvf",
+            "name": "Kevin",
+            "alias": "AmorAltras"
+          },
+          {
+            "globalParticipantId": "gp_1786761981144_462dv5s",
+            "name": "Samuel",
+            "alias": "Grimmjo"
+          },
+          {
+            "globalParticipantId": "gp_1786393850039_1imzf6x",
+            "name": "Dionisio",
+            "alias": "Dio"
+          }
+        ]
+      },
+      {
         "id": "1787069757014-dlsrhl0op",
         "name": "Crusaders",
-        "seed": 2,
+        "seed": 3,
         "eliminated": false,
         "lossCount": 0,
         "members": [
@@ -2116,7 +2140,7 @@
       {
         "id": "1787087929977-tu92i8dyk",
         "name": "Smash Yupisote",
-        "seed": 3,
+        "seed": 4,
         "eliminated": false,
         "lossCount": 0,
         "members": [
@@ -2137,7 +2161,7 @@
       {
         "id": "1787083673514-q0wpgz4n4",
         "name": "Chorizo",
-        "seed": 4,
+        "seed": 5,
         "eliminated": false,
         "lossCount": 0,
         "members": [
@@ -2159,7 +2183,7 @@
       {
         "id": "1787088512604-a57c39fuz",
         "name": "Eyaculatis",
-        "seed": 5,
+        "seed": 6,
         "eliminated": false,
         "lossCount": 0,
         "members": [
@@ -2182,7 +2206,7 @@
       {
         "id": "1787092639728-p3zahlfn8",
         "name": "Ratata",
-        "seed": 6,
+        "seed": 7,
         "eliminated": false,
         "lossCount": 0,
         "members": [
@@ -2205,7 +2229,7 @@
       {
         "id": "1787112796551-rixdk82sz",
         "name": "Mata7",
-        "seed": 7,
+        "seed": 8,
         "eliminated": false,
         "lossCount": 0,
         "members": [
@@ -2223,30 +2247,6 @@
             "globalParticipantId": "gp_1787112745370_2zahvg8",
             "name": "Frank",
             "alias": "Pollo"
-          }
-        ]
-      },
-      {
-        "id": "1787150507627-cwvbw5ynq",
-        "name": "Esquizofrenia Pro Max",
-        "seed": 8,
-        "eliminated": false,
-        "lossCount": 0,
-        "members": [
-          {
-            "globalParticipantId": "gp_1786391936937_anlwmxy",
-            "name": "Jose Enrique",
-            "alias": "Eknd3las"
-          },
-          {
-            "globalParticipantId": "gp_1787150448285_vlvxdb2",
-            "name": "Javier",
-            "alias": "Dante"
-          },
-          {
-            "globalParticipantId": "gp_1787150405263_dyjmu7b",
-            "name": "Maher",
-            "alias": "Daeron"
           }
         ]
       },
@@ -2273,26 +2273,26 @@
         ]
       },
       {
-        "id": "1787193126197-ca5ubxtlp",
-        "name": "Tung Tung Tung Pinghurs",
+        "id": "1787150507627-cwvbw5ynq",
+        "name": "Esquizofrenia Pro Max",
         "seed": 10,
         "eliminated": false,
         "lossCount": 0,
         "members": [
           {
-            "globalParticipantId": "gp_1786393834683_lievrvf",
-            "name": "Kevin",
-            "alias": "AmorAltras"
+            "globalParticipantId": "gp_1786391936937_anlwmxy",
+            "name": "Jose Enrique",
+            "alias": "Eknd3las"
           },
           {
-            "globalParticipantId": "gp_1786761981144_462dv5s",
-            "name": "Samuel",
-            "alias": "Grimmjo"
+            "globalParticipantId": "gp_1787150448285_vlvxdb2",
+            "name": "Javier",
+            "alias": "Dante"
           },
           {
-            "globalParticipantId": "gp_1786393850039_1imzf6x",
-            "name": "Dionisio",
-            "alias": "Dio"
+            "globalParticipantId": "gp_1787150405263_dyjmu7b",
+            "name": "Maher",
+            "alias": "Daeron"
           }
         ]
       },
@@ -2346,7 +2346,7 @@
     "bracket": null,
     "championId": null,
     "createdAt": "2026-08-18T16:03:25.182Z",
-    "updatedAt": "2026-08-20T05:14:38.243Z",
+    "updatedAt": "2026-08-21T23:12:50.004Z",
     "teamSize": 3
   }
 ]

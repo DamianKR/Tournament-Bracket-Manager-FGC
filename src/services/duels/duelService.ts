@@ -173,15 +173,59 @@ export async function getDuelChallenge(id: string): Promise<DuelChallenge | null
 }
 
 /**
+ * Get the last weekly reset timestamp based on settings
+ */
+export function getLastWeeklyReset(settings: DuelSettings): Date {
+  const now = new Date();
+  const currentDay = now.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+  const diff = (currentDay - settings.weeklyResetDay + 7) % 7;
+  const lastReset = new Date(now);
+  lastReset.setDate(now.getDate() - diff);
+  lastReset.setHours(settings.weeklyResetHour, settings.weeklyResetMinute, 0, 0);
+
+  // If the reset for this week hasn't happened yet, go back one more week
+  if (lastReset > now) {
+    lastReset.setDate(lastReset.getDate() - 7);
+  }
+
+  return lastReset;
+}
+
+/**
+ * Get the next weekly reset timestamp based on settings
+ */
+export function getNextWeeklyReset(settings: DuelSettings): Date {
+  const lastReset = getLastWeeklyReset(settings);
+  const nextReset = new Date(lastReset);
+  nextReset.setDate(nextReset.getDate() + 7);
+  return nextReset;
+}
+
+/**
+ * Format time remaining until next reset
+ */
+export function formatTimeUntilReset(nextReset: Date): string {
+  const now = new Date();
+  const diffMs = nextReset.getTime() - now.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (diffDays > 0) return `${diffDays}d ${diffHours}h ${diffMinutes}m`;
+  if (diffHours > 0) return `${diffHours}h ${diffMinutes}m`;
+  return `${diffMinutes}m`;
+}
+
+/**
  * Get challenges created this week by a player
  */
 export async function getChallengesThisWeek(challengerId: string): Promise<DuelChallenge[]> {
-  const weekAgo = new Date();
-  weekAgo.setDate(weekAgo.getDate() - 7);
+  const settings = await getDuelSettingsAsync();
+  const lastReset = getLastWeeklyReset(settings);
   
   const all = await getAllChallengesAsync();
   return all.filter(
-    c => c.challengerId === challengerId && new Date(c.createdAt) > weekAgo
+    c => c.challengerId === challengerId && new Date(c.createdAt) >= lastReset
   );
 }
 
@@ -256,15 +300,14 @@ export async function validateDuelChallenge(
   }
 
   // 4. Check if already challenged this week
-  const weekAgo = new Date();
-  weekAgo.setDate(weekAgo.getDate() - 7);
+  const lastReset = getLastWeeklyReset(settings);
   
   const all = await getAllChallengesAsync();
   const alreadyChallenged = all.some(
     c =>
       c.challengerId === challengerId &&
       c.challengedId === challengedId &&
-      new Date(c.createdAt) > weekAgo &&
+      new Date(c.createdAt) >= lastReset &&
       c.status !== 'declined' &&
       c.status !== 'expired'
   );

@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllMatches, type MatchRecord } from '@/services/ranking/rankingService';
+import { getAllMatches } from '@/services/ranking/rankingService';
 import { getAllRankedMatchesAsync } from '@/services/ranked/rankedMatchService';
 import { getAllParticipants } from '@/services/participants/participantService';
-import { RankedMatch } from '@/models/rankedMatch';
-import { GlobalParticipant } from '@/models/types';
+import { RankedMatch, MatchRecord, GlobalParticipant } from '@/models/types';
 import './HistoryTab.css';
 
 type HistoryFilter = 'all' | 'tournament' | 'league' | 'duel' | 'matchmaking';
@@ -32,7 +31,6 @@ function HistoryTab() {
   const [filter, setFilter] = useState<HistoryFilter>('all');
   const [matches, setMatches] = useState<UnifiedMatch[]>([]);
   const [loading, setLoading] = useState(true);
-  const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
 
   useEffect(() => {
     loadHistory();
@@ -41,18 +39,19 @@ function HistoryTab() {
   const loadHistory = async () => {
     setLoading(true);
     try {
-      const [rankingMatches, rankedMatches, allParticipants] = await Promise.all([
-        getAllMatches(),
-        getAllRankedMatchesAsync(),
-        Promise.resolve(getAllParticipants()),
+      // Load from 3 separate sources
+      const [tournamentMatches, rankedMatches] = await Promise.all([
+        getAllMatches(), // This now reads from tournament_matches.json
+        getAllRankedMatchesAsync(), // This reads from ranked_matches.json (duels/matchmaking)
+        // TODO: Add league matches when needed
       ]);
 
-      setParticipants(allParticipants);
+      const allParticipants = getAllParticipants();
 
-      // Convert ranking matches (tournament/league)
-      const unifiedRanking: UnifiedMatch[] = rankingMatches.map((m: MatchRecord) => ({
+      // Convert tournament matches
+      const unifiedTournament: UnifiedMatch[] = tournamentMatches.map((m: MatchRecord) => ({
         id: m.id,
-        type: 'tournament', // TODO: distinguish between tournament and league
+        type: 'tournament',
         player1Id: m.playerAId,
         player2Id: m.playerBId,
         winnerId: m.winnerId,
@@ -70,7 +69,7 @@ function HistoryTab() {
       // Convert ranked matches (duel/matchmaking)
       const unifiedRanked: UnifiedMatch[] = rankedMatches.map((m: RankedMatch) => ({
         id: m.id,
-        type: m.type,
+        type: m.type, // 'duel' or 'matchmaking'
         player1Id: m.player1Id,
         player2Id: m.player2Id,
         winnerId: m.winnerId,
@@ -85,8 +84,8 @@ function HistoryTab() {
         date: m.date,
       }));
 
-      // Combine and sort by date (newest first)
-      const all = [...unifiedRanking, ...unifiedRanked].sort(
+      // Combine all sources and sort by date (newest first)
+      const all = [...unifiedTournament, ...unifiedRanked].sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
       );
 

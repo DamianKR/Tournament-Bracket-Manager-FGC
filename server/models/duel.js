@@ -57,5 +57,8 @@ export function duelSettingsShape() {
     maxChallengesPerWeek: 10,
     eloRestriction: 300,
     challengeExpirationDays: 7,
+    weeklyResetDay: 1,    // Monday
+    weeklyResetHour: 0,   // Midnight
+    weeklyResetMinute: 0,
   };
 }

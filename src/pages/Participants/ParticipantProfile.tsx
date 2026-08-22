@@ -14,7 +14,7 @@ import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import { getCharacter, getGame } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
-import { getDuelStats } from '@/services/duels/duelService';
+import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
 import './ParticipantProfile.css';
 
 type Tab = 'overview' | 'results' | 'edit';
@@ -39,6 +39,7 @@ function ParticipantProfile() {
   const [notFound, setNotFound] = useState(false);
   const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
   const [duelStats, setDuelStats] = useState({ challengesThisWeek: 0, maxChallengesPerWeek: 10, pendingChallenges: 0, completedThisWeek: 0 });
+  const [nextResetText, setNextResetText] = useState('');
 
   const completedLeagues = leagueStats?.leagues.filter((l) => l.status === 'completed') ?? [];
   const leagueFirstPlaces = completedLeagues.filter((l) => l.rank === 1).length;
@@ -87,6 +88,12 @@ function ParticipantProfile() {
       // Load duel stats
       getDuelStats(id).then(dStats => {
         setDuelStats(dStats);
+      });
+      
+      // Load next reset time
+      getDuelSettingsAsync().then(settings => {
+        const nextReset = getNextWeeklyReset(settings);
+        setNextResetText(formatTimeUntilReset(nextReset));
       });
     })();
   }, [id]);
@@ -357,6 +364,7 @@ function ParticipantProfile() {
                   </span>
                   <span className="psc-sublabel">
                     {duelStats.challengesThisWeek} / {duelStats.maxChallengesPerWeek} used
+                    {nextResetText && <span className="reset-timer">Resets in {nextResetText}</span>}
                   </span>
                 </div>
                 <div className="profile-stat-card">

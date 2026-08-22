@@ -262,12 +262,12 @@ function CreateTournament() {
     setShowStartConfirm(true);
   };
 
-  const confirmStartTournament = () => {
+  const confirmStartTournament = async () => {
     if (!tournamentId) return;
     setShowStartConfirm(false);
     try {
-      startTournament(tournamentId);
-      navigate(`/tournament/${tournamentId}`);
+      await startTournament(tournamentId);
+      navigate(`/events/tournaments/${tournamentId}`);
     } catch (err: any) {
       setError(err.message);
     }

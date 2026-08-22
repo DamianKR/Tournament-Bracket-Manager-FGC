@@ -2,7 +2,7 @@ import { Tournament, Participant, TournamentMode, TournamentType, TeamSize, Seed
 import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult } from '@/engine/progression/matchProgression';
-import { saveTournament, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
+import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
 import { findOrCreateParticipant } from '@/services/participants/participantService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
 
@@ -270,7 +270,7 @@ export function updateTournamentParticipants(
 /**
  * Start the tournament and generate bracket
  */
-export function startTournament(tournamentId: string): Tournament {
+export async function startTournament(tournamentId: string): Promise<Tournament> {
   const tournament = loadTournament(tournamentId);
   if (!tournament) throw new Error('Tournament not found');
   if (tournament.status !== 'setup') throw new Error('Tournament already started');
@@ -289,7 +289,7 @@ export function startTournament(tournamentId: string): Tournament {
   tournament.status = 'in_progress';
   tournament.updatedAt = new Date().toISOString();
 
-  saveTournament(tournament);
+  await saveTournamentAsync(tournament);
   return tournament;
 }
 

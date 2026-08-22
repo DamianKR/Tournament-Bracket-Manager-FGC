@@ -709,6 +709,14 @@
   font-size: 0.75rem;
   color: var(--text-secondary);
   margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.reset-timer {
+  color: #f59e0b;
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
