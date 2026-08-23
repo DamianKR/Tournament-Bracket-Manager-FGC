@@ -325,9 +325,12 @@ export async function setMatchWinner(
         tournamentName: updatedTournament.name,
         player1Id: match.participant1Id,
         player2Id: match.participant2Id,
+        player1GlobalId: p1?.globalParticipantId ?? null,
+        player2GlobalId: p2?.globalParticipantId ?? null,
         player1Name: p1?.name ?? 'Unknown',
         player2Name: p2?.name ?? 'Unknown',
         winnerId,
+        winnerGlobalId: winnerId === match.participant1Id ? (p1?.globalParticipantId ?? null) : (p2?.globalParticipantId ?? null),
         round: match.roundNumber,
         matchNumber: match.matchNumber,
         createdAt: new Date().toISOString(),
@@ -428,9 +431,12 @@ export interface TournamentMatchRecord {
   tournamentName: string;
   player1Id: string;
   player2Id: string;
+  player1GlobalId: string | null;
+  player2GlobalId: string | null;
   player1Name: string;
   player2Name: string;
   winnerId: string;
+  winnerGlobalId: string | null;
   round: number;
   matchNumber: number;
   createdAt: string;
@@ -467,5 +473,7 @@ export function getTournamentMatchesForTournament(tournamentId: string): Tournam
 }
 
 export function getTournamentMatchesForPlayer(playerId: string): TournamentMatchRecord[] {
-  return getAllTournamentMatches().filter(m => m.player1Id === playerId || m.player2Id === playerId);
+  return getAllTournamentMatches().filter(m =>
+    m.player1GlobalId === playerId || m.player2GlobalId === playerId
+  );
 }

@@ -4,6 +4,7 @@ import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentSe
 import { getAllMatches } from '@/services/ranking/rankingService';
 import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
 import { MatchRecord, GlobalParticipant } from '@/models/types';
+import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import './HistoryTab.css';
 
 type HistoryFilter = 'all' | 'tournament' | 'league' | 'duel' | 'matchmaking';
@@ -29,7 +30,9 @@ interface UnifiedMatch {
 function HistoryTab() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<HistoryFilter>('all');
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [matches, setMatches] = useState<UnifiedMatch[]>([]);
+  const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,30 +42,39 @@ function HistoryTab() {
   const loadHistory = async () => {
     setLoading(true);
     try {
-      const [tournamentMatches, rankedMatches, allParticipants] = await Promise.all([
+      const [tournamentMatches, rankedMatches, participants] = await Promise.all([
         getAllTournamentMatchesAsync(),
         getAllMatches(),
         getAllParticipantsAsync().then(data => data.length > 0 ? data : getAllParticipants()),
       ]);
 
-      // Convert tournament matches
-      const unifiedTournament: UnifiedMatch[] = tournamentMatches.map((m: any) => ({
-        id: m.id,
-        type: 'tournament' as const,
-        player1Id: m.player1Id,
-        player2Id: m.player2Id,
-        winnerId: m.winnerId,
-        player1Name: m.player1Name || getParticipantName(m.player1Id, allParticipants),
-        player2Name: m.player2Name || getParticipantName(m.player2Id, allParticipants),
-        player1EloBefore: 0,
-        player2EloBefore: 0,
-        player1EloAfter: 0,
-        player2EloAfter: 0,
-        player1EloChange: 0,
-        player2EloChange: 0,
-        date: m.createdAt,
-        context: m.tournamentName,
-      }));
+      setAllParticipants(participants);
+
+      const globalById = new Map(participants.map((p: GlobalParticipant) => [p.id, p]));
+
+      // Convert tournament matches - use stored global IDs
+      const unifiedTournament: UnifiedMatch[] = tournamentMatches.map((m: any) => {
+        const gP1 = m.player1GlobalId ? globalById.get(m.player1GlobalId) : null;
+        const gP2 = m.player2GlobalId ? globalById.get(m.player2GlobalId) : null;
+
+        return {
+          id: m.id,
+          type: 'tournament' as const,
+          player1Id: gP1?.id ?? m.player1GlobalId ?? m.player1Id,
+          player2Id: gP2?.id ?? m.player2GlobalId ?? m.player2Id,
+          winnerId: gP1?.id ?? m.winnerGlobalId ?? m.winnerId,
+          player1Name: gP1 ? `${gP1.name}${gP1.alias ? ` (${gP1.alias})` : ''}` : (m.player1Name || 'Unknown'),
+          player2Name: gP2 ? `${gP2.name}${gP2.alias ? ` (${gP2.alias})` : ''}` : (m.player2Name || 'Unknown'),
+          player1EloBefore: 0,
+          player2EloBefore: 0,
+          player1EloAfter: 0,
+          player2EloAfter: 0,
+          player1EloChange: 0,
+          player2EloChange: 0,
+          date: m.createdAt,
+          context: m.tournamentName,
+        };
+      });
 
       // Convert ranking matches (duel/free/matchmaking)
       const unifiedRanked: UnifiedMatch[] = rankedMatches.map((m: MatchRecord) => ({
@@ -71,8 +83,8 @@ function HistoryTab() {
         player1Id: m.playerAId,
         player2Id: m.playerBId,
         winnerId: m.winnerId,
-        player1Name: getParticipantName(m.playerAId, allParticipants),
-        player2Name: getParticipantName(m.playerBId, allParticipants),
+        player1Name: getParticipantName(m.playerAId, participants),
+        player2Name: getParticipantName(m.playerBId, participants),
         player1EloBefore: m.playerAPointsBefore,
         player2EloBefore: m.playerBPointsBefore,
         player1EloAfter: m.playerAPointsAfter,
@@ -102,9 +114,12 @@ function HistoryTab() {
     return p ? `${p.name}${p.alias ? ` (${p.alias})` : ''}` : 'Unknown';
   };
 
-  const filteredMatches = filter === 'all' 
-    ? matches 
-    : matches.filter(m => m.type === filter);
+  // Apply both filters: type and player
+  const filteredMatches = matches.filter(m => {
+    const typeMatch = filter === 'all' || m.type === filter;
+    const playerMatch = !selectedPlayerId || m.player1Id === selectedPlayerId || m.player2Id === selectedPlayerId;
+    return typeMatch && playerMatch;
+  });
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -144,6 +159,12 @@ function HistoryTab() {
           <h1><i className="fas fa-history" /> Match History</h1>
           <p className="text-secondary">Complete history of all competitive matches</p>
         </div>
+        <PlayerDropdown
+          participants={allParticipants}
+          selectedId={selectedPlayerId}
+          onSelect={setSelectedPlayerId}
+          placeholder="All Players"
+        />
       </div>
 
       <div className="history-filters">

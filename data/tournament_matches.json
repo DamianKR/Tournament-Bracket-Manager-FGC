@@ -10,7 +10,10 @@
     "winnerId": "1786802854456-2t17mnthg",
     "round": 5,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T13:58:40.215Z"
+    "createdAt": "2026-08-22T13:58:40.215Z",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786387243524_6er0c9u",
+    "winnerGlobalId": "gp_1786387243524_6er0c9u"
   },
   {
     "id": "tm_1787407782081_htxkbr9ss",
@@ -23,7 +26,10 @@
     "winnerId": "1786802852787-pjz04haav",
     "round": 8,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T14:09:42.081Z"
+    "createdAt": "2026-08-22T14:09:42.081Z",
+    "player1GlobalId": "gp_1786387234567_aoe1z95",
+    "player2GlobalId": "gp_1786387250178_ac5thmv",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95"
   },
   {
     "id": "tm_1787409307471_bibsa40sm",
@@ -36,7 +42,10 @@
     "winnerId": "1786802852787-pjz04haav",
     "round": 1,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T14:35:07.471Z"
+    "createdAt": "2026-08-22T14:35:07.471Z",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95"
   },
   {
     "id": "tm_1787409309851_twxkeykfg",
@@ -49,6 +58,9 @@
     "winnerId": "1786802852787-pjz04haav",
     "round": 2,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T14:35:09.851Z"
+    "createdAt": "2026-08-22T14:35:09.851Z",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95"
   }
 ]

@@ -4,6 +4,12 @@
   padding: 2rem 0;
 }
 
+.rk-history-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
 .rk-header {
   display: flex;
   justify-content: space-between;

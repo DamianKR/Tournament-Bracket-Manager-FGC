@@ -14,6 +14,7 @@ import {
 } from '@/services/ranking/rankingService';
 import type { MatchRecord } from '@/models/types';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import RankingInfo from './RankingInfo';
 import './RankingPage.css';
 
@@ -31,12 +32,11 @@ function RankingPage() {
   // All participants (for selectors)
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
 
-
-
   // History
   const [matchHistory, setMatchHistory] = useState<MatchRecord[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
 
   // Reset modals
   // Soft: single confirmation. Hard: two-step (first modal → second modal).
@@ -276,9 +276,18 @@ function RankingPage() {
       {/* ── HISTORY TAB ── */}
       {tab === 'history' && (
         <div className="rk-section">
+          <div className="rk-history-header">
+            <PlayerDropdown
+              participants={allParticipants}
+              selectedId={selectedPlayerId}
+              onSelect={setSelectedPlayerId}
+              placeholder="All Players"
+            />
+          </div>
+
           {loadingHistory && <p className="rk-loading">Loading history...</p>}
 
-          {!loadingHistory && matchHistory.length === 0 && (
+          {!loadingHistory && matchHistory.filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId).length === 0 && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-list" /></span>
               <p>No matches recorded yet.</p>
@@ -293,7 +302,9 @@ function RankingPage() {
                 playerADelta: number; playerBDelta: number;
                 playerARankBefore: string; playerBRankBefore: string;
                 playerARankAfter: string; playerBRankAfter: string;
-              })[]).map((m) => (
+              })[])
+                .filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId)
+                .map((m) => (
                 <div key={m.id} className="card rk-history-card">
                   <div className="rk-history-top">
                     <span className="rk-history-date">{formatDate(m.createdAt)}</span>

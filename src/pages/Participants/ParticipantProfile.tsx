@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { GlobalParticipant, ComputedStats, LeagueResultEntry } from '@/models/types';
+import { GlobalParticipant, ComputedStats, LeagueResultEntry, MatchRecord } from '@/models/types';
 import {
   getParticipant,
   computeStats,
   updateParticipant,
   getParticipantLeagueStats,
+  getAllParticipantsAsync,
   type LeagueStatsSummary,
 } from '@/services/participants/participantService';
 import { loadTournamentsForParticipantAsync } from '@/services/storage/localStorage';
+import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
+import { getAllMatches } from '@/services/ranking/rankingService';
 import { initials, avatarColor } from './ParticipantsPage';
 import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import { getCharacter, getGame } from '@/data/games';
@@ -17,7 +20,9 @@ import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from
 import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
 import './ParticipantProfile.css';
 
-type Tab = 'overview' | 'results' | 'edit';
+type Tab = 'overview' | 'results' | 'matches' | 'edit';
+type MatchTypeFilter = 'all' | 'tournament' | 'league' | 'duel';
+type MatchResultFilter = 'all' | 'wins' | 'losses';
 
 const PLACEMENT_MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
@@ -40,6 +45,12 @@ function ParticipantProfile() {
   const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
   const [duelStats, setDuelStats] = useState({ challengesThisWeek: 0, maxChallengesPerWeek: 10, pendingChallenges: 0, completedThisWeek: 0 });
   const [nextResetText, setNextResetText] = useState('');
+
+  // Matches tab
+  const [allMatches, setAllMatches] = useState<any[]>([]);
+  const [loadingMatches, setLoadingMatches] = useState(false);
+  const [matchTypeFilter, setMatchTypeFilter] = useState<MatchTypeFilter>('all');
+  const [matchResultFilter, setMatchResultFilter] = useState<MatchResultFilter>('all');
 
   const completedLeagues = leagueStats?.leagues.filter((l) => l.status === 'completed') ?? [];
   const leagueFirstPlaces = completedLeagues.filter((l) => l.rank === 1).length;
@@ -97,6 +108,76 @@ function ParticipantProfile() {
       });
     })();
   }, [id]);
+
+  // Load matches when Matches tab is opened
+  useEffect(() => {
+    if (tab === 'matches' && id && allMatches.length === 0) {
+      loadMatches();
+    }
+  }, [tab, id]);
+
+  async function loadMatches() {
+    if (!id) return;
+    setLoadingMatches(true);
+    try {
+      const [tournamentMatches, rankedMatches, allParticipants] = await Promise.all([
+        getAllTournamentMatchesAsync(),
+        getAllMatches(),
+        getAllParticipantsAsync().then(data => data.length > 0 ? data : []),
+      ]);
+
+      const participantMap = new Map(allParticipants.map((p: GlobalParticipant) => [p.id, p]));
+
+      // Filter and unify matches for this participant
+      const unified = [
+        ...tournamentMatches
+          .filter((m: any) => m.player1GlobalId === id || m.player2GlobalId === id)
+          .map((m: any) => {
+            const gP1 = m.player1GlobalId ? participantMap.get(m.player1GlobalId) : null;
+            const gP2 = m.player2GlobalId ? participantMap.get(m.player2GlobalId) : null;
+            const player1IsWinner = m.winnerId === m.player1Id;
+
+            return {
+              id: m.id,
+              type: 'tournament' as const,
+              player1Id: gP1?.id ?? m.player1GlobalId ?? m.player1Id,
+              player2Id: gP2?.id ?? m.player2GlobalId ?? m.player2Id,
+              winnerId: player1IsWinner
+                ? (gP1?.id ?? m.winnerGlobalId ?? m.winnerId)
+                : (gP2?.id ?? m.winnerGlobalId ?? m.winnerId),
+              player1Name: gP1 ? `${gP1.name}${gP1.alias ? ` (${gP1.alias})` : ''}` : (m.player1Name || 'Unknown'),
+              player2Name: gP2 ? `${gP2.name}${gP2.alias ? ` (${gP2.alias})` : ''}` : (m.player2Name || 'Unknown'),
+              date: m.createdAt,
+              context: m.tournamentName,
+            };
+          }),
+        ...rankedMatches
+          .filter((m: MatchRecord) => m.playerAId === id || m.playerBId === id)
+          .map((m: MatchRecord) => ({
+            id: m.id,
+            type: (m.type as 'duel' | 'matchmaking' | 'free') ?? 'duel',
+            player1Id: m.playerAId,
+            player2Id: m.playerBId,
+            winnerId: m.winnerId,
+            player1Name: participantMap.get(m.playerAId) ? `${participantMap.get(m.playerAId)!.name}${participantMap.get(m.playerAId)!.alias ? ` (${participantMap.get(m.playerAId)!.alias})` : ''}` : 'Unknown',
+            player2Name: participantMap.get(m.playerBId) ? `${participantMap.get(m.playerBId)!.name}${participantMap.get(m.playerBId)!.alias ? ` (${participantMap.get(m.playerBId)!.alias})` : ''}` : 'Unknown',
+            player1EloBefore: m.playerAPointsBefore,
+            player2EloBefore: m.playerBPointsBefore,
+            player1EloAfter: m.playerAPointsAfter,
+            player2EloAfter: m.playerBPointsAfter,
+            player1EloChange: m.playerADelta,
+            player2EloChange: m.playerBDelta,
+            date: m.createdAt,
+          })),
+      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      setAllMatches(unified);
+    } catch (err) {
+      console.error('Failed to load matches:', err);
+    } finally {
+      setLoadingMatches(false);
+    }
+  }
 
   async function handleSave() {
     if (!participant) return;
@@ -245,10 +326,13 @@ function ParticipantProfile() {
       {/* ── Tabs ── */}
       <div className="profile-tabs-bar">
         <div className="container profile-tabs">
-          {(['overview', 'results', 'edit'] as Tab[]).map((t) => (
+          {(['overview', 'results', 'matches', 'edit'] as Tab[]).map((t) => (
             <button key={t} className={`profile-tab ${tab === t ? 'active' : ''}`}
               onClick={() => setTab(t)}>
-              {t === 'overview' ? 'Overview' : t === 'results' ? `Results (${stats.placements.length + (leagueStats?.leagues.length ?? 0)})` : 'Edit'}
+              {t === 'overview' ? 'Overview' 
+                : t === 'results' ? `Results`
+                : t === 'matches' ? 'Matches'
+                : 'Edit'}
             </button>
           ))}
         </div>
@@ -453,6 +537,163 @@ function ParticipantProfile() {
                 )}
               </>
             )}
+          </div>
+        )}
+
+        {/* ── Matches tab ── */}
+        {tab === 'matches' && (
+          <div className="card matches-tab">
+            <h3 className="mb-3">Match History</h3>
+            
+            <div className="matches-filters">
+              <div className="matches-filter-group">
+                <label>Type:</label>
+                <div className="filter-buttons">
+                  <button
+                    className={`filter-btn ${matchTypeFilter === 'all' ? 'active' : ''}`}
+                    onClick={() => setMatchTypeFilter('all')}
+                  >
+                    All
+                  </button>
+                  <button
+                    className={`filter-btn ${matchTypeFilter === 'tournament' ? 'active' : ''}`}
+                    onClick={() => setMatchTypeFilter('tournament')}
+                  >
+                    <i className="fas fa-trophy" /> Tournament
+                  </button>
+                  <button
+                    className={`filter-btn ${matchTypeFilter === 'league' ? 'active' : ''}`}
+                    onClick={() => setMatchTypeFilter('league')}
+                  >
+                    <i className="fas fa-calendar-alt" /> League
+                  </button>
+                  <button
+                    className={`filter-btn ${matchTypeFilter === 'duel' ? 'active' : ''}`}
+                    onClick={() => setMatchTypeFilter('duel')}
+                  >
+                    <i className="fas fa-swords" /> Duel
+                  </button>
+                </div>
+              </div>
+
+              <div className="matches-filter-group">
+                <label>Result:</label>
+                <div className="filter-buttons">
+                  <button
+                    className={`filter-btn ${matchResultFilter === 'all' ? 'active' : ''}`}
+                    onClick={() => setMatchResultFilter('all')}
+                  >
+                    All
+                  </button>
+                  <button
+                    className={`filter-btn ${matchResultFilter === 'wins' ? 'active' : ''}`}
+                    onClick={() => setMatchResultFilter('wins')}
+                  >
+                    <i className="fas fa-trophy" /> Wins
+                  </button>
+                  <button
+                    className={`filter-btn ${matchResultFilter === 'losses' ? 'active' : ''}`}
+                    onClick={() => setMatchResultFilter('losses')}
+                  >
+                    <i className="fas fa-times" /> Losses
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {loadingMatches && (
+              <div className="matches-loading">
+                <i className="fas fa-spinner fa-spin" /> Loading matches...
+              </div>
+            )}
+
+            {!loadingMatches && (() => {
+              const filtered = allMatches.filter(m => {
+                const typeMatch = matchTypeFilter === 'all' || m.type === matchTypeFilter;
+                const resultMatch = matchResultFilter === 'all' 
+                  || (matchResultFilter === 'wins' && m.winnerId === id)
+                  || (matchResultFilter === 'losses' && m.winnerId !== id);
+                return typeMatch && resultMatch;
+              });
+
+              if (filtered.length === 0) {
+                return (
+                  <p className="text-secondary">No matches found with current filters.</p>
+                );
+              }
+
+              return (
+                <div className="matches-list">
+                  {filtered.map(m => {
+                    const isPlayer1 = m.player1Id === id;
+                    const won = m.winnerId === id;
+                    const opponentId = isPlayer1 ? m.player2Id : m.player1Id;
+                    const opponentName = isPlayer1 ? m.player2Name : m.player1Name;
+
+                    return (
+                      <div key={m.id} className={`match-item ${won ? 'win' : 'loss'}`}>
+                        <div className="match-item-header">
+                          <span className={`match-item-result ${won ? 'win' : 'loss'}`}>
+                            {won ? <><i className="fas fa-trophy" /> WIN</> : <><i className="fas fa-times" /> LOSS</>}
+                          </span>
+                          <span className="match-item-type">
+                            {m.type === 'tournament' && <><i className="fas fa-trophy" /> Tournament</>}
+                            {m.type === 'league' && <><i className="fas fa-calendar-alt" /> League</>}
+                            {m.type === 'duel' && <><i className="fas fa-swords" /> Duel</>}
+                            {m.type === 'matchmaking' && <><i className="fas fa-random" /> Matchmaking</>}
+                            {m.type === 'free' && <><i className="fas fa-gamepad" /> Ranked</>}
+                          </span>
+                          <span className="match-item-date">
+                            {new Date(m.date).toLocaleDateString(undefined, { 
+                              month: 'short', 
+                              day: 'numeric', 
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+                        <div className="match-item-body">
+                          <div className="match-item-opponent">
+                            <span className="match-item-vs">vs</span>
+                            <span 
+                              className="match-item-opponent-name"
+                              onClick={() => navigate(`/participants/${opponentId}`)}
+                            >
+                              {opponentName || 'Unknown'}
+                            </span>
+                          </div>
+                          {m.context && (
+                            <div className="match-item-context">
+                              <i className="fas fa-info-circle" /> {m.context}
+                            </div>
+                          )}
+                          {m.type !== 'tournament' && m.player1EloChange !== undefined && (
+                            <div className="match-item-elo">
+                              {isPlayer1 ? (
+                                <>
+                                  <span>{m.player1EloBefore} → {m.player1EloAfter}</span>
+                                  <span className={`elo-change ${m.player1EloChange >= 0 ? 'positive' : 'negative'}`}>
+                                    {m.player1EloChange >= 0 ? '+' : ''}{m.player1EloChange}
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>{m.player2EloBefore} → {m.player2EloAfter}</span>
+                                  <span className={`elo-change ${m.player2EloChange >= 0 ? 'positive' : 'negative'}`}>
+                                    {m.player2EloChange >= 0 ? '+' : ''}{m.player2EloChange}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         )}
 

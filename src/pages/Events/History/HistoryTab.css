@@ -5,8 +5,13 @@
 .history-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 2rem;
+  gap: 2rem;
+}
+
+.history-header > div:first-child {
+  flex: 1;
 }
 
 .history-header h1 {
