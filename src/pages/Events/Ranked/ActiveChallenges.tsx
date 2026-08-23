@@ -113,7 +113,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
 
       {filteredChallenges.length === 0 ? (
         <div className="empty-state card">
-          <i className="fas fa-swords" style={{ fontSize: '3rem', color: 'var(--text-secondary)', marginBottom: '1rem' }} />
+          <i className="fas fa-khanda" style={{ fontSize: '3rem', color: 'var(--text-secondary)', marginBottom: '1rem' }} />
           <h3>No challenges {filterStatus !== 'all' ? filterStatus : 'yet'}</h3>
           <p className="text-secondary">Create a new challenge to get started</p>
           <button className="btn-primary mt-2" onClick={() => setShowCreateModal(true)}>
@@ -131,7 +131,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     <span className="player-elo">{getParticipantElo(challenge.challengerId)} ELO</span>
                   </div>
                   <div className="challenge-vs">
-                    <i className="fas fa-swords" />
+                    <i className="fas fa-khanda" />
                   </div>
                   <div className="challenge-player">
                     <span className="player-name">{getParticipantName(challenge.challengedId)}</span>
@@ -196,7 +196,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2><i className="fas fa-swords" /> Create Duel Challenge</h2>
+              <h2><i className="fas fa-khanda" /> Create Duel Challenge</h2>
               <button className="btn-icon" onClick={() => setShowCreateModal(false)}>
                 <i className="fas fa-times" />
               </button>

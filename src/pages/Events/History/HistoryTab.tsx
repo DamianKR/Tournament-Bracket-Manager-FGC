@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
-import { getAllRankedMatchesAsync } from '@/services/ranked/rankedMatchService';
-import { getAllParticipants } from '@/services/participants/participantService';
-import { getAllParticipantsAsync } from '@/services/participants/participantService';
-import { RankedMatch, GlobalParticipant } from '@/models/types';
+import { getAllMatches } from '@/services/ranking/rankingService';
+import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
+import { MatchRecord, GlobalParticipant } from '@/models/types';
 import './HistoryTab.css';
 
 type HistoryFilter = 'all' | 'tournament' | 'league' | 'duel' | 'matchmaking';
 
 interface UnifiedMatch {
   id: string;
-  type: 'tournament' | 'league' | 'duel' | 'matchmaking';
+  type: 'tournament' | 'league' | 'duel' | 'matchmaking' | 'free';
   player1Id: string;
   player2Id: string;
   winnerId: string;
@@ -42,7 +41,7 @@ function HistoryTab() {
     try {
       const [tournamentMatches, rankedMatches, allParticipants] = await Promise.all([
         getAllTournamentMatchesAsync(),
-        getAllRankedMatchesAsync(),
+        getAllMatches(),
         getAllParticipantsAsync().then(data => data.length > 0 ? data : getAllParticipants()),
       ]);
 
@@ -65,22 +64,22 @@ function HistoryTab() {
         context: m.tournamentName,
       }));
 
-      // Convert ranked matches (duel/matchmaking)
-      const unifiedRanked: UnifiedMatch[] = rankedMatches.map((m: RankedMatch) => ({
+      // Convert ranking matches (duel/free/matchmaking)
+      const unifiedRanked: UnifiedMatch[] = rankedMatches.map((m: MatchRecord) => ({
         id: m.id,
-        type: m.type as 'duel' | 'matchmaking',
-        player1Id: m.player1Id,
-        player2Id: m.player2Id,
+        type: (m.type as 'duel' | 'matchmaking' | 'free') ?? 'free',
+        player1Id: m.playerAId,
+        player2Id: m.playerBId,
         winnerId: m.winnerId,
-        player1Name: getParticipantName(m.player1Id, allParticipants),
-        player2Name: getParticipantName(m.player2Id, allParticipants),
-        player1EloBefore: m.player1EloBefore,
-        player2EloBefore: m.player2EloBefore,
-        player1EloAfter: m.player1EloAfter,
-        player2EloAfter: m.player2EloAfter,
-        player1EloChange: m.player1EloChange,
-        player2EloChange: m.player2EloChange,
-        date: m.date,
+        player1Name: getParticipantName(m.playerAId, allParticipants),
+        player2Name: getParticipantName(m.playerBId, allParticipants),
+        player1EloBefore: m.playerAPointsBefore,
+        player2EloBefore: m.playerBPointsBefore,
+        player1EloAfter: m.playerAPointsAfter,
+        player2EloAfter: m.playerBPointsAfter,
+        player1EloChange: m.playerADelta,
+        player2EloChange: m.playerBDelta,
+        date: m.createdAt,
       }));
 
       // TODO: Add league matches
@@ -122,7 +121,7 @@ function HistoryTab() {
     switch (type) {
       case 'tournament': return 'fa-trophy';
       case 'league': return 'fa-calendar-alt';
-      case 'duel': return 'fa-swords';
+      case 'duel': return 'fa-khanda';
       case 'matchmaking': return 'fa-random';
       default: return 'fa-gamepad';
     }

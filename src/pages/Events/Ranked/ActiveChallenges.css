@@ -89,12 +89,13 @@
 .challenge-main {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 1rem;
 }
 
 .challenge-players {
   display: flex;
+  flex: 1;
   align-items: center;
   gap: 1.5rem;
 }
@@ -108,6 +109,7 @@
 
 .player-name {
   font-weight: 600;
+  text-align: center;
   color: var(--text-color);
   font-size: 1.125rem;
 }
@@ -116,6 +118,7 @@
   font-size: 0.875rem;
   color: var(--text-secondary);
   font-family: 'Courier New', monospace;
+  align-self: center;
 }
 
 .challenge-vs {

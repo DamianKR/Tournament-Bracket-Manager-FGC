@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "duel_1787362180622_n6t9u97wl",
+    "challengerId": "gp_1786408686972_s4nl3vz",
+    "challengedId": "gp_1786808135517_vfoni2a",
+    "status": "accepted",
+    "createdAt": "2026-08-22T01:29:40.629Z",
+    "expiresAt": "2026-08-29T01:29:40.622Z",
+    "acceptedAt": "2026-08-22T01:30:00.505Z",
+    "declinedAt": null,
+    "completedAt": null,
+    "matchId": null,
+    "metadata": null
+  }
+]

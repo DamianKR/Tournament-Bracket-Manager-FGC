@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DuelSettings as DuelSettingsType } from '@/models/duel';
 import './DuelSettings.css';
 
@@ -10,6 +10,10 @@ interface DuelSettingsProps {
 function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [localSettings, setLocalSettings] = useState(settings);
+
+  useEffect(() => {
+    setLocalSettings(settings);
+  }, [settings]);
 
   const handleSave = () => {
     onUpdate(localSettings);

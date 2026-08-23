@@ -140,12 +140,13 @@ export async function getMatchesForParticipant(participantId: string): Promise<M
 export async function recordMatch(
   playerAId: string,
   playerBId: string,
-  winnerId: string
+  winnerId: string,
+  matchType: 'duel' | 'matchmaking' | 'free' = 'free'
 ): Promise<MatchResult> {
   const res = await fetch(`${API_BASE}/match`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ playerAId, playerBId, winnerId }),
+    body: JSON.stringify({ playerAId, playerBId, winnerId, matchType }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));

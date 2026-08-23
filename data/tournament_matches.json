@@ -1,1 +1,54 @@
-[]
+[
+  {
+    "id": "tm_1787407120215_tyig5t7ch",
+    "tournamentId": "1786802844864-5bjdz2hif",
+    "tournamentName": "Smash SC Singles - 2",
+    "player1Id": "1786802856410-8sj0a0oc6",
+    "player2Id": "1786802854456-2t17mnthg",
+    "player1Name": "Alexis",
+    "player2Name": "Ale",
+    "winnerId": "1786802854456-2t17mnthg",
+    "round": 5,
+    "matchNumber": 1,
+    "createdAt": "2026-08-22T13:58:40.215Z"
+  },
+  {
+    "id": "tm_1787407782081_htxkbr9ss",
+    "tournamentId": "1786802844864-5bjdz2hif",
+    "tournamentName": "Smash SC Singles - 2",
+    "player1Id": "1786802852787-pjz04haav",
+    "player2Id": "1786802856410-8sj0a0oc6",
+    "player1Name": "Gino",
+    "player2Name": "Alexis",
+    "winnerId": "1786802852787-pjz04haav",
+    "round": 8,
+    "matchNumber": 1,
+    "createdAt": "2026-08-22T14:09:42.081Z"
+  },
+  {
+    "id": "tm_1787409307471_bibsa40sm",
+    "tournamentId": "1786802844864-5bjdz2hif",
+    "tournamentName": "Smash SC Singles - 2",
+    "player1Id": "1786802854456-2t17mnthg",
+    "player2Id": "1786802852787-pjz04haav",
+    "player1Name": "Ale",
+    "player2Name": "Gino",
+    "winnerId": "1786802852787-pjz04haav",
+    "round": 1,
+    "matchNumber": 1,
+    "createdAt": "2026-08-22T14:35:07.471Z"
+  },
+  {
+    "id": "tm_1787409309851_twxkeykfg",
+    "tournamentId": "1786802844864-5bjdz2hif",
+    "tournamentName": "Smash SC Singles - 2",
+    "player1Id": "1786802854456-2t17mnthg",
+    "player2Id": "1786802852787-pjz04haav",
+    "player1Name": "Ale",
+    "player2Name": "Gino",
+    "winnerId": "1786802852787-pjz04haav",
+    "round": 2,
+    "matchNumber": 1,
+    "createdAt": "2026-08-22T14:35:09.851Z"
+  }
+]

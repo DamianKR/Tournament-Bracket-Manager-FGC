@@ -137,10 +137,13 @@ export interface MatchRecord {
   playerBId: string;
   winnerId: string;
   loserId: string;
+  type: 'duel' | 'matchmaking' | 'free';
   playerAPointsBefore: number;
   playerBPointsBefore: number;
   playerAPointsAfter: number;
   playerBPointsAfter: number;
+  playerADelta: number;
+  playerBDelta: number;
   playerARankBefore: string;
   playerBRankBefore: string;
   playerARankAfter: string;

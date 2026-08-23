@@ -94,7 +94,9 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
     setRecordError('');
     setLastResult(null);
     try {
-      const result = await recordMatch(playerAId, playerBId, winnerId);
+      const resolvedMatchType: 'duel' | 'matchmaking' | 'free' =
+        selectedChallengeId ? 'duel' : matchType === 'matchmaking' ? 'matchmaking' : 'free';
+      const result = await recordMatch(playerAId, playerBId, winnerId, resolvedMatchType);
       setLastResult(result);
 
       // If this was from a challenge, mark it as completed

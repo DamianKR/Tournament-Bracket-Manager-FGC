@@ -27,6 +27,19 @@ router.get('/', async (_req, res) => {
   }
 });
 
+// ── Tournament Match records (for history) — registered BEFORE /:id to avoid capture
+
+// GET /api/tournaments/matches
+router.get('/matches', async (_req, res) => {
+  try {
+    const all = await tournamentMatches.getAll();
+    res.json(all);
+  } catch (err) {
+    console.error('[Tournaments] GET /matches error:', err);
+    res.status(500).json({ error: 'Failed to read tournament matches' });
+  }
+});
+
 // GET /api/tournaments/:id
 router.get('/:id', async (req, res) => {
   try {
@@ -141,19 +154,6 @@ router.delete('/', async (_req, res) => {
   } catch (err) {
     console.error('[Tournaments] DELETE / error:', err);
     res.status(500).json({ error: 'Failed to clear tournaments' });
-  }
-});
-
-// ── Tournament Match records (for history) ────────────────────────────────
-
-// GET /api/tournament-matches
-router.get('/matches', async (_req, res) => {
-  try {
-    const all = await tournamentMatches.getAll();
-    res.json(all);
-  } catch (err) {
-    console.error('[Tournaments] GET /matches error:', err);
-    res.status(500).json({ error: 'Failed to read tournament matches' });
   }
 });
 
