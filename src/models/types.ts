@@ -106,7 +106,7 @@ export interface GlobalParticipant {
   gameId: string | null;    // e.g. 'ssbu' — which game this player competes in
   mainCharacterId: string | null; // e.g. 'kirby' — their main character
   // ELO Ranking
-  eloPoints: number;        // Current ELO score (default 1500)
+  eloPoints: number | null; // Current ELO score (null = unranked/no points yet)
   eloRank: string;          // Rank name derived from eloPoints
   createdAt: string;
   updatedAt: string;
@@ -115,6 +115,7 @@ export interface GlobalParticipant {
 // ── ELO / Ranking ──────────────────────────────────────────────────────────
 
 export type EloRankName =
+  | 'Sin puntos'
   | 'Plata'
   | 'Oro'
   | 'Platino'

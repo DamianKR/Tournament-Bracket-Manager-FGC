@@ -43,14 +43,14 @@ const API_BASE = 'http://localhost:3001/api/ranking';
 // ── Types ─────────────────────────────────────────────────────────────────
 
 export interface LeaderboardEntry {
-  position: number;
+  position: number | null;
   id: string;
   name: string;
   alias: string;
   avatarUrl: string | null;
-  eloPoints: number;
+  eloPoints: number | null;
   eloRank: string;
-  displayRank: string;   // 'Legend' for top 5, otherwise same as eloRank
+  displayRank: string;   // 'Legend' for top 5, 'Sin puntos' for unranked
   gameId: string | null;
   mainCharacterId: string | null;
 }

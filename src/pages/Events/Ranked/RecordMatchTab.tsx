@@ -173,7 +173,7 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
                     .filter((p) => p.id !== playerBId)
                     .map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name}{p.alias ? ` (${p.alias})` : ''} — {p.eloPoints ?? 1500} pts
+                        {p.name}{p.alias ? ` (${p.alias})` : ''} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}
                       </option>
                     ))}
                 </select>
@@ -201,7 +201,7 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
                     .filter((p) => p.id !== playerAId)
                     .map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name}{p.alias ? ` (${p.alias})` : ''} — {p.eloPoints ?? 1500} pts
+                        {p.name}{p.alias ? ` (${p.alias})` : ''} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}
                       </option>
                     ))}
                 </select>
@@ -292,14 +292,14 @@ function EloPreview({
   isWinner: boolean;
   onSetWinner: () => void;
 }) {
-  const pts = participant.eloPoints ?? 1500;
-  const rank = participant.eloRank ?? 'Diamante';
+  const pts = participant.eloPoints;
+  const rank = participant.eloRank;
   return (
     <div className={`rk-elo-preview ${isWinner ? 'winner-preview' : ''}`} onClick={onSetWinner}>
       <span className="rk-elo-rank-icon"><i className={getRankIcon(rank)} /></span>
       <div>
         <span className="rk-elo-rank-name" style={{ color: getRankColor(rank) }}>{rank}</span>
-        <span className="rk-elo-pts">{pts.toLocaleString()} pts</span>
+        <span className="rk-elo-pts">{pts != null ? `${pts.toLocaleString()} pts` : 'unranked'}</span>
       </div>
       {isWinner && <span className="rk-winner-crown"><i className="fas fa-crown" /> Winner</span>}
     </div>

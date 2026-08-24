@@ -10,7 +10,7 @@
  */
 
 import { participants } from '../db/collections.js';
-import { getRankName, getTournamentPoints } from './eloEngine.js';
+import { getRankName, getTournamentPoints, effectiveElo } from './eloEngine.js';
 
 /**
  * Resolve a tournament participant or team member to a global participant.
@@ -59,7 +59,7 @@ export async function applyTournamentElo(tournament) {
         const gp = resolveGlobalParticipant(member, byId, byName);
         if (!gp) continue;
 
-        const ptsBefore = gp.eloPoints ?? 1500;
+        const ptsBefore = effectiveElo(gp.eloPoints);
         const baseEarned = getTournamentPoints(position, ptsBefore);
         if (baseEarned <= 0) continue;
 
@@ -91,7 +91,7 @@ export async function applyTournamentElo(tournament) {
       const gp = resolveGlobalParticipant(tp, byId, byName);
       if (!gp) continue;
 
-      const ptsBefore = gp.eloPoints ?? 1500;
+      const ptsBefore = effectiveElo(gp.eloPoints);
       const earned = getTournamentPoints(position, ptsBefore);
       if (earned <= 0) continue;
 

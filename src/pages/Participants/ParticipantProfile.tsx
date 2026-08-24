@@ -265,8 +265,9 @@ function ParticipantProfile() {
 
             {/* ELO Rank widget — right side of banner */}
             {(() => {
-              const pts   = rankEntry?.eloPoints ?? participant.eloPoints ?? 1500;
-              const rank  = rankEntry?.displayRank ?? participant.eloRank ?? 'Diamante';
+              const hasPts = (rankEntry?.eloPoints ?? participant.eloPoints) != null;
+              const pts   = hasPts ? (rankEntry?.eloPoints ?? participant.eloPoints) : null;
+              const rank  = rankEntry?.displayRank ?? participant.eloRank ?? 'Sin puntos';
               const pos   = rankEntry?.position;
               const col   = getRankColor(rank);
               const icon  = getRankIcon(rank);
@@ -297,10 +298,10 @@ function ParticipantProfile() {
                   {/* Bottom row: pts left, position right */}
                   <div className="pew-bottom">
                     <div className="pew-pts-block">
-                      <span className="pew-pts-value">{pts.toLocaleString()}</span>
-                      <span className="pew-pts-label">points</span>
+                      <span className="pew-pts-value">{pts != null ? pts.toLocaleString() : '—'}</span>
+                      <span className="pew-pts-label">{pts != null ? 'points' : 'unranked'}</span>
                     </div>
-                    {pos !== undefined && (
+                    {pos != null && (
                       <div className="pew-pos-block">
                         <span className="pew-pos-value">#{pos}</span>
                         <span className="pew-pos-label">ranking</span>

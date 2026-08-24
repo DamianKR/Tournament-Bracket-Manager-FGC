@@ -230,12 +230,14 @@ function RankingPage() {
                   {leaderboard.map((entry) => (
                     <tr
                       key={entry.id}
-                      className={`rk-row ${entry.position <= 5 ? 'legend-row' : ''}`}
+                      className={`rk-row ${entry.position != null && entry.position <= 5 ? 'legend-row' : ''}`}
                       onClick={() => navigate(`/participants/${entry.id}`)}
                     >
                       <td className="rk-col-pos">
-                        <span className={`rk-pos ${entry.position <= 3 ? `top${entry.position}` : ''}`}>
-                          {entry.position <= 3 ? ['🥇', '🥈', '🥉'][entry.position - 1] : entry.position}
+                        <span className={`rk-pos ${entry.position != null && entry.position <= 3 ? `top${entry.position}` : ''}`}>
+                          {entry.position != null
+                            ? (entry.position <= 3 ? ['🥇', '🥈', '🥉'][entry.position - 1] : entry.position)
+                            : '—'}
                         </span>
                       </td>
                       <td className="rk-col-player">
@@ -260,7 +262,9 @@ function RankingPage() {
                         </span>
                       </td>
                       <td className="rk-col-pts">
-                        <span className="rk-pts">{entry.eloPoints.toLocaleString()}</span>
+                        <span className="rk-pts">
+                          {entry.eloPoints != null ? entry.eloPoints.toLocaleString() : '—'}
+                        </span>
                       </td>
                     </tr>
                   ))}

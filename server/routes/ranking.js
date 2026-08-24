@@ -24,12 +24,11 @@ function generateId(prefix = 'm') {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
-/** Ensures a participant has ELO fields (migration for old records). */
+/** Ensures a participant has ELO rank set. Unranked players keep null points. */
 function ensureElo(p) {
   return {
     ...p,
-    eloPoints: p.eloPoints ?? 1500,
-    eloRank:   p.eloRank   ?? getRankName(p.eloPoints ?? 1500),
+    eloRank: p.eloRank ?? getRankName(p.eloPoints),
   };
 }
 
@@ -39,19 +38,25 @@ router.get('/', async (_req, res) => {
   try {
     const all = (await participants.getAll()).map(ensureElo);
 
-    // Sort by ELO descending
-    const sorted = [...all].sort((a, b) => b.eloPoints - a.eloPoints);
+    // Sort: players with points first (desc), then unranked players
+    const withPoints = all.filter((p) => p.eloPoints != null)
+      .sort((a, b) => b.eloPoints - a.eloPoints);
+    const unranked = all.filter((p) => p.eloPoints == null);
+    const sorted = [...withPoints, ...unranked];
 
-    // Apply Legend tier to top 5
-    const leaderboard = applyLegendTier(sorted).map((p, i) => ({
-      position:        i + 1,
+    // Apply Legend tier to top 5 (only point-holders)
+    const rankedForLegend = applyLegendTier(withPoints);
+    const legendMap = new Map(rankedForLegend.map((p) => [p.id, p.displayRank]));
+
+    const leaderboard = sorted.map((p, i) => ({
+      position:        p.eloPoints != null ? i + 1 : null,
       id:              p.id,
       name:            p.name,
       alias:           p.alias,
       avatarUrl:       p.avatarUrl,
       eloPoints:       p.eloPoints,
       eloRank:         p.eloRank,
-      displayRank:     p.displayRank,
+      displayRank:     p.eloPoints != null ? (legendMap.get(p.id) ?? p.eloRank) : 'Sin puntos',
       gameId:          p.gameId,
       mainCharacterId: p.mainCharacterId,
     }));
@@ -129,6 +134,8 @@ router.post('/match', async (req, res) => {
       createdAt: new Date().toISOString(),
     };
 
+    // A player only gets points after their first match; before that they were null.
+    // Persist real points; both players now have an ELO score.
     const updatedA = { ...pA, eloPoints: newRA, eloRank: newRankA, updatedAt: new Date().toISOString() };
     const updatedB = { ...pB, eloPoints: newRB, eloRank: newRankB, updatedAt: new Date().toISOString() };
 

@@ -34,10 +34,11 @@ export const RANK_TIERS = [
 /**
  * Returns the rank name for a given ELO score.
  * "Legend" is NOT returned here — assigned at query time by leaderboard position.
- * @param {number} points
+ * @param {number|null|undefined} points
  * @returns {string}
  */
 export function getRankName(points) {
+  if (points == null) return 'Sin puntos';
   for (let i = RANK_TIERS.length - 1; i >= 0; i--) {
     if (points >= RANK_TIERS[i].min) return RANK_TIERS[i].name;
   }
@@ -71,10 +72,13 @@ export function getRankColor(rankName) {
  * Master     (1700–1849)  → 14
  * Ultimate   (1850+)      → 10
  *
- * @param {number} points
+ * Unranked players use Diamante K=22 for their first match.
+ *
+ * @param {number|null|undefined} points
  * @returns {number}
  */
 export function getKFactor(points) {
+  if (points == null) return 22; // Diamante K for unranked first match
   if (points < 1200) return 44;  // Bronce
   if (points < 1300) return 40;  // Plata
   if (points < 1400) return 34;  // Oro
@@ -117,8 +121,10 @@ export function expectedScore(rA, rB) {
  * @returns {{ newRA: number, newRB: number, deltaA: number, deltaB: number }}
  */
 export function calculateElo(rA, rB, winner) {
-  const rWinner = winner === 'A' ? rA : rB;
-  const rLoser  = winner === 'A' ? rB : rA;
+  const baseA = rA ?? 1500;
+  const baseB = rB ?? 1500;
+  const rWinner = winner === 'A' ? baseA : baseB;
+  const rLoser  = winner === 'A' ? baseB : baseA;
 
   const Ew    = expectedScore(rWinner, rLoser);
   const K     = getKFactor(rWinner);
@@ -128,8 +134,8 @@ export function calculateElo(rA, rB, winner) {
   const deltaB = winner === 'B' ? +delta : -delta;
 
   return {
-    newRA: Math.max(0, rA + deltaA),
-    newRB: Math.max(0, rB + deltaB),
+    newRA: Math.max(0, baseA + deltaA),
+    newRB: Math.max(0, baseB + deltaB),
     deltaA,
     deltaB,
   };
@@ -170,6 +176,15 @@ export function getTournamentPoints(position, eloPoints) {
   if (!entry) return 0;
   const K = getKFactor(eloPoints);
   return Math.round(K * entry.multiplier);
+}
+
+/**
+ * Resolves effective ELO (treating null as 1500 starting base).
+ * @param {number|null|undefined} points
+ * @returns {number}
+ */
+export function effectiveElo(points) {
+  return points ?? 1500;
 }
 
 // ── Legend tier ───────────────────────────────────────────────────────────

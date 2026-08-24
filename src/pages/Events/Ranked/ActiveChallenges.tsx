@@ -65,7 +65,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
 
   const getParticipantElo = (id: string) => {
     const p = participants.find(p => p.id === id);
-    return p?.eloPoints ?? 1500;
+    return p?.eloPoints;
   };
 
   const filteredChallenges = filterStatus === 'all' 
@@ -214,7 +214,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     .filter(p => p.id !== player2Id)
                     .map(p => (
                       <option key={p.id} value={p.id}>
-                        {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints} ELO
+                        {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
                       </option>
                     ))}
                 </select>
@@ -231,7 +231,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     .filter(p => p.id !== player1Id)
                     .map(p => (
                       <option key={p.id} value={p.id}>
-                        {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints} ELO
+                        {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
                       </option>
                     ))}
                 </select>
