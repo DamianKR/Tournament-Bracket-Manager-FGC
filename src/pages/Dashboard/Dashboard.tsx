@@ -34,15 +34,15 @@ function Dashboard() {
   };
 
   const handleCreateNew = () => {
-    navigate('/create');
+    navigate('/events/tournaments/create');
   };
 
   const handleOpenTournament = (id: string) => {
     const tournament = tournaments.find(t => t.id === id);
     if (tournament?.status === 'setup') {
-      navigate(`/create/${id}`);
+      navigate(`/events/tournaments/create/${id}`);
     } else {
-      navigate(`/tournament/${id}`);
+      navigate(`/events/tournaments/${id}`);
     }
   };
 
@@ -137,7 +137,7 @@ function Dashboard() {
                 <div className="tournament-card-actions">
                   <button
                     className="btn-outline"
-                    onClick={() => tournament.status === 'setup' ? navigate(`/create/${tournament.id}`) : navigate(`/tournament/${tournament.id}`)}
+                    onClick={() => tournament.status === 'setup' ? navigate(`/events/tournaments/create/${tournament.id}`) : navigate(`/events/tournaments/${tournament.id}`)}
                   >
                     <i className={tournament.status === 'setup' ? 'fas fa-pen' : 'fas fa-eye'} />
                     {tournament.status === 'setup' ? ' Continue Setup' : ' View Bracket'}

@@ -492,7 +492,7 @@ function ParticipantProfile() {
                   <div className="profile-results-list">
                     {stats.placements.map((pl) => (
                       <div key={pl.tournamentId} className="profile-result-row"
-                        onClick={() => navigate(`/tournament/${pl.tournamentId}`)}>
+                        onClick={() => navigate(`/events/tournaments/${pl.tournamentId}`)}>
                         <span className="prr-medal">{PLACEMENT_MEDAL[pl.position] ?? <i className="fas fa-gamepad" />}</span>
                         <div className="prr-info">
                           <span className="prr-name">{pl.tournamentName}</span>
@@ -519,7 +519,7 @@ function ParticipantProfile() {
                   <div className="profile-results-list">
                     {leagueStats!.leagues.map((pl: LeagueResultEntry) => (
                       <div key={pl.leagueId} className="profile-result-row"
-                        onClick={() => navigate(`/leagues/${pl.leagueId}`)}>
+                        onClick={() => navigate(`/events/leagues/${pl.leagueId}`)}>
                         <span className={`prr-medal prr-rank rank-${pl.rank}`}>
                           {pl.rank <= 3 ? PLACEMENT_MEDAL[pl.rank] : pl.rank}
                         </span>

@@ -498,9 +498,12 @@ export async function completeDuelChallenge(challengeId: string, matchId: string
 }
 
 /**
- * Check and expire old challenges
+ * Check and expire old challenges.
+ * Pending challenges expire after challengeExpirationDays from creation.
+ * Accepted challenges expire after challengeExpirationDays from acceptance.
  */
 export async function expireOldChallenges(): Promise<void> {
+  const settings = await getDuelSettingsAsync();
   const all = lsReadChallenges();
   const now = new Date();
   let changed = false;
@@ -509,6 +512,15 @@ export async function expireOldChallenges(): Promise<void> {
     if (challenge.status === 'pending' && new Date(challenge.expiresAt) < now) {
       challenge.status = 'expired';
       changed = true;
+    }
+
+    if (challenge.status === 'accepted' && challenge.acceptedAt) {
+      const acceptedExpiresAt = new Date(challenge.acceptedAt);
+      acceptedExpiresAt.setDate(acceptedExpiresAt.getDate() + settings.challengeExpirationDays);
+      if (acceptedExpiresAt < now) {
+        challenge.status = 'expired';
+        changed = true;
+      }
     }
   });
 

@@ -26,6 +26,17 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
 
+  // Calculate the actual current week based on startDate and today
+  function getEffectiveCurrentWeek(): number {
+    const start = new Date(league.startDate);
+    const now = new Date();
+    const diffDays = (now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+    if (diffDays < 0) return 0; // League hasn't started yet
+    return Math.floor(diffDays / league.periodDays) + 1;
+  }
+
+  const effectiveCurrentWeek = getEffectiveCurrentWeek();
+
   // Group matches by week
   const matchesByWeek = new Map<number, LeagueMatch[]>();
   for (const match of matches) {
@@ -47,7 +58,7 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
             <option value="all">All Weeks</option>
             {weeks.map((w) => (
               <option key={w} value={w}>
-                Week {w}{w > league.currentWeek ? ' (future)' : w === league.currentWeek ? ' (current)' : ' (past)'}
+                Week {w}{w > effectiveCurrentWeek ? ' (future)' : w === effectiveCurrentWeek ? ' (current)' : ' (past)'}
               </option>
             ))}
           </select>
@@ -72,7 +83,7 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                 const isCompleted = match.status === 'completed' || match.status === 'no_show';
                 const isNoShow = match.status === 'no_show';
                 const winner = match.winnerId;
-                const isFutureWeek = match.week > league.currentWeek;
+                const isFutureWeek = match.week > effectiveCurrentWeek;
 
                 return (
                   <div key={match.id} className={`match-row ${isCompleted ? 'completed' : isFutureWeek ? 'pending future' : 'pending'}`}>

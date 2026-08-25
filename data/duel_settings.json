@@ -2,7 +2,7 @@
   {
     "id": "default",
     "maxChallengesPerWeek": 5,
-    "eloRestriction": 300,
+    "eloRestriction": 250,
     "challengeExpirationDays": 7,
     "weeklyResetDay": 1,
     "weeklyResetHour": 0,

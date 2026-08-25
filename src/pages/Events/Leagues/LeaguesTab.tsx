@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { League } from '@/models/league';
-import { getAllLeagues, deleteLeague } from '@/services/leagues/leagueService';
+import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './LeaguesTab.css';
@@ -62,7 +62,8 @@ function LeaguesTab() {
         <div className="leagues-grid">
           {leagues.map((league) => {
             const game = getGame(league.gameId);
-            const statusClass = league.status === 'active' ? 'status-active' : 'status-completed';
+            const displayStatus = getLeagueDisplayStatus(league);
+            const statusClass = `status-${displayStatus}`;
 
             return (
               <div
@@ -73,7 +74,7 @@ function LeaguesTab() {
                 <div className="league-card-header">
                   <h3 className="league-card-title">{league.name}</h3>
                   <span className={`league-card-status ${statusClass}`}>
-                    {league.status === 'active' ? 'Active' : 'Completed'}
+                    {displayStatus.charAt(0).toUpperCase() + displayStatus.slice(1)}
                   </span>
                 </div>
 
@@ -99,7 +100,10 @@ function LeaguesTab() {
                 <div className="league-card-actions">
                   <button
                     className="btn-outline"
-                    onClick={() => navigate(`/events/leagues/${league.id}`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/events/leagues/${league.id}`);
+                    }}
                   >
                     <i className="fas fa-eye" /> View League
                   </button>

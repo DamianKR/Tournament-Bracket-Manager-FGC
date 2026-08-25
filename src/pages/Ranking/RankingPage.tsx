@@ -243,12 +243,12 @@ function RankingPage() {
                       <td className="rk-col-player">
                         <div className="rk-player">
                           {entry.avatarUrl
-                            ? <img src={entry.avatarUrl} alt={entry.name} className="rk-avatar" />
-                            : <div className="rk-avatar-placeholder">{entry.name[0]?.toUpperCase()}</div>
+                            ? <img src={entry.avatarUrl} alt={entry.alias || entry.name} className="rk-avatar" />
+                            : <div className="rk-avatar-placeholder">{(entry.alias || entry.name)[0]?.toUpperCase()}</div>
                           }
                           <div className="rk-player-info">
-                            <span className="rk-player-name">{entry.name}</span>
-                            {entry.alias && <span className="rk-player-alias">{entry.alias}</span>}
+                            <span className="rk-player-name">{entry.alias || entry.name}</span>
+                            {entry.alias && entry.name && <span className="rk-player-real-name">{entry.name}</span>}
                           </div>
                         </div>
                       </td>

@@ -5,7 +5,8 @@ import {
   createDuelChallenge, 
   acceptDuelChallenge,
   declineDuelChallenge,
-  getAllChallengesAsync 
+  getAllChallengesAsync,
+  expireOldChallenges,
 } from '@/services/duels/duelService';
 import { getAllParticipants } from '@/services/participants/participantService';
 import './ActiveChallenges.css';
@@ -27,6 +28,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   }, []);
 
   const loadData = async () => {
+    await expireOldChallenges();
     const all = await getAllChallengesAsync();
     setAllChallenges(all);
     setParticipants(getAllParticipants());
@@ -68,9 +70,13 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     return p?.eloPoints;
   };
 
+  const sortedChallenges = [...allChallenges].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
   const filteredChallenges = filterStatus === 'all' 
-    ? allChallenges 
-    : allChallenges.filter(c => c.status === filterStatus);
+    ? sortedChallenges 
+    : sortedChallenges.filter(c => c.status === filterStatus);
 
   return (
     <div className="active-challenges">
@@ -212,6 +218,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                   <option value="">-- Select player --</option>
                   {participants
                     .filter(p => p.id !== player2Id)
+                    .sort((a, b) => a.name.localeCompare(b.name))
                     .map(p => (
                       <option key={p.id} value={p.id}>
                         {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
@@ -229,6 +236,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                   <option value="">-- Select player --</option>
                   {participants
                     .filter(p => p.id !== player1Id)
+                    .sort((a, b) => a.name.localeCompare(b.name))
                     .map(p => (
                       <option key={p.id} value={p.id}>
                         {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}

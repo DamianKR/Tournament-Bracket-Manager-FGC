@@ -52,15 +52,16 @@
   text-transform: capitalize;
 }
 
-.status-badge[data-status="active"] {
+.status-badge.status-active {
   color: #10b981;
 }
 
-.status-badge[data-status="completed"] {
+.status-badge.status-completed {
   color: #6b7280;
 }
 
-.status-badge[data-status="draft"] {
+.status-badge.status-pending,
+.status-badge.status-draft {
   color: #f59e0b;
 }
 

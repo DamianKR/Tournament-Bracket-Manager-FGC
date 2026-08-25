@@ -111,7 +111,7 @@ function CreateLeague() {
       return;
     }
 
-    navigate(`/leagues/${result.league.id}`);
+    navigate(`/events/leagues/${result.league.id}`);
   }
 
   return (
@@ -151,16 +151,18 @@ function CreateLeague() {
               <span className="text-secondary">Selected: {selectedIds.size}</span>
             </div>
             <div className="participants-grid">
-              {allParticipants.map((p) => (
-                <label key={p.id} className="participant-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.has(p.id)}
-                    onChange={() => toggleParticipant(p.id)}
-                  />
-                  <span>{p.name}</span>
-                </label>
-              ))}
+              {allParticipants
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((p) => (
+                  <label key={p.id} className="participant-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(p.id)}
+                      onChange={() => toggleParticipant(p.id)}
+                    />
+                    <span>{p.name}</span>
+                  </label>
+                ))}
             </div>
           </div>
 

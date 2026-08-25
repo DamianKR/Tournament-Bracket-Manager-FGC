@@ -128,7 +128,7 @@ function LeagueView() {
             className={`league-tab ${tab === 'my-matches' ? 'active' : ''}`}
             onClick={() => setTab('my-matches')}
           >
-            My Matches
+            Matches
           </button>
           <button
             className={`league-tab ${tab === 'options' ? 'active' : ''}`}

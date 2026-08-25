@@ -306,8 +306,8 @@
       "1786158558338-ey6twflzq"
     ],
     "createdAt": "2026-08-10T20:30:34.683Z",
-    "updatedAt": "2026-08-24T00:42:58.185Z",
-    "eloPoints": 1534,
+    "updatedAt": "2026-08-24T03:30:24.112Z",
+    "eloPoints": 1544,
     "eloRank": "Diamante"
   },
   {
@@ -445,9 +445,9 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-11T01:04:28.124Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z",
-    "eloPoints": null,
-    "eloRank": "Sin puntos"
+    "updatedAt": "2026-08-24T23:24:51.389Z",
+    "eloPoints": 1511,
+    "eloRank": "Diamante"
   },
   {
     "gameId": "ssbu",
@@ -474,9 +474,9 @@
       "1786802844864-5bjdz2hif"
     ],
     "createdAt": "2026-08-11T04:02:08.315Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z",
-    "eloPoints": null,
-    "eloRank": "Sin puntos"
+    "updatedAt": "2026-08-24T23:24:51.389Z",
+    "eloPoints": 1489,
+    "eloRank": "Platino"
   },
   {
     "gameId": "ssbu",
@@ -544,10 +544,10 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "bowser",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
+    "eloPoints": 1500,
+    "eloRank": "Diamante",
     "createdAt": "2026-08-15T01:28:49.455Z",
-    "updatedAt": "2026-08-18T23:02:41.424Z"
+    "updatedAt": "2026-08-24T05:56:53.624Z"
   },
   {
     "id": "gp_1786758755895_bgdf2b9",
@@ -562,10 +562,10 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "kirby",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
+    "eloPoints": 1521,
+    "eloRank": "Diamante",
     "createdAt": "2026-08-15T01:52:35.895Z",
-    "updatedAt": "2026-08-18T23:02:18.483Z"
+    "updatedAt": "2026-08-24T05:58:53.582Z"
   },
   {
     "id": "gp_1786758906647_1ib85c1",
@@ -598,10 +598,10 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "sephiroth",
-    "eloPoints": 1507,
-    "eloRank": "Diamante",
+    "eloPoints": 1497,
+    "eloRank": "Platino",
     "createdAt": "2026-08-15T02:46:21.144Z",
-    "updatedAt": "2026-08-23T03:34:31.188Z"
+    "updatedAt": "2026-08-24T03:30:24.112Z"
   },
   {
     "id": "gp_1786802386624_ficm2tl",
@@ -736,10 +736,10 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "dark_pit",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
+    "eloPoints": 1479,
+    "eloRank": "Platino",
     "createdAt": "2026-08-19T04:10:45.165Z",
-    "updatedAt": "2026-08-19T04:13:16.553Z"
+    "updatedAt": "2026-08-24T05:58:53.582Z"
   },
   {
     "id": "gp_1787112745370_2zahvg8",

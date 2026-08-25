@@ -143,3 +143,14 @@ export async function deleteLeague(id: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Returns the display status for a league.
+ * Active leagues are shown as 'pending' until their startDate is reached.
+ */
+export function getLeagueDisplayStatus(league: League): 'pending' | 'active' | 'completed' {
+  if (league.status === 'completed') return 'completed';
+  if (league.status === 'draft') return 'pending';
+  if (new Date(league.startDate) > new Date()) return 'pending';
+  return 'active';
+}

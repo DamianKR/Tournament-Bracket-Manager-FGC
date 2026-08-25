@@ -1,4 +1,5 @@
 import { League } from '@/models/league';
+import { getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import './LeagueOptionsTab.css';
 
 interface LeagueOptionsTabProps {
@@ -16,6 +17,7 @@ function LeagueOptionsTab({ league }: LeagueOptionsTabProps) {
   };
 
   const totalMatches = (league.participantIds.length * (league.participantIds.length - 1) / 2) * league.roundsPerOpponent;
+  const displayStatus = getLeagueDisplayStatus(league);
 
   return (
     <div className="options-tab">
@@ -87,8 +89,8 @@ function LeagueOptionsTab({ league }: LeagueOptionsTabProps) {
 
           <div className="option-card">
             <div className="option-label">Status</div>
-            <div className="option-value status-badge" data-status={league.status}>
-              {league.status}
+            <div className={`option-value status-badge status-${displayStatus}`}>
+              {displayStatus.charAt(0).toUpperCase() + displayStatus.slice(1)}
             </div>
           </div>
         </div>

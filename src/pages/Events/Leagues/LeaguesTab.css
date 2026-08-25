@@ -94,6 +94,12 @@
   border-color: rgba(245, 158, 11, 0.35);
 }
 
+.status-pending {
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
 .status-completed {
   background: rgba(16, 185, 129, 0.12);
   color: #6ee7b7;
@@ -126,34 +132,39 @@
   color: rgba(255,255,255,0.9);
 }
 
-.league-card-footer {
+.league-card-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: rgba(255,255,255,0.65);
-  font-size: 0.8rem;
+  gap: 0.5rem;
 }
 
-.league-card-date {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
+.league-card-actions button {
+  flex: 1;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.78rem;
 }
 
-.league-card-delete {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.95rem;
-  cursor: pointer;
-  padding: 0.35rem;
-  border-radius: 4px;
-  transition: color 0.15s, background-color 0.15s;
+.league-card-actions .btn-outline {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.9);
 }
 
-.league-card-delete:hover {
-  color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.12);
+.league-card-actions .btn-outline:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.league-card-actions .btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+
+.league-card-actions .btn-danger:hover {
+  background: rgba(239, 68, 68, 0.22);
+  color: #fff;
 }
 
 @media (max-width: 640px) {

@@ -294,15 +294,18 @@ router.get('/:id/league-stats', async (req, res) => {
       });
     }
 
-    const totalLeagueMatches = results.reduce((sum, r) => sum + r.matchesPlayed, 0);
-    const totalLeagueWins = results.reduce((sum, r) => sum + r.wins, 0);
-    const totalLeagueLosses = results.reduce((sum, r) => sum + r.losses, 0);
+    // Only show results for completed leagues in the profile
+    const completedResults = results.filter((r) => r.status === 'completed');
+
+    const totalLeagueMatches = completedResults.reduce((sum, r) => sum + r.matchesPlayed, 0);
+    const totalLeagueWins = completedResults.reduce((sum, r) => sum + r.wins, 0);
+    const totalLeagueLosses = completedResults.reduce((sum, r) => sum + r.losses, 0);
     const leagueWinRate = totalLeagueMatches > 0
       ? Math.round((totalLeagueWins / totalLeagueMatches) * 100)
       : 0;
 
     res.json({
-      leagues: results,
+      leagues: completedResults,
       totalMatches: totalLeagueMatches,
       totalWins: totalLeagueWins,
       totalLosses: totalLeagueLosses,

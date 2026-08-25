@@ -30,8 +30,14 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
 
   const myStanding = standings.find(s => s.participantId === selectedParticipantId);
 
-  const thisWeekMatches = myMatches.filter(m => m.week === league.currentWeek);
-  const upcomingMatches = myMatches.filter(m => m.status === 'scheduled' && m.week > league.currentWeek);
+  // Calculate actual current week from startDate
+  const start = new Date(league.startDate);
+  const now = new Date();
+  const diffDays = (now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+  const effectiveCurrentWeek = diffDays < 0 ? 0 : Math.floor(diffDays / league.periodDays) + 1;
+
+  const thisWeekMatches = myMatches.filter(m => m.week === effectiveCurrentWeek);
+  const upcomingMatches = myMatches.filter(m => m.status === 'scheduled' && m.week > effectiveCurrentWeek);
   const completedMatches = myMatches.filter(m => m.status === 'completed' || m.status === 'no_show');
   const remainingOpponents = league.participantIds.filter(pid => {
     if (pid === selectedParticipantId) return false;
@@ -78,12 +84,18 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
         ) : (
           <>
             <div className="my-match-status">Pending</div>
-            <button
-              className="btn-primary btn-sm"
-              onClick={() => setSelectedMatch(match)}
-            >
-              Report Result
-            </button>
+            {match.week <= effectiveCurrentWeek ? (
+              <button
+                className="btn-primary btn-sm"
+                onClick={() => setSelectedMatch(match)}
+              >
+                Report Result
+              </button>
+            ) : (
+              <span className="match-locked" title={`Locked until Week ${match.week}`}>
+                <i className="fas fa-lock" /> Week {match.week}
+              </span>
+            )}
           </>
         )}
       </div>
@@ -100,11 +112,14 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
             onChange={(e) => setSelectedParticipantId(e.target.value)}
           >
             <option value="">-- Choose a player --</option>
-            {league.participantIds.map((pid) => (
-              <option key={pid} value={pid}>
-                {getParticipantName(pid)}
-              </option>
-            ))}
+            {league.participantIds
+              .map((pid) => ({ id: pid, name: getParticipantName(pid) }))
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map(({ id, name }) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
           </select>
         </label>
       </div>

@@ -1,0 +1,83 @@
+.duel-info {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.duel-info h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.duel-info h2 i {
+  color: var(--primary-color);
+}
+
+.duel-info-section {
+  padding: 1.25rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.duel-info-section h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.duel-info-section h3 i {
+  color: var(--primary-color);
+}
+
+.duel-info-section p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.duel-info-section p + p {
+  margin-top: 0.5rem;
+}
+
+.duel-info-section strong {
+  color: var(--text-primary);
+}
+
+.duel-info-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+  border-radius: 0.375rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.duel-info-example {
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .duel-info {
+    padding: 1.25rem;
+  }
+
+  .duel-info h2 {
+    font-size: 1.25rem;
+  }
+}

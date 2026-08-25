@@ -154,5 +154,70 @@
     "completedAt": "2026-08-24T00:43:24.850Z",
     "matchId": "m_1787532204843_r9ue91p",
     "metadata": null
+  },
+  {
+    "id": "duel_1787542146434_uo8xqvpu9",
+    "challengerId": "gp_1786757329455_8ijcyo8",
+    "challengedId": "gp_1787112645165_cj7eik8",
+    "status": "completed",
+    "createdAt": "2026-08-24T03:29:06.444Z",
+    "expiresAt": "2026-08-31T03:29:06.434Z",
+    "acceptedAt": "2026-08-24T03:29:09.094Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-24T03:29:16.124Z",
+    "matchId": "m_1787542156116_7vhamnn",
+    "metadata": null
+  },
+  {
+    "id": "duel_1787542215421_j8muebuzg",
+    "challengerId": "gp_1786761981144_462dv5s",
+    "challengedId": "gp_1786393834683_lievrvf",
+    "status": "completed",
+    "createdAt": "2026-08-24T03:30:15.422Z",
+    "expiresAt": "2026-08-31T03:30:15.421Z",
+    "acceptedAt": "2026-08-24T03:30:17.532Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-24T03:30:24.118Z",
+    "matchId": "m_1787542224112_ofz19pm",
+    "metadata": null
+  },
+  {
+    "id": "duel_1787550996033_7kfawx93f",
+    "challengerId": "gp_1786757329455_8ijcyo8",
+    "challengedId": "gp_1786758755895_bgdf2b9",
+    "status": "completed",
+    "createdAt": "2026-08-24T05:56:36.040Z",
+    "expiresAt": "2026-08-31T05:56:36.033Z",
+    "acceptedAt": "2026-08-24T05:56:41.790Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-24T05:56:53.631Z",
+    "matchId": "m_1787551013624_ynn3etw",
+    "metadata": null
+  },
+  {
+    "id": "duel_1787551107446_5uqh1wlvy",
+    "challengerId": "gp_1786758755895_bgdf2b9",
+    "challengedId": "gp_1787112645165_cj7eik8",
+    "status": "completed",
+    "createdAt": "2026-08-24T05:58:27.443Z",
+    "expiresAt": "2026-08-31T05:58:27.446Z",
+    "acceptedAt": "2026-08-24T05:58:33.939Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-24T05:58:53.588Z",
+    "matchId": "m_1787551133582_2kiorhx",
+    "metadata": null
+  },
+  {
+    "id": "duel_1787613881856_o17s1bvyl",
+    "challengerId": "gp_1786410268124_ja1vgy5",
+    "challengedId": "gp_1786420928315_91m6kmr",
+    "status": "completed",
+    "createdAt": "2026-08-24T23:24:41.868Z",
+    "expiresAt": "2026-08-31T23:24:41.856Z",
+    "acceptedAt": "2026-08-24T23:24:43.823Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-24T23:24:51.396Z",
+    "matchId": "m_1787613891389_cyc2xk2",
+    "metadata": null
   }
 ]

@@ -5,9 +5,10 @@ import { getDuelSettingsAsync, updateDuelSettings } from '@/services/duels/duelS
 import DuelSettings from './DuelSettings';
 import RecordMatchTab from './RecordMatchTab';
 import ActiveChallenges from './ActiveChallenges';
+import DuelInfo from './DuelInfo';
 import './RankedTab.css';
 
-type RankedSubTab = 'record' | 'challenges';
+type RankedSubTab = 'record' | 'challenges' | 'info';
 
 function RankedTab() {
   const [matchType, setMatchType] = useState<RankedMatchType>('duel');
@@ -71,6 +72,12 @@ function RankedTab() {
             >
               <i className="fas fa-gamepad" /> Record Match
             </button>
+            <button
+              className={`ranked-tab-btn ${subTab === 'info' ? 'active' : ''}`}
+              onClick={() => setSubTab('info')}
+            >
+              <i className="fas fa-info-circle" /> Info
+            </button>
           </div>
 
           <div className="ranked-content">
@@ -87,6 +94,7 @@ function RankedTab() {
                 }}
               />
             )}
+            {subTab === 'info' && <DuelInfo />}
           </div>
         </>
       )}

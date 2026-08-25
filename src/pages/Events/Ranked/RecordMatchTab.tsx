@@ -171,6 +171,7 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
                   <option value="">— Select player —</option>
                   {allParticipants
                     .filter((p) => p.id !== playerBId)
+                    .sort((a, b) => a.name.localeCompare(b.name))
                     .map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.name}{p.alias ? ` (${p.alias})` : ''} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}
@@ -199,6 +200,7 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
                   <option value="">— Select player —</option>
                   {allParticipants
                     .filter((p) => p.id !== playerAId)
+                    .sort((a, b) => a.name.localeCompare(b.name))
                     .map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.name}{p.alias ? ` (${p.alias})` : ''} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}

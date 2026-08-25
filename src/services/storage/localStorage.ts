@@ -341,8 +341,8 @@ export function findGlobalParticipantByName(name: string): GlobalParticipant | n
 
 export function searchGlobalParticipants(query: string): GlobalParticipant[] {
   const q = query.trim().toLowerCase();
-  if (!q) return lsReadParticipants();
-  return lsReadParticipants().filter((p) =>
+  const all = lsReadParticipants().filter((p) =>
     p.name.toLowerCase().includes(q) || p.alias?.toLowerCase().includes(q)
   );
+  return all.sort((a, b) => a.name.localeCompare(b.name));
 }
