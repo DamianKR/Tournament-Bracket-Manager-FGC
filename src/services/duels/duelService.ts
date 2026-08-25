@@ -373,8 +373,7 @@ export async function createDuelChallenge(
   // Validate first
   const validation = await validateDuelChallenge(challengerId, challengedId);
   if (!validation.valid) {
-    console.error('Challenge validation failed:', validation.error);
-    return null;
+    throw new Error(validation.error || 'Challenge validation failed');
   }
 
   const settings = await getDuelSettingsAsync();

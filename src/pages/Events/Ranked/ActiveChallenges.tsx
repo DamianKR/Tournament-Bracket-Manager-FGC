@@ -22,6 +22,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const [player1Id, setPlayer1Id] = useState('');
   const [player2Id, setPlayer2Id] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'accepted' | 'completed'>('all');
+  const [createError, setCreateError] = useState('');
 
   useEffect(() => {
     loadData();
@@ -36,13 +37,18 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
 
   const handleCreateChallenge = async () => {
     if (!player1Id || !player2Id) return;
+    setCreateError('');
     
-    const challenge = await createDuelChallenge(player1Id, player2Id);
-    if (challenge) {
-      await loadData();
-      setShowCreateModal(false);
-      setPlayer1Id('');
-      setPlayer2Id('');
+    try {
+      const challenge = await createDuelChallenge(player1Id, player2Id);
+      if (challenge) {
+        await loadData();
+        setShowCreateModal(false);
+        setPlayer1Id('');
+        setPlayer2Id('');
+      }
+    } catch (err: any) {
+      setCreateError(err.message || 'Failed to create challenge');
     }
   };
 
@@ -199,7 +205,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
       )}
 
       {showCreateModal && (
-        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
+        <div className="modal-overlay" onClick={() => { setShowCreateModal(false); setCreateError(''); }}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h2><i className="fas fa-khanda" /> Create Duel Challenge</h2>
@@ -208,11 +214,12 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               </button>
             </div>
             <div className="modal-body">
+              {createError && <div className="error-message">{createError}</div>}
               <div className="form-group">
                 <label>Player 1 (Challenger)</label>
                 <select
                   value={player1Id}
-                  onChange={e => setPlayer1Id(e.target.value)}
+                  onChange={e => { setPlayer1Id(e.target.value); setCreateError(''); }}
                   className="form-control"
                 >
                   <option value="">-- Select player --</option>
@@ -230,7 +237,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                 <label>Player 2 (Challenged)</label>
                 <select
                   value={player2Id}
-                  onChange={e => setPlayer2Id(e.target.value)}
+                  onChange={e => { setPlayer2Id(e.target.value); setCreateError(''); }}
                   className="form-control"
                 >
                   <option value="">-- Select player --</option>
@@ -246,7 +253,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn-outline" onClick={() => setShowCreateModal(false)}>
+              <button className="btn-outline" onClick={() => { setShowCreateModal(false); setCreateError(''); }}>
                 Cancel
               </button>
               <button 
