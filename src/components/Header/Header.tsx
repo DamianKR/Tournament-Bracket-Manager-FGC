@@ -50,30 +50,32 @@ function Header() {
             )}
           </nav>
 
+          <div className="header-divider" />
+
           <div className="header-auth">
             {isAuthenticated ? (
-              <div className="header-user">
+              <div className="header-user-pill">
                 <span
                   className={`header-username ${user?.participantId ? 'clickable' : ''}`}
                   onClick={() => user?.participantId && navigate(`/participants/${user.participantId}`)}
-                  title={user?.participantId ? 'View profile' : ''}
+                  title={user?.participantId ? 'View profile' : user!.username}
                 >
                   <i className="fas fa-user-circle" />
-                  {user!.username}
+                  <span className="header-username-text">{user!.username}</span>
                 </span>
                 {isAdmin && <span className="header-role-badge">Admin</span>}
-                <button className="header-logout-btn" onClick={handleLogout} title="Sign out">
+                <button className="header-logout-btn" onClick={handleLogout} title="Sign out" aria-label="Sign out">
                   <i className="fas fa-sign-out-alt" />
-                  <span>Sign out</span>
                 </button>
               </div>
             ) : (
               <button
                 className="header-login-btn"
                 onClick={() => navigate('/login')}
+                title="Sign in"
+                aria-label="Sign in"
               >
                 <i className="fas fa-sign-in-alt" />
-                <span>Sign in</span>
               </button>
             )}
           </div>
