@@ -25,7 +25,13 @@ export const DEFAULT_DUEL_SETTINGS: DuelSettings = {
   weeklyResetMinute: 0,
 };
 
-export type DuelChallengeStatus = 'pending' | 'accepted' | 'completed' | 'expired' | 'declined';
+export type DuelChallengeStatus = 'pending' | 'accepted' | 'completed' | 'expired' | 'declined' | 'pending_review';
+
+export interface DuelResult {
+  winnerId: string;
+  reportedAt: string;
+  evidence?: string | null;
+}
 
 export interface DuelChallenge {
   id: string;
@@ -36,6 +42,10 @@ export interface DuelChallenge {
   
   // Result (when completed)
   matchId?: string; // Links to RankedMatch
+  
+  // Participant-reported results
+  challengerResult?: DuelResult | null;
+  challengedResult?: DuelResult | null;
   
   // Dates
   createdAt: string;

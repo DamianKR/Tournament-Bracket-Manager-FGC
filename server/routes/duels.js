@@ -21,6 +21,9 @@ import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
 
 const router = Router();
 
+// Max evidence (base64) size: 6MB string, which is roughly 4.5MB decoded image
+const MAX_EVIDENCE_SIZE_BYTES = 6 * 1024 * 1024;
+
 // ── Settings ──────────────────────────────────────────────────────────────
 
 // GET /api/duels/settings
@@ -93,6 +96,11 @@ router.post('/', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // Non-admin users can only challenge as themselves
+    if (req.user.role !== 'admin' && req.user.participantId !== challengerId) {
+      return res.status(403).json({ error: 'You can only create challenges as yourself' });
+    }
+
     const challenge = duelChallengeShape(id, challengerId, challengedId, expiresAt);
     const validation = validateDuelChallenge(challenge);
     
@@ -153,13 +161,22 @@ router.put('/:id/decline', requireAuth, async (req, res) => {
 });
 
 // PUT /api/duels/:id/complete
-router.put('/:id/complete', requireAuth, requireAdmin, async (req, res) => {
+// Allows admin or either participant to link a match to the challenge
+router.put('/:id/complete', requireAuth, async (req, res) => {
   try {
     const challenge = await duels.findById(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
 
     const { matchId } = req.body;
     if (!matchId) return res.status(400).json({ error: 'Missing matchId' });
+
+    // Authorize: admin or either participant
+    const isAdmin = req.user.role === 'admin';
+    const isParticipant = req.user.participantId === challenge.challengerId ||
+                          req.user.participantId === challenge.challengedId;
+    if (!isAdmin && !isParticipant) {
+      return res.status(403).json({ error: 'Only the duel participants or admin can complete' });
+    }
 
     challenge.status = 'completed';
     challenge.matchId = matchId;
@@ -181,6 +198,113 @@ router.delete('/:id', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('[Duels] DELETE /:id error:', err);
     res.status(500).json({ error: 'Failed to delete challenge' });
+  }
+});
+
+// PUT /api/duels/:id/report-result
+// Allows a participant to report their version of the match result
+router.put('/:id/report-result', requireAuth, async (req, res) => {
+  try {
+    const challenge = await duels.findById(req.params.id);
+    if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
+    
+    if (challenge.status !== 'accepted') {
+      return res.status(400).json({ error: 'Challenge must be accepted before reporting results' });
+    }
+
+    // Check if user is one of the participants
+    const isChallenger = req.user.participantId === challenge.challengerId;
+    const isChallenged = req.user.participantId === challenge.challengedId;
+    
+    if (!isChallenger && !isChallenged && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Only participants can report results' });
+    }
+
+    const { winnerId, evidence } = req.body;
+    if (!winnerId) return res.status(400).json({ error: 'Missing winnerId' });
+
+    // Validate winnerId is one of the participants
+    if (winnerId !== challenge.challengerId && winnerId !== challenge.challengedId) {
+      return res.status(400).json({ error: 'Winner must be one of the participants' });
+    }
+
+    // Validate evidence size if provided
+    if (evidence && typeof evidence === 'string' && evidence.length > MAX_EVIDENCE_SIZE_BYTES) {
+      return res.status(413).json({ error: `Evidence image too large. Maximum is ${MAX_EVIDENCE_SIZE_BYTES / 1024 / 1024}MB after encoding.` });
+    }
+
+    const result = {
+      winnerId,
+      reportedAt: new Date().toISOString(),
+      evidence: evidence || null,
+    };
+
+    // Store result based on who is reporting
+    if (isChallenger) {
+      challenge.challengerResult = result;
+    } else if (isChallenged) {
+      challenge.challengedResult = result;
+    }
+
+    // Check if both participants have reported
+    if (challenge.challengerResult && challenge.challengedResult) {
+      if (challenge.challengerResult.winnerId === challenge.challengedResult.winnerId) {
+        // Results match - auto-confirm (will be handled by frontend to create match)
+        challenge.status = 'completed';
+        challenge.completedAt = new Date().toISOString();
+        // Clear evidence since results match
+        if (challenge.challengerResult.evidence) challenge.challengerResult.evidence = null;
+        if (challenge.challengedResult.evidence) challenge.challengedResult.evidence = null;
+      } else {
+        // Results don't match - needs admin review
+        challenge.status = 'pending_review';
+      }
+    }
+
+    await duels.upsert(challenge);
+    res.json(challenge);
+  } catch (err) {
+    console.error('[Duels] PUT /:id/report-result error:', err);
+    res.status(500).json({ error: 'Failed to report result' });
+  }
+});
+
+// PUT /api/duels/:id/resolve-conflict
+// Admin-only endpoint to resolve conflicting results
+router.put('/:id/resolve-conflict', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const challenge = await duels.findById(req.params.id);
+    if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
+    
+    if (challenge.status !== 'pending_review') {
+      return res.status(400).json({ error: 'Challenge is not pending review' });
+    }
+
+    const { winnerId } = req.body;
+    if (!winnerId) return res.status(400).json({ error: 'Missing winnerId' });
+
+    // Validate winnerId is one of the participants
+    if (winnerId !== challenge.challengerId && winnerId !== challenge.challengedId) {
+      return res.status(400).json({ error: 'Winner must be one of the participants' });
+    }
+
+    // Admin has resolved - update both results to match admin decision
+    const resolvedResult = {
+      winnerId,
+      reportedAt: new Date().toISOString(),
+      evidence: null,
+    };
+
+    challenge.challengerResult = resolvedResult;
+    challenge.challengedResult = resolvedResult;
+    challenge.status = 'completed';
+    challenge.completedAt = new Date().toISOString();
+
+    await duels.upsert(challenge);
+    res.json(challenge);
+  } catch (err) {
+    console.error('[Duels] PUT /:id/resolve-conflict error:', err);
+    res.status(500).json({ error: 'Failed to resolve conflict' });
   }
 });
 

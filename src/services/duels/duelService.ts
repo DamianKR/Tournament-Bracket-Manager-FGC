@@ -547,3 +547,74 @@ export async function expireOldChallenges(): Promise<void> {
     await writeChallenges(all);
   }
 }
+
+/**
+ * Report match result for a challenge (participant submits their version)
+ */
+export async function reportDuelResult(
+  challengeId: string,
+  winnerId: string,
+  evidence?: string
+): Promise<DuelChallenge | null> {
+  if (await isServerAvailable()) {
+    try {
+      const res = await fetch(`${API_BASE}/${challengeId}/report-result`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify({ winnerId, evidence }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        // Update localStorage cache
+        const all = lsReadChallenges();
+        const index = all.findIndex(c => c.id === challengeId);
+        if (index >= 0) {
+          all[index] = updated;
+          lsWriteChallenges(all);
+        }
+        return updated;
+      }
+      const error = await res.json();
+      throw new Error(error.error || 'Failed to report result');
+    } catch (err) {
+      console.error('[Duels] Report result failed:', err);
+      throw err;
+    }
+  }
+  return null;
+}
+
+/**
+ * Resolve conflicting results (admin only)
+ */
+export async function resolveConflict(
+  challengeId: string,
+  winnerId: string
+): Promise<DuelChallenge | null> {
+  if (await isServerAvailable()) {
+    try {
+      const res = await fetch(`${API_BASE}/${challengeId}/resolve-conflict`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify({ winnerId }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        // Update localStorage cache
+        const all = lsReadChallenges();
+        const index = all.findIndex(c => c.id === challengeId);
+        if (index >= 0) {
+          all[index] = updated;
+          lsWriteChallenges(all);
+        }
+        return updated;
+      }
+      const error = await res.json();
+      throw new Error(error.error || 'Failed to resolve conflict');
+    } catch (err) {
+      console.error('[Duels] Resolve conflict failed:', err);
+      throw err;
+    }
+  }
+  return null;
+}

@@ -11,6 +11,7 @@
 
 import type { MatchRecord, GlobalParticipant } from '../../models/types';
 import { SERVER_URL } from '@/services/api/apiClient';
+import { getAuthHeader } from '@/services/auth/authService';
 
 // ── localStorage sync helpers ─────────────────────────────────────────────
 
@@ -146,7 +147,7 @@ export async function recordMatch(
 ): Promise<MatchResult> {
   const res = await fetch(`${API_BASE}/match`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify({ playerAId, playerBId, winnerId, matchType }),
   });
   if (!res.ok) {

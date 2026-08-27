@@ -13,7 +13,7 @@ import { getAllParticipants } from '@/services/participants/participantService';
 import './ActiveChallenges.css';
 
 interface ActiveChallengesProps {
-  onChallengeSelect: (challengeId: string) => void;
+  onChallengeSelect: (challenge: { id: string; challengerId: string; challengedId: string }) => void;
 }
 
 function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
@@ -23,12 +23,19 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [player1Id, setPlayer1Id] = useState('');
   const [player2Id, setPlayer2Id] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'accepted' | 'completed'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'accepted' | 'completed' | 'pending_review'>('all');
   const [createError, setCreateError] = useState('');
 
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    // Auto-set player1 to current user's participant if not admin
+    if (!isAdmin && user?.participantId && showCreateModal) {
+      setPlayer1Id(user.participantId);
+    }
+  }, [isAdmin, user, showCreateModal]);
 
   const loadData = async () => {
     await expireOldChallenges();
@@ -64,8 +71,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     await loadData();
   };
 
-  const handleRecordMatch = (challengeId: string) => {
-    onChallengeSelect(challengeId);
+  const handleRecordMatch = (challenge: DuelChallenge) => {
+    onChallengeSelect({ id: challenge.id, challengerId: challenge.challengerId, challengedId: challenge.challengedId });
   };
 
   const getParticipantName = (id: string) => {
@@ -117,6 +124,14 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         >
           Accepted ({allChallenges.filter(c => c.status === 'accepted').length})
         </button>
+        {isAdmin && (
+          <button 
+            className={`filter-btn ${filterStatus === 'pending_review' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('pending_review')}
+          >
+            Pending Review ({allChallenges.filter(c => c.status === 'pending_review').length})
+          </button>
+        )}
         <button 
           className={`filter-btn ${filterStatus === 'completed' ? 'active' : ''}`}
           onClick={() => setFilterStatus('completed')}
@@ -186,13 +201,26 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     </button>
                   </>
                 )}
-                {challenge.status === 'accepted' && isAdmin && (
+                {challenge.status === 'accepted' && (
+                  <>
+                    {(user?.participantId === challenge.challengerId || user?.participantId === challenge.challengedId || isAdmin) && (
+                      <button 
+                        className="btn-primary btn-sm"
+                        onClick={() => handleRecordMatch(challenge)}
+                        title="Report match result"
+                      >
+                        <i className="fas fa-gamepad" /> Report Result
+                      </button>
+                    )}
+                  </>
+                )}
+                {challenge.status === 'pending_review' && isAdmin && (
                   <button 
-                    className="btn-primary btn-sm"
-                    onClick={() => handleRecordMatch(challenge.id)}
-                    title="Record match result"
+                    className="btn-warning btn-sm"
+                    onClick={() => handleRecordMatch(challenge)}
+                    title="Resolve conflict"
                   >
-                    <i className="fas fa-gamepad" /> Record Match
+                    <i className="fas fa-gavel" /> Resolve Conflict
                   </button>
                 )}
                 {challenge.status === 'completed' && challenge.matchId && (
@@ -217,42 +245,74 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
             </div>
             <div className="modal-body">
               {createError && <div className="error-message">{createError}</div>}
-              <div className="form-group">
-                <label>Player 1 (Challenger)</label>
-                <select
-                  value={player1Id}
-                  onChange={e => { setPlayer1Id(e.target.value); setCreateError(''); }}
-                  className="form-control"
-                >
-                  <option value="">-- Select player --</option>
-                  {participants
-                    .filter(p => p.id !== player2Id)
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map(p => (
-                      <option key={p.id} value={p.id}>
-                        {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Player 2 (Challenged)</label>
-                <select
-                  value={player2Id}
-                  onChange={e => { setPlayer2Id(e.target.value); setCreateError(''); }}
-                  className="form-control"
-                >
-                  <option value="">-- Select player --</option>
-                  {participants
-                    .filter(p => p.id !== player1Id)
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map(p => (
-                      <option key={p.id} value={p.id}>
-                        {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
-                      </option>
-                    ))}
-                </select>
-              </div>
+              
+              {isAdmin ? (
+                <>
+                  <div className="form-group">
+                    <label>Player 1 (Challenger)</label>
+                    <select
+                      value={player1Id}
+                      onChange={e => { setPlayer1Id(e.target.value); setCreateError(''); }}
+                      className="form-control"
+                    >
+                      <option value="">-- Select player --</option>
+                      {participants
+                        .filter(p => p.id !== player2Id)
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map(p => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Player 2 (Challenged)</label>
+                    <select
+                      value={player2Id}
+                      onChange={e => { setPlayer2Id(e.target.value); setCreateError(''); }}
+                      className="form-control"
+                    >
+                      <option value="">-- Select player --</option>
+                      {participants
+                        .filter(p => p.id !== player1Id)
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map(p => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="form-group">
+                    <label>You (Challenger)</label>
+                    <div className="form-control-static">
+                      {getParticipantName(player1Id)} - {getParticipantElo(player1Id)} ELO
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Challenge Player</label>
+                    <select
+                      value={player2Id}
+                      onChange={e => { setPlayer2Id(e.target.value); setCreateError(''); }}
+                      className="form-control"
+                    >
+                      <option value="">-- Select player to challenge --</option>
+                      {participants
+                        .filter(p => p.id !== player1Id)
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map(p => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </>
+              )}
             </div>
             <div className="modal-footer">
               <button className="btn-outline" onClick={() => { setShowCreateModal(false); setCreateError(''); }}>

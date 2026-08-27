@@ -266,6 +266,135 @@
   color: #c4b5fd;
 }
 
+.rk-player-locked {
+  padding: 0.625rem 0.875rem;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--border-radius);
+  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.rk-record-notice {
+  padding: 1.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: var(--border-radius);
+  color: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.rk-record-notice i {
+  font-size: 1.5rem;
+  color: #60a5fa;
+  flex-shrink: 0;
+}
+
+.rk-record-notice h3 {
+  margin: 0 0 0.5rem;
+  color: #fff;
+}
+
+.rk-record-notice p {
+  margin: 0;
+  color: rgba(255,255,255,0.7);
+}
+
+.rk-evidence-section {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--border-radius);
+}
+
+.rk-evidence-section h4 {
+  margin: 0 0 1rem;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.rk-evidence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.rk-evidence-card {
+  padding: 1rem;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--border-radius);
+}
+
+.rk-evidence-card h5 {
+  margin: 0 0 0.5rem;
+  color: #fff;
+  font-size: 0.875rem;
+}
+
+.rk-evidence-card p {
+  margin: 0 0 0.75rem;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.875rem;
+}
+
+.rk-evidence-image {
+  margin-top: 0.75rem;
+}
+
+.rk-evidence-image img {
+  max-width: 100%;
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.rk-evidence-preview {
+  margin-top: 0.75rem;
+  max-width: 300px;
+}
+
+.rk-evidence-preview img {
+  max-width: 100%;
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.rk-evidence-upload {
+  margin: 1.5rem 0;
+}
+
+.rk-evidence-upload label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+
+.rk-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--border-radius);
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  font-size: 0.9375rem;
+}
+
+.rk-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.rk-help-text {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  color: rgba(255,255,255,0.5);
+}
+
 @media (max-width: 768px) {
   .rk-matchup {
     flex-direction: column;
@@ -280,5 +409,9 @@
 
   .rk-result-row {
     flex-direction: column;
+  }
+
+  .rk-evidence-grid {
+    grid-template-columns: 1fr;
   }
 }

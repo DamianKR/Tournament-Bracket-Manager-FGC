@@ -12,7 +12,7 @@ import './RankedTab.css';
 type RankedSubTab = 'record' | 'challenges' | 'info';
 
 function RankedTab() {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [matchType, setMatchType] = useState<RankedMatchType>('duel');
   const [subTab, setSubTab] = useState<RankedSubTab>('challenges');
   const [settings, setSettings] = useState<DuelSettingsType>(DEFAULT_DUEL_SETTINGS);
@@ -32,9 +32,11 @@ function RankedTab() {
     setSettings(newSettings);
   };
 
-  const handleChallengeSelect = (challengeId: string) => {
-    if (!isAdmin) return;
-    setSelectedChallenge(challengeId);
+  const handleChallengeSelect = (challenge: { id: string; challengerId: string; challengedId: string }) => {
+    // Allow admin or challenge participants to access record tab
+    const isParticipant = user?.participantId === challenge.challengerId || user?.participantId === challenge.challengedId;
+    if (!isAdmin && !isParticipant) return;
+    setSelectedChallenge(challenge.id);
     setSubTab('record');
   };
 
@@ -65,16 +67,16 @@ function RankedTab() {
           <div className="ranked-tabs">
             <button
               className={`ranked-tab-btn ${subTab === 'challenges' ? 'active' : ''}`}
-              onClick={() => setSubTab('challenges')}
+              onClick={() => { setSubTab('challenges'); setSelectedChallenge(null); }}
             >
               <i className="fas fa-swords" /> Manage Challenges
             </button>
-            {isAdmin && (
+            {(isAdmin || selectedChallenge) && (
               <button
                 className={`ranked-tab-btn ${subTab === 'record' ? 'active' : ''}`}
                 onClick={() => setSubTab('record')}
               >
-                <i className="fas fa-gamepad" /> Record Match
+                <i className="fas fa-gamepad" /> {selectedChallenge ? 'Report Result' : 'Record Match'}
               </button>
             )}
             <button
@@ -89,7 +91,7 @@ function RankedTab() {
             {subTab === 'challenges' && (
               <ActiveChallenges onChallengeSelect={handleChallengeSelect} />
             )}
-            {subTab === 'record' && isAdmin && (
+            {subTab === 'record' && (isAdmin || selectedChallenge) && (
               <RecordMatchTab
                 matchType={matchType}
                 selectedChallengeId={selectedChallenge}

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
@@ -9,8 +8,12 @@ import {
   getRankIcon,
   type MatchResult,
 } from '@/services/ranking/rankingService';
-import { validateDuelChallenge, getDuelChallenge, completeDuelChallenge } from '@/services/duels/duelService';
+import { getDuelChallenge, reportDuelResult, resolveConflict, completeDuelChallenge } from '@/services/duels/duelService';
+import { DuelChallenge } from '@/models/duel';
 import './RecordMatchTab.css';
+
+const MAX_EVIDENCE_SIZE_MB = 4;
+const MAX_EVIDENCE_SIZE_BYTES = MAX_EVIDENCE_SIZE_MB * 1024 * 1024;
 
 interface RecordMatchTabProps {
   matchType: 'duel' | 'matchmaking';
@@ -18,24 +21,25 @@ interface RecordMatchTabProps {
   onMatchRecorded?: () => void;
 }
 
-function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: RecordMatchTabProps) {
-  const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTabProps) {
+  const { user, isAdmin } = useAuth();
 
   // All participants (for selectors)
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
+
+  // Challenge data
+  const [challenge, setChallenge] = useState<DuelChallenge | null>(null);
 
   // Record match
   const [playerAId, setPlayerAId] = useState('');
   const [playerBId, setPlayerBId] = useState('');
   const [winnerId, setWinnerId] = useState('');
+  const [evidence, setEvidence] = useState('');
+  const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordError, setRecordError] = useState('');
   const [lastResult, setLastResult] = useState<MatchResult | null>(null);
-
-  // Duel validation
-  const [duelValidationError, setDuelValidationError] = useState('');
-  const [duelValidationWarnings, setDuelValidationWarnings] = useState<string[]>([]);
+  const [evidenceError, setEvidenceError] = useState('');
 
   // Participant name lookup
   const participantMap = new Map(allParticipants.map((p) => [p.id, p]));
@@ -50,84 +54,378 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
   // Auto-populate from selected challenge
   useEffect(() => {
     if (selectedChallengeId && allParticipants.length > 0) {
-      getDuelChallenge(selectedChallengeId).then(challenge => {
-        if (challenge) {
-          setPlayerAId(challenge.challengerId);
-          setPlayerBId(challenge.challengedId);
+      getDuelChallenge(selectedChallengeId).then(ch => {
+        if (ch) {
+          setChallenge(ch);
+          setPlayerAId(ch.challengerId);
+          setPlayerBId(ch.challengedId);
           setWinnerId('');
           setLastResult(null);
-        }
-      });
-    }
-  }, [selectedChallengeId, allParticipants]);
-
-  // Validate duel when players change (skip if from selected challenge)
-  useEffect(() => {
-    // If this is from a selected challenge, skip validation
-    if (selectedChallengeId) {
-      setDuelValidationError('');
-      setDuelValidationWarnings([]);
-      return;
-    }
-
-    if (matchType === 'duel' && playerAId && playerBId) {
-      validateDuelChallenge(playerAId, playerBId).then(result => {
-        if (!result.valid) {
-          setDuelValidationError(result.error || '');
-          setDuelValidationWarnings([]);
-        } else {
-          setDuelValidationError('');
-          setDuelValidationWarnings(result.warnings || []);
+          setEvidence('');
+          setEvidenceFile(null);
         }
       });
     } else {
-      setDuelValidationError('');
-      setDuelValidationWarnings([]);
+      setChallenge(null);
     }
-  }, [playerAId, playerBId, matchType, selectedChallengeId]);
+  }, [selectedChallengeId, allParticipants]);
+
+  // Check if current user is a participant in the challenge
+  const isParticipant = challenge && user?.participantId && 
+    (user.participantId === challenge.challengerId || user.participantId === challenge.challengedId);
+
+  // Check if user has already reported
+  const hasReported = challenge && user?.participantId && (
+    (user.participantId === challenge.challengerId && challenge.challengerResult) ||
+    (user.participantId === challenge.challengedId && challenge.challengedResult)
+  );
+
+  async function handleReportResult() {
+    if (!challenge) return;
+    if (!winnerId) { setRecordError('Select who won.'); return; }
+
+    setRecording(true);
+    setRecordError('');
+    try {
+      // Convert image file to base64 if selected
+      let evidenceData = evidence;
+      if (evidenceFile) {
+        evidenceData = await fileToBase64(evidenceFile);
+      }
+
+      const updated = await reportDuelResult(challenge.id, winnerId, evidenceData || undefined);
+      if (updated) {
+        setChallenge(updated);
+        setEvidenceFile(null);
+
+        // If status is now 'completed', both results matched - record the match
+        if (updated.status === 'completed') {
+          const result = await recordMatch(playerAId, playerBId, winnerId, 'duel');
+          setLastResult(result);
+
+          // Link match to challenge
+          if (result.match) {
+            await completeDuelChallenge(updated.id, result.match.id);
+          }
+
+          // Patch the local participants list with the updated ELO values
+          const pA = (result as unknown as { updatedParticipantA?: GlobalParticipant }).updatedParticipantA;
+          const pB = (result as unknown as { updatedParticipantB?: GlobalParticipant }).updatedParticipantB;
+          if (pA || pB) {
+            setAllParticipants((prev) =>
+              prev.map((p) => {
+                if (pA && p.id === pA.id) return pA;
+                if (pB && p.id === pB.id) return pB;
+                return p;
+              })
+            );
+          }
+
+          // Notify parent
+          if (onMatchRecorded) {
+            setTimeout(() => onMatchRecorded(), 2000);
+          }
+        } else if (updated.status === 'pending_review') {
+          setRecordError('Results don\'t match. Waiting for admin review or other participant to report.');
+        } else {
+          setRecordError('Result reported. Waiting for other participant to report.');
+        }
+      }
+    } catch (err: unknown) {
+      setRecordError(err instanceof Error ? err.message : 'Error reporting result.');
+    } finally {
+      setRecording(false);
+    }
+  }
+
+  async function handleAdminResolve() {
+    if (!challenge || !isAdmin) return;
+    if (!winnerId) { setRecordError('Select who won.'); return; }
+
+    setRecording(true);
+    setRecordError('');
+    try {
+      const updated = await resolveConflict(challenge.id, winnerId);
+      if (updated) {
+        // Record the match with admin's decision
+        const result = await recordMatch(playerAId, playerBId, winnerId, 'duel');
+        setLastResult(result);
+        
+        // Link match to challenge
+        if (result.match) {
+          await completeDuelChallenge(updated.id, result.match.id);
+        }
+
+        // Patch the local participants list with the updated ELO values
+        const pA = (result as unknown as { updatedParticipantA?: GlobalParticipant }).updatedParticipantA;
+        const pB = (result as unknown as { updatedParticipantB?: GlobalParticipant }).updatedParticipantB;
+        if (pA || pB) {
+          setAllParticipants((prev) =>
+            prev.map((p) => {
+              if (pA && p.id === pA.id) return pA;
+              if (pB && p.id === pB.id) return pB;
+              return p;
+            })
+          );
+        }
+
+        // Notify parent
+        if (onMatchRecorded) {
+          setTimeout(() => onMatchRecorded(), 2000);
+        }
+      }
+    } catch (err: unknown) {
+      setRecordError(err instanceof Error ? err.message : 'Error resolving conflict.');
+    } finally {
+      setRecording(false);
+    }
+  }
+
+  function pName(id: string) {
+    return participantMap.get(id)?.name ?? id;
+  }
+
+  // If not admin and no challenge selected, show message
+  if (!isAdmin && !selectedChallengeId) {
+    return (
+      <div className="record-match-tab">
+        <div className="card rk-record-card">
+          <div className="rk-record-notice">
+            <i className="fas fa-info-circle" /> 
+            <div>
+              <h3>Report Match Results</h3>
+              <p>To report a match result, accept a challenge from the "Manage Challenges" tab and click "Report Result".</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If admin but no challenge, allow free match recording
+  if (isAdmin && !selectedChallengeId) {
+    return <AdminFreeMatchRecording allParticipants={allParticipants} />;
+  }
+
+  return (
+    <div className="record-match-tab">
+      <div className="card rk-record-card">
+        <div className="rk-record-header">
+          <span className="rk-record-icon"><i className="fas fa-gamepad" /></span>
+          <div>
+            <h2>{challenge?.status === 'pending_review' ? 'Resolve Conflict' : 'Report Match Result'}</h2>
+            <p>
+              {challenge?.status === 'pending_review' 
+                ? 'Both participants reported different results. Review evidence and decide the winner.'
+                : 'Select the winner of this match. If both participants agree, the result will be recorded automatically.'}
+            </p>
+          </div>
+        </div>
+
+        {challenge && (
+          <>
+            <div className="rk-matchup">
+              {/* Player A */}
+              <div className="rk-player-slot">
+                <label className="rk-slot-label">Player 1</label>
+                <div className="rk-player-locked">
+                  {pName(playerAId)}
+                </div>
+                {playerAId && (
+                  <EloPreview
+                    participant={participantMap.get(playerAId)!}
+                    isWinner={winnerId === playerAId}
+                    onSetWinner={() => setWinnerId(playerAId)}
+                  />
+                )}
+              </div>
+
+              <div className="rk-vs">VS</div>
+
+              {/* Player B */}
+              <div className="rk-player-slot">
+                <label className="rk-slot-label">Player 2</label>
+                <div className="rk-player-locked">
+                  {pName(playerBId)}
+                </div>
+                {playerBId && (
+                  <EloPreview
+                    participant={participantMap.get(playerBId)!}
+                    isWinner={winnerId === playerBId}
+                    onSetWinner={() => setWinnerId(playerBId)}
+                  />
+                )}
+              </div>
+            </div>
+
+            {playerAId && playerBId && (
+              <div className="rk-winner-prompt">
+                <p>Who won?</p>
+                <div className="rk-winner-btns">
+                  <button
+                    className={`rk-winner-btn ${winnerId === playerAId ? 'selected' : ''}`}
+                    onClick={() => setWinnerId(playerAId)}
+                  >
+                    <i className="fas fa-crown" /> {pName(playerAId)}
+                  </button>
+                  <button
+                    className={`rk-winner-btn ${winnerId === playerBId ? 'selected' : ''}`}
+                    onClick={() => setWinnerId(playerBId)}
+                  >
+                    <i className="fas fa-crown" /> {pName(playerBId)}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Evidence section for pending_review */}
+            {challenge.status === 'pending_review' && isAdmin && (
+              <div className="rk-evidence-section">
+                <h4>Reported Results</h4>
+                <div className="rk-evidence-grid">
+                  {challenge.challengerResult && (
+                    <div className="rk-evidence-card">
+                      <h5>{pName(challenge.challengerId)} reported:</h5>
+                      <p><strong>Winner:</strong> {pName(challenge.challengerResult.winnerId)}</p>
+                      {challenge.challengerResult.evidence && (
+                        <div className="rk-evidence-image">
+                          <img src={challenge.challengerResult.evidence} alt="Evidence" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {challenge.challengedResult && (
+                    <div className="rk-evidence-card">
+                      <h5>{pName(challenge.challengedId)} reported:</h5>
+                      <p><strong>Winner:</strong> {pName(challenge.challengedResult.winnerId)}</p>
+                      {challenge.challengedResult.evidence && (
+                        <div className="rk-evidence-image">
+                          <img src={challenge.challengedResult.evidence} alt="Evidence" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Evidence upload for participants */}
+            {challenge.status === 'accepted' && isParticipant && !hasReported && (
+              <div className="rk-evidence-upload">
+                <label>Evidence (optional - screenshot, max {MAX_EVIDENCE_SIZE_MB}MB)</label>
+                <input
+                  type="file"
+                  className="rk-input"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setEvidenceError('');
+                    if (file) {
+                      if (file.size > MAX_EVIDENCE_SIZE_BYTES) {
+                        setEvidenceError(`Image too large. Maximum size is ${MAX_EVIDENCE_SIZE_MB}MB. Your image is ${(file.size / 1024 / 1024).toFixed(2)}MB.`);
+                        setEvidenceFile(null);
+                        setEvidence('');
+                        return;
+                      }
+                      setEvidenceFile(file);
+                      const reader = new FileReader();
+                      reader.onload = (event) => setEvidence((event.target?.result as string) || '');
+                      reader.readAsDataURL(file);
+                    } else {
+                      setEvidenceFile(null);
+                      setEvidence('');
+                    }
+                  }}
+                />
+                {evidenceError && <p className="rk-error">{evidenceError}</p>}
+                {evidence && !evidenceError && (
+                  <div className="rk-evidence-preview">
+                    <img src={evidence} alt="Evidence preview" />
+                  </div>
+                )}
+                <p className="rk-help-text">
+                  Upload a screenshot of the result. This image will be stored with the challenge until the result is confirmed.
+                </p>
+              </div>
+            )}
+
+            {recordError && <p className="rk-error">{recordError}</p>}
+
+            {/* Action buttons */}
+            {challenge.status === 'pending_review' && isAdmin ? (
+              <div className="rk-record-actions">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleAdminResolve}
+                  disabled={recording || !winnerId}
+                >
+                  {recording ? 'Resolving...' : 'Confirm Winner & Record Match'}
+                </button>
+              </div>
+            ) : challenge.status === 'accepted' && isParticipant && !hasReported ? (
+              <div className="rk-record-actions">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleReportResult}
+                  disabled={recording || !winnerId}
+                >
+                  {recording ? 'Reporting...' : 'Report Result'}
+                </button>
+              </div>
+            ) : hasReported ? (
+              <div className="rk-record-notice">
+                <i className="fas fa-check-circle" /> You have already reported your result. Waiting for {
+                  user?.participantId === challenge.challengerId ? pName(challenge.challengedId) : pName(challenge.challengerId)
+                } to report.
+              </div>
+            ) : null}
+
+            {/* Result feedback */}
+            {lastResult && (
+              <div className="rk-result-box">
+                <h4>Result recorded!</h4>
+                <div className="rk-result-row">
+                  <ResultCard r={lastResult.playerA} isWinner={lastResult.playerA.id === lastResult.match.winnerId} />
+                  <span className="rk-result-vs">vs</span>
+                  <ResultCard r={lastResult.playerB} isWinner={lastResult.playerB.id === lastResult.match.winnerId} />
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Admin Free Match Recording ────────────────────────────────────────────
+
+function AdminFreeMatchRecording({ allParticipants }: { allParticipants: GlobalParticipant[] }) {
+  const [playerAId, setPlayerAId] = useState('');
+  const [playerBId, setPlayerBId] = useState('');
+  const [winnerId, setWinnerId] = useState('');
+  const [recording, setRecording] = useState(false);
+  const [recordError, setRecordError] = useState('');
+  const [lastResult, setLastResult] = useState<MatchResult | null>(null);
+
+  const participantMap = new Map(allParticipants.map((p) => [p.id, p]));
 
   async function handleRecord() {
     if (!playerAId || !playerBId) { setRecordError('Select both participants.'); return; }
     if (playerAId === playerBId) { setRecordError('A participant cannot face itself.'); return; }
     if (!winnerId) { setRecordError('Select who won.'); return; }
-    if (matchType === 'duel' && duelValidationError && !selectedChallengeId) { return; }
 
     setRecording(true);
     setRecordError('');
     setLastResult(null);
     try {
-      const resolvedMatchType: 'duel' | 'matchmaking' | 'free' =
-        selectedChallengeId ? 'duel' : matchType === 'matchmaking' ? 'matchmaking' : 'free';
-      const result = await recordMatch(playerAId, playerBId, winnerId, resolvedMatchType);
+      const result = await recordMatch(playerAId, playerBId, winnerId, 'free');
       setLastResult(result);
-
-      // If this was from a challenge, mark it as completed
-      if (selectedChallengeId && result.match) {
-        completeDuelChallenge(selectedChallengeId, result.match.id);
-      }
-
-      // Patch the local participants list with the updated ELO values
-      const pA = (result as unknown as { updatedParticipantA?: GlobalParticipant }).updatedParticipantA;
-      const pB = (result as unknown as { updatedParticipantB?: GlobalParticipant }).updatedParticipantB;
-      if (pA || pB) {
-        setAllParticipants((prev) =>
-          prev.map((p) => {
-            if (pA && p.id === pA.id) return pA;
-            if (pB && p.id === pB.id) return pB;
-            return p;
-          })
-        );
-      }
 
       // Reset form
       setPlayerAId('');
       setPlayerBId('');
       setWinnerId('');
-
-      // Notify parent
-      if (onMatchRecorded) {
-        setTimeout(() => onMatchRecorded(), 1500);
-      }
     } catch (err: unknown) {
       setRecordError(err instanceof Error ? err.message : 'Error recording match.');
     } finally {
@@ -145,17 +443,14 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
         <div className="rk-record-header">
           <span className="rk-record-icon"><i className="fas fa-gamepad" /></span>
           <div>
-            <h2>Record Match</h2>
-            <p>Select two players and who won. ELO points are calculated and updated automatically.</p>
+            <h2>Record Free Match</h2>
+            <p>Record a match that wasn't part of a challenge. ELO points are calculated and updated automatically.</p>
           </div>
         </div>
 
         {allParticipants.length < 2 && (
           <div className="rk-warn">
-            You need at least 2 participants to record a match.{' '}
-            <button className="btn-link" onClick={() => navigate('/participants')}>
-              Go to Participants →
-            </button>
+            You need at least 2 participants to record a match.
           </div>
         )}
 
@@ -219,22 +514,6 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
               </div>
             </div>
 
-            {/* Duel validation errors/warnings */}
-            {matchType === 'duel' && duelValidationError && (
-              <div className="rk-error">
-                <i className="fas fa-exclamation-circle" /> {duelValidationError}
-              </div>
-            )}
-
-            {matchType === 'duel' && duelValidationWarnings.length > 0 && (
-              <div className="rk-warn">
-                <i className="fas fa-exclamation-triangle" />
-                {duelValidationWarnings.map((w, i) => (
-                  <div key={i}>{w}</div>
-                ))}
-              </div>
-            )}
-
             {playerAId && playerBId && (
               <div className="rk-winner-prompt">
                 <p>Who won?</p>
@@ -257,21 +536,15 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
 
             {recordError && <p className="rk-error">{recordError}</p>}
 
-            {isAdmin ? (
-              <div className="rk-record-actions">
-                <button
-                  className="btn btn-primary"
-                  onClick={handleRecord}
-                  disabled={recording || !playerAId || !playerBId || !winnerId || (matchType === 'duel' && !!duelValidationError)}
-                >
-                  {recording ? 'Calculating...' : 'Confirm Result'}
-                </button>
-              </div>
-            ) : (
-              <div className="rk-record-notice">
-                <i className="fas fa-lock" /> Only admins can record match results.
-              </div>
-            )}
+            <div className="rk-record-actions">
+              <button
+                className="btn btn-primary"
+                onClick={handleRecord}
+                disabled={recording || !playerAId || !playerBId || !winnerId}
+              >
+                {recording ? 'Calculating...' : 'Confirm Result'}
+              </button>
+            </div>
 
             {/* Result feedback */}
             {lastResult && (
@@ -314,6 +587,18 @@ function EloPreview({
       {isWinner && <span className="rk-winner-crown"><i className="fas fa-crown" /> Winner</span>}
     </div>
   );
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result);
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
 }
 
 function ResultCard({
