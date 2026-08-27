@@ -12,6 +12,7 @@ export interface League {
   
   // Participantes
   participantIds: string[]; // GlobalParticipant IDs
+  bannedParticipantIds: string[]; // Jugadores baneados por no-shows
   
   // Formato
   roundsPerOpponent: 1 | 2 | 3;
@@ -21,9 +22,11 @@ export interface League {
   matchesPerPlayerPerPeriod: number;
   periodDays: 7 | 14;
   startDate: string;
+  weekStartDates: Record<number, string>; // { 1: "2026-09-01", 2: "2026-09-08", ... }
   
-  // No-shows
+  // No-shows y tiempo de gracia
   maxNoShowsBeforeKick: number;
+  gracePeriodDays: number; // Default: 30 días antes de marcar como pending_review
   
   // Playoffs
   playoffsEnabled: boolean;
@@ -51,7 +54,7 @@ export interface LeagueMatch {
   participant2Id: string;
   
   // Estado
-  status: 'scheduled' | 'completed' | 'no_show';
+  status: 'scheduled' | 'completed' | 'no_show' | 'pending_review';
   
   // Resultado
   winnerId?: string;

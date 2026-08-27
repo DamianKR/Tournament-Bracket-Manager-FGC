@@ -154,3 +154,104 @@ export function getLeagueDisplayStatus(league: League): 'pending' | 'active' | '
   if (new Date(league.startDate) > new Date()) return 'pending';
   return 'active';
 }
+
+/**
+ * Expire old scheduled matches and mark them as pending_review
+ */
+export async function expireLeagueMatches(leagueId: string): Promise<number> {
+  try {
+    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/expire-matches`, {
+      method: 'POST',
+    });
+    if (!res.ok) throw new Error('Failed to expire matches');
+    const data = await res.json();
+    return data.expiredCount || 0;
+  } catch (err) {
+    console.error('[LeagueService] expireLeagueMatches error:', err);
+    return 0;
+  }
+}
+
+/**
+ * Mark a pending_review match as no-show
+ */
+export async function markMatchNoShow(
+  leagueId: string,
+  matchId: string,
+  noShowParticipantId: string
+): Promise<boolean> {
+  try {
+    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/matches/${matchId}/mark-no-show`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ noShowParticipantId }),
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('[LeagueService] markMatchNoShow error:', err);
+    return false;
+  }
+}
+
+/**
+ * Cancel a pending_review match without penalty
+ */
+export async function cancelMatch(leagueId: string, matchId: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/matches/${matchId}/cancel`, {
+      method: 'POST',
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('[LeagueService] cancelMatch error:', err);
+    return false;
+  }
+}
+
+/**
+ * Get participants eligible for ban (reached max no-shows)
+ */
+export async function getEligibleForBan(leagueId: string): Promise<{
+  eligible: Array<{
+    participantId: string;
+    name: string;
+    alias?: string;
+    noShowCount: number;
+  }>;
+  maxNoShows: number;
+} | null> {
+  try {
+    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/eligible-for-ban`);
+    if (!res.ok) throw new Error('Failed to get eligible participants');
+    return await res.json();
+  } catch (err) {
+    console.error('[LeagueService] getEligibleForBan error:', err);
+    return null;
+  }
+}
+
+/**
+ * Ban participants and regenerate schedule
+ */
+export async function banParticipants(
+  leagueId: string,
+  participantIds: string[]
+): Promise<{
+  bannedCount: number;
+  activeParticipants: number;
+  newMatchesCreated: number;
+  completedMatchesPreserved: number;
+} | null> {
+  try {
+    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/ban-participants`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participantIds }),
+    });
+    if (!res.ok) throw new Error('Failed to ban participants');
+    return await res.json();
+  } catch (err) {
+    console.error('[LeagueService] banParticipants error:', err);
+    return null;
+  }
+}

@@ -75,22 +75,11 @@ export function distributeIntoWeeks(roundPairings, matchesPerPlayerPerPeriod, pa
   const playerMatchCount = new Map();
   
   for (const { round, pairings } of roundPairings) {
-    // Check if adding this round would exceed any player's limit
-    const tempCounts = new Map(playerMatchCount);
-    let canAdd = true;
+    // In round-robin, each player plays exactly once per round
+    // So we can safely add rounds until we hit the limit
+    const currentMaxMatches = Math.max(...Array.from(playerMatchCount.values()), 0);
     
-    for (const [p1, p2] of pairings) {
-      tempCounts.set(p1, (tempCounts.get(p1) || 0) + 1);
-      tempCounts.set(p2, (tempCounts.get(p2) || 0) + 1);
-      
-      if (tempCounts.get(p1) > matchesPerPlayerPerPeriod || 
-          tempCounts.get(p2) > matchesPerPlayerPerPeriod) {
-        canAdd = false;
-        break;
-      }
-    }
-    
-    if (canAdd) {
+    if (currentMaxMatches < matchesPerPlayerPerPeriod) {
       // Add to current week
       currentWeekRounds.push(round);
       for (const [p1, p2] of pairings) {

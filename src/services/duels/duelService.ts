@@ -12,6 +12,7 @@
 
 import { DuelChallenge, DuelSettings, DuelValidationResult, DuelStats, DEFAULT_DUEL_SETTINGS } from '@/models/duel';
 import { getParticipant } from '@/services/participants/participantService';
+import { getAllRankedMatchesAsync } from '@/services/ranked/rankedMatchService';
 
 const API_BASE = 'http://localhost:3001/api/duels';
 const LS_KEY_CHALLENGES = 'bracket_duel_challenges';
@@ -235,26 +236,57 @@ export async function getChallengesThisWeek(challengerId: string): Promise<DuelC
 export async function getDuelStats(participantId: string): Promise<DuelStats> {
   const challengesThisWeek = (await getChallengesThisWeek(participantId)).length;
   const settings = await getDuelSettingsAsync();
-  
+
   const all = await getAllChallengesAsync();
   const pending = all.filter(
-    c => (c.challengerId === participantId || c.challengedId === participantId) && 
+    c => (c.challengerId === participantId || c.challengedId === participantId) &&
          c.status === 'pending'
   ).length;
-  
+
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
   const completedThisWeek = all.filter(
-    c => (c.challengerId === participantId || c.challengedId === participantId) && 
+    c => (c.challengerId === participantId || c.challengedId === participantId) &&
          c.status === 'completed' &&
          c.completedAt && new Date(c.completedAt) > weekAgo
   ).length;
-  
+
+  // All-time duel record
+  const participantDuels = all.filter(
+    c => (c.challengerId === participantId || c.challengedId === participantId) &&
+         c.status === 'completed'
+  );
+
+  // Load ranked matches to determine duel winners
+  const rankedMatches = await getAllRankedMatchesAsync();
+  const matchMap = new Map(rankedMatches.map(m => [m.id, m]));
+
+  let duelWins = 0;
+  let duelLosses = 0;
+
+  for (const duel of participantDuels) {
+    const match = duel.matchId ? matchMap.get(duel.matchId) : null;
+    if (match && match.winnerId) {
+      if (match.winnerId === participantId) {
+        duelWins++;
+      } else {
+        duelLosses++;
+      }
+    }
+  }
+
+  const totalDuels = duelWins + duelLosses;
+  const duelWinRate = totalDuels > 0 ? Math.round((duelWins / totalDuels) * 100) : 0;
+
   return {
     challengesThisWeek,
     maxChallengesPerWeek: settings.maxChallengesPerWeek,
     pendingChallenges: pending,
     completedThisWeek,
+    totalDuels,
+    duelWins,
+    duelLosses,
+    duelWinRate,
   };
 }
 

@@ -253,13 +253,21 @@ function RankingPage() {
                         </div>
                       </td>
                       <td className="rk-col-rank">
-                        <span
-                          className={`rk-rank-badge ${entry.displayRank === 'Legend' ? 'rk-rank-badge--legend' : ''}`}
-                          style={{ '--rank-color': getRankColor(entry.displayRank) } as React.CSSProperties}
-                        >
-                          <i className={entry.displayRank === 'Legend' ? 'fas fa-dragon' : getRankIcon(entry.displayRank)} />
-                          {' '}{entry.displayRank}
-                        </span>
+                        <div className="rk-rank-badges">
+                          {entry.position != null && entry.position <= 5 && (
+                            <span className="rk-legend-badge">
+                              <i className="fas fa-dragon" />
+                              {' '}LEGEND
+                            </span>
+                          )}
+                          <span
+                            className="rk-rank-badge"
+                            style={{ '--rank-color': getRankColor(entry.eloRank) } as React.CSSProperties}
+                          >
+                            <i className={getRankIcon(entry.eloRank)} />
+                            {' '}{entry.eloRank}
+                          </span>
+                        </div>
                       </td>
                       <td className="rk-col-pts">
                         <span className="rk-pts">

@@ -56,4 +56,8 @@ export interface DuelStats {
   maxChallengesPerWeek: number;
   pendingChallenges: number;
   completedThisWeek: number;
+  totalDuels: number;
+  duelWins: number;
+  duelLosses: number;
+  duelWinRate: number;
 }

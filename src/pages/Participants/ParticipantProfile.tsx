@@ -43,7 +43,16 @@ function ParticipantProfile() {
   const [resultsSubTab, setResultsSubTab] = useState<'tournaments' | 'leagues'>('tournaments');
   const [notFound, setNotFound] = useState(false);
   const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
-  const [duelStats, setDuelStats] = useState({ challengesThisWeek: 0, maxChallengesPerWeek: 10, pendingChallenges: 0, completedThisWeek: 0 });
+  const [duelStats, setDuelStats] = useState({
+    challengesThisWeek: 0,
+    maxChallengesPerWeek: 10,
+    pendingChallenges: 0,
+    completedThisWeek: 0,
+    totalDuels: 0,
+    duelWins: 0,
+    duelLosses: 0,
+    duelWinRate: 0,
+  });
   const [nextResetText, setNextResetText] = useState('');
 
   // Matches tab
@@ -267,13 +276,14 @@ function ParticipantProfile() {
             {(() => {
               const hasPts = (rankEntry?.eloPoints ?? participant.eloPoints) != null;
               const pts   = hasPts ? (rankEntry?.eloPoints ?? participant.eloPoints) : null;
-              const rank  = rankEntry?.displayRank ?? participant.eloRank ?? 'Sin puntos';
+              const eloRank = rankEntry?.eloRank ?? participant.eloRank ?? 'Sin puntos';
               const pos   = rankEntry?.position;
-              const col   = getRankColor(rank);
-              const icon  = getRankIcon(rank);
+              const isLegend = pos != null && pos <= 5;
+              const col   = getRankColor(eloRank);
+              const icon  = getRankIcon(eloRank);
               return (
                 <div
-                  className="profile-elo-widget"
+                  className={`profile-elo-widget ${isLegend ? 'profile-elo-widget--legend' : ''}`}
                   style={{ '--elo-color': col } as React.CSSProperties}
                   onClick={() => navigate('/ranking')}
                   title="View full ranking"
@@ -281,15 +291,24 @@ function ParticipantProfile() {
                   {/* Glow layer */}
                   <div className="pew-glow" />
 
+                  {/* Legend banner (if top 5) */}
+                  {isLegend && (
+                    <div className="pew-legend-banner">
+                      <i className="fas fa-dragon" />
+                      <span>LEGEND</span>
+                      <i className="fas fa-dragon" />
+                    </div>
+                  )}
+
                   {/* Top: label */}
                   <div className="pew-label">ELO RANKING</div>
 
                   {/* Center: icon + rank name */}
                   <div className="pew-center">
-                    <span className={`pew-icon ${rank === 'Legend' ? 'pew-icon--legend' : ''}`}>
-                      <i className={rank === 'Legend' ? 'fas fa-dragon' : icon} />
+                    <span className="pew-icon">
+                      <i className={icon} />
                     </span>
-                    <span className="pew-rank">{rank}</span>
+                    <span className="pew-rank">{eloRank}</span>
                   </div>
 
                   {/* Divider */}
@@ -432,7 +451,7 @@ function ParticipantProfile() {
             <div className="card profile-duels-card">
               <div className="profile-duels-header">
                 <h3><i className="fas fa-swords" /> Ranked Duels</h3>
-                <button 
+                <button
                   className="btn-outline btn-sm"
                   onClick={() => navigate('/events?tab=ranked')}
                 >
@@ -453,6 +472,18 @@ function ParticipantProfile() {
                   </span>
                 </div>
                 <div className="profile-stat-card">
+                  <span className="psc-value">{duelStats.duelWinRate > 0 ? `${duelStats.duelWinRate}%` : '—'}</span>
+                  <span className="psc-label">Duel Win Rate</span>
+                </div>
+                <div className="profile-stat-card">
+                  <span className="psc-value">{duelStats.duelWins}</span>
+                  <span className="psc-label">Duel Wins</span>
+                </div>
+                <div className="profile-stat-card">
+                  <span className="psc-value">{duelStats.duelLosses}</span>
+                  <span className="psc-label">Duel Losses</span>
+                </div>
+                <div className="profile-stat-card">
                   <span className="psc-value">{duelStats.pendingChallenges}</span>
                   <span className="psc-label">Pending Challenges</span>
                 </div>
@@ -461,6 +492,19 @@ function ParticipantProfile() {
                   <span className="psc-label">Duels This Week</span>
                 </div>
               </div>
+
+              {/* Duel Match Record */}
+              {duelStats.totalDuels > 0 && (
+                <div className="card profile-winrate-card profile-winrate-card--duel">
+                  <div className="profile-winrate-header">
+                    <span><i className="fas fa-swords" /> Duel Match Record</span>
+                    <span>{duelStats.duelWins}W – {duelStats.duelLosses}L</span>
+                  </div>
+                  <div className="profile-winrate-bar">
+                    <div className="profile-winrate-fill" style={{ width: `${duelStats.duelWinRate}%` }} />
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}

@@ -56,9 +56,9 @@
   color: #10b981;
 }
 
-.status-badge.status-completed {
+/* .status-badge.status-completed {
   color: #6b7280;
-}
+} */
 
 .status-badge.status-pending,
 .status-badge.status-draft {

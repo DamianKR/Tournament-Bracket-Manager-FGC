@@ -189,12 +189,15 @@ router.post('/', async (req, res) => {
       name,
       gameId,
       participantIds,
+      bannedParticipantIds: [],
       roundsPerOpponent: validRoundsPerOpponent,
       gamesPerMatch: validGamesPerMatch,
       matchesPerPlayerPerPeriod: matchesPerPlayerPerPeriod || 2,
       periodDays: periodDays || 7,
       startDate: startDate || new Date().toISOString(),
+      weekStartDates: {}, // Will be populated below
       maxNoShowsBeforeKick: maxNoShowsBeforeKick || 3,
+      gracePeriodDays: 30, // Default: 30 días de gracia
       playoffsEnabled: playoffsEnabled ?? true,
       playoffsEloMultiplier: playoffsEloMultiplier || 1.5,
       status: 'active',
@@ -209,18 +212,20 @@ router.post('/', async (req, res) => {
     const pairings = generateRoundRobinPairings(participantIds, league.roundsPerOpponent);
     const weekDistribution = distributeIntoWeeks(pairings, league.matchesPerPlayerPerPeriod, participantIds.length);
     
-    // Create match records
+    // Create match records and populate weekStartDates
     const matchRecords = [];
     const start = new Date(league.startDate);
+    const weekStartDates = {};
     
     for (const { week, rounds } of weekDistribution) {
+      const weekStart = new Date(start.getTime() + (week - 1) * league.periodDays * 24 * 60 * 60 * 1000);
+      weekStartDates[week] = weekStart.toISOString();
+      
       for (const roundNum of rounds) {
         const roundData = pairings.find(p => p.round === roundNum);
         if (!roundData) continue;
         
         for (const [p1, p2] of roundData.pairings) {
-          const scheduledDate = new Date(start.getTime() + (week - 1) * league.periodDays * 24 * 60 * 60 * 1000);
-          
           matchRecords.push({
             id: generateId('lmatch'),
             leagueId: league.id,
@@ -229,11 +234,15 @@ router.post('/', async (req, res) => {
             participant1Id: p1,
             participant2Id: p2,
             status: 'scheduled',
-            scheduledDate: scheduledDate.toISOString(),
+            scheduledDate: weekStart.toISOString(),
           });
         }
       }
     }
+    
+    // Update league with weekStartDates
+    league.weekStartDates = weekStartDates;
+    await leagues.upsert(league);
     
     // Save all matches
     for (const match of matchRecords) {
@@ -396,6 +405,274 @@ router.post('/:id/matches/:matchId/result', async (req, res) => {
   } catch (err) {
     console.error('[Leagues] POST /:id/matches/:matchId/result error:', err);
     res.status(500).json({ error: 'Failed to report match result' });
+  }
+});
+
+// POST /api/leagues/:id/expire-matches — mark expired matches as pending_review
+router.post('/:id/expire-matches', async (req, res) => {
+  try {
+    const league = await leagues.findById(req.params.id);
+    if (!league) return res.status(404).json({ error: 'League not found' });
+
+    const allMatches = await leagueMatches.getAll();
+    const leagueMatchList = allMatches.filter(m => m.leagueId === league.id);
+    
+    const now = new Date();
+    let expiredCount = 0;
+
+    for (const match of leagueMatchList) {
+      if (match.status !== 'scheduled') continue;
+
+      const weekStart = new Date(league.weekStartDates[match.week]);
+      const gracePeriodEnd = new Date(weekStart.getTime() + (league.periodDays + league.gracePeriodDays) * 24 * 60 * 60 * 1000);
+
+      if (now > gracePeriodEnd) {
+        match.status = 'pending_review';
+        await leagueMatches.upsert(match);
+        expiredCount++;
+      }
+    }
+
+    res.json({ expiredCount });
+  } catch (err) {
+    console.error('[Leagues] POST /:id/expire-matches error:', err);
+    res.status(500).json({ error: 'Failed to expire matches' });
+  }
+});
+
+// POST /api/leagues/:id/matches/:matchId/mark-no-show — manually mark as no-show from pending_review
+router.post('/:id/matches/:matchId/mark-no-show', async (req, res) => {
+  try {
+    const { noShowParticipantId } = req.body;
+    
+    const match = await leagueMatches.findById(req.params.matchId);
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    if (match.leagueId !== req.params.id) return res.status(400).json({ error: 'Match does not belong to this league' });
+    if (match.status !== 'pending_review') return res.status(400).json({ error: 'Match is not pending review' });
+
+    const league = await leagues.findById(req.params.id);
+    if (!league) return res.status(404).json({ error: 'League not found' });
+
+    // Get participants
+    const p1 = await participants.findById(match.participant1Id);
+    const p2 = await participants.findById(match.participant2Id);
+    if (!p1 || !p2) return res.status(404).json({ error: 'Participant not found' });
+
+    const absentId = noShowParticipantId;
+    const presentId = absentId === match.participant1Id ? match.participant2Id : match.participant1Id;
+
+    // Calculate ELO as if present player won
+    const p1Elo = p1.eloPoints ?? 1500;
+    const p2Elo = p2.eloPoints ?? 1500;
+    const winnerChar = presentId === match.participant1Id ? 'A' : 'B';
+    const result = calculateMatchElo(p1Elo, p2Elo, winnerChar);
+
+    let eloChange1 = 0;
+    let eloChange2 = 0;
+
+    if (absentId === match.participant1Id) {
+      eloChange1 = result.newEloA - p1Elo;
+      await participants.upsert({
+        ...p1,
+        eloPoints: result.newEloA,
+        eloRank: getRankFromElo(result.newEloA),
+        updatedAt: new Date().toISOString(),
+      });
+    } else {
+      eloChange2 = result.newEloB - p2Elo;
+      await participants.upsert({
+        ...p2,
+        eloPoints: result.newEloB,
+        eloRank: getRankFromElo(result.newEloB),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
+    match.status = 'no_show';
+    match.noShowParticipantId = absentId;
+    match.winnerId = presentId;
+    match.participant1EloChange = eloChange1;
+    match.participant2EloChange = eloChange2;
+    match.completedDate = new Date().toISOString();
+
+    await leagueMatches.upsert(match);
+
+    // Check for no-show kick eligibility
+    const allMatches = await leagueMatches.getAll();
+    const playerMatches = allMatches.filter(m =>
+      m.leagueId === league.id &&
+      m.noShowParticipantId === noShowParticipantId
+    );
+
+    const isEligibleForBan = playerMatches.length >= league.maxNoShowsBeforeKick;
+    const absentPlayer = await participants.findById(noShowParticipantId);
+
+    res.json({
+      match,
+      eloChanges: { [match.participant1Id]: eloChange1, [match.participant2Id]: eloChange2 },
+      banEligible: isEligibleForBan ? {
+        participantId: noShowParticipantId,
+        name: absentPlayer?.name || 'Unknown',
+        alias: absentPlayer?.alias,
+        noShowCount: playerMatches.length,
+        maxNoShows: league.maxNoShowsBeforeKick,
+      } : null,
+    });
+  } catch (err) {
+    console.error('[Leagues] POST /:id/matches/:matchId/mark-no-show error:', err);
+    res.status(500).json({ error: 'Failed to mark no-show' });
+  }
+});
+
+// POST /api/leagues/:id/matches/:matchId/cancel — cancel match without penalty
+router.post('/:id/matches/:matchId/cancel', async (req, res) => {
+  try {
+    const match = await leagueMatches.findById(req.params.matchId);
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    if (match.leagueId !== req.params.id) return res.status(400).json({ error: 'Match does not belong to this league' });
+    if (match.status !== 'pending_review') return res.status(400).json({ error: 'Match is not pending review' });
+
+    // Simply mark as completed with no winner/loser and no ELO change
+    match.status = 'completed';
+    match.score = 'Cancelled';
+    match.completedDate = new Date().toISOString();
+    await leagueMatches.upsert(match);
+
+    res.json({ match });
+  } catch (err) {
+    console.error('[Leagues] POST /:id/matches/:matchId/cancel error:', err);
+    res.status(500).json({ error: 'Failed to cancel match' });
+  }
+});
+
+// POST /api/leagues/:id/ban-participants — ban players and regenerate schedule
+router.post('/:id/ban-participants', async (req, res) => {
+  try {
+    const { participantIds } = req.body; // Array of participant IDs to ban
+    
+    const league = await leagues.findById(req.params.id);
+    if (!league) return res.status(404).json({ error: 'League not found' });
+
+    if (!participantIds || !Array.isArray(participantIds) || participantIds.length === 0) {
+      return res.status(400).json({ error: 'No participants to ban' });
+    }
+
+    // Add to banned list
+    const newBanned = [...new Set([...league.bannedParticipantIds, ...participantIds])];
+    league.bannedParticipantIds = newBanned;
+
+    // Get active participants (not banned)
+    const activeParticipants = league.participantIds.filter(pid => !newBanned.includes(pid));
+
+    if (activeParticipants.length < 2) {
+      return res.status(400).json({ error: 'Cannot ban: league needs at least 2 active participants' });
+    }
+
+    // Get all matches
+    const allMatches = await leagueMatches.getAll();
+    const leagueMatchList = allMatches.filter(m => m.leagueId === league.id);
+
+    // Separate completed/no_show matches from scheduled/pending_review
+    const completedMatches = leagueMatchList.filter(m => 
+      m.status === 'completed' || m.status === 'no_show'
+    );
+    const futureMatches = leagueMatchList.filter(m => 
+      m.status === 'scheduled' || m.status === 'pending_review'
+    );
+
+    // Delete all future matches (we'll regenerate)
+    for (const match of futureMatches) {
+      await leagueMatches.remove(match.id);
+    }
+
+    // Regenerate schedule with active participants only
+    const pairings = generateRoundRobinPairings(activeParticipants, league.roundsPerOpponent);
+    const weekDistribution = distributeIntoWeeks(pairings, league.matchesPerPlayerPerPeriod, activeParticipants.length);
+
+    // Recalculate week start dates
+    const start = new Date(league.startDate);
+    const weekStartDates = {};
+    const newMatches = [];
+
+    for (const { week, rounds } of weekDistribution) {
+      const weekStart = new Date(start.getTime() + (week - 1) * league.periodDays * 24 * 60 * 60 * 1000);
+      weekStartDates[week] = weekStart.toISOString();
+
+      for (const roundNum of rounds) {
+        const roundData = pairings.find(p => p.round === roundNum);
+        if (!roundData) continue;
+
+        for (const [p1, p2] of roundData.pairings) {
+          newMatches.push({
+            id: generateId('lmatch'),
+            leagueId: league.id,
+            round: roundNum,
+            week,
+            participant1Id: p1,
+            participant2Id: p2,
+            status: 'scheduled',
+            scheduledDate: weekStart.toISOString(),
+          });
+        }
+      }
+    }
+
+    // Save new matches
+    for (const match of newMatches) {
+      await leagueMatches.upsert(match);
+    }
+
+    // Update league
+    league.weekStartDates = weekStartDates;
+    league.updatedAt = new Date().toISOString();
+    await leagues.upsert(league);
+
+    res.json({
+      bannedCount: participantIds.length,
+      activeParticipants: activeParticipants.length,
+      newMatchesCreated: newMatches.length,
+      completedMatchesPreserved: completedMatches.length,
+    });
+  } catch (err) {
+    console.error('[Leagues] POST /:id/ban-participants error:', err);
+    res.status(500).json({ error: 'Failed to ban participants' });
+  }
+});
+
+// GET /api/leagues/:id/eligible-for-ban — get participants eligible for ban
+router.get('/:id/eligible-for-ban', async (req, res) => {
+  try {
+    const league = await leagues.findById(req.params.id);
+    if (!league) return res.status(404).json({ error: 'League not found' });
+
+    const allMatches = await leagueMatches.getAll();
+    const leagueMatchList = allMatches.filter(m => m.leagueId === league.id);
+
+    const noShowCounts = {};
+
+    for (const match of leagueMatchList) {
+      if (match.status === 'no_show' && match.noShowParticipantId) {
+        noShowCounts[match.noShowParticipantId] = (noShowCounts[match.noShowParticipantId] || 0) + 1;
+      }
+    }
+
+    const eligible = [];
+    for (const [pid, count] of Object.entries(noShowCounts)) {
+      if (count >= league.maxNoShowsBeforeKick && !league.bannedParticipantIds.includes(pid)) {
+        const p = await participants.findById(pid);
+        eligible.push({
+          participantId: pid,
+          name: p?.name || 'Unknown',
+          alias: p?.alias,
+          noShowCount: count,
+        });
+      }
+    }
+
+    res.json({ eligible, maxNoShows: league.maxNoShowsBeforeKick });
+  } catch (err) {
+    console.error('[Leagues] GET /:id/eligible-for-ban error:', err);
+    res.status(500).json({ error: 'Failed to get eligible participants' });
   }
 });
 

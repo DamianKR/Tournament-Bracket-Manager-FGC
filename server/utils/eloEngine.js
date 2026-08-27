@@ -24,8 +24,8 @@ export const RANK_TIERS = [
   { name: 'Plata',      min: 1200, max: 1299, color: '#94a3b8' },
   { name: 'Oro',        min: 1300, max: 1399, color: '#f59e0b' },
   { name: 'Platino',    min: 1400, max: 1499, color: '#06b6d4' },
-  { name: 'Diamante',   min: 1500, max: 1599, color: '#6366f1' },
-  { name: 'Vanquisher', min: 1600, max: 1699, color: '#8b5cf6' },
+  { name: 'Diamante',   min: 1500, max: 1599, color: '#2563eb' },
+  { name: 'Vanquisher', min: 1600, max: 1699, color: '#a855f7' },
   { name: 'Master',     min: 1700, max: 1849, color: '#ec4899' },
   { name: 'Ultimate',   min: 1850, max: null, color: '#7c2d12' },
   // Legend is positional (top 5) — not point-based; handled at query time

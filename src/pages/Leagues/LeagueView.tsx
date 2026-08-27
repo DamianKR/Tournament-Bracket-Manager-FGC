@@ -11,10 +11,11 @@ import { getAllParticipants } from '@/services/participants/participantService';
 import LeagueStandingsTab from './LeagueStandingsTab';
 import LeagueScheduleTab from './LeagueScheduleTab';
 import LeagueMyMatchesTab from './LeagueMyMatchesTab';
+import LeaguePendingTab from './LeaguePendingTab';
 import LeagueOptionsTab from './LeagueOptionsTab';
 import './LeagueView.css';
 
-type Tab = 'standings' | 'schedule' | 'my-matches' | 'options';
+type Tab = 'standings' | 'schedule' | 'my-matches' | 'pending' | 'options';
 
 function LeagueView() {
   const { id } = useParams<{ id: string }>();
@@ -131,6 +132,12 @@ function LeagueView() {
             Matches
           </button>
           <button
+            className={`league-tab ${tab === 'pending' ? 'active' : ''}`}
+            onClick={() => setTab('pending')}
+          >
+            <i className="fas fa-exclamation-triangle" /> Pending Review
+          </button>
+          <button
             className={`league-tab ${tab === 'options' ? 'active' : ''}`}
             onClick={() => setTab('options')}
           >
@@ -161,6 +168,14 @@ function LeagueView() {
             league={league}
             matches={matches}
             standings={standings}
+            participants={participants}
+            onMatchUpdated={loadData}
+          />
+        )}
+        {tab === 'pending' && (
+          <LeaguePendingTab
+            league={league}
+            matches={matches}
             participants={participants}
             onMatchUpdated={loadData}
           />

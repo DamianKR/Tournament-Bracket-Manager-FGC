@@ -90,12 +90,66 @@
     0 0 32px color-mix(in srgb, var(--elo-color) 25%, transparent);
 }
 
+/* Extra top padding when legend banner is shown */
+.profile-elo-widget--legend {
+  padding-top: 2.5rem;
+}
+
+.profile-elo-widget--legend .pew-label {
+  margin-top: 0.25rem;
+}
+
 /* Subtle radial glow in background */
 .pew-glow {
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--elo-color) 22%, transparent) 0%, transparent 70%);
   pointer-events: none;
+}
+
+/* Legend banner (top 5 only) */
+.pew-legend-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(110, 231, 183, 0.25));
+  border-bottom: 2px solid rgba(16, 185, 129, 0.6);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #6ee7b7;
+  text-shadow: 
+    0 0 16px rgba(110, 231, 183, 0.9),
+    0 0 32px rgba(16, 185, 129, 0.5),
+    0 1px 2px rgba(0,0,0,0.8);
+  animation: legendBannerPulse 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+.pew-legend-banner i {
+  color: #10b981;
+  font-size: 0.9rem;
+  filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.9));
+}
+
+@keyframes legendBannerPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 16px rgba(16, 185, 129, 0.5),
+      0 0 32px rgba(110, 231, 183, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 0 24px rgba(16, 185, 129, 0.7),
+      0 0 48px rgba(110, 231, 183, 0.5);
+  }
 }
 
 /* Top label */
@@ -131,12 +185,7 @@
     drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
-.pew-icon--legend {
-  filter:
-    drop-shadow(0 0 12px rgba(16, 185, 129, 0.7))
-    drop-shadow(0 0 24px rgba(110, 231, 183, 0.55))
-    drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-}
+
 
 .pew-rank {
   font-size: 1.65rem;
@@ -398,6 +447,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 @media (max-width: 640px) {
@@ -413,6 +463,7 @@
   padding: 1.25rem 1rem;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 0.375rem;
 }
@@ -471,6 +522,10 @@
 
 .profile-winrate-card--league .profile-winrate-fill {
   background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.profile-winrate-card--duel .profile-winrate-fill {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
 }
 
 /* ── Results sub-tabs ────────────────────────────────────────────────── */
@@ -713,6 +768,7 @@
   margin-top: 0.25rem;
   display: flex;
   flex-direction: column;
+  text-align: center;
   gap: 0.25rem;
 }
 
