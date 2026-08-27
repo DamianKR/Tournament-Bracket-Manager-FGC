@@ -14,6 +14,7 @@ import { DuelChallenge, DuelSettings, DuelValidationResult, DuelStats, DEFAULT_D
 import { getParticipant } from '@/services/participants/participantService';
 import { getAllRankedMatchesAsync } from '@/services/rankedMatches/rankedMatchService';
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
+import { getAuthHeader } from '@/services/auth/authService';
 
 const API_BASE = `${SERVER_URL}/api/duels`;
 const LS_KEY_CHALLENGES = 'bracket_duel_challenges';
@@ -98,7 +99,7 @@ export async function updateDuelSettings(newSettings: Partial<DuelSettings>): Pr
   if (await isServerAvailable()) {
     fetch(`${API_BASE}/settings`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(updated),
     }).catch((err) => {
       console.warn('[Duels] Server settings write failed:', err);
@@ -370,7 +371,7 @@ async function writeChallenges(challenges: DuelChallenge[]): Promise<void> {
   if (await isServerAvailable()) {
     fetch(API_BASE, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(challenges),
     }).catch((err) => {
       console.warn('[Duels] Server challenges write failed:', err);
@@ -415,7 +416,7 @@ export async function createDuelChallenge(
     try {
       const res = await fetch(API_BASE, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
         body: JSON.stringify(challenge),
       });
       if (!res.ok) throw new Error('Server rejected challenge');
@@ -446,6 +447,7 @@ export async function acceptDuelChallenge(challengeId: string): Promise<DuelChal
   if (await isServerAvailable()) {
     fetch(`${API_BASE}/${challengeId}/accept`, {
       method: 'PUT',
+      headers: getAuthHeader(),
     }).catch((err) => {
       console.warn('[Duels] Server accept failed:', err);
       resetServerCache();
@@ -473,6 +475,7 @@ export async function declineDuelChallenge(challengeId: string): Promise<DuelCha
   if (await isServerAvailable()) {
     fetch(`${API_BASE}/${challengeId}/decline`, {
       method: 'PUT',
+      headers: getAuthHeader(),
     }).catch((err) => {
       console.warn('[Duels] Server decline failed:', err);
       resetServerCache();
@@ -501,7 +504,7 @@ export async function completeDuelChallenge(challengeId: string, matchId: string
   if (await isServerAvailable()) {
     fetch(`${API_BASE}/${challengeId}/complete`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify({ matchId }),
     }).catch((err) => {
       console.warn('[Duels] Server complete failed:', err);

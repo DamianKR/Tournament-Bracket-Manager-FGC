@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
+import { useAuth } from '@/contexts/AuthContext';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
 import ReportMatchModal from './ReportMatchModal';
 import './LeagueScheduleTab.css';
@@ -12,6 +13,7 @@ interface LeagueScheduleTabProps {
 }
 
 function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: LeagueScheduleTabProps) {
+  const { isAdmin } = useAuth();
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
   const [weekFilter, setWeekFilter] = useState<number | 'all'>('all');
 
@@ -128,7 +130,7 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                       </span>
                     )}
 
-                    {!isCompleted && !isFutureWeek && (
+                    {!isCompleted && !isFutureWeek && isAdmin && (
                       <button
                         className="btn-primary btn-sm"
                         onClick={() => setSelectedMatch(match)}

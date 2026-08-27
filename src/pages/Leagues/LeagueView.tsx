@@ -8,6 +8,7 @@ import {
   getLeagueStandings,
 } from '@/services/leagues/leagueService';
 import { getAllParticipants } from '@/services/participants/participantService';
+import { useAuth } from '@/contexts/AuthContext';
 import LeagueStandingsTab from './LeagueStandingsTab';
 import LeagueScheduleTab from './LeagueScheduleTab';
 import LeagueMyMatchesTab from './LeagueMyMatchesTab';
@@ -20,6 +21,7 @@ type Tab = 'standings' | 'schedule' | 'my-matches' | 'pending' | 'options';
 function LeagueView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
 
   const [league, setLeague] = useState<League | null>(null);
   const [matches, setMatches] = useState<LeagueMatch[]>([]);
@@ -131,12 +133,14 @@ function LeagueView() {
           >
             Matches
           </button>
-          <button
-            className={`league-tab ${tab === 'pending' ? 'active' : ''}`}
-            onClick={() => setTab('pending')}
-          >
-            <i className="fas fa-exclamation-triangle" /> Pending Review
-          </button>
+          {isAdmin && (
+            <button
+              className={`league-tab ${tab === 'pending' ? 'active' : ''}`}
+              onClick={() => setTab('pending')}
+            >
+              <i className="fas fa-exclamation-triangle" /> Pending Review
+            </button>
+          )}
           <button
             className={`league-tab ${tab === 'options' ? 'active' : ''}`}
             onClick={() => setTab('options')}
@@ -172,7 +176,7 @@ function LeagueView() {
             onMatchUpdated={loadData}
           />
         )}
-        {tab === 'pending' && (
+        {tab === 'pending' && isAdmin && (
           <LeaguePendingTab
             league={league}
             matches={matches}

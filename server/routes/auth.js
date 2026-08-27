@@ -142,6 +142,31 @@ router.get('/me', requireAuth, async (req, res) => {
   res.json(safeUser(user));
 });
 
+// ── PUT /api/auth/me/password ─────────────────────────────────────────────
+// Cualquier usuario autenticado puede cambiar su propia contraseña.
+
+router.put('/me/password', requireAuth, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'currentPassword and newPassword are required' });
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: 'New password must be at least 6 characters' });
+  }
+
+  const user = await users.findById(req.user.userId);
+  if (!user || !user.isActive) return res.status(401).json({ error: 'User not found' });
+
+  const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+  if (!valid) return res.status(401).json({ error: 'Current password is incorrect' });
+
+  user.passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+  user.updatedAt = new Date().toISOString();
+  await users.upsert(user);
+
+  res.json({ ok: true, message: 'Password updated successfully' });
+});
+
 // ── GET /api/auth/users ───────────────────────────────────────────────────
 
 router.get('/users', requireAuth, requireAdmin, async (req, res) => {
@@ -220,16 +245,14 @@ router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // ── DELETE /api/auth/users/:id ────────────────────────────────────────────
-// Desactiva la cuenta (conserva historial).
+// Borra la cuenta permanentemente (conserva historial en los brackets).
 
 router.delete('/users/:id', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const user = await users.findById(id);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  user.isActive = false;
-  user.updatedAt = new Date().toISOString();
-  await users.upsert(user);
+  await users.remove(id);
   res.json({ ok: true });
 });
 

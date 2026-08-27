@@ -116,6 +116,9 @@ router.put('/:id/accept', requireAuth, async (req, res) => {
     if (challenge.status !== 'pending') {
       return res.status(400).json({ error: 'Challenge is not pending' });
     }
+    if (req.user.role !== 'admin' && req.user.participantId !== challenge.challengedId) {
+      return res.status(403).json({ error: 'Only the challenged player or admin can accept' });
+    }
 
     challenge.status = 'accepted';
     challenge.acceptedAt = new Date().toISOString();
@@ -135,6 +138,9 @@ router.put('/:id/decline', requireAuth, async (req, res) => {
     if (challenge.status !== 'pending') {
       return res.status(400).json({ error: 'Challenge is not pending' });
     }
+    if (req.user.role !== 'admin' && req.user.participantId !== challenge.challengedId) {
+      return res.status(403).json({ error: 'Only the challenged player or admin can decline' });
+    }
 
     challenge.status = 'declined';
     challenge.declinedAt = new Date().toISOString();
@@ -147,7 +153,7 @@ router.put('/:id/decline', requireAuth, async (req, res) => {
 });
 
 // PUT /api/duels/:id/complete
-router.put('/:id/complete', requireAuth, async (req, res) => {
+router.put('/:id/complete', requireAuth, requireAdmin, async (req, res) => {
   try {
     const challenge = await duels.findById(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });

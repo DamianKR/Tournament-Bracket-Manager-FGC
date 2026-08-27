@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DuelChallenge } from '@/models/duel';
 import { GlobalParticipant } from '@/models/types';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   createDuelChallenge, 
   acceptDuelChallenge,
@@ -16,6 +17,7 @@ interface ActiveChallengesProps {
 }
 
 function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
+  const { user, isAdmin } = useAuth();
   const [allChallenges, setAllChallenges] = useState<DuelChallenge[]>([]);
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -166,7 +168,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               </div>
 
               <div className="challenge-actions">
-                {challenge.status === 'pending' && (
+                {challenge.status === 'pending' && (isAdmin || user?.participantId === challenge.challengedId) && (
                   <>
                     <button 
                       className="btn-success btn-sm"
@@ -184,7 +186,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     </button>
                   </>
                 )}
-                {challenge.status === 'accepted' && (
+                {challenge.status === 'accepted' && isAdmin && (
                   <button 
                     className="btn-primary btn-sm"
                     onClick={() => handleRecordMatch(challenge.id)}

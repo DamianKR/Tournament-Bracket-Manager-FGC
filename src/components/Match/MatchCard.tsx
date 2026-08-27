@@ -6,7 +6,7 @@ interface MatchCardProps {
   match: Match;
   participant1Name: string;
   participant2Name: string;
-  onSelectWinner: (matchId: string, winnerId: string) => void;
+  onSelectWinner?: (matchId: string, winnerId: string) => void;
   onRevertMatch?: (matchId: string) => void;
   readOnly?: boolean;
   isGrandFinal?: boolean;
@@ -39,7 +39,7 @@ function MatchCard({
   };
 
   const handleConfirm = () => {
-    if (!pendingWinnerId) return;
+    if (!pendingWinnerId || !onSelectWinner) return;
     onSelectWinner(match.id, pendingWinnerId);
     setPendingWinnerId(null);
   };

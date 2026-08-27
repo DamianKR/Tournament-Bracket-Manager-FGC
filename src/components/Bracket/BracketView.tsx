@@ -8,7 +8,7 @@ import './BracketView.css';
 interface BracketViewProps {
   bracket: Bracket;
   participants: Participant[];
-  onMatchResult: (matchId: string, winnerId: string) => void;
+  onMatchResult?: (matchId: string, winnerId: string) => void;
   onRevertMatch?: (matchId: string) => void;
   readOnly?: boolean;
 }

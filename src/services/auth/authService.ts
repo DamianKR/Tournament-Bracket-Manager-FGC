@@ -101,6 +101,19 @@ export async function setupAdmin(username: string, password: string): Promise<Au
   return data as AuthSession;
 }
 
+// ── Self-service ─────────────────────────────────────────────────────────
+
+/** Cambia la contraseña del usuario actualmente autenticado. */
+export async function changeMyPassword(currentPassword: string, newPassword: string): Promise<void> {
+  const res = await fetch(`${SERVER_URL}/api/auth/me/password`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to change password');
+}
+
 // ── User management (admin) ──────────────────────────────────────────────
 
 /** Lista todos los usuarios. Requiere rol admin. */
@@ -144,14 +157,14 @@ export async function updateUserAccount(
   return data as AuthUser;
 }
 
-/** Desactiva una cuenta (no la borra). */
-export async function deactivateUser(userId: string): Promise<void> {
+/** Borra una cuenta permanentemente (requiere admin). */
+export async function deleteUserAccount(userId: string): Promise<void> {
   const res = await fetch(`${SERVER_URL}/api/auth/users/${userId}`, {
     method: 'DELETE',
     headers: getAuthHeader(),
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || 'Failed to deactivate user');
+    throw new Error(data.error || 'Failed to delete user');
   }
 }

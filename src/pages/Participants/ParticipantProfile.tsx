@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { GlobalParticipant, ComputedStats, LeagueResultEntry, MatchRecord } from '@/models/types';
+import type { AuthUser } from '@/models/auth';
 import {
   getParticipant,
   computeStats,
   updateParticipant,
+  removeParticipant,
   getParticipantLeagueStats,
   getAllParticipantsAsync,
   type LeagueStatsSummary,
@@ -18,6 +20,9 @@ import { getCharacter, getGame } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
 import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
+import { useAuth } from '@/contexts/AuthContext';
+import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccount } from '@/services/auth/authService';
+import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './ParticipantProfile.css';
 
 type Tab = 'overview' | 'results' | 'matches' | 'edit';
@@ -35,11 +40,17 @@ function ordinal(n: number): string {
 function ParticipantProfile() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user, isAdmin } = useAuth();
+  const isOwnProfile = !!(user && user.participantId === id);
+  const canEdit = isAdmin || isOwnProfile;
+
+  const initialTab = (searchParams.get('tab') as Tab | null) ?? 'overview';
 
   const [participant, setParticipant] = useState<GlobalParticipant | null>(null);
   const [stats, setStats] = useState<ComputedStats | null>(null);
   const [leagueStats, setLeagueStats] = useState<LeagueStatsSummary | null>(null);
-  const [tab, setTab] = useState<Tab>('overview');
+  const [tab, setTab] = useState<Tab>(initialTab === 'edit' && canEdit ? 'edit' : 'overview');
   const [resultsSubTab, setResultsSubTab] = useState<'tournaments' | 'leagues'>('tournaments');
   const [notFound, setNotFound] = useState(false);
   const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
@@ -73,6 +84,28 @@ function ParticipantProfile() {
   const [editCharacterId, setEditCharacterId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
+
+  // Password change (solo propio perfil)
+  const [pwCurrent, setPwCurrent] = useState('');
+  const [pwNew, setPwNew] = useState('');
+  const [pwConfirm, setPwConfirm] = useState('');
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState(false);
+
+  // Admin account management
+  const [linkedUser, setLinkedUser] = useState<AuthUser | null>(null);
+  const [loadingUser, setLoadingUser] = useState(false);
+  const [admUsername, setAdmUsername] = useState('');
+  const [admPassword, setAdmPassword] = useState('');
+  const [admConfirm, setAdmConfirm] = useState('');
+  const [admRole, setAdmRole] = useState<'admin' | 'user'>('user');
+  const [admIsActive, setAdmIsActive] = useState(true);
+  const [admError, setAdmError] = useState('');
+  const [admSaving, setAdmSaving] = useState(false);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteSaving, setDeleteSaving] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -124,6 +157,40 @@ function ParticipantProfile() {
       loadMatches();
     }
   }, [tab, id]);
+
+  // Load linked user account (admin only)
+  useEffect(() => {
+    if (!id || !isAdmin) return;
+    loadLinkedUser();
+  }, [id, isAdmin]);
+
+  async function loadLinkedUser() {
+    if (!id) return;
+    setLoadingUser(true);
+    try {
+      const all = await listUsers();
+      const u = all.find(x => x.participantId === id) ?? null;
+      setLinkedUser(u);
+      if (u) {
+        setAdmUsername(u.username);
+        setAdmPassword('');
+        setAdmConfirm('');
+        setAdmRole(u.role);
+        setAdmIsActive(u.isActive);
+      } else {
+        setAdmUsername('');
+        setAdmPassword('');
+        setAdmConfirm('');
+        setAdmRole('user');
+        setAdmIsActive(true);
+      }
+      setAdmError('');
+    } catch {
+      setLinkedUser(null);
+    } finally {
+      setLoadingUser(false);
+    }
+  }
 
   async function loadMatches() {
     if (!id) return;
@@ -205,6 +272,62 @@ function ParticipantProfile() {
       setEditError(err.message);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleChangePassword() {
+    if (pwNew.length < 6) { setPwError('Password must be at least 6 characters'); return; }
+    if (pwNew !== pwConfirm) { setPwError('Passwords do not match'); return; }
+    setPwSaving(true); setPwError(''); setPwSuccess(false);
+    try {
+      await changeMyPassword(pwCurrent, pwNew);
+      setPwSuccess(true);
+      setPwCurrent(''); setPwNew(''); setPwConfirm('');
+    } catch (err: any) {
+      setPwError(err.message || 'Failed to change password');
+    } finally {
+      setPwSaving(false);
+    }
+  }
+
+  async function handleSaveAdminAccount() {
+    if (!linkedUser || !participant) return;
+    if (!admUsername.trim()) { setAdmError('Username is required'); return; }
+    if (admPassword.trim() && admPassword.trim().length < 6) { setAdmError('New password must be at least 6 characters'); return; }
+    if (admPassword.trim() && admPassword.trim() !== admConfirm.trim()) { setAdmError('Passwords do not match'); return; }
+
+    setAdmSaving(true); setAdmError('');
+    try {
+      const updates: Parameters<typeof updateUserAccount>[1] = {};
+      if (admUsername.trim() !== linkedUser.username) updates.username = admUsername.trim();
+      if (admPassword.trim()) updates.password = admPassword.trim();
+      if (admRole !== linkedUser.role) updates.role = admRole;
+      if (admIsActive !== linkedUser.isActive) updates.isActive = admIsActive;
+
+      if (Object.keys(updates).length > 0) {
+        const updated = await updateUserAccount(linkedUser.id, updates);
+        setLinkedUser(updated);
+        setAdmPassword(''); setAdmConfirm('');
+      }
+    } catch (err: any) {
+      setAdmError(err.message || 'Failed to update account');
+    } finally {
+      setAdmSaving(false);
+    }
+  }
+
+  async function handleDeleteParticipant() {
+    if (!participant) return;
+    setDeleteSaving(true);
+    try {
+      await removeParticipant(participant.id);
+      if (linkedUser) await deleteUserAccount(linkedUser.id);
+      setShowDeleteConfirm(false);
+      navigate('/participants');
+    } catch (err: any) {
+      setEditError(err.message || 'Failed to delete participant');
+    } finally {
+      setDeleteSaving(false);
     }
   }
 
@@ -346,15 +469,17 @@ function ParticipantProfile() {
       {/* ── Tabs ── */}
       <div className="profile-tabs-bar">
         <div className="container profile-tabs">
-          {(['overview', 'results', 'matches', 'edit'] as Tab[]).map((t) => (
-            <button key={t} className={`profile-tab ${tab === t ? 'active' : ''}`}
-              onClick={() => setTab(t)}>
-              {t === 'overview' ? 'Overview' 
-                : t === 'results' ? `Results`
-                : t === 'matches' ? 'Matches'
-                : 'Edit'}
-            </button>
-          ))}
+          {(['overview', 'results', 'matches', 'edit'] as Tab[])
+            .filter((t) => t !== 'edit' || canEdit)
+            .map((t) => (
+              <button key={t} className={`profile-tab ${tab === t ? 'active' : ''}`}
+                onClick={() => setTab(t)}>
+                {t === 'overview' ? 'Overview'
+                  : t === 'results' ? `Results`
+                  : t === 'matches' ? 'Matches'
+                  : 'Edit'}
+              </button>
+            ))}
         </div>
       </div>
 
@@ -743,7 +868,7 @@ function ParticipantProfile() {
         )}
 
         {/* ── Edit tab ── */}
-        {tab === 'edit' && (
+        {tab === 'edit' && canEdit && (
           <div className="card profile-edit-form">
             <h3>Edit Profile</h3>
             {editError && <div className="error-message">{editError}</div>}
@@ -775,8 +900,121 @@ function ParticipantProfile() {
                 {saving ? 'Saving…' : 'Save Changes'}
               </button>
             </div>
+
+            {isOwnProfile && (
+              <>
+                <hr className="profile-password-sep" />
+                <h3>Security</h3>
+                <p className="text-secondary mb-2">Change your account password</p>
+                {pwError && <div className="error-message">{pwError}</div>}
+                {pwSuccess && <div className="success-message">Password changed successfully</div>}
+                <div className="profile-edit-grid">
+                  <div className="form-group">
+                    <label>Current Password</label>
+                    <input type="password" value={pwCurrent}
+                      onChange={(e) => setPwCurrent(e.target.value)}
+                      placeholder="Your current password" autoComplete="current-password" />
+                  </div>
+                  <div className="form-group">
+                    <label>New Password</label>
+                    <input type="password" value={pwNew}
+                      onChange={(e) => setPwNew(e.target.value)}
+                      placeholder="At least 6 characters" autoComplete="new-password" />
+                  </div>
+                  <div className="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" value={pwConfirm}
+                      onChange={(e) => setPwConfirm(e.target.value)}
+                      placeholder="Repeat new password" autoComplete="new-password" />
+                  </div>
+                </div>
+                <div className="form-actions">
+                  <button className="btn-primary" onClick={handleChangePassword} disabled={pwSaving}>
+                    {pwSaving ? 'Updating…' : 'Change Password'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {isAdmin && (
+              <>
+                <hr className="profile-password-sep" />
+                <h3>Account Management</h3>
+                <p className="text-secondary mb-2">{linkedUser ? 'Manage linked login account' : 'No user account linked'}</p>
+                {loadingUser && <p className="text-secondary">Loading account…</p>}
+                {admError && <div className="error-message">{admError}</div>}
+                {linkedUser ? (
+                  <>
+                    <div className="profile-edit-grid">
+                      <div className="form-group">
+                        <label>Username</label>
+                        <input type="text" value={admUsername}
+                          onChange={(e) => setAdmUsername(e.target.value)}
+                          placeholder="username" autoComplete="off" />
+                      </div>
+                      <div className="form-group">
+                        <label>New Password <span className="text-secondary">(leave blank to keep)</span></label>
+                        <input type="password" value={admPassword}
+                          onChange={(e) => setAdmPassword(e.target.value)}
+                          placeholder="At least 6 characters" autoComplete="new-password" />
+                      </div>
+                      {admPassword && (
+                        <div className="form-group">
+                          <label>Confirm New Password</label>
+                          <input type="password" value={admConfirm}
+                            onChange={(e) => setAdmConfirm(e.target.value)}
+                            placeholder="Repeat new password" autoComplete="new-password" />
+                        </div>
+                      )}
+                      <div className="form-group">
+                        <label>Role</label>
+                        <select value={admRole} onChange={e => setAdmRole(e.target.value as 'admin' | 'user')}>
+                          <option value="user">User</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </div>
+                      <div className="form-group pp-account-active-toggle">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={admIsActive}
+                            onChange={e => setAdmIsActive(e.target.checked)}
+                          />
+                          <span>Account active</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div className="form-actions">
+                      <button className="btn-primary" onClick={handleSaveAdminAccount} disabled={admSaving}>
+                        {admSaving ? 'Saving…' : 'Save Account Changes'}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-secondary">No account exists for this participant.</p>
+                )}
+
+                <hr className="profile-password-sep" />
+                <h3>Danger Zone</h3>
+                <p className="text-secondary mb-2">This will permanently delete the participant and any linked login account.</p>
+                <div className="form-actions">
+                  <button className="btn-danger" onClick={() => setShowDeleteConfirm(true)} disabled={deleteSaving}>
+                    Delete Participant
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
+
+        <ConfirmModal
+          isOpen={showDeleteConfirm}
+          title="Delete participant"
+          message={participant ? `Delete "${participant.name}" and all linked data? This cannot be undone.` : ''}
+          onCancel={() => setShowDeleteConfirm(false)}
+          onConfirm={handleDeleteParticipant}
+          confirmText="Delete"
+        />
       </div>
     </div>
   );

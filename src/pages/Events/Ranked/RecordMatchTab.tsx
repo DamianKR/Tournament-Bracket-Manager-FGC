@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GlobalParticipant } from '@/models/types';
+import { useAuth } from '@/contexts/AuthContext';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
 import {
   recordMatch,
@@ -19,7 +20,8 @@ interface RecordMatchTabProps {
 
 function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: RecordMatchTabProps) {
   const navigate = useNavigate();
-  
+  const { isAdmin } = useAuth();
+
   // All participants (for selectors)
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
 
@@ -255,15 +257,21 @@ function RecordMatchTab({ matchType, selectedChallengeId, onMatchRecorded }: Rec
 
             {recordError && <p className="rk-error">{recordError}</p>}
 
-            <div className="rk-record-actions">
-              <button
-                className="btn btn-primary"
-                onClick={handleRecord}
-                disabled={recording || !playerAId || !playerBId || !winnerId || (matchType === 'duel' && !!duelValidationError)}
-              >
-                {recording ? 'Calculating...' : 'Confirm Result'}
-              </button>
-            </div>
+            {isAdmin ? (
+              <div className="rk-record-actions">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleRecord}
+                  disabled={recording || !playerAId || !playerBId || !winnerId || (matchType === 'duel' && !!duelValidationError)}
+                >
+                  {recording ? 'Calculating...' : 'Confirm Result'}
+                </button>
+              </div>
+            ) : (
+              <div className="rk-record-notice">
+                <i className="fas fa-lock" /> Only admins can record match results.
+              </div>
+            )}
 
             {/* Result feedback */}
             {lastResult && (

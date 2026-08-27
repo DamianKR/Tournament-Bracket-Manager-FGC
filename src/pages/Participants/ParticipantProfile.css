@@ -3,6 +3,22 @@
   background-color: var(--bg-secondary);
 }
 
+.profile-password-sep {
+  border: 0;
+  border-top: 1px solid var(--border-color, rgba(255,255,255,0.08));
+  margin: 1.5rem 0;
+}
+
+.success-message {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  color: #34d399;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
 .profile-loading {
   padding: 4rem 0;
   color: var(--text-secondary);
@@ -723,6 +739,21 @@
 
 .profile-edit-form .form-actions {
   margin-top: 1.5rem;
+}
+
+.pp-account-active-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.pp-account-active-toggle input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
 }
 
 /* -- Ranked Duels Card -------------------------------------------------- */

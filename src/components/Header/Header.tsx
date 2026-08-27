@@ -25,52 +25,58 @@ function Header() {
           <span className="header-logo-text">Bracket Manager</span>
         </div>
 
-        <nav className="header-nav">
-          <button
-            className={`header-nav-item ${isActive('/events') ? 'active' : ''}`}
-            onClick={() => navigate('/events')}
-          >
-            Events
-          </button>
-          <button
-            className={`header-nav-item ${isActive('/ranking') ? 'active' : ''}`}
-            onClick={() => navigate('/ranking')}
-          >
-            Ranking
-          </button>
-          {/* Participants solo visible para admin en el header */}
-          {isAdmin && (
+        <div className="header-right">
+          <nav className="header-nav">
             <button
-              className={`header-nav-item ${isActive('/participants') ? 'active' : ''}`}
-              onClick={() => navigate('/participants')}
+              className={`header-nav-item ${isActive('/events') ? 'active' : ''}`}
+              onClick={() => navigate('/events')}
             >
-              Participants
+              Events
             </button>
-          )}
-        </nav>
-
-        <div className="header-auth">
-          {isAuthenticated ? (
-            <div className="header-user">
-              <span className="header-username">
-                <i className="fas fa-user-circle" />
-                {user!.username}
-              </span>
-              {isAdmin && <span className="header-role-badge">Admin</span>}
-              <button className="header-logout-btn" onClick={handleLogout} title="Sign out">
-                <i className="fas fa-sign-out-alt" />
-                <span>Sign out</span>
+            <button
+              className={`header-nav-item ${isActive('/ranking') ? 'active' : ''}`}
+              onClick={() => navigate('/ranking')}
+            >
+              Ranking
+            </button>
+            {/* Participants solo visible para admin en el header */}
+            {isAdmin && (
+              <button
+                className={`header-nav-item ${isActive('/participants') ? 'active' : ''}`}
+                onClick={() => navigate('/participants')}
+              >
+                Participants
               </button>
-            </div>
-          ) : (
-            <button
-              className="header-login-btn"
-              onClick={() => navigate('/login')}
-            >
-              <i className="fas fa-sign-in-alt" />
-              <span>Sign in</span>
-            </button>
-          )}
+            )}
+          </nav>
+
+          <div className="header-auth">
+            {isAuthenticated ? (
+              <div className="header-user">
+                <span
+                  className={`header-username ${user?.participantId ? 'clickable' : ''}`}
+                  onClick={() => user?.participantId && navigate(`/participants/${user.participantId}`)}
+                  title={user?.participantId ? 'View profile' : ''}
+                >
+                  <i className="fas fa-user-circle" />
+                  {user!.username}
+                </span>
+                {isAdmin && <span className="header-role-badge">Admin</span>}
+                <button className="header-logout-btn" onClick={handleLogout} title="Sign out">
+                  <i className="fas fa-sign-out-alt" />
+                  <span>Sign out</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                className="header-login-btn"
+                onClick={() => navigate('/login')}
+              >
+                <i className="fas fa-sign-in-alt" />
+                <span>Sign in</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </header>

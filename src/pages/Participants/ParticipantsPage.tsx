@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GlobalParticipant, ComputedStats } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
@@ -7,15 +7,13 @@ import {
   getAllParticipants,
   getAllParticipantsAsync,
   createParticipant,
-  updateParticipant,
   removeParticipant,
   computeAllStats,
 } from '@/services/participants/participantService';
 import {
   listUsers,
   createUserAccount,
-  updateUserAccount,
-  deactivateUser,
+  deleteUserAccount,
 } from '@/services/auth/authService';
 import { saveGlobalParticipants } from '@/services/storage/localStorage';
 import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
@@ -38,28 +36,16 @@ function ParticipantsPage() {
   const [newAlias, setNewAlias] = useState('');
   const [newGameId, setNewGameId] = useState<string | null>(null);
   const [newCharacterId, setNewCharacterId] = useState<string | null>(null);
+  const [newUsername, setNewUsername] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [creating, setCreating] = useState(false);
-
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState('');
-  const [editAlias, setEditAlias] = useState('');
-  const editInputRef = useRef<HTMLInputElement>(null);
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   // ── Account management ────────────────────────────────────────────────
   const [usersMap, setUsersMap] = useState<Map<string, AuthUser>>(new Map());
-  const [accountTarget, setAccountTarget] = useState<{ participant: GlobalParticipant; user: AuthUser | null } | null>(null);
-  const [acctUsername, setAcctUsername] = useState('');
-  const [acctPassword, setAcctPassword] = useState('');
-  const [acctConfirm, setAcctConfirm] = useState('');
-  const [acctRole, setAcctRole] = useState<'admin' | 'user'>('user');
-  const [acctIsActive, setAcctIsActive] = useState(true);
-  const [acctError, setAcctError] = useState('');
-  const [acctSaving, setAcctSaving] = useState(false);
 
   useEffect(() => { loadAll(); }, []);
-  useEffect(() => { if (editingId && editInputRef.current) editInputRef.current.focus(); }, [editingId]);
 
   function refreshStats(data: GlobalParticipant[]) {
     setStatsMap(computeAllStats(data));
@@ -120,14 +106,27 @@ function ParticipantsPage() {
 
   // ── Create ────────────────────────────────────────────────────────────
 
+  function generateUsernameFromName(): string {
+    const base = newAlias.trim() || newName.trim();
+    return base.toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
+
   async function handleCreate() {
     if (!newName.trim()) { setError('Name is required'); return; }
+    if (!newPassword.trim()) { setError('Password is required for the login account'); return; }
+    if (newPassword.trim().length < 6) { setError('Password must be at least 6 characters'); return; }
     setCreating(true); setError('');
     try {
       const p = await createParticipant(newName, newAlias, newGameId, newCharacterId);
+      const username = newUsername.trim() || generateUsernameFromName();
+      const u = await createUserAccount(p.id, username, newPassword.trim(), 'user');
       const next = [...participants, p];
       setParticipants(next); refreshStats(next);
+      const nextUsers = new Map(usersMap);
+      nextUsers.set(p.id, u);
+      setUsersMap(nextUsers);
       setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null);
+      setNewUsername(''); setNewPassword('');
       setShowCreateForm(false);
     } catch (err: any) { setError(err.message); }
     finally { setCreating(false); }
@@ -135,19 +134,8 @@ function ParticipantsPage() {
 
   // ── Edit ──────────────────────────────────────────────────────────────
 
-  function startEdit(p: GlobalParticipant) {
-    setEditingId(p.id); setEditName(p.name); setEditAlias(p.alias ?? '');
-  }
-
-  async function saveEdit() {
-    if (!editingId) return;
-    setError('');
-    try {
-      const updated = await updateParticipant(editingId, { name: editName, alias: editAlias });
-      const next = participants.map((p) => (p.id === editingId ? updated : p));
-      setParticipants(next); refreshStats(next);
-    } catch (err: any) { setError(err.message); }
-    finally { setEditingId(null); }
+  function goToEdit(p: GlobalParticipant) {
+    navigate(`/participants/${p.id}?tab=edit`);
   }
 
   // ── Delete ────────────────────────────────────────────────────────────
@@ -164,87 +152,18 @@ function ParticipantsPage() {
     if (!deleteTarget) return;
     try {
       await removeParticipant(deleteTarget.id);
+      const user = usersMap.get(deleteTarget.id);
+      if (user) await deleteUserAccount(user.id);
       const next = participants.filter((p) => p.id !== deleteTarget.id);
+      const nextUsers = new Map(usersMap);
+      nextUsers.delete(deleteTarget.id);
       setParticipants(next); refreshStats(next);
+      setUsersMap(nextUsers);
     } catch (err: any) { setError(err.message); }
     setDeleteTarget(null);
   }
 
-  // ── Account modal ────────────────────────────────────────────────────
-
-  function openAccountModal(p: GlobalParticipant) {
-    const existing = usersMap.get(p.id) ?? null;
-    setAccountTarget({ participant: p, user: existing });
-    setAcctUsername(existing?.username ?? '');
-    setAcctPassword('');
-    setAcctConfirm('');
-    setAcctRole(existing?.role ?? 'user');
-    setAcctIsActive(existing?.isActive ?? true);
-    setAcctError('');
-  }
-
-  function closeAccountModal() {
-    setAccountTarget(null);
-    setAcctError('');
-  }
-
-  async function saveAccount() {
-    if (!accountTarget) return;
-    const { participant, user } = accountTarget;
-
-    if (!user) {
-      // Crear nueva cuenta
-      if (!acctUsername.trim()) { setAcctError('Username is required'); return; }
-      if (acctPassword.length < 6) { setAcctError('Password must be at least 6 characters'); return; }
-      if (acctPassword !== acctConfirm) { setAcctError('Passwords do not match'); return; }
-    }
-
-    setAcctSaving(true);
-    setAcctError('');
-    try {
-      if (!user) {
-        const newUser = await createUserAccount(participant.id, acctUsername.trim(), acctPassword, acctRole);
-        const next = new Map(usersMap);
-        next.set(participant.id, newUser);
-        setUsersMap(next);
-      } else {
-        const updates: Parameters<typeof updateUserAccount>[1] = {};
-        if (acctUsername.trim() && acctUsername.trim() !== user.username) updates.username = acctUsername.trim();
-        if (acctPassword.trim()) updates.password = acctPassword.trim();
-        if (acctRole !== user.role) updates.role = acctRole;
-        if (acctIsActive !== user.isActive) updates.isActive = acctIsActive;
-
-        if (Object.keys(updates).length > 0) {
-          const updated = await updateUserAccount(user.id, updates);
-          const next = new Map(usersMap);
-          next.set(participant.id, updated);
-          setUsersMap(next);
-        }
-      }
-      closeAccountModal();
-    } catch (err: any) {
-      setAcctError(err.message || 'Failed to save account');
-    } finally {
-      setAcctSaving(false);
-    }
-  }
-
-  async function handleDeactivateAccount() {
-    if (!accountTarget?.user) return;
-    setAcctSaving(true);
-    try {
-      await deactivateUser(accountTarget.user.id);
-      const next = new Map(usersMap);
-      const updated = { ...accountTarget.user, isActive: false };
-      next.set(accountTarget.participant.id, updated);
-      setUsersMap(next);
-      closeAccountModal();
-    } catch (err: any) {
-      setAcctError(err.message || 'Failed to deactivate account');
-    } finally {
-      setAcctSaving(false);
-    }
-  }
+  // ── Account management ahora vive en el perfil ────────────────────────
 
   // ── Render ────────────────────────────────────────────────────────────
 
@@ -300,6 +219,25 @@ function ParticipantsPage() {
                   onCharacterChange={setNewCharacterId}
                 />
               </div>
+
+              <div className="pp-create-section">
+                <h4>Login Account</h4>
+                <p className="text-secondary text-sm mb-2">Each participant needs an account to log in.</p>
+                <div className="form-group">
+                  <label>Username <span className="text-secondary">(auto if empty)</span></label>
+                  <input type="text" value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setError(''); }}}
+                    placeholder={generateUsernameFromName() || 'username'} />
+                </div>
+                <div className="form-group">
+                  <label>Password *</label>
+                  <input type="password" value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setError(''); }}}
+                    placeholder="Set the participant's password" />
+                </div>
+              </div>
             </div>
 
             <div className="pp-create-preview">
@@ -326,7 +264,11 @@ function ParticipantsPage() {
             </div>
 
             <div className="pp-create-actions">
-              <button className="btn-outline" onClick={() => setShowCreateForm(false)}>Cancel</button>
+              <button className="btn-outline" onClick={() => {
+                setShowCreateForm(false);
+                setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null);
+                setNewUsername(''); setNewPassword(''); setError('');
+              }}>Cancel</button>
               <button className="btn-primary" onClick={handleCreate} disabled={creating}>
                 {creating ? 'Creating…' : 'Create Participant'}
               </button>
@@ -362,80 +304,58 @@ function ParticipantsPage() {
               const s = getStats(p.id);
               return (
                 <div key={p.id} className="pp-item card">
-                  {editingId === p.id ? (
-                    <div className="pp-item-edit">
-                      <input ref={editInputRef} type="text" value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') setEditingId(null); }}
-                        placeholder="Name" />
-                      <input type="text" value={editAlias}
-                        onChange={(e) => setEditAlias(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') setEditingId(null); }}
-                        placeholder="Alias" />
-                      <div className="pp-item-edit-actions">
-                        <button className="btn-outline" onClick={() => setEditingId(null)}>Cancel</button>
-                        <button className="btn-primary" onClick={saveEdit}>Save</button>
-                      </div>
+                  <div className="pp-item-info" onClick={() => navigate(`/participants/${p.id}`)}>
+                    <div className="pp-item-avatar" style={{ background: avatarColor(p.name) }}>
+                      {initials(p.name)}
                     </div>
-                  ) : (
-                    <>
-                      <div className="pp-item-info" onClick={() => navigate(`/participants/${p.id}`)}>
-                        <div className="pp-item-avatar" style={{ background: avatarColor(p.name) }}>
-                          {initials(p.name)}
-                        </div>
-                        <div className="pp-item-name-block">
-                          <div className="pp-item-name-row">
-                            <span className="pp-item-name">{p.name}</span>
-                            {p.alias && <span className="pp-item-alias">{p.alias}</span>}
-                          </div>
-                          {p.gameId && p.mainCharacterId && (
-                            <div className="pp-item-tags">
-                              <span className="pp-item-tag pp-item-tag-game">{getGame(p.gameId)?.shortName}</span>
-                              <span className="pp-item-tag pp-item-tag-char">
-                                {getCharacter(p.gameId, p.mainCharacterId)?.name}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="pp-item-stats">
-                          <span className="pp-stat">
-                            <span className="pp-stat-label">Played</span>
-                            <span className="pp-stat-value">{s.tournamentsPlayed}</span>
-                          </span>
-                          <span className="pp-stat">
-                            <span className="pp-stat-label"><i className="fas fa-trophy" /> Wins</span>
-                            <span className="pp-stat-value pp-stat-wins">{s.wins}</span>
-                          </span>
-                          <span className="pp-stat">
-                            <span className="pp-stat-label">Win %</span>
-                            <span className="pp-stat-value">{s.winRate > 0 ? `${s.winRate}%` : '—'}</span>
-                          </span>
-                        </div>
+                    <div className="pp-item-name-block">
+                      <div className="pp-item-name-row">
+                        <span className="pp-item-name">{p.name}</span>
+                        {p.alias && <span className="pp-item-alias">{p.alias}</span>}
                       </div>
-                      <div className="pp-item-actions">
-                        {/* Account badge */}
-                        {(() => {
-                          const u = usersMap.get(p.id);
-                          return u ? (
-                            <span className={`pp-account-badge ${u.isActive ? 'has-account' : 'inactive-account'}`}>
-                              <i className="fas fa-user-check" />
-                              {u.isActive ? u.username : 'Inactive'}
-                            </span>
-                          ) : (
-                            <span className="pp-account-badge no-account">
-                              <i className="fas fa-user-slash" />
-                              No account
-                            </span>
-                          );
-                        })()}
-                        <button className="btn-icon" title="Manage Account" onClick={() => openAccountModal(p)}>
-                          <i className="fas fa-key" />
-                        </button>
-                        <button className="btn-icon" onClick={() => startEdit(p)} title="Edit"><i className="fas fa-pen" /></button>
-                        <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title="Delete"><i className="fas fa-trash" /></button>
-                      </div>
-                    </>
-                  )}
+                      {p.gameId && p.mainCharacterId && (
+                        <div className="pp-item-tags">
+                          <span className="pp-item-tag pp-item-tag-game">{getGame(p.gameId)?.shortName}</span>
+                          <span className="pp-item-tag pp-item-tag-char">
+                            {getCharacter(p.gameId, p.mainCharacterId)?.name}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="pp-item-stats">
+                      <span className="pp-stat">
+                        <span className="pp-stat-label">Played</span>
+                        <span className="pp-stat-value">{s.tournamentsPlayed}</span>
+                      </span>
+                      <span className="pp-stat">
+                        <span className="pp-stat-label"><i className="fas fa-trophy" /> Wins</span>
+                        <span className="pp-stat-value pp-stat-wins">{s.wins}</span>
+                      </span>
+                      <span className="pp-stat">
+                        <span className="pp-stat-label">Win %</span>
+                        <span className="pp-stat-value">{s.winRate > 0 ? `${s.winRate}%` : '—'}</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="pp-item-actions">
+                    {/* Account badge */}
+                    {(() => {
+                      const u = usersMap.get(p.id);
+                      return u ? (
+                        <span className={`pp-account-badge ${u.isActive ? 'has-account' : 'inactive-account'}`}>
+                          <i className="fas fa-user-check" />
+                          {u.isActive ? u.username : 'Inactive'}
+                        </span>
+                      ) : (
+                        <span className="pp-account-badge no-account">
+                          <i className="fas fa-user-slash" />
+                          No account
+                        </span>
+                      );
+                    })()}
+                    <button className="btn-icon" onClick={() => goToEdit(p)} title="Edit"><i className="fas fa-pen" /></button>
+                    <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title="Delete"><i className="fas fa-trash" /></button>
+                  </div>
                 </div>
               );
             })}
@@ -452,93 +372,7 @@ function ParticipantsPage() {
         confirmText="Delete"
       />
 
-      {/* Account Management Modal */}
-      {accountTarget && (
-        <div className="modal-overlay" onClick={closeAccountModal}>
-          <div className="pp-account-modal card" onClick={e => e.stopPropagation()}>
-            <div className="pp-account-modal-header">
-              <div>
-                <h3>{accountTarget.user ? 'Edit Account' : 'Create Account'}</h3>
-                <p className="text-secondary">{accountTarget.participant.name}{accountTarget.participant.alias ? ` — ${accountTarget.participant.alias}` : ''}</p>
-              </div>
-              <button className="btn-icon" onClick={closeAccountModal}><i className="fas fa-times" /></button>
-            </div>
-
-            <div className="pp-account-modal-body">
-              <div className="form-group">
-                <label>Username</label>
-                <input
-                  type="text"
-                  value={acctUsername}
-                  onChange={e => setAcctUsername(e.target.value)}
-                  placeholder="username"
-                  autoFocus
-                  autoComplete="off"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>{accountTarget.user ? 'New Password (leave blank to keep current)' : 'Password'}</label>
-                <input
-                  type="password"
-                  value={acctPassword}
-                  onChange={e => setAcctPassword(e.target.value)}
-                  placeholder={accountTarget.user ? 'Leave blank to keep current' : 'At least 6 characters'}
-                  autoComplete="new-password"
-                />
-              </div>
-
-              {(!accountTarget.user || acctPassword) && (
-                <div className="form-group">
-                  <label>Confirm Password</label>
-                  <input
-                    type="password"
-                    value={acctConfirm}
-                    onChange={e => setAcctConfirm(e.target.value)}
-                    placeholder="Repeat password"
-                    autoComplete="new-password"
-                  />
-                </div>
-              )}
-
-              <div className="form-group">
-                <label>Role</label>
-                <select value={acctRole} onChange={e => setAcctRole(e.target.value as 'admin' | 'user')}>
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-
-              {accountTarget.user && (
-                <div className="form-group pp-account-active-toggle">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={acctIsActive}
-                      onChange={e => setAcctIsActive(e.target.checked)}
-                    />
-                    <span>Account active</span>
-                  </label>
-                </div>
-              )}
-
-              {acctError && <div className="error-message">{acctError}</div>}
-            </div>
-
-            <div className="pp-account-modal-actions">
-              {accountTarget.user && accountTarget.user.isActive && (
-                <button className="btn-outline btn-danger-outline" onClick={handleDeactivateAccount} disabled={acctSaving}>
-                  Deactivate
-                </button>
-              )}
-              <button className="btn-outline" onClick={closeAccountModal} disabled={acctSaving}>Cancel</button>
-              <button className="btn-primary" onClick={saveAccount} disabled={acctSaving}>
-                {acctSaving ? 'Saving…' : accountTarget.user ? 'Save Changes' : 'Create Account'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Account management ahora vive en el perfil del participant */}
     </div>
   );
 }
