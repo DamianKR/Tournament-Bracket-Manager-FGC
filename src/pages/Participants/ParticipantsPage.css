@@ -479,3 +479,96 @@
 .pp-modal-since {
   text-align: center;
 }
+
+/* ── Account badges ──────────────────────────────────────────────────────── */
+
+.pp-account-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.pp-account-badge.has-account {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.pp-account-badge.inactive-account {
+  background: rgba(107, 114, 128, 0.12);
+  border: 1px solid rgba(107, 114, 128, 0.3);
+  color: #9ca3af;
+}
+
+.pp-account-badge.no-account {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+}
+
+/* ── Account modal ───────────────────────────────────────────────────────── */
+
+.pp-account-modal {
+  width: 100%;
+  max-width: 440px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.pp-account-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pp-account-modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.2rem;
+}
+
+.pp-account-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.pp-account-active-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.pp-account-active-toggle input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.pp-account-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--border-color, rgba(255,255,255,0.08));
+}
+
+.pp-account-modal-actions .btn-danger-outline {
+  color: var(--danger-color, #ef4444);
+  border-color: rgba(239,68,68,0.35);
+  margin-right: auto;
+}
+
+.pp-account-modal-actions .btn-danger-outline:hover {
+  background: rgba(239,68,68,0.1);
+}

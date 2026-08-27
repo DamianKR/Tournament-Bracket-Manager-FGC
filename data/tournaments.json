@@ -2895,7 +2895,7 @@
           "participant2Id": "1787150507627-cwvbw5ynq",
           "winnerId": null,
           "loserId": null,
-          "status": "in_progress",
+          "status": "pending",
           "nextWinnerMatchId": "loser-r3-m1",
           "nextLoserMatchId": null
         },
@@ -3034,7 +3034,7 @@
     },
     "championId": null,
     "createdAt": "2026-08-18T16:03:25.182Z",
-    "updatedAt": "2026-08-22T17:00:54.025Z",
+    "updatedAt": "2026-08-27T03:48:41.171Z",
     "teamSize": 3
   }
 ]

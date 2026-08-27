@@ -127,7 +127,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
       {selectedParticipantId && myStanding && (
         <>
           <div className="my-stats-card card">
-            <h3>My Stats</h3>
+            <h3>Stats</h3>
             <div className="my-stats-grid">
               <div className="my-stat">
                 <span className="my-stat-label">Rank</span>

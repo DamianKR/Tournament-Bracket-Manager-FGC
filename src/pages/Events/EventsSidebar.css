@@ -65,6 +65,21 @@
   border-left-color: var(--primary-color);
 }
 
+.events-sidebar-item.locked {
+  opacity: 0.55;
+}
+
+.events-sidebar-item.locked:hover {
+  opacity: 0.75;
+}
+
+.events-sidebar-lock {
+  font-size: 0.75rem !important;
+  width: auto !important;
+  margin-left: auto;
+  color: var(--text-muted, #6b7280);
+}
+
 @media (max-width: 768px) {
   .events-sidebar {
     width: 100%;

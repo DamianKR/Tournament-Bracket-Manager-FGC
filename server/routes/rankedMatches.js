@@ -10,6 +10,7 @@
 import { Router } from 'express';
 import { rankedMatches } from '../db/collections.js';
 import { rankedMatchShape, validateRankedMatch } from '../models/rankedMatch.js';
+import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
 
 const router = Router();
 
@@ -37,7 +38,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/ranked-matches
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { id, matchType, playerAId, playerBId, winnerId, eloData } = req.body;
     
@@ -61,7 +62,7 @@ router.post('/', async (req, res) => {
 });
 
 // DELETE /api/ranked-matches/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const deleted = await rankedMatches.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Match not found' });

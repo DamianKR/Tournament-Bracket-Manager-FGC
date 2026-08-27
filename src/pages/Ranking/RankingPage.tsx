@@ -13,6 +13,7 @@ import {
   type LeaderboardEntry,
 } from '@/services/ranking/rankingService';
 import type { MatchRecord } from '@/models/types';
+import { useAuth } from '@/contexts/AuthContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import RankingInfo from './RankingInfo';
@@ -22,6 +23,7 @@ type Tab = 'leaderboard' | 'history' | 'info';
 
 function RankingPage() {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [tab, setTab] = useState<Tab>('leaderboard');
 
   // Leaderboard
@@ -153,24 +155,26 @@ function RankingPage() {
           <p className="rk-subtitle">Competitive scoring system — start at 1500 pts</p>
         </div>
         <div className="rk-header-right">
-          <div className="rk-reset-btns">
-            <button
-              className="rk-reset-btn soft"
-              onClick={() => setShowSoftConfirm(true)}
-              disabled={resetting}
-              title="Returns each player to the start of their current tier"
-            >
-              <i className="fas fa-rotate-left" /> Soft Reset
-            </button>
-            <button
-              className="rk-reset-btn hard"
-              onClick={() => setShowHardConfirm1(true)}
-              disabled={resetting}
-              title="Returns all players to 1500 pts and clears history"
-            >
-              <i className="fas fa-triangle-exclamation" /> Hard Reset
-            </button>
-          </div>
+          {isAdmin && (
+            <div className="rk-reset-btns">
+              <button
+                className="rk-reset-btn soft"
+                onClick={() => setShowSoftConfirm(true)}
+                disabled={resetting}
+                title="Returns each player to the start of their current tier"
+              >
+                <i className="fas fa-rotate-left" /> Soft Reset
+              </button>
+              <button
+                className="rk-reset-btn hard"
+                onClick={() => setShowHardConfirm1(true)}
+                disabled={resetting}
+                title="Returns all players to 1500 pts and clears history"
+              >
+                <i className="fas fa-triangle-exclamation" /> Hard Reset
+              </button>
+            </div>
+          )}
           <div className="rk-tabs">
             <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => setTab('leaderboard')}>
               <i className="fas fa-trophy" /> Ranking
@@ -320,13 +324,15 @@ function RankingPage() {
                 <div key={m.id} className="card rk-history-card">
                   <div className="rk-history-top">
                     <span className="rk-history-date">{formatDate(m.createdAt)}</span>
-                    <button
-                      className="rk-history-delete"
-                      title="Delete record (does not revert ELO)"
-                      onClick={() => setDeleteTarget(m.id)}
-                    >
-                      🗑
-                    </button>
+                    {isAdmin && (
+                      <button
+                        className="rk-history-delete"
+                        title="Delete record (does not revert ELO)"
+                        onClick={() => setDeleteTarget(m.id)}
+                      >
+                        🗑
+                      </button>
+                    )}
                   </div>
                   <div className="rk-history-players">
                     <div className={`rk-history-player ${m.winnerId === m.playerAId ? 'winner' : 'loser'}`}>

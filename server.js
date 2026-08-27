@@ -22,6 +22,7 @@ import rankingRouter from './server/routes/ranking.js';
 import leaguesRouter from './server/routes/leagues.js';
 import duelsRouter from './server/routes/duels.js';
 import rankedMatchesRouter from './server/routes/rankedMatches.js';
+import authRouter from './server/routes/auth.js';
 
 const PORT = 3001;
 
@@ -35,6 +36,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 // ── Routes ──────────────────────────────────────────────────────────────
+app.use('/api/auth', authRouter);
 app.use('/api/tournaments', tournamentsRouter);
 app.use('/api/participants', participantsRouter);
 app.use('/api/ranking', rankingRouter);

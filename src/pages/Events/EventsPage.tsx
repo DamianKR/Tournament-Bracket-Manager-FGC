@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import EventsSidebar from './EventsSidebar';
 import TournamentsTab from './Tournaments/TournamentsTab';
 import LeaguesTab from './Leagues/LeaguesTab';
@@ -9,10 +10,31 @@ import './EventsPage.css';
 
 export type EventTab = 'tournaments' | 'leagues' | 'ranked' | 'history';
 
+// Tabs que requieren autenticación
+const AUTH_TABS: EventTab[] = ['ranked', 'history'];
+
 function EventsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const tabParam = searchParams.get('tab') as EventTab | null;
-  const [activeTab, setActiveTab] = useState<EventTab>(tabParam || 'tournaments');
+  const { isAuthenticated } = useAuth();
+
+  function resolveTab(param: string | null): EventTab {
+    const t = param as EventTab | null;
+    // Si la tab requiere auth y el user no está autenticado → fallback a tournaments
+    if (t && AUTH_TABS.includes(t) && !isAuthenticated) return 'tournaments';
+    return t || 'tournaments';
+  }
+
+  const [activeTab, setActiveTab] = useState<EventTab>(() =>
+    resolveTab(searchParams.get('tab'))
+  );
+
+  // Si el usuario cierra sesión estando en una tab protegida → volver a tournaments
+  useEffect(() => {
+    if (AUTH_TABS.includes(activeTab) && !isAuthenticated) {
+      setActiveTab('tournaments');
+      setSearchParams({ tab: 'tournaments' });
+    }
+  }, [isAuthenticated, activeTab, setSearchParams]);
 
   const handleTabChange = (tab: EventTab) => {
     setActiveTab(tab);
@@ -22,12 +44,12 @@ function EventsPage() {
   return (
     <div className="events-page">
       <EventsSidebar activeTab={activeTab} onTabChange={handleTabChange} />
-      
+
       <div className="events-content">
         {activeTab === 'tournaments' && <TournamentsTab />}
         {activeTab === 'leagues' && <LeaguesTab />}
-        {activeTab === 'ranked' && <RankedTab />}
-        {activeTab === 'history' && <HistoryTab />}
+        {activeTab === 'ranked' && isAuthenticated && <RankedTab />}
+        {activeTab === 'history' && isAuthenticated && <HistoryTab />}
       </div>
     </div>
   );

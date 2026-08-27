@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Tournament } from '@/models/types';
 import { getAllTournaments, removeTournament } from '@/services/tournament/tournamentService';
 import { loadTournamentsAsync, saveTournaments } from '@/services/storage/localStorage';
+import { useAuth } from '@/contexts/AuthContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './TournamentsTab.css';
 
@@ -10,6 +11,7 @@ function TournamentsTab() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     // Show localStorage immediately (instant), then refresh from server
@@ -88,18 +90,22 @@ function TournamentsTab() {
           <h1><i className="fas fa-trophy" /> Tournaments</h1>
           <p className="text-secondary">Create and manage brackets — double elimination, single elimination and group stages supported</p>
         </div>
-        <button className="btn-primary" onClick={handleCreateNew}>
-          <i className="fas fa-plus" /> New Tournament
-        </button>
+        {isAdmin && (
+          <button className="btn-primary" onClick={handleCreateNew}>
+            <i className="fas fa-plus" /> New Tournament
+          </button>
+        )}
       </div>
 
       {tournaments.length === 0 ? (
         <div className="empty-state card">
           <h3>No tournaments yet</h3>
           <p className="text-secondary">Create your first tournament to get started</p>
-          <button className="btn-primary mt-2" onClick={handleCreateNew}>
-            Create Tournament
-          </button>
+          {isAdmin && (
+            <button className="btn-primary mt-2" onClick={handleCreateNew}>
+              Create Tournament
+            </button>
+          )}
         </div>
       ) : (
         <div className="tournaments-grid">
@@ -141,13 +147,15 @@ function TournamentsTab() {
                   <i className={tournament.status === 'setup' ? 'fas fa-pen' : 'fas fa-eye'} />
                   {tournament.status === 'setup' ? ' Continue Setup' : ' View Bracket'}
                 </button>
-                <button
-                  className="btn-danger btn-sm"
-                  onClick={(e) => requestDelete(tournament.id, e)}
-                  title="Delete tournament"
-                >
-                  <i className="fas fa-trash" />
-                </button>
+                {isAdmin && (
+                  <button
+                    className="btn-danger btn-sm"
+                    onClick={(e) => requestDelete(tournament.id, e)}
+                    title="Delete tournament"
+                  >
+                    <i className="fas fa-trash" />
+                  </button>
+                )}
               </div>
             </div>
           ))}

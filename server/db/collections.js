@@ -38,5 +38,8 @@ export const rankedMatches      = createCollection(path.join(DATA_DIR, 'ranked_m
 export const duels              = createCollection(path.join(DATA_DIR, 'duels.json'));
 export const duelSettings       = createCollection(path.join(DATA_DIR, 'duel_settings.json'));
 
+// Auth
+export const users              = createCollection(path.join(DATA_DIR, 'users.json'));
+
 // Legacy - kept for backward compatibility, will be migrated
 export const matches            = createCollection(path.join(DATA_DIR, 'matches.json'));

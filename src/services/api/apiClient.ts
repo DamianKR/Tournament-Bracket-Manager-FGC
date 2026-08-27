@@ -84,6 +84,19 @@ export async function supabaseDeleteRow(
   return false;
 }
 
+// ── Auth header ───────────────────────────────────────────────────────────
+// Lee el token de localStorage para adjuntarlo a todas las peticiones.
+// authService.ts lo escribe/limpia; aquí solo lo leemos.
+
+function getAuthHeader(): Record<string, string> {
+  try {
+    const token = localStorage.getItem('bracket_auth_token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 // ── Helpers fetch genéricos ───────────────────────────────────────────────
 // Verifican disponibilidad del servidor y manejan errores de forma uniforme.
 // Los servicios los usan en lugar de llamar fetch() directamente.
@@ -91,7 +104,12 @@ export async function supabaseDeleteRow(
 async function safeFetch<T>(path: string, options?: RequestInit): Promise<T | null> {
   try {
     if (!(await isServerAvailable())) return null;
-    const res = await fetch(`${SERVER_URL}${path}`, options);
+    const authHeader = getAuthHeader();
+    const merged: RequestInit = {
+      ...options,
+      headers: { ...authHeader, ...(options?.headers as Record<string, string> ?? {}) },
+    };
+    const res = await fetch(`${SERVER_URL}${path}`, merged);
     if (!res.ok) return null;
     const contentType = res.headers.get('content-type');
     if (!contentType?.includes('application/json')) return null;
@@ -125,7 +143,10 @@ export async function apiPut<T>(path: string, body?: unknown): Promise<T | null>
 export async function apiDelete(path: string): Promise<boolean> {
   try {
     if (!(await isServerAvailable())) return false;
-    const res = await fetch(`${SERVER_URL}${path}`, { method: 'DELETE' });
+    const res = await fetch(`${SERVER_URL}${path}`, {
+      method: 'DELETE',
+      headers: getAuthHeader(),
+    });
     return res.ok;
   } catch {
     resetServerCache();

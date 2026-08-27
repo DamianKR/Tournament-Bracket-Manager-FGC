@@ -21,6 +21,7 @@ import {
   estimateLeagueDuration 
 } from '../utils/leagueScheduler.js';
 import { calculateMatchElo, getRankName } from '../utils/eloEngine.js';
+import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
 
 const router = Router();
 
@@ -160,7 +161,7 @@ router.post('/estimate', async (req, res) => {
 });
 
 // POST /api/leagues — create new league
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const {
       name,
@@ -280,7 +281,7 @@ router.get('/:id/standings', async (req, res) => {
 });
 
 // POST /api/leagues/:id/matches/:matchId/result — report match result
-router.post('/:id/matches/:matchId/result', async (req, res) => {
+router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
   try {
     const { winnerId, score, isNoShow, noShowParticipantId } = req.body;
     
@@ -409,7 +410,7 @@ router.post('/:id/matches/:matchId/result', async (req, res) => {
 });
 
 // POST /api/leagues/:id/expire-matches — mark expired matches as pending_review
-router.post('/:id/expire-matches', async (req, res) => {
+router.post('/:id/expire-matches', requireAuth, requireAdmin, async (req, res) => {
   try {
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
@@ -441,7 +442,7 @@ router.post('/:id/expire-matches', async (req, res) => {
 });
 
 // POST /api/leagues/:id/matches/:matchId/mark-no-show — manually mark as no-show from pending_review
-router.post('/:id/matches/:matchId/mark-no-show', async (req, res) => {
+router.post('/:id/matches/:matchId/mark-no-show', requireAuth, requireAdmin, async (req, res) => {
   try {
     const { noShowParticipantId } = req.body;
     
@@ -525,7 +526,7 @@ router.post('/:id/matches/:matchId/mark-no-show', async (req, res) => {
 });
 
 // POST /api/leagues/:id/matches/:matchId/cancel — cancel match without penalty
-router.post('/:id/matches/:matchId/cancel', async (req, res) => {
+router.post('/:id/matches/:matchId/cancel', requireAuth, requireAdmin, async (req, res) => {
   try {
     const match = await leagueMatches.findById(req.params.matchId);
     if (!match) return res.status(404).json({ error: 'Match not found' });
@@ -546,7 +547,7 @@ router.post('/:id/matches/:matchId/cancel', async (req, res) => {
 });
 
 // POST /api/leagues/:id/ban-participants — ban players and regenerate schedule
-router.post('/:id/ban-participants', async (req, res) => {
+router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res) => {
   try {
     const { participantIds } = req.body; // Array of participant IDs to ban
     
@@ -677,7 +678,7 @@ router.get('/:id/eligible-for-ban', async (req, res) => {
 });
 
 // DELETE /api/leagues/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const deleted = await leagues.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'League not found' });

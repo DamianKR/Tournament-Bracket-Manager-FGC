@@ -17,6 +17,7 @@
 import { Router } from 'express';
 import { duels, duelSettings } from '../db/collections.js';
 import { duelChallengeShape, validateDuelChallenge, duelSettingsShape } from '../models/duel.js';
+import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
 
 const router = Router();
 
@@ -35,7 +36,7 @@ router.get('/settings', async (_req, res) => {
 });
 
 // PUT /api/duels/settings
-router.put('/settings', async (req, res) => {
+router.put('/settings', requireAuth, requireAdmin, async (req, res) => {
   try {
     const updated = { id: 'default', ...req.body };
     await duelSettings.upsert(updated);
@@ -84,7 +85,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/duels
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { id, challengerId, challengedId, expiresAt } = req.body;
     
@@ -108,7 +109,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/duels/:id/accept
-router.put('/:id/accept', async (req, res) => {
+router.put('/:id/accept', requireAuth, async (req, res) => {
   try {
     const challenge = await duels.findById(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
@@ -127,7 +128,7 @@ router.put('/:id/accept', async (req, res) => {
 });
 
 // PUT /api/duels/:id/decline
-router.put('/:id/decline', async (req, res) => {
+router.put('/:id/decline', requireAuth, async (req, res) => {
   try {
     const challenge = await duels.findById(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
@@ -146,7 +147,7 @@ router.put('/:id/decline', async (req, res) => {
 });
 
 // PUT /api/duels/:id/complete
-router.put('/:id/complete', async (req, res) => {
+router.put('/:id/complete', requireAuth, async (req, res) => {
   try {
     const challenge = await duels.findById(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
@@ -166,7 +167,7 @@ router.put('/:id/complete', async (req, res) => {
 });
 
 // DELETE /api/duels/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const deleted = await duels.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Challenge not found' });

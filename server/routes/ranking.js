@@ -15,6 +15,7 @@
 import { Router } from 'express';
 import { participants, rankedMatches } from '../db/collections.js';
 import { calculateElo, getRankName, applyLegendTier, RANK_TIERS } from '../utils/eloEngine.js';
+import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
 
 const router = Router();
 
@@ -83,7 +84,7 @@ router.get('/matches', async (_req, res) => {
 
 // ── POST /api/ranking/match — Record result & update ELO ─────────────────
 
-router.post('/match', async (req, res) => {
+router.post('/match', requireAuth, async (req, res) => {
   try {
     const { playerAId, playerBId, winnerId } = req.body;
 
@@ -164,7 +165,7 @@ router.post('/match', async (req, res) => {
 // ── POST /api/ranking/reset/hard ──────────────────────────────────────────
 // Must be registered BEFORE /matches/:participantId to avoid wildcard capture.
 
-router.post('/reset/hard', async (req, res) => {
+router.post('/reset/hard', requireAuth, requireAdmin, async (req, res) => {
   try {
     const all = await participants.getAll();
     const resetPoints = 1500;
@@ -195,7 +196,7 @@ router.post('/reset/hard', async (req, res) => {
 // ── POST /api/ranking/reset/soft ──────────────────────────────────────────
 // Must be registered BEFORE /matches/:participantId to avoid wildcard capture.
 
-router.post('/reset/soft', async (req, res) => {
+router.post('/reset/soft', requireAuth, requireAdmin, async (req, res) => {
   try {
     const all = await participants.getAll();
 
@@ -242,7 +243,7 @@ router.get('/matches/:participantId', async (req, res) => {
 
 // ── DELETE /api/ranking/matches/:matchId — wildcard, must be AFTER fixed paths ──
 
-router.delete('/matches/:matchId', async (req, res) => {
+router.delete('/matches/:matchId', requireAuth, requireAdmin, async (req, res) => {
   try {
     const deleted = await rankedMatches.remove(req.params.matchId);
     if (!deleted) return res.status(404).json({ error: 'Match not found' });

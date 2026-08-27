@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { EventTab } from './EventsPage';
 import './EventsSidebar.css';
 
@@ -7,6 +9,17 @@ interface EventsSidebarProps {
 }
 
 function EventsSidebar({ activeTab, onTabChange }: EventsSidebarProps) {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  function handleAuthTab(tab: EventTab) {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: `/events?tab=${tab}` } });
+      return;
+    }
+    onTabChange(tab);
+  }
+
   return (
     <aside className="events-sidebar">
       <div className="events-sidebar-header">
@@ -31,20 +44,25 @@ function EventsSidebar({ activeTab, onTabChange }: EventsSidebarProps) {
           <span>Leagues</span>
         </button>
 
+        {/* Ranked e History solo para usuarios autenticados */}
         <button
-          className={`events-sidebar-item ${activeTab === 'ranked' ? 'active' : ''}`}
-          onClick={() => onTabChange('ranked')}
+          className={`events-sidebar-item ${activeTab === 'ranked' ? 'active' : ''} ${!isAuthenticated ? 'locked' : ''}`}
+          onClick={() => handleAuthTab('ranked')}
+          title={!isAuthenticated ? 'Sign in to access Ranked' : undefined}
         >
           <i className="fas fa-star" />
           <span>Ranked</span>
+          {!isAuthenticated && <i className="fas fa-lock events-sidebar-lock" />}
         </button>
 
         <button
-          className={`events-sidebar-item ${activeTab === 'history' ? 'active' : ''}`}
-          onClick={() => onTabChange('history')}
+          className={`events-sidebar-item ${activeTab === 'history' ? 'active' : ''} ${!isAuthenticated ? 'locked' : ''}`}
+          onClick={() => handleAuthTab('history')}
+          title={!isAuthenticated ? 'Sign in to access History' : undefined}
         >
           <i className="fas fa-history" />
           <span>History</span>
+          {!isAuthenticated && <i className="fas fa-lock events-sidebar-lock" />}
         </button>
       </nav>
     </aside>

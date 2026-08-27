@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { League } from '@/models/league';
 import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
+import { useAuth } from '@/contexts/AuthContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './LeaguesTab.css';
 
 function LeaguesTab() {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
@@ -45,18 +47,22 @@ function LeaguesTab() {
           <h1><i className="fas fa-shield-alt" /> Leagues</h1>
           <p className="text-secondary">Seasons of round-robin matches spread across multiple weeks</p>
         </div>
-        <button className="btn-primary" onClick={() => navigate('/events/leagues/create')}>
-          <i className="fas fa-plus" /> New League
-        </button>
+        {isAdmin && (
+          <button className="btn-primary" onClick={() => navigate('/events/leagues/create')}>
+            <i className="fas fa-plus" /> New League
+          </button>
+        )}
       </div>
 
       {leagues.length === 0 ? (
         <div className="empty-state card">
           <h3>No leagues yet</h3>
-          <p className="text-secondary">Create a round-robin league and track weekly matches and ELO standings.</p>
-          <button className="btn-primary mt-2" onClick={() => navigate('/events/leagues/create')}>
-            <i className="fas fa-plus" /> New League
-          </button>
+          <p className="text-secondary">Leagues are round-robin seasons with weekly matches and ELO standings.</p>
+          {isAdmin && (
+            <button className="btn-primary mt-2" onClick={() => navigate('/events/leagues/create')}>
+              <i className="fas fa-plus" /> New League
+            </button>
+          )}
         </div>
       ) : (
         <div className="leagues-grid">
@@ -107,16 +113,18 @@ function LeaguesTab() {
                   >
                     <i className="fas fa-eye" /> View League
                   </button>
-                  <button
-                    className="btn-danger btn-sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeleteTarget({ id: league.id, name: league.name });
-                    }}
-                    title="Delete league"
-                  >
-                    <i className="fas fa-trash" />
-                  </button>
+                  {isAdmin && (
+                    <button
+                      className="btn-danger btn-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteTarget({ id: league.id, name: league.name });
+                      }}
+                      title="Delete league"
+                    >
+                      <i className="fas fa-trash" />
+                    </button>
+                  )}
                 </div>
               </div>
             );

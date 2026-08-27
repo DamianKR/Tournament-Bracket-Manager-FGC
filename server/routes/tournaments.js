@@ -13,6 +13,7 @@ import { Router } from 'express';
 import { tournaments, tournamentMatches } from '../db/collections.js';
 import { validateTournament } from '../models/tournament.js';
 import { applyTournamentElo } from '../utils/tournamentElo.js';
+import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
 
 const router = Router();
 
@@ -55,7 +56,7 @@ router.get('/:id', async (req, res) => {
 // POST /api/tournaments — replace full array (used by bulk sync)
 // Also detects any tournament that just transitioned to 'completed' and
 // applies ELO placement points automatically.
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     if (!Array.isArray(req.body)) {
       return res.status(400).json({ error: 'Body must be an array of tournaments' });
@@ -97,7 +98,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/tournaments/:id — upsert one
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   try {
     const body = req.body;
 
@@ -135,7 +136,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/tournaments/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const deleted = await tournaments.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Tournament not found' });
@@ -147,7 +148,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // DELETE /api/tournaments — clear all
-router.delete('/', async (_req, res) => {
+router.delete('/', requireAuth, requireAdmin, async (_req, res) => {
   try {
     await tournaments.clear();
     res.json({ ok: true });
@@ -170,7 +171,7 @@ router.get('/:id/matches', async (req, res) => {
 });
 
 // POST /api/tournaments/:id/matches
-router.post('/:id/matches', async (req, res) => {
+router.post('/:id/matches', requireAuth, async (req, res) => {
   try {
     const match = req.body;
     if (!match.tournamentId || !match.player1Id || !match.player2Id || !match.winnerId) {
