@@ -20,55 +20,30 @@
 
 import { Tournament, GlobalParticipant } from '@/models/types';
 import { STORAGE_KEYS } from '@/constants/tournament';
+import {
+  SERVER_URL,
+  isServerAvailable,
+  resetServerCache,
+  hasSupabase,
+  supabaseGet,
+  supabaseUpsert,
+} from '@/services/api/apiClient';
 
-const LOCAL_SERVER = 'http://localhost:3001';
-const HEALTH_TIMEOUT_MS = 1500;
-
-// ── Local server detection ──────────────────────────────────────────────
-// Single shared Promise so concurrent callers don't fire multiple health checks.
-
-let _healthPromise: Promise<boolean> | null = null;
-
-function isLocalServerAvailable(): Promise<boolean> {
-  if (_healthPromise) return _healthPromise;
-  _healthPromise = fetch(`${LOCAL_SERVER}/api/health`, {
-    signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
-  })
-    .then((res) => {
-      const ok = res.ok;
-      console.log(`[Storage] Local server ${ok ? 'available' : 'returned error'}`);
-      return ok;
-    })
-    .catch(() => {
-      console.log('[Storage] Local server not available, using localStorage only');
-      return false;
-    });
-  return _healthPromise;
-}
-
-function resetServerCache() {
-  _healthPromise = null;
-}
-
-// ── Supabase slot ───────────────────────────────────────────────────────
+// ── Supabase helpers específicos de esta colección ───────────────────────
+// Los stubs genéricos viven en apiClient; aquí solo wrapeamos con los tipos.
 
 async function _supabaseLoadTournaments(): Promise<Tournament[] | null> {
-  // TODO: implement with @supabase/supabase-js
-  return null;
+  return supabaseGet<Tournament[]>('tournaments');
 }
-async function _supabaseSyncTournaments(_data: Tournament[]): Promise<void> {
-  // TODO: implement with @supabase/supabase-js
+async function _supabaseSyncTournaments(data: Tournament[]): Promise<void> {
+  await supabaseUpsert('tournaments', data);
 }
 async function _supabaseLoadParticipants(): Promise<GlobalParticipant[] | null> {
-  // TODO: implement with @supabase/supabase-js
-  return null;
+  return supabaseGet<GlobalParticipant[]>('participants');
 }
-async function _supabaseSyncParticipants(_data: GlobalParticipant[]): Promise<void> {
-  // TODO: implement with @supabase/supabase-js
+async function _supabaseSyncParticipants(data: GlobalParticipant[]): Promise<void> {
+  await supabaseUpsert('participants', data);
 }
-
-const hasSupabase = () =>
-  !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 // ══════════════════════════════════════════════════════════════════════════
 //  TOURNAMENTS
@@ -92,9 +67,9 @@ function lsWriteTournaments(data: Tournament[]): void {
 }
 
 async function readAllTournaments(): Promise<Tournament[]> {
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     try {
-      const res = await fetch(`${LOCAL_SERVER}/api/tournaments`);
+      const res = await fetch(`${SERVER_URL}/api/tournaments`);
       if (res.ok) {
         const data = (await res.json()) as Tournament[];
         // Only overwrite localStorage if server has data OR localStorage is also empty.
@@ -118,8 +93,8 @@ async function readAllTournaments(): Promise<Tournament[]> {
 
 async function writeAllTournaments(data: Tournament[]): Promise<void> {
   lsWriteTournaments(data);
-  if (await isLocalServerAvailable()) {
-    fetch(`${LOCAL_SERVER}/api/tournaments`, {
+  if (await isServerAvailable()) {
+    fetch(`${SERVER_URL}/api/tournaments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -134,8 +109,8 @@ async function writeAllTournaments(data: Tournament[]): Promise<void> {
 
 // Write a single tournament via PUT (more efficient than bulk POST).
 async function writeOneTournament(tournament: Tournament): Promise<void> {
-  if (await isLocalServerAvailable()) {
-    fetch(`${LOCAL_SERVER}/api/tournaments/${encodeURIComponent(tournament.id)}`, {
+  if (await isServerAvailable()) {
+    fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournament.id)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(tournament),
@@ -159,9 +134,9 @@ export async function loadTournamentsAsync(): Promise<Tournament[]> {
 }
 
 export async function loadTournamentsForParticipantAsync(participantId: string): Promise<Tournament[]> {
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     try {
-      const res = await fetch(`${LOCAL_SERVER}/api/participants/${encodeURIComponent(participantId)}/tournaments`);
+      const res = await fetch(`${SERVER_URL}/api/participants/${encodeURIComponent(participantId)}/tournaments`);
       if (res.ok) return (await res.json()) as Tournament[];
     } catch (err) {
       console.warn('[Storage] Local server participant tournaments read failed:', err);
@@ -251,9 +226,9 @@ function lsWriteParticipants(data: GlobalParticipant[]): void {
 }
 
 async function readAllParticipants(): Promise<GlobalParticipant[]> {
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     try {
-      const res = await fetch(`${LOCAL_SERVER}/api/participants`);
+      const res = await fetch(`${SERVER_URL}/api/participants`);
       if (res.ok) {
         const data = (await res.json()) as GlobalParticipant[];
         // Only overwrite localStorage if server has data OR localStorage is also empty.
@@ -277,8 +252,8 @@ async function readAllParticipants(): Promise<GlobalParticipant[]> {
 // Exactamente igual que writeAllTournaments pero para participants
 async function writeAllParticipants(data: GlobalParticipant[]): Promise<void> {
   lsWriteParticipants(data);
-  if (await isLocalServerAvailable()) {
-    fetch(`${LOCAL_SERVER}/api/participants`, {
+  if (await isServerAvailable()) {
+    fetch(`${SERVER_URL}/api/participants`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),

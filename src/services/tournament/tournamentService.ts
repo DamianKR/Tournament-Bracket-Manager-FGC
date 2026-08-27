@@ -5,10 +5,9 @@ import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progre
 import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
 import { findOrCreateParticipant } from '@/services/participants/participantService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
+import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 
-const LOCAL_SERVER = 'http://localhost:3001';
 const TM_LS_KEY = 'bracket_tournament_matches';
-const HEALTH_TIMEOUT_MS = 1500;
 
 /**
  * Create a new tournament
@@ -349,7 +348,7 @@ export async function setMatchWinner(
 
       // Sync to server
       try {
-        await fetch(`http://localhost:3001/api/tournaments/${tournamentId}/matches`, {
+        await fetch(`${SERVER_URL}/api/tournaments/${tournamentId}/matches`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(matchRecord),
@@ -409,22 +408,6 @@ function generateId(): string {
 
 // ── Tournament Match Records (for History) ────────────────────────────────
 
-let _healthPromise: Promise<boolean> | null = null;
-
-function isLocalServerAvailable(): Promise<boolean> {
-  if (_healthPromise) return _healthPromise;
-  _healthPromise = fetch(`${LOCAL_SERVER}/api/tournaments`, {
-    signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
-  })
-    .then((res) => res.ok)
-    .catch(() => false);
-  return _healthPromise;
-}
-
-function resetServerCache() {
-  _healthPromise = null;
-}
-
 export interface TournamentMatchRecord {
   id: string;
   tournamentId: string;
@@ -450,9 +433,9 @@ export function getAllTournamentMatches(): TournamentMatchRecord[] {
 }
 
 export async function getAllTournamentMatchesAsync(): Promise<TournamentMatchRecord[]> {
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     try {
-      const res = await fetch(`${LOCAL_SERVER}/api/tournaments/matches`);
+      const res = await fetch(`${SERVER_URL}/api/tournaments/matches`);
       if (res.ok) {
         const data = await res.json();
         if (data.length > 0 || getAllTournamentMatches().length === 0) {

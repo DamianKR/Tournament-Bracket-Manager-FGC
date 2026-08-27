@@ -10,6 +10,7 @@
  */
 
 import type { MatchRecord, GlobalParticipant } from '../../models/types';
+import { SERVER_URL } from '@/services/api/apiClient';
 
 // ── localStorage sync helpers ─────────────────────────────────────────────
 
@@ -38,7 +39,7 @@ function lsReplaceAllParticipants(updated: GlobalParticipant[]): void {
   }
 }
 
-const API_BASE = 'http://localhost:3001/api/ranking';
+const API_BASE = `${SERVER_URL}/api/ranking`;
 
 // ── Types ─────────────────────────────────────────────────────────────────
 

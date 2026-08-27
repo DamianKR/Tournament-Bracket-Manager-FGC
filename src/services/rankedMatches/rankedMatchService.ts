@@ -1,36 +1,24 @@
 /**
- * Ranked Match Service — 3-layer persistence (JSON first + localStorage cache)
+ * Ranked Match Service — 3-layer persistence (JSON primero + localStorage cache)
  *
- * Priority for READS:
- *   1. Local JSON server (http://localhost:3001/api/ranked-matches)
+ * Prioridad LECTURA:
+ *   1. Servidor JSON local  (http://localhost:3001/api/ranked-matches)
  *   2. localStorage cache
  *
- * Priority for WRITES:
- *   1. localStorage (synchronous, instant)
- *   2. Local JSON server (async, fire-and-forget)
+ * Prioridad ESCRITURA:
+ *   1. localStorage (síncrono, instantáneo)
+ *   2. Servidor JSON local (async, fire-and-forget)
+ *
+ * Ruta de migración:
+ *   • Supabase → reemplazar calls al servidor por supabaseGet/supabaseUpsert desde apiClient
+ *   • React Native → reemplazar localStorage con AsyncStorage
  */
 
 import { RankedMatch } from '@/models/rankedMatch';
+import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 
-const API_BASE = 'http://localhost:3001/api/ranked-matches';
+const API_BASE = `${SERVER_URL}/api/ranked-matches`;
 const LS_KEY = 'bracket_ranked_matches';
-const HEALTH_TIMEOUT_MS = 1500;
-
-let _healthPromise: Promise<boolean> | null = null;
-
-function isLocalServerAvailable(): Promise<boolean> {
-  if (_healthPromise) return _healthPromise;
-  _healthPromise = fetch(API_BASE, {
-    signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
-  })
-    .then((res) => res.ok)
-    .catch(() => false);
-  return _healthPromise;
-}
-
-function resetServerCache() {
-  _healthPromise = null;
-}
 
 // ── localStorage helpers ──────────────────────────────────────────────────
 
@@ -53,23 +41,18 @@ function lsWriteMatches(data: RankedMatch[]): void {
 
 // ── Public API ────────────────────────────────────────────────────────────
 
-/**
- * Get all ranked matches (sync from localStorage)
- */
+/** Obtiene todas las partidas ranked (sync desde localStorage). */
 export function getAllRankedMatches(): RankedMatch[] {
   return lsReadMatches();
 }
 
-/**
- * Get all ranked matches (async from server, fallback to localStorage)
- */
+/** Obtiene todas las partidas ranked (async desde servidor, fallback a localStorage). */
 export async function getAllRankedMatchesAsync(): Promise<RankedMatch[]> {
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     try {
       const res = await fetch(API_BASE);
       if (res.ok) {
         const data = await res.json();
-        // Only overwrite cache if server has data OR cache is empty
         if (data.length > 0 || lsReadMatches().length === 0) {
           lsWriteMatches(data);
         }
@@ -83,17 +66,13 @@ export async function getAllRankedMatchesAsync(): Promise<RankedMatch[]> {
   return lsReadMatches();
 }
 
-/**
- * Get a single ranked match by ID
- */
+/** Obtiene una partida ranked por ID. */
 export async function getRankedMatch(id: string): Promise<RankedMatch | null> {
   const all = await getAllRankedMatchesAsync();
   return all.find(m => m.id === id) ?? null;
 }
 
-/**
- * Create a new ranked match
- */
+/** Crea una nueva partida ranked. */
 export async function createRankedMatch(
   matchType: 'duel' | 'matchmaking',
   player1Id: string,
@@ -121,13 +100,13 @@ export async function createRankedMatch(
     duelChallengeId,
   };
 
-  // Add to localStorage cache
+  // Guardar en localStorage primero (instantáneo)
   const all = lsReadMatches();
   all.push(match);
   lsWriteMatches(all);
 
-  // Sync to server
-  if (await isLocalServerAvailable()) {
+  // Sincronizar con servidor
+  if (await isServerAvailable()) {
     try {
       const res = await fetch(API_BASE, {
         method: 'POST',
@@ -144,23 +123,17 @@ export async function createRankedMatch(
   return match;
 }
 
-/**
- * Delete a ranked match
- */
+/** Elimina una partida ranked. */
 export async function deleteRankedMatch(id: string): Promise<boolean> {
   const all = lsReadMatches();
   const filtered = all.filter(m => m.id !== id);
-  
-  if (filtered.length === all.length) return false; // Not found
-  
-  // Update localStorage
+
+  if (filtered.length === all.length) return false;
+
   lsWriteMatches(filtered);
 
-  // Sync to server
-  if (await isLocalServerAvailable()) {
-    fetch(`${API_BASE}/${id}`, {
-      method: 'DELETE',
-    }).catch((err) => {
+  if (await isServerAvailable()) {
+    fetch(`${API_BASE}/${id}`, { method: 'DELETE' }).catch((err) => {
       console.warn('[RankedMatches] Server delete failed:', err);
       resetServerCache();
     });
@@ -169,17 +142,13 @@ export async function deleteRankedMatch(id: string): Promise<boolean> {
   return true;
 }
 
-/**
- * Get ranked matches for a specific player
- */
+/** Obtiene partidas ranked de un jugador específico. */
 export async function getPlayerRankedMatches(playerId: string): Promise<RankedMatch[]> {
   const all = await getAllRankedMatchesAsync();
   return all.filter(m => m.player1Id === playerId || m.player2Id === playerId);
 }
 
-/**
- * Get ranked matches by type
- */
+/** Obtiene partidas ranked por tipo. */
 export async function getRankedMatchesByType(matchType: 'duel' | 'matchmaking'): Promise<RankedMatch[]> {
   const all = await getAllRankedMatchesAsync();
   return all.filter(m => m.type === matchType);

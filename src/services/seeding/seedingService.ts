@@ -1,6 +1,7 @@
 import { Participant, GlobalParticipant, SeedingMode, PartialSeedCount } from '@/models/types';
 import { getAllParticipants } from '@/services/participants/participantService';
 import { loadTournaments } from '@/services/storage/localStorage';
+import { generateStandardSeeding } from '@/engine/seeding/seeding';
 
 /**
  * Calculate win rate for a global participant across all tournaments
@@ -115,41 +116,20 @@ export function applySeed(
 }
 
 /**
- * Standard bracket seeding algorithm (recursive interleaving).
- * Generates the classic tournament bracket order: [1,8,5,4,3,6,7,2] for 8 players.
- */
-function generateStandardBracketOrder(bracketSize: number): number[] {
-  if (bracketSize === 1) return [1];
-  if (bracketSize === 2) return [1, 2];
-
-  const half = bracketSize / 2;
-  const prevOrder = generateStandardBracketOrder(half);
-
-  const result: number[] = [];
-  for (const seed of prevOrder) {
-    result.push(seed);
-    result.push(bracketSize + 1 - seed);
-  }
-
-  return result;
-}
-
-/**
- * Apply standard bracket seeding with automatic bye distribution.
- * 
- * Algorithm:
- * 1. Participants already have seeds assigned (1, 2, 3... N)
- * 2. Generate standard bracket order for bracket size (power of 2)
- * 3. Map participants to bracket positions
- * 4. Top seeds automatically receive byes (positions where opponent doesn't exist)
- * 
- * Examples:
- * - 8 players, bracket 8: [1,8,5,4,3,6,7,2] - no byes
- * - 11 players, bracket 16: top 5 seeds get byes
- * - 7 players, top 4 seeded: seeds 1-4 placed strategically, 5-7 fill remaining
- * 
- * @param participants - Participants with seeds already assigned
- * @param topSeedCount - For partial seeding: how many top seeds to place strategically
+ * Aplica el orden estándar de bracket con distribución automática de byes.
+ *
+ * Algoritmo:
+ * 1. Los participantes ya tienen seeds asignados (1, 2, 3... N)
+ * 2. Se genera el orden estándar de bracket para el tamaño de bracket (potencia de 2)
+ *    usando generateStandardSeeding del engine (matemática pura, sin dependencias de datos)
+ * 3. Los participantes se mapean a las posiciones del bracket
+ * 4. Los top seeds reciben byes automáticamente (posiciones sin oponente)
+ *
+ * Ejemplos:
+ * - 8 jugadores, bracket 8: [1,8,4,5,2,7,3,6] — sin byes
+ * - 11 jugadores, bracket 16: los top 5 seeds obtienen byes
+ *
+ * @param participants - Participantes con seeds ya asignados
  */
 export function applyBracketSeeding(
   participants: Participant[]
@@ -157,26 +137,19 @@ export function applyBracketSeeding(
   const n = participants.length;
   if (n < 2) return participants;
 
-  // Sort by seed
+  // Ordenar por seed
   const sorted = [...participants].sort((a, b) => a.seed - b.seed);
-  
-  // Bracket size is next power of 2
+
+  // Bracket size = siguiente potencia de 2
   const bracketSize = Math.pow(2, Math.ceil(Math.log2(n)));
-  
-  // Generate standard bracket order
-  const bracketOrder = generateStandardBracketOrder(bracketSize);
-  
-  // Map participants by seed number
+
+  // Obtener orden estándar del engine (evita duplicar la lógica matemática)
+  const bracketOrder = generateStandardSeeding(bracketSize);
+
+  // Mapear participantes por número de seed (O(1) lookup)
   const participantMap = new Map<number, Participant>();
   sorted.forEach(p => participantMap.set(p.seed, p));
-  
-  // Build bracket slots by mapping bracket order to participants
-  const slots: (Participant | null)[] = [];
-  
-  for (const seedNum of bracketOrder) {
-    const participant = participantMap.get(seedNum);
-    slots.push(participant || null);
-  }
-  
-  return slots;
+
+  // Construir slots del bracket
+  return bracketOrder.map(seedNum => participantMap.get(seedNum) ?? null);
 }

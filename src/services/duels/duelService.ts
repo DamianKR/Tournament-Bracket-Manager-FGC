@@ -12,28 +12,12 @@
 
 import { DuelChallenge, DuelSettings, DuelValidationResult, DuelStats, DEFAULT_DUEL_SETTINGS } from '@/models/duel';
 import { getParticipant } from '@/services/participants/participantService';
-import { getAllRankedMatchesAsync } from '@/services/ranked/rankedMatchService';
+import { getAllRankedMatchesAsync } from '@/services/rankedMatches/rankedMatchService';
+import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 
-const API_BASE = 'http://localhost:3001/api/duels';
+const API_BASE = `${SERVER_URL}/api/duels`;
 const LS_KEY_CHALLENGES = 'bracket_duel_challenges';
 const LS_KEY_SETTINGS = 'bracket_duel_settings';
-const HEALTH_TIMEOUT_MS = 1500;
-
-let _healthPromise: Promise<boolean> | null = null;
-
-function isLocalServerAvailable(): Promise<boolean> {
-  if (_healthPromise) return _healthPromise;
-  _healthPromise = fetch(`${API_BASE}/settings`, {
-    signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
-  })
-    .then((res) => res.ok)
-    .catch(() => false);
-  return _healthPromise;
-}
-
-function resetServerCache() {
-  _healthPromise = null;
-}
 
 // ── localStorage helpers ──────────────────────────────────────────────────
 
@@ -84,7 +68,7 @@ export function getDuelSettings(): DuelSettings {
  * Get duel settings (async from server, fallback to localStorage)
  */
 export async function getDuelSettingsAsync(): Promise<DuelSettings> {
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     try {
       const res = await fetch(`${API_BASE}/settings`);
       if (res.ok) {
@@ -111,7 +95,7 @@ export async function updateDuelSettings(newSettings: Partial<DuelSettings>): Pr
   lsWriteSettings(updated);
   
   // Sync to server (fire-and-forget)
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     fetch(`${API_BASE}/settings`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -138,7 +122,7 @@ export function getAllChallenges(): DuelChallenge[] {
  * Get all challenges (async from server, fallback to localStorage)
  */
 export async function getAllChallengesAsync(): Promise<DuelChallenge[]> {
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     try {
       const res = await fetch(API_BASE);
       if (res.ok) {
@@ -383,7 +367,7 @@ async function writeChallenges(challenges: DuelChallenge[]): Promise<void> {
   lsWriteChallenges(challenges);
   
   // Sync to server (fire-and-forget)
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -427,7 +411,7 @@ export async function createDuelChallenge(
   lsWriteChallenges(all);
 
   // Sync to server
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     try {
       const res = await fetch(API_BASE, {
         method: 'POST',
@@ -459,7 +443,7 @@ export async function acceptDuelChallenge(challengeId: string): Promise<DuelChal
   lsWriteChallenges(all);
 
   // Sync to server
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     fetch(`${API_BASE}/${challengeId}/accept`, {
       method: 'PUT',
     }).catch((err) => {
@@ -486,7 +470,7 @@ export async function declineDuelChallenge(challengeId: string): Promise<DuelCha
   lsWriteChallenges(all);
 
   // Sync to server
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     fetch(`${API_BASE}/${challengeId}/decline`, {
       method: 'PUT',
     }).catch((err) => {
@@ -514,7 +498,7 @@ export async function completeDuelChallenge(challengeId: string, matchId: string
   lsWriteChallenges(all);
 
   // Sync to server
-  if (await isLocalServerAvailable()) {
+  if (await isServerAvailable()) {
     fetch(`${API_BASE}/${challengeId}/complete`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

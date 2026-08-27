@@ -15,8 +15,10 @@ import {
   deleteGlobalParticipant,
   findGlobalParticipantByName,
   searchGlobalParticipants,
+  loadTournaments,
+  saveTournaments,
 } from '@/services/storage/localStorage';
-import { loadTournaments, saveTournaments } from '@/services/storage/localStorage';
+import { SERVER_URL } from '@/services/api/apiClient';
 
 // ── ID generator ─────────────────────────────────────────────────────────
 
@@ -273,8 +275,6 @@ export function computeAllStats(
 
 // ── League stats ─────────────────────────────────────────────────────────
 
-const LOCAL_SERVER = 'http://localhost:3001';
-
 export interface LeagueStatsSummary {
   leagues: LeagueResultEntry[];
   totalMatches: number;
@@ -285,7 +285,7 @@ export interface LeagueStatsSummary {
 
 export async function getParticipantLeagueStats(participantId: string): Promise<LeagueStatsSummary> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/participants/${participantId}/league-stats`);
+    const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/league-stats`);
     if (!res.ok) throw new Error('Failed to fetch league stats');
     return await res.json();
   } catch (err) {

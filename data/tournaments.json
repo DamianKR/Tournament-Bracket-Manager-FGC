@@ -191,7 +191,8 @@
         "eliminated": false,
         "globalParticipantId": "gp_1786387243524_6er0c9u",
         "lossCount": 0,
-        "finalPosition": 1
+        "finalPosition": 1,
+        "alias": "TQMandreFN"
       }
     ],
     "bracket": {
@@ -1189,7 +1190,8 @@
         "eliminated": true,
         "lossCount": 2,
         "globalParticipantId": "gp_1786387243524_6er0c9u",
-        "finalPosition": 2
+        "finalPosition": 2,
+        "alias": "TQMandreFN"
       },
       {
         "id": "1786802957143-0mfkr776s",

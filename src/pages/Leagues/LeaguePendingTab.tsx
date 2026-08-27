@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
-import { expireLeagueMatches, cancelMatch, getEligibleForBan, banParticipants } from '@/services/leagues/leagueService';
+import { expireLeagueMatches, cancelMatch, getEligibleForBan, banParticipants, markMatchNoShow } from '@/services/leagues/leagueService';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './LeaguePendingTab.css';
@@ -75,27 +75,21 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
   async function handleMarkNoShow() {
     if (!selectedMatch || !selectedAbsent) return;
     setProcessing(true);
-    
+
     try {
-      const res = await fetch(`http://localhost:3001/api/leagues/${league.id}/matches/${selectedMatch.id}/mark-no-show`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ noShowParticipantId: selectedAbsent }),
-      });
-      
-      const data = await res.json();
+      const data = await markMatchNoShow(league.id, selectedMatch.id, selectedAbsent);
       setProcessing(false);
-      
-      if (res.ok) {
+
+      if (data) {
         setShowNoShowModal(false);
         setSelectedMatch(null);
         setSelectedAbsent('');
-        
+
         // Check if player is now eligible for ban
         if (data.banEligible) {
           setBanWarning(data.banEligible);
         }
-        
+
         await loadEligibleForBan();
         onMatchUpdated();
       }

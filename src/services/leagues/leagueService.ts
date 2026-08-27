@@ -5,14 +5,13 @@
  */
 
 import { League, LeagueMatch, LeagueStanding } from '@/models/league';
-
-const LOCAL_SERVER = 'http://localhost:3001';
+import { SERVER_URL } from '@/services/api/apiClient';
 
 // ── API Calls ─────────────────────────────────────────────────────────────
 
 export async function getAllLeagues(): Promise<League[]> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues`);
+    const res = await fetch(`${SERVER_URL}/api/leagues`);
     if (!res.ok) throw new Error('Failed to fetch leagues');
     return await res.json();
   } catch (err) {
@@ -23,7 +22,7 @@ export async function getAllLeagues(): Promise<League[]> {
 
 export async function getLeague(id: string): Promise<League | null> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${id}`);
+    const res = await fetch(`${SERVER_URL}/api/leagues/${id}`);
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
@@ -46,7 +45,7 @@ export async function estimateLeagueDuration(config: {
   matchesPerPlayer: number;
 } | null> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/estimate`, {
+    const res = await fetch(`${SERVER_URL}/api/leagues/estimate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config),
@@ -73,7 +72,7 @@ export async function createLeague(config: {
   playoffsEloMultiplier: number;
 }): Promise<{ league: League; matchesCreated: number } | null> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues`, {
+    const res = await fetch(`${SERVER_URL}/api/leagues`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config),
@@ -88,7 +87,7 @@ export async function createLeague(config: {
 
 export async function getLeagueMatches(leagueId: string): Promise<LeagueMatch[]> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/matches`);
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches`);
     if (!res.ok) throw new Error('Failed to fetch league matches');
     return await res.json();
   } catch (err) {
@@ -99,7 +98,7 @@ export async function getLeagueMatches(leagueId: string): Promise<LeagueMatch[]>
 
 export async function getLeagueStandings(leagueId: string): Promise<LeagueStanding[]> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/standings`);
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/standings`);
     if (!res.ok) throw new Error('Failed to fetch standings');
     return await res.json();
   } catch (err) {
@@ -119,7 +118,7 @@ export async function reportMatchResult(
   }
 ): Promise<{ match: LeagueMatch; eloChanges: Record<string, number> } | null> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/matches/${matchId}/result`, {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/result`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(result),
@@ -134,7 +133,7 @@ export async function reportMatchResult(
 
 export async function deleteLeague(id: string): Promise<boolean> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${id}`, {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${id}`, {
       method: 'DELETE',
     });
     return res.ok;
@@ -160,7 +159,7 @@ export function getLeagueDisplayStatus(league: League): 'pending' | 'active' | '
  */
 export async function expireLeagueMatches(leagueId: string): Promise<number> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/expire-matches`, {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/expire-matches`, {
       method: 'POST',
     });
     if (!res.ok) throw new Error('Failed to expire matches');
@@ -173,23 +172,25 @@ export async function expireLeagueMatches(leagueId: string): Promise<number> {
 }
 
 /**
- * Mark a pending_review match as no-show
+ * Mark a pending_review match as no-show.
+ * Returns the server response (includes banEligible flag) or null on failure.
  */
 export async function markMatchNoShow(
   leagueId: string,
   matchId: string,
   noShowParticipantId: string
-): Promise<boolean> {
+): Promise<{ banEligible?: { participantId: string; name: string; alias?: string; noShowCount: number } } | null> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/matches/${matchId}/mark-no-show`, {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/mark-no-show`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ noShowParticipantId }),
     });
-    return res.ok;
+    if (!res.ok) return null;
+    return await res.json();
   } catch (err) {
     console.error('[LeagueService] markMatchNoShow error:', err);
-    return false;
+    return null;
   }
 }
 
@@ -198,7 +199,7 @@ export async function markMatchNoShow(
  */
 export async function cancelMatch(leagueId: string, matchId: string): Promise<boolean> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/matches/${matchId}/cancel`, {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/cancel`, {
       method: 'POST',
     });
     return res.ok;
@@ -221,7 +222,7 @@ export async function getEligibleForBan(leagueId: string): Promise<{
   maxNoShows: number;
 } | null> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/eligible-for-ban`);
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/eligible-for-ban`);
     if (!res.ok) throw new Error('Failed to get eligible participants');
     return await res.json();
   } catch (err) {
@@ -243,7 +244,7 @@ export async function banParticipants(
   completedMatchesPreserved: number;
 } | null> {
   try {
-    const res = await fetch(`${LOCAL_SERVER}/api/leagues/${leagueId}/ban-participants`, {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/ban-participants`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ participantIds }),
