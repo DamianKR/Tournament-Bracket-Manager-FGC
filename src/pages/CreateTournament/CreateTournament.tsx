@@ -34,6 +34,7 @@ function CreateTournament() {
   const [teamSize, setTeamSize] = useState<TeamSize>(2);
   const [seedingMode, setSeedingMode] = useState<SeedingMode>('none');
   const [partialSeedCount, setPartialSeedCount] = useState<PartialSeedCount>(8);
+  const [givesPoints, setGivesPoints] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('participants');
   const [participants, setParticipants] = useState<any[]>([]);
   const [newParticipantName, setNewParticipantName] = useState('');
@@ -79,6 +80,7 @@ function CreateTournament() {
       setMode(tournament.mode);
       setType(tournament.type || 'singles');
       setTeamSize(tournament.teamSize || 2);
+      setGivesPoints(tournament.givesPoints !== false);
       setParticipants(tournament.participants);
       setIsCreated(true);
     }
@@ -147,12 +149,13 @@ function CreateTournament() {
     }
     try {
       const tournament = await createTournament(
-        tournamentName, 
-        mode, 
+        tournamentName,
+        mode,
         type,
         type === 'teams' ? teamSize : undefined,
         type === 'singles' ? seedingMode : undefined,
-        type === 'singles' && seedingMode === 'partial' ? partialSeedCount : undefined
+        type === 'singles' && seedingMode === 'partial' ? partialSeedCount : undefined,
+        givesPoints
       );
       setTournamentId(tournament.id);
       setIsCreated(true);
@@ -372,6 +375,22 @@ function CreateTournament() {
                   <option value="double_elimination">Double Elimination</option>
                   <option value="single_elimination">Single Elimination</option>
                 </select>
+              </div>
+
+              <div className="form-group form-group--inline">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={givesPoints}
+                    onChange={(e) => setGivesPoints(e.target.checked)}
+                  />
+                  <span>Award ranking points on completion</span>
+                </label>
+                <p className="text-secondary text-sm mt-1">
+                  {givesPoints
+                    ? 'Top 8 placements will earn ELO points when the tournament ends'
+                    : 'No ELO points will be awarded; results are recorded for history only'}
+                </p>
               </div>
 
               {type === 'singles' && (

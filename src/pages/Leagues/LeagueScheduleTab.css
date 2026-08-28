@@ -45,7 +45,6 @@
 
 .week-header h3 {
   margin: 0;
-  font-size: 1.1rem;
   font-weight: 700;
   color: var(--primary-color);
 }
@@ -175,18 +174,58 @@
 
 @media (max-width: 640px) {
   .match-row {
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
+    padding: 0.75rem;
   }
-  
+
+  .match-status-icon {
+    font-size: 1rem;
+    flex: 0 0 auto;
+  }
+
   .match-players {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+    min-width: 0;
   }
-  
+
+  .match-player {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
   .match-vs {
-    display: none;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    text-transform: lowercase;
+  }
+
+  .match-score,
+  .match-elo-changes,
+  
+  .match-row .btn-sm {
+    flex: 0 0 auto;
+    margin-left: auto;
+    align-self: center;
+  }
+
+  .match-date {
+    width: 100%;
+    order: 1;
+    font-size: 0.75rem;
+    text-align: left;
+    margin-top: 0.25rem;
   }
 }

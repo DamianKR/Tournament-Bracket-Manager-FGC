@@ -73,12 +73,16 @@ router.post('/', requireAuth, async (req, res) => {
       const becomesCompleted = t.status === 'completed' && (!prev || prev.status !== 'completed');
       const alreadyApplied   = t.eloApplied || (prev && prev.eloApplied);
 
-      if (becomesCompleted && !alreadyApplied) {
+      if (becomesCompleted && !alreadyApplied && t.givesPoints !== false) {
         const updates = await applyTournamentElo(t);
         t.eloApplied = true;
         t.eloUpdates = updates;
         eloAppliedIds.push(t.id);
         console.log(`[Tournaments] ELO applied for ${t.id}: ${updates.length} participants`);
+      } else if (becomesCompleted && !alreadyApplied) {
+        t.eloApplied = true;
+        t.eloUpdates = [];
+        console.log(`[Tournaments] ELO skipped for ${t.id}: givesPoints=false`);
       }
 
       updatedBody.push(t);
@@ -119,12 +123,16 @@ router.put('/:id', requireAuth, async (req, res) => {
     const becomesCompleted = body.status === 'completed' && (!existing || existing.status !== 'completed');
     const alreadyApplied   = body.eloApplied || (existing && existing.eloApplied);
 
-    if (becomesCompleted && !alreadyApplied) {
+    if (becomesCompleted && !alreadyApplied && body.givesPoints !== false) {
       const tournamentToApply = { ...body, status: 'completed' };
       const eloUpdates = await applyTournamentElo(tournamentToApply);
       body.eloApplied = true;
       body.eloUpdates = eloUpdates;
       console.log(`[Tournaments] ELO applied for ${req.params.id}: ${eloUpdates.length} participants`);
+    } else if (becomesCompleted && !alreadyApplied) {
+      body.eloApplied = true;
+      body.eloUpdates = [];
+      console.log(`[Tournaments] ELO skipped for ${req.params.id}: givesPoints=false`);
     }
 
     const saved = await tournaments.upsert(body);

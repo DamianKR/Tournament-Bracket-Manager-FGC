@@ -359,6 +359,109 @@
   color: var(--primary-dark);
 }
 
+@media (max-width: 768px) {
+  .rk-table {
+    table-layout: fixed;
+  }
+
+  .rk-table th,
+  .rk-table td {
+    padding: 0.5rem 0.35rem;
+  }
+
+  .rk-col-pos {
+    width: 10%;
+  }
+
+  .rk-col-player {
+    width: 45%;
+    min-width: 0;
+  }
+
+  .rk-col-rank {
+    width: 15%;
+    text-align: center;
+  }
+
+  .rk-col-pts {
+    width: 30%;
+    text-align: right;
+  }
+
+  .rk-avatar,
+  .rk-avatar-placeholder {
+    width: 26px;
+    height: 26px;
+  }
+
+  .rk-avatar-placeholder {
+    font-size: 0.75rem;
+  }
+
+  .rk-player {
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .rk-player-info {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .rk-player-name {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rk-player-real-name {
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rk-rank-badges {
+    justify-content: center;
+    gap: 0;
+  }
+
+  .rk-legend-badge {
+    display: none;
+  }
+
+  .rk-rank-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 0;
+    gap: 0;
+  }
+
+  .rk-rank-badge i {
+    font-size: 0.75rem;
+  }
+
+  .rk-pts {
+    font-size: 0.85rem;
+  }
+
+  .rk-pos {
+    font-size: 0.85rem;
+  }
+
+  .rk-pos.top1,
+  .rk-pos.top2,
+  .rk-pos.top3 {
+    font-size: 1rem;
+  }
+}
+
 /* ── History ───────────────────────────────────────────────────────────── */
 
 .rk-history-list {
@@ -503,9 +606,5 @@
 
   .rk-result-row {
     flex-direction: column;
-  }
-
-  .rk-col-rank {
-    display: none;
   }
 }

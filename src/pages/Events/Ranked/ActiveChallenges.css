@@ -12,7 +12,6 @@
 .challenges-header h3 {
   margin: 0 0 0.5rem 0;
   color: var(--text-color);
-  font-size: 1.5rem;
 }
 
 .challenges-filters {
@@ -253,31 +252,105 @@
 
 @media (max-width: 768px) {
   .challenges-header {
-    flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
   }
 
   .challenges-filters {
     flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .filter-btn {
+    padding: 0.4rem 0.625rem;
+    font-size: 0.75rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
   }
 
   .challenge-card {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .challenge-main {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
   }
 
   .challenge-players {
     flex-direction: column;
     width: 100%;
-    gap: 1rem;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+
+  .challenge-player {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+  }
+
+  .player-name {
+    text-align: left;
+    font-size: 1rem;
+  }
+
+  .player-elo {
+    align-self: auto;
+    font-size: 0.8rem;
   }
 
   .challenge-vs {
-    transform: rotate(90deg);
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.9rem;
+    align-self: center;
+    transform: none;
+    order: -1;
+    margin: 0.25rem 0;
+  }
+
+  .challenge-meta {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .challenge-status {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .challenge-date {
+    font-size: 0.8rem;
   }
 
   .challenge-actions {
     width: 100%;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .challenge-actions button {
+    flex: 1 1 auto;
+    min-width: 100px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    justify-content: center;
+  }
+
+  .challenge-completed-badge {
+    width: 100%;
+    justify-content: center;
   }
 }

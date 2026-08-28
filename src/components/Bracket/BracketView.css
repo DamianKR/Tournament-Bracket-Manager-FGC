@@ -119,12 +119,48 @@
 
 /* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  .bracket-view {
+    gap: 1.5rem;
+    padding: 0rem;
+  }
+
   .bracket-section {
-    padding: 1rem;
+    padding: 0.5rem;
+  }
+
+  .bracket-title {
+    top: 60px;
+    font-size: 1rem;
+    padding: 0.35rem 0;
+  }
+
+  .round-headers-row {
+    top: 95px;
+    gap: 0.75rem;
+    padding: 0.25rem 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .round-header-cell {
+    width: 160px;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.3rem;
+  }
+
+  .bracket-rounds {
+    gap: 0.75rem;
   }
 
   .bracket-round,
   .round-header-cell {
-    width: 220px;
+    width: 160px;
+  }
+
+  .round-matches {
+    gap: 0.5rem;
+  }
+
+  .grand-final-matches {
+    max-width: 260px;
   }
 }

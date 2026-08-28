@@ -56,8 +56,6 @@
 .player-dropdown-menu {
   position: absolute;
   top: calc(100% + 0.5rem);
-  /* left: 0; */
-  right: 0;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
@@ -65,6 +63,16 @@
   z-index: 1000;
   overflow: hidden;
   min-width: 280px;
+}
+
+.player-dropdown-menu.align-left {
+  left: 0;
+  right: auto;
+}
+
+.player-dropdown-menu.align-right {
+  right: 0;
+  left: auto;
 }
 
 .player-dropdown-search {

@@ -12,12 +12,26 @@ interface PlayerDropdownProps {
 
 function PlayerDropdown({ participants, selectedId, onSelect, placeholder = 'All Players', className = '' }: PlayerDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [openToRight, setOpenToRight] = useState(true);
   const [search, setSearch] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const selected = participants.find(p => p.id === selectedId);
   const sortedParticipants = [...participants].sort((a, b) => a.name.localeCompare(b.name));
+
+  function handleToggle() {
+    if (!isOpen && dropdownRef.current) {
+      const rect = dropdownRef.current.getBoundingClientRect();
+      const spaceRight = window.innerWidth - rect.left;
+      const spaceLeft = rect.right;
+      const menuWidth = 280;
+      const canOpenRight = spaceRight >= menuWidth;
+      const canOpenLeft = spaceLeft >= menuWidth;
+      setOpenToRight(canOpenRight || (!canOpenLeft && spaceRight >= spaceLeft));
+    }
+    setIsOpen(!isOpen);
+  }
 
   const filtered = search.trim()
     ? sortedParticipants.filter(p =>
@@ -53,7 +67,7 @@ function PlayerDropdown({ participants, selectedId, onSelect, placeholder = 'All
     <div className={`player-dropdown ${className}`} ref={dropdownRef}>
       <button
         className="player-dropdown-trigger"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         type="button"
       >
         <span className="player-dropdown-label">
@@ -74,7 +88,7 @@ function PlayerDropdown({ participants, selectedId, onSelect, placeholder = 'All
       </button>
 
       {isOpen && (
-        <div className="player-dropdown-menu">
+        <div className={`player-dropdown-menu ${openToRight ? 'align-left' : 'align-right'}`}>
           <div className="player-dropdown-search">
             <i className="fas fa-search" />
             <input

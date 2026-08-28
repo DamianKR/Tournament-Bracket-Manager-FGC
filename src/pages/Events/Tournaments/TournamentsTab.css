@@ -56,7 +56,6 @@
   flex: 1;
   color: #fff;
   font-family: var(--font-display);
-  font-size: 1.35rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -157,4 +156,42 @@
 .btn-sm {
   padding: 0.5rem 0.75rem;
   font-size: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .tournaments-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* .tournaments-header h1 {
+    font-size: 1.5rem;
+  } */
+
+  .tournaments-header p {
+    font-size: 0.9rem;
+  }
+
+  .tournaments-header button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tournaments-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tournament-card-info {
+    font-size: 0.85rem;
+  }
+
+  .info-row {
+    gap: 0.5rem;
+  }
+
+  .tournament-card-actions .btn-outline span {
+    display: inline;
+  }
 }

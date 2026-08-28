@@ -239,25 +239,33 @@ router.put('/:id/report-result', requireAuth, async (req, res) => {
       evidence: evidence || null,
     };
 
-    // Store result based on who is reporting
-    if (isChallenger) {
-      challenge.challengerResult = result;
-    } else if (isChallenged) {
-      challenge.challengedResult = result;
-    }
+    // Admin can confirm directly without consensus
+    if (req.user.role === 'admin') {
+      challenge.challengerResult = { ...result, evidence: null };
+      challenge.challengedResult = { ...result, evidence: null };
+      challenge.status = 'completed';
+      challenge.completedAt = new Date().toISOString();
+    } else {
+      // Store result based on who is reporting
+      if (isChallenger) {
+        challenge.challengerResult = result;
+      } else if (isChallenged) {
+        challenge.challengedResult = result;
+      }
 
-    // Check if both participants have reported
-    if (challenge.challengerResult && challenge.challengedResult) {
-      if (challenge.challengerResult.winnerId === challenge.challengedResult.winnerId) {
-        // Results match - auto-confirm (will be handled by frontend to create match)
-        challenge.status = 'completed';
-        challenge.completedAt = new Date().toISOString();
-        // Clear evidence since results match
-        if (challenge.challengerResult.evidence) challenge.challengerResult.evidence = null;
-        if (challenge.challengedResult.evidence) challenge.challengedResult.evidence = null;
-      } else {
-        // Results don't match - needs admin review
-        challenge.status = 'pending_review';
+      // Check if both participants have reported
+      if (challenge.challengerResult && challenge.challengedResult) {
+        if (challenge.challengerResult.winnerId === challenge.challengedResult.winnerId) {
+          // Results match - auto-confirm (will be handled by frontend to create match)
+          challenge.status = 'completed';
+          challenge.completedAt = new Date().toISOString();
+          // Clear evidence since results match
+          if (challenge.challengerResult.evidence) challenge.challengerResult.evidence = null;
+          if (challenge.challengedResult.evidence) challenge.challengedResult.evidence = null;
+        } else {
+          // Results don't match - needs admin review
+          challenge.status = 'pending_review';
+        }
       }
     }
 

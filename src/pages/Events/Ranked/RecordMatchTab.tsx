@@ -362,6 +362,16 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                   {recording ? 'Resolving...' : 'Confirm Winner & Record Match'}
                 </button>
               </div>
+            ) : challenge.status === 'accepted' && isAdmin ? (
+              <div className="rk-record-actions">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleReportResult}
+                  disabled={recording || !winnerId}
+                >
+                  {recording ? 'Recording...' : 'Confirm & Record Match'}
+                </button>
+              </div>
             ) : challenge.status === 'accepted' && isParticipant && !hasReported ? (
               <div className="rk-record-actions">
                 <button

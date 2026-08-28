@@ -284,3 +284,64 @@
   color: var(--text-tertiary);
   font-style: italic;
 }
+
+@media (max-width: 768px) {
+  .match-card {
+    border-radius: 0.25rem;
+  }
+
+  .match-header {
+    min-width: 42px;
+    padding: 0.3rem 0.35rem;
+    gap: 0.25rem;
+  }
+
+  .match-id,
+  .match-status {
+    font-size: 0.55rem;
+  }
+
+  .participant {
+    padding: 0.25rem 0.4rem;
+  }
+
+  .participant-name {
+    font-size: 0.7rem;
+  }
+
+  .winner-badge,
+  .pending-badge {
+    font-size: 0.5rem;
+    padding: 0.075rem 0.25rem;
+  }
+
+  .match-divider {
+    font-size: 0.5rem;
+    padding: 0.075rem 0;
+  }
+
+  .match-actions {
+    padding: 0.2rem 0.4rem;
+  }
+
+  .match-hint {
+    font-size: 0.55rem;
+  }
+
+  .revert-btn {
+    font-size: 0.6rem;
+  }
+
+  .confirm-bar {
+    padding: 0.25rem 0.4rem;
+  }
+
+  .confirm-label {
+    font-size: 0.6rem;
+  }
+
+  .confirm-btn {
+    font-size: 0.55rem;
+    padding: 0.1rem 0.35rem;
+  }
+}

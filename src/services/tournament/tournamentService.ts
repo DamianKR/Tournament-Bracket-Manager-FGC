@@ -13,12 +13,13 @@ const TM_LS_KEY = 'bracket_tournament_matches';
  * Create a new tournament
  */
 export async function createTournament(
-  name: string, 
-  mode: TournamentMode, 
+  name: string,
+  mode: TournamentMode,
   type: TournamentType = 'singles',
   teamSize?: TeamSize,
   seedingMode?: SeedingMode,
-  partialSeedCount?: PartialSeedCount
+  partialSeedCount?: PartialSeedCount,
+  givesPoints: boolean = true
 ): Promise<Tournament> {
   const tournament: Tournament = {
     id: generateId(),
@@ -27,6 +28,7 @@ export async function createTournament(
     type,
     status: 'setup',
     gameId: null,
+    givesPoints,
     seedingMode: seedingMode || 'none',
     participants: [],
     bracket: null,

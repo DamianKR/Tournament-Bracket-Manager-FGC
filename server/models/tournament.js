@@ -51,6 +51,7 @@
  * @property {TournamentStatus} status
  * @property {string|null}      [gameId]    - Game identifier (e.g., 'ssbu')
  * @property {TeamSize}         [teamSize]  - Only for team tournaments: 2, 3, 4, or 5
+ * @property {boolean}          [givesPoints] - Whether this tournament awards ranking/ELO points
  * @property {TournamentParticipant[]} participants
  * @property {Bracket|null}     bracket
  * @property {string|null}      championId
@@ -77,6 +78,7 @@ export function tournamentShape(id, name, mode, type = 'singles', teamSize) {
     type,
     status: 'setup',
     gameId: null,
+    givesPoints: true,
     participants: [],
     bracket: null,
     championId: null,

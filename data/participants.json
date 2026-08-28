@@ -28,8 +28,8 @@
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-08-26T23:08:06.050Z",
-    "eloPoints": 1576,
+    "updatedAt": "2026-08-28T00:18:17.700Z",
+    "eloPoints": 1595,
     "eloRank": "Diamante"
   },
   {
@@ -59,8 +59,8 @@
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-08-26T20:29:09.725Z",
-    "eloPoints": 1605,
+    "updatedAt": "2026-08-28T00:30:59.650Z",
+    "eloPoints": 1626,
     "eloRank": "Vanquisher"
   },
   {
@@ -91,8 +91,8 @@
     "alias": "TQMandreFN",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-08-27T02:45:55.152Z",
-    "eloPoints": 1629,
+    "updatedAt": "2026-08-28T01:59:50.517Z",
+    "eloPoints": 1619,
     "eloRank": "Vanquisher"
   },
   {
@@ -124,8 +124,8 @@
     "alias": "Adecty",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-08-23T03:34:31.180Z",
-    "eloPoints": 1577,
+    "updatedAt": "2026-08-28T01:59:50.517Z",
+    "eloPoints": 1592,
     "eloRank": "Diamante"
   },
   {
@@ -365,9 +365,9 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T22:12:14.148Z",
-    "updatedAt": "2026-08-26T23:05:21.327Z",
-    "eloPoints": 1472,
-    "eloRank": "Platino"
+    "updatedAt": "2026-08-28T00:19:59.920Z",
+    "eloPoints": 1501,
+    "eloRank": "Diamante"
   },
   {
     "gameId": "ssbu",
@@ -384,8 +384,8 @@
       "1786158558338-ey6twflzq"
     ],
     "createdAt": "2026-08-10T22:12:58.250Z",
-    "updatedAt": "2026-08-26T20:31:28.478Z",
-    "eloPoints": 1541,
+    "updatedAt": "2026-08-28T00:35:36.670Z",
+    "eloPoints": 1534,
     "eloRank": "Diamante"
   },
   {
@@ -509,10 +509,10 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "corrin",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
+    "eloPoints": 1474,
+    "eloRank": "Platino",
     "createdAt": "2026-08-15T01:17:41.811Z",
-    "updatedAt": "2026-08-18T21:42:15.035Z"
+    "updatedAt": "2026-08-28T00:35:36.670Z"
   },
   {
     "id": "gp_1786756707267_xybm206",
@@ -526,10 +526,10 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "little_mac",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
+    "eloPoints": 1462,
+    "eloRank": "Platino",
     "createdAt": "2026-08-15T01:18:27.267Z",
-    "updatedAt": "2026-08-18T21:42:15.035Z"
+    "updatedAt": "2026-08-28T00:34:55.093Z"
   },
   {
     "id": "gp_1786757329455_8ijcyo8",
@@ -898,10 +898,10 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "gameId": "ssbu",
-    "mainCharacterId": "fox",
+    "mainCharacterId": "lucario",
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-27T02:43:55.187Z",
-    "updatedAt": "2026-08-27T02:43:55.188Z"
+    "updatedAt": "2026-08-28T02:01:43.743Z"
   }
 ]

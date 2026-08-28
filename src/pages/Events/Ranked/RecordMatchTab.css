@@ -396,22 +396,100 @@
 }
 
 @media (max-width: 768px) {
+  .rk-record-card {
+    padding: 1.25rem;
+  }
+
+  .rk-record-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .rk-record-icon {
+    font-size: 2.5rem;
+  }
+
+  .rk-record-header p {
+    font-size: 0.8rem;
+  }
+
   .rk-matchup {
     flex-direction: column;
     gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .rk-player-slot {
+    gap: 0.5rem;
+  }
+
+  .rk-slot-label {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .rk-select {
+    min-height: 48px;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .rk-player-locked {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
   }
 
   .rk-vs {
     padding: 0;
     align-self: center;
     margin-top: 0;
+    font-size: 0.9rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .rk-elo-preview {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .rk-winner-prompt > p {
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .rk-winner-btns {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .rk-winner-btn {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .rk-record-actions {
+    justify-content: stretch;
+  }
+
+  .rk-record-actions button {
+    width: 100%;
+    min-height: 48px;
+    font-size: 1rem;
   }
 
   .rk-result-row {
     flex-direction: column;
   }
 
-  .rk-evidence-grid {
-    grid-template-columns: 1fr;
+  .rk-evidence-preview {
+    max-width: 100%;
+  }
+
+  .rk-evidence-upload input[type="file"] {
+    min-height: 48px;
+    padding: 0.75rem;
   }
 }

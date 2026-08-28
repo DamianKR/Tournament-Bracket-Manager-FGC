@@ -81,6 +81,7 @@ export interface Tournament {
   seedingMode?: SeedingMode;    // How participants were seeded
   partialSeedCount?: PartialSeedCount; // If seedingMode is 'partial', how many top seeds
   bracketSeeded?: boolean;      // True if applyBracketSeeding was applied (participants in bracket order)
+  givesPoints?: boolean;        // Whether this tournament awards ranking/ELO points on completion
   participants: Participant[];
   bracket: Bracket | null;
   championId: string | null;

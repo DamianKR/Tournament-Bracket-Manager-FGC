@@ -583,5 +583,350 @@
     "completedAt": "2026-08-26T23:09:22.007Z",
     "matchId": "m_1787785762001_w2elpm9",
     "metadata": null
+  },
+  {
+    "id": "duel_1787875194871_es96mh7sx",
+    "challengerId": "gp_1786387234567_aoe1z95",
+    "challengedId": "gp_1786387243524_6er0c9u",
+    "status": "completed",
+    "createdAt": "2026-08-27T23:59:54.882Z",
+    "expiresAt": "2026-09-03T23:59:54.871Z",
+    "acceptedAt": "2026-08-27T23:59:58.038Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:00:10.350Z",
+    "matchId": "m_1787875210343_tqcehwe",
+    "challengerResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-08-28T00:00:10.337Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-08-28T00:00:10.337Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787875832465_ra2rzxdzn",
+    "challengerId": "gp_1786387234567_aoe1z95",
+    "challengedId": "gp_1786387250178_ac5thmv",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:10:32.466Z",
+    "expiresAt": "2026-09-04T00:10:32.465Z",
+    "acceptedAt": "2026-08-28T00:11:13.717Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:11:21.143Z",
+    "matchId": "m_1787875881136_y5iizfn",
+    "challengerResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-08-28T00:11:21.131Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-08-28T00:11:21.131Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787875845537_eugazkvf5",
+    "challengerId": "gp_1786387243524_6er0c9u",
+    "challengedId": "gp_1786387234567_aoe1z95",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:10:45.539Z",
+    "expiresAt": "2026-09-04T00:10:45.537Z",
+    "acceptedAt": "2026-08-28T00:11:15.603Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:11:31.074Z",
+    "matchId": "m_1787875891067_kzykp4t",
+    "challengerResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-08-28T00:11:31.062Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-08-28T00:11:31.062Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787875865213_8sirn3vkf",
+    "challengerId": "gp_1786387250178_ac5thmv",
+    "challengedId": "gp_1786387234567_aoe1z95",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:11:05.214Z",
+    "expiresAt": "2026-09-04T00:11:05.213Z",
+    "acceptedAt": "2026-08-28T00:11:16.649Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:11:41.015Z",
+    "matchId": "m_1787875901008_jkvzrge",
+    "challengerResult": {
+      "winnerId": "gp_1786387250178_ac5thmv",
+      "reportedAt": "2026-08-28T00:11:41.002Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387250178_ac5thmv",
+      "reportedAt": "2026-08-28T00:11:41.002Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787875983551_wm1mg8c6v",
+    "challengerId": "gp_1786387250178_ac5thmv",
+    "challengedId": "gp_1786756661811_fa5pg74",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:13:03.552Z",
+    "expiresAt": "2026-09-04T00:13:03.551Z",
+    "acceptedAt": "2026-08-28T00:13:04.979Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:13:09.702Z",
+    "matchId": "m_1787875989695_y01jexm",
+    "challengerResult": {
+      "winnerId": "gp_1786387250178_ac5thmv",
+      "reportedAt": "2026-08-28T00:13:09.689Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387250178_ac5thmv",
+      "reportedAt": "2026-08-28T00:13:09.689Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787876130133_nexgzsp56",
+    "challengerId": "gp_1786387250178_ac5thmv",
+    "challengedId": "gp_1786387087046_wnwtadb",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:15:30.134Z",
+    "expiresAt": "2026-09-04T00:15:30.133Z",
+    "acceptedAt": "2026-08-28T00:15:33.404Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:15:38.133Z",
+    "matchId": "m_1787876138126_57okzqb",
+    "challengerResult": {
+      "winnerId": "gp_1786387250178_ac5thmv",
+      "reportedAt": "2026-08-28T00:15:38.121Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387250178_ac5thmv",
+      "reportedAt": "2026-08-28T00:15:38.121Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787876168781_pbsc4pcal",
+    "challengerId": "gp_1786387087046_wnwtadb",
+    "challengedId": "gp_1786399978250_n7msxo5",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:16:08.783Z",
+    "expiresAt": "2026-09-04T00:16:08.781Z",
+    "acceptedAt": "2026-08-28T00:16:12.678Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:16:19.178Z",
+    "matchId": "m_1787876179171_t5ltgtc",
+    "challengerResult": {
+      "winnerId": "gp_1786387087046_wnwtadb",
+      "reportedAt": "2026-08-28T00:16:19.166Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387087046_wnwtadb",
+      "reportedAt": "2026-08-28T00:16:19.166Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787876216262_wrl84jfjj",
+    "challengerId": "gp_1786756707267_xybm206",
+    "challengedId": "gp_1786387087046_wnwtadb",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:16:56.263Z",
+    "expiresAt": "2026-09-04T00:16:56.262Z",
+    "acceptedAt": "2026-08-28T00:16:57.974Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:17:02.580Z",
+    "matchId": "m_1787876222573_yt251o6",
+    "challengerResult": {
+      "winnerId": "gp_1786387087046_wnwtadb",
+      "reportedAt": "2026-08-28T00:17:02.568Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387087046_wnwtadb",
+      "reportedAt": "2026-08-28T00:17:02.568Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787876291838_fizaab2np",
+    "challengerId": "gp_1786756661811_fa5pg74",
+    "challengedId": "gp_1786387087046_wnwtadb",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:18:11.840Z",
+    "expiresAt": "2026-09-04T00:18:11.838Z",
+    "acceptedAt": "2026-08-28T00:18:14.374Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:18:17.707Z",
+    "matchId": "m_1787876297700_wg8zbbn",
+    "challengerResult": {
+      "winnerId": "gp_1786387087046_wnwtadb",
+      "reportedAt": "2026-08-28T00:18:17.695Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387087046_wnwtadb",
+      "reportedAt": "2026-08-28T00:18:17.695Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787876358738_6ukechtb1",
+    "challengerId": "gp_1786399934148_stq7jpb",
+    "challengedId": "gp_1786756707267_xybm206",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:19:18.740Z",
+    "expiresAt": "2026-09-04T00:19:18.738Z",
+    "acceptedAt": "2026-08-28T00:19:20.147Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:19:34.276Z",
+    "matchId": "m_1787876374270_5dwq6sr",
+    "challengerResult": {
+      "winnerId": "gp_1786399934148_stq7jpb",
+      "reportedAt": "2026-08-28T00:19:34.264Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786399934148_stq7jpb",
+      "reportedAt": "2026-08-28T00:19:34.264Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787876393726_l3glk9vk5",
+    "challengerId": "gp_1786399934148_stq7jpb",
+    "challengedId": "gp_1786756661811_fa5pg74",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:19:53.727Z",
+    "expiresAt": "2026-09-04T00:19:53.726Z",
+    "acceptedAt": "2026-08-28T00:19:55.845Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:19:59.927Z",
+    "matchId": "m_1787876399920_76tews1",
+    "challengerResult": {
+      "winnerId": "gp_1786399934148_stq7jpb",
+      "reportedAt": "2026-08-28T00:19:59.916Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786399934148_stq7jpb",
+      "reportedAt": "2026-08-28T00:19:59.916Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787877053088_ye166lumu",
+    "challengerId": "gp_1786387234567_aoe1z95",
+    "challengedId": "gp_1786399978250_n7msxo5",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:30:53.089Z",
+    "expiresAt": "2026-09-04T00:30:53.088Z",
+    "acceptedAt": "2026-08-28T00:30:54.829Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:30:59.657Z",
+    "matchId": "m_1787877059650_l7rveem",
+    "challengerResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-08-28T00:30:59.646Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-08-28T00:30:59.646Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787877289960_utbrhhd5j",
+    "challengerId": "gp_1786756707267_xybm206",
+    "challengedId": "gp_1786756661811_fa5pg74",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:34:49.961Z",
+    "expiresAt": "2026-09-04T00:34:49.960Z",
+    "acceptedAt": "2026-08-28T00:34:51.296Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:34:55.100Z",
+    "matchId": "m_1787877295093_7sykg9j",
+    "challengerResult": {
+      "winnerId": "gp_1786756661811_fa5pg74",
+      "reportedAt": "2026-08-28T00:34:55.088Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786756661811_fa5pg74",
+      "reportedAt": "2026-08-28T00:34:55.088Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787877331118_skqcqensy",
+    "challengerId": "gp_1786756661811_fa5pg74",
+    "challengedId": "gp_1786399978250_n7msxo5",
+    "status": "completed",
+    "createdAt": "2026-08-28T00:35:31.119Z",
+    "expiresAt": "2026-09-04T00:35:31.118Z",
+    "acceptedAt": "2026-08-28T00:35:32.425Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T00:35:36.677Z",
+    "matchId": "m_1787877336670_cpundwy",
+    "challengerResult": {
+      "winnerId": "gp_1786399978250_n7msxo5",
+      "reportedAt": "2026-08-28T00:35:36.667Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786399978250_n7msxo5",
+      "reportedAt": "2026-08-28T00:35:36.667Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1787882370911_6jj2iypk3",
+    "challengerId": "gp_1786387243524_6er0c9u",
+    "challengedId": "gp_1786387250178_ac5thmv",
+    "status": "completed",
+    "createdAt": "2026-08-28T01:59:30.917Z",
+    "expiresAt": "2026-09-04T01:59:30.910Z",
+    "acceptedAt": "2026-08-28T01:59:39.132Z",
+    "declinedAt": null,
+    "completedAt": "2026-08-28T01:59:50.524Z",
+    "matchId": "m_1787882390517_xewtw5y",
+    "challengerResult": {
+      "winnerId": "gp_1786387243524_6er0c9u",
+      "reportedAt": "2026-08-28T01:59:50.512Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387243524_6er0c9u",
+      "reportedAt": "2026-08-28T01:59:50.512Z",
+      "evidence": null
+    },
+    "metadata": null
   }
 ]

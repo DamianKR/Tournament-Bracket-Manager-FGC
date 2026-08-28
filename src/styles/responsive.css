@@ -1,0 +1,136 @@
+/* Responsive global utilities — loaded after component CSS */
+
+html, body, #root {
+  overflow-x: hidden;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  /* Standardize mobile headings (h1 = 1.4rem base scale) */
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.2rem; }
+  h3 { font-size: 1.05rem; }
+
+  /* Generic card padding */
+  .card {
+    padding: 1rem;
+  }
+
+  /* Make tables horizontally scrollable without breaking layout */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Forms */
+  .form-control,
+  .rk-input,
+  .rk-select,
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  input[type="number"],
+  input[type="file"],
+  select,
+  textarea {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Modals */
+  .modal-content,
+  .modal-overlay .modal-content {
+    width: 92vw !important;
+    max-width: 92vw !important;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  /* Page wrappers */
+  .page-container,
+  .container,
+  .ranked-tab,
+  .events-page,
+  .participants-page,
+  .league-view,
+  .league-view-page {
+    padding: 0.5rem !important;
+  }
+
+  /* Stack flex rows on mobile unless explicitly row */
+  .flex-row,
+  .actions-row,
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  /* Buttons full width on small screens when in a vertical stack */
+  .btn-group,
+  .modal-footer,
+  .form-actions,
+  .rk-record-actions,
+  .challenges-header,
+  .ranked-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem;
+  }
+
+  .btn-group .btn,
+  .modal-footer .btn,
+  .form-actions .btn,
+  .challenges-header .btn,
+  .ranked-header .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Tabs */
+  .tabs,
+  .ranked-tabs,
+  .challenges-filters {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tab-btn,
+  .ranked-tab-btn,
+  .filter-btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  /* Grids */
+  .grid,
+  .rk-evidence-grid,
+  .form-row.grid,
+  .players-grid,
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  h1 { font-size: 1.25rem; }
+  h2 { font-size: 1.1rem; }
+  h3 { font-size: 1rem; }
+
+  .card {
+    padding: 0.75rem;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+  }
+}

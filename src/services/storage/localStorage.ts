@@ -28,6 +28,7 @@ import {
   supabaseGet,
   supabaseUpsert,
 } from '@/services/api/apiClient';
+import { getAuthHeader } from '@/services/auth/authService';
 
 // ── Supabase helpers específicos de esta colección ───────────────────────
 // Los stubs genéricos viven en apiClient; aquí solo wrapeamos con los tipos.
@@ -96,7 +97,7 @@ async function writeAllTournaments(data: Tournament[]): Promise<void> {
   if (await isServerAvailable()) {
     fetch(`${SERVER_URL}/api/tournaments`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(data),
     }).catch((err) => { console.warn('[Storage] Local server tournaments write failed:', err); resetServerCache(); });
   }
@@ -112,7 +113,7 @@ async function writeOneTournament(tournament: Tournament): Promise<void> {
   if (await isServerAvailable()) {
     fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournament.id)}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(tournament),
     }).catch((err) => { console.warn('[Storage] Local server tournament write failed:', err); resetServerCache(); });
   }
@@ -255,7 +256,7 @@ async function writeAllParticipants(data: GlobalParticipant[]): Promise<void> {
   if (await isServerAvailable()) {
     fetch(`${SERVER_URL}/api/participants`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(data),
     }).catch((err) => { console.warn('[Storage] Local server participants write failed:', err); resetServerCache(); });
   }

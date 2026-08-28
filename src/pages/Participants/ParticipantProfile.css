@@ -468,8 +468,6 @@
 
 @media (max-width: 640px) {
   .profile-stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .profile-banner-body { flex-direction: column; align-items: flex-start; }
-  .profile-elo-widget  { width: 100%; }
 }
 
 .profile-stat-card {
@@ -692,7 +690,6 @@
 
 .profile-edit-form h3 {
   margin: 0 0 1.25rem;
-  font-size: 1.25rem;
   font-weight: 700;
 }
 
@@ -774,7 +771,6 @@
 
 .profile-duels-header h3 {
   margin: 0;
-  font-size: 1.25rem;
   color: var(--text-color);
 }
 
@@ -950,6 +946,90 @@
   margin-left: auto;
   font-size: 0.8rem;
   color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .profile-content { padding: 1rem; }
+
+  .profile-banner-body {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .profile-identity {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .profile-name { font-size: 1.5rem; }
+  .profile-alias { font-size: 0.9rem; }
+  .profile-avatar { width: 72px; height: 72px; font-size: 1.75rem; }
+
+  .profile-character { justify-content: center; }
+
+  .profile-elo-widget {
+    width: 100%;
+    max-width: 320px;
+    box-sizing: border-box;
+  }
+
+
+
+  .profile-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .profile-tab {
+    flex: 1 0 auto;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+
+  .results-subtabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .matches-filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .filter-buttons {
+    width: 100%;
+  }
+
+  .match-item-header {
+    gap: 0.5rem;
+  }
+
+  .match-item-date {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .match-item-body {
+    grid-template-columns: 1fr !important;
+  }
+
+  .prr-rank { width: 28px; height: 28px; font-size: 0.75rem; }
+}
+
+@media (max-width: 480px) {
+  .profile-name { font-size: 1.25rem; }
+  .profile-elo-widget { padding: 1rem; }
+    .profile-elo-widget--legend {
+    padding-top: 2.5rem;
+  }
+  .pew-icon { font-size: 2.5rem; }
+  .pew-rank { font-size: 1.25rem; }
+  .profile-stat-grid { grid-template-columns: 1fr !important; }
+  .profile-edit-form { padding: 1rem; }
 }
 
 .match-item-body {
