@@ -12,6 +12,7 @@ import ParticipantsPage from './pages/Participants/ParticipantsPage';
 import ParticipantProfile from './pages/Participants/ParticipantProfile';
 import RankingPage from './pages/Ranking/RankingPage';
 import LoginPage from './pages/Login/LoginPage';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 function App() {
   return (
@@ -22,8 +23,10 @@ function App() {
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
 
+          {/* Dashboard - landing page pública */}
+          <Route path="/" element={<Dashboard />} />
+
           {/* Events - main hub (público, las sub-tabs se gestionan internamente) */}
-          <Route path="/" element={<Navigate to="/events" replace />} />
           <Route path="/events" element={<EventsPage />} />
 
           {/* Tournaments — solo usuarios autenticados pueden crear/editar */}

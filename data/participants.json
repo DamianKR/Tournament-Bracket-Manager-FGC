@@ -21,14 +21,16 @@
       "1786977122065-rrypq1js6",
       "1787009908365-98h5rq54m",
       "1787069005182-knkndcjgv",
-      "1786158558338-ey6twflzq"
+      "1786158558338-ey6twflzq",
+      "1787926772254-rfmvzuacg",
+      "1787926905258-q0tw79fm2"
     ],
     "id": "gp_1786387087046_wnwtadb",
     "name": "Damiam",
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-08-28T00:18:17.700Z",
+    "updatedAt": "2026-08-28T14:21:52.481Z",
     "eloPoints": 1595,
     "eloRank": "Diamante"
   },
@@ -52,14 +54,16 @@
       "1786977122065-rrypq1js6",
       "1787009908365-98h5rq54m",
       "1787069005182-knkndcjgv",
-      "1786158558338-ey6twflzq"
+      "1786158558338-ey6twflzq",
+      "1787926772254-rfmvzuacg",
+      "1787926905258-q0tw79fm2"
     ],
     "id": "gp_1786387234567_aoe1z95",
     "name": "Gino",
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-08-28T00:30:59.650Z",
+    "updatedAt": "2026-08-28T14:21:48.371Z",
     "eloPoints": 1626,
     "eloRank": "Vanquisher"
   },
@@ -84,14 +88,16 @@
       "1786977122065-rrypq1js6",
       "1787009908365-98h5rq54m",
       "1787069005182-knkndcjgv",
-      "1786158558338-ey6twflzq"
+      "1786158558338-ey6twflzq",
+      "1787926772254-rfmvzuacg",
+      "1787926905258-q0tw79fm2"
     ],
     "id": "gp_1786387243524_6er0c9u",
     "name": "Ale",
     "alias": "TQMandreFN",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-08-28T01:59:50.517Z",
+    "updatedAt": "2026-08-28T14:21:50.233Z",
     "eloPoints": 1619,
     "eloRank": "Vanquisher"
   },
@@ -117,14 +123,16 @@
       "1786977122065-rrypq1js6",
       "1787009908365-98h5rq54m",
       "1787069005182-knkndcjgv",
-      "1786158558338-ey6twflzq"
+      "1786158558338-ey6twflzq",
+      "1787926772254-rfmvzuacg",
+      "1787926905258-q0tw79fm2"
     ],
     "id": "gp_1786387250178_ac5thmv",
     "name": "Alexis",
     "alias": "Adecty",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-08-28T01:59:50.517Z",
+    "updatedAt": "2026-08-28T14:22:01.029Z",
     "eloPoints": 1592,
     "eloRank": "Diamante"
   },
@@ -303,10 +311,12 @@
       "1786977122065-rrypq1js6",
       "1787009908365-98h5rq54m",
       "1787069005182-knkndcjgv",
-      "1786158558338-ey6twflzq"
+      "1786158558338-ey6twflzq",
+      "1787926772254-rfmvzuacg",
+      "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T20:30:34.683Z",
-    "updatedAt": "2026-08-26T23:05:47.681Z",
+    "updatedAt": "2026-08-28T14:22:13.804Z",
     "eloPoints": 1580,
     "eloRank": "Diamante"
   },
@@ -325,10 +335,12 @@
       "1786763010204-fwzepsyo7",
       "1786802844864-5bjdz2hif",
       "1786977122065-rrypq1js6",
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1787926772254-rfmvzuacg",
+      "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T20:30:50.039Z",
-    "updatedAt": "2026-08-24T00:43:24.843Z",
+    "updatedAt": "2026-08-28T14:22:33.613Z",
     "eloPoints": 1518,
     "eloRank": "Diamante"
   },
@@ -381,10 +393,12 @@
       "1786802844864-5bjdz2hif",
       "1787009908365-98h5rq54m",
       "1787069005182-knkndcjgv",
-      "1786158558338-ey6twflzq"
+      "1786158558338-ey6twflzq",
+      "1787926772254-rfmvzuacg",
+      "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T22:12:58.250Z",
-    "updatedAt": "2026-08-28T00:35:36.670Z",
+    "updatedAt": "2026-08-28T14:22:24.455Z",
     "eloPoints": 1534,
     "eloRank": "Diamante"
   },
@@ -443,9 +457,12 @@
     "name": "Manuel Martinez",
     "alias": "Manuel(Z)",
     "avatarUrl": null,
-    "tournamentIds": [],
+    "tournamentIds": [
+      "1787926772254-rfmvzuacg",
+      "1787926905258-q0tw79fm2"
+    ],
     "createdAt": "2026-08-11T01:04:28.124Z",
-    "updatedAt": "2026-08-25T20:37:28.624Z",
+    "updatedAt": "2026-08-28T14:22:29.260Z",
     "eloPoints": 1532,
     "eloRank": "Diamante"
   },

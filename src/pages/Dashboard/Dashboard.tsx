@@ -1,169 +1,107 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Tournament } from '@/models/types';
-import { getAllTournaments, removeTournament } from '@/services/tournament/tournamentService';
-import { loadTournamentsAsync, saveTournaments } from '@/services/storage/localStorage';
-import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './Dashboard.css';
 
 function Dashboard() {
-  const [tournaments, setTournaments] = useState<Tournament[]>([]);
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Show localStorage immediately (instant), then refresh from server
-    const cached = getAllTournaments();
-    applySort(cached);
-    loadTournamentsAsync().then((serverData) => {
-      // If server returned empty but localStorage has data → push localStorage to server
-      if (serverData.length === 0 && cached.length > 0) {
-        saveTournaments(cached);
-        applySort(cached);
-      } else {
-        applySort(serverData);
-      }
-    });
-  }, []);
-
-  const applySort = (data: Tournament[]) => {
-    const sorted = [...data].sort((a, b) =>
-      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
-    setTournaments(sorted);
-  };
-
-  const handleCreateNew = () => {
-    navigate('/events/tournaments/create');
-  };
-
-  const handleOpenTournament = (id: string) => {
-    const tournament = tournaments.find(t => t.id === id);
-    if (tournament?.status === 'setup') {
-      navigate(`/events/tournaments/create/${id}`);
-    } else {
-      navigate(`/events/tournaments/${id}`);
-    }
-  };
-
-  const requestDelete = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const t = tournaments.find((t2) => t2.id === id);
-    if (t) setDeleteTarget({ id, name: t.name });
-  };
-
-  const cancelDelete = () => setDeleteTarget(null);
-
-  const confirmDelete = () => {
-    if (!deleteTarget) return;
-    removeTournament(deleteTarget.id);
-    applySort(getAllTournaments());
-    setDeleteTarget(null);
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-  };
-
-  const getStatusBadge = (status: string) => {
-    const badges = {
-      setup: { label: 'Setup', className: 'status-setup' },
-      in_progress: { label: 'In Progress', className: 'status-progress' },
-      completed: { label: 'Completed', className: 'status-completed' },
-    };
-    
-    const badge = badges[status as keyof typeof badges] || badges.setup;
-    
-    return <span className={`status-badge ${badge.className}`}>{badge.label}</span>;
-  };
-
   return (
-    <div className="dashboard">
-      <div className="container">
-        <div className="dashboard-header">
-          <div>
-            <h1><i className="fas fa-trophy" /> Tournament Manager</h1>
-            <p className="text-secondary">Create and manage brackets — double elimination, single elimination and group stages supported</p>
-          </div>
-          <button className="btn-primary" onClick={handleCreateNew}>
-            <i className="fas fa-plus" /> New Tournament
-          </button>
-        </div>
-
-        {tournaments.length === 0 ? (
-          <div className="empty-state card">
-            <h3>No tournaments yet</h3>
-            <p className="text-secondary">Create your first tournament to get started</p>
-            <button className="btn-primary mt-2" onClick={handleCreateNew}>
-              Create Tournament
+    <div className="dashboard-page">
+      <section className="dashboard-hero">
+        <div className="container">
+          <h1 className="dashboard-title">Competitive Gaming Ecosystem</h1>
+          <p className="dashboard-subtitle">
+            Local-first brackets, weekly leagues, ranked duels and ELO tracking for your community.
+          </p>
+          <div className="dashboard-hero-actions">
+            <button className="btn-primary" onClick={() => navigate('/events')}>
+              <i className="fas fa-trophy" /> Explore Events
+            </button>
+            <button className="btn-outline" onClick={() => navigate('/ranking')}>
+              <i className="fas fa-chart-line" /> View Ranking
             </button>
           </div>
-        ) : (
-          <div className="tournaments-grid">
-            {tournaments.map(tournament => (
-              <div
-                key={tournament.id}
-                className="tournament-card card"
-                onClick={() => handleOpenTournament(tournament.id)}
-              >
-                <div className="tournament-card-header">
-                  <h3>{tournament.name}</h3>
-                  {getStatusBadge(tournament.status)}
-                </div>
-                
-                <div className="tournament-card-info">
-                  <div className="info-row">
-                    <span><i className="fas fa-users" /> Participants</span>
-                    <span>{tournament.participants.length}</span>
-                  </div>
-                  <div className="info-row">
-                    <span><i className="fas fa-sitemap" /> Mode</span>
-                    <span>
-                      {tournament.mode === 'double_elimination'
-                        ? 'Double Elimination'
-                        : 'Single Elimination'}
-                    </span>
-                  </div>
-                  <div className="info-row">
-                    <span><i className="fas fa-clock" /> Last updated</span>
-                    <span className="text-sm">{formatDate(tournament.updatedAt)}</span>
-                  </div>
-                </div>
+        </div>
+      </section>
 
-                <div className="tournament-card-actions">
-                  <button
-                    className="btn-outline"
-                    onClick={() => tournament.status === 'setup' ? navigate(`/events/tournaments/create/${tournament.id}`) : navigate(`/events/tournaments/${tournament.id}`)}
-                  >
-                    <i className={tournament.status === 'setup' ? 'fas fa-pen' : 'fas fa-eye'} />
-                    {tournament.status === 'setup' ? ' Continue Setup' : ' View Bracket'}
-                  </button>
-                  <button
-                    className="btn-danger btn-sm"
-                    onClick={(e) => requestDelete(tournament.id, e)}
-                    title="Delete tournament"
-                  >
-                    <i className="fas fa-trash" />
-                  </button>
-                </div>
-              </div>
-            ))}
+      <section className="dashboard-section">
+        <div className="container">
+          <h2 className="dashboard-section-title">What is this?</h2>
+          <p className="dashboard-text">
+            A single place to run your competitive gaming community. Create participants, organize
+            tournaments, run weekly leagues, challenge players to ranked duels and track a global
+            ELO ranking that updates automatically as matches resolve.
+          </p>
+        </div>
+      </section>
+
+      <section className="dashboard-section dashboard-section-alt">
+        <div className="container">
+          <h2 className="dashboard-section-title">How it works</h2>
+          <div className="dashboard-steps">
+            <div className="dashboard-step card">
+              <span className="dashboard-step-number">1</span>
+              <h3>Create Participants</h3>
+              <p>Admins register players with aliases, games and main characters.</p>
+            </div>
+            <div className="dashboard-step card">
+              <span className="dashboard-step-number">2</span>
+              <h3>Run Events</h3>
+              <p>Create tournaments or weekly leagues and invite participants.</p>
+            </div>
+            <div className="dashboard-step card">
+              <span className="dashboard-step-number">3</span>
+              <h3>Record Results</h3>
+              <p>Admins confirm match winners and weekly league scores.</p>
+            </div>
+            <div className="dashboard-step card">
+              <span className="dashboard-step-number">4</span>
+              <h3>Track Ranking</h3>
+              <p>ELO and league points update the global leaderboard.</p>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      </section>
 
-      <ConfirmModal
-        isOpen={deleteTarget !== null}
-        title="Delete tournament"
-        message={deleteTarget ? `Are you sure you want to delete "${deleteTarget.name}"? This cannot be undone.` : ''}
-        onCancel={cancelDelete}
-        onConfirm={confirmDelete}
-        confirmText="Delete"
-      />
+      <section className="dashboard-section">
+        <div className="container">
+          <h2 className="dashboard-section-title">Areas</h2>
+          <div className="dashboard-cards">
+            <div className="dashboard-card card" onClick={() => navigate('/events')}>
+              <i className="fas fa-trophy" />
+              <h3>Tournaments</h3>
+              <p>Single and double elimination brackets with optional ELO rewards.</p>
+            </div>
+            <div className="dashboard-card card" onClick={() => navigate('/events?tab=leagues')}>
+              <i className="fas fa-calendar-alt" />
+              <h3>Leagues</h3>
+              <p>Weekly round-robin seasons with schedules and standings.</p>
+            </div>
+            <div className="dashboard-card card" onClick={() => navigate('/events?tab=ranked')}>
+              <i className="fas fa-swords" />
+              <h3>Ranked Duels</h3>
+              <p>Challenge other players to head-to-head ranked matches.</p>
+            </div>
+            <div className="dashboard-card card" onClick={() => navigate('/ranking')}>
+              <i className="fas fa-list-ol" />
+              <h3>Ranking</h3>
+              <p>Global ELO leaderboard, match history and progression.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="dashboard-cta">
+        <div className="container">
+          <h2 className="dashboard-section-title">Get Started</h2>
+          <p className="dashboard-text">
+            Log in with your account to participate. If you do not have an account, ask an admin to
+            create a participant and user for you.
+          </p>
+          <button className="btn-primary" onClick={() => navigate('/login')}>
+            <i className="fas fa-sign-in-alt" /> Log In
+          </button>
+        </div>
+      </section>
     </div>
   );
 }
