@@ -14,7 +14,16 @@
  *                    también reemplazar localStorage con AsyncStorage
  */
 
-export const SERVER_URL = 'http://localhost:3001';
+/**
+ * URL del backend Express.
+ * - Local:       http://localhost:3001 (valor por defecto)
+ * - Producción:  se lee de VITE_API_URL (configurado en Render o el host)
+ *
+ * Para cambiar en producción, define VITE_API_URL en el build.
+ * En local puedes usar .env.local con VITE_API_URL=http://localhost:3001
+ */
+export const SERVER_URL =
+  (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:3001';
 
 const HEALTH_TIMEOUT_MS = 1500;
 
