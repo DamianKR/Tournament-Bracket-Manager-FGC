@@ -7,7 +7,7 @@ import {
   getLeagueMatches,
   getLeagueStandings,
 } from '@/services/leagues/leagueService';
-import { getAllParticipants } from '@/services/participants/participantService';
+import { getAllParticipantsAsync } from '@/services/participants/participantService';
 import { useAuth } from '@/contexts/AuthContext';
 import LeagueStandingsTab from './LeagueStandingsTab';
 import LeagueScheduleTab from './LeagueScheduleTab';
@@ -39,7 +39,7 @@ function LeagueView() {
       getLeague(id),
       getLeagueMatches(id),
       getLeagueStandings(id),
-      getAllParticipants(),
+      getAllParticipantsAsync(),
     ]);
 
     if (!leagueData) {

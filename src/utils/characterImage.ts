@@ -10,5 +10,8 @@ export function getCharacterImageUrl(gameId: string | null | undefined, characte
   const character = getCharacter(gameId, characterId);
   if (!character) return null;
 
-  return `/images/characters/ssbu/${SSBU_IMAGE_MAP[characterId] ?? `${characterId}.png`}`;
+  // Usa BASE_URL para que funcione tanto en local (./) como en GitHub Pages (/repo/)
+  const base = (import.meta.env.BASE_URL as string) ?? '/';
+  const file = SSBU_IMAGE_MAP[characterId] ?? `${characterId}.png`;
+  return `${base}images/characters/ssbu/${file}`;
 }
