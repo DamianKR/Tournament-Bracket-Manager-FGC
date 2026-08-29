@@ -62,7 +62,39 @@
 }
 
 @media (max-width: 640px) {
-  .profile-character-render { display: none; }
+  .profile-character-render {
+    position: absolute;
+    right: 0%;
+    bottom: 39%;
+    height: 60%;
+    max-width: none;
+    width: auto;
+    opacity: 0.20;
+    filter: blur(1px);
+    z-index: 0;
+    mask-image: linear-gradient(
+      to bottom,
+      black 0%,
+      black 60%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black 0%,
+      black 60%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  .profile-character-render img {
+    height: 100%;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    object-position: right bottom;
+    display: block;
+  }
 }
 
 /* Row that holds identity (left) + ELO widget (right) */
@@ -955,6 +987,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
+    padding-top: 50px;
   }
 
   .profile-identity {
@@ -966,7 +999,7 @@
 
   .profile-name { font-size: 1.5rem; }
   .profile-alias { font-size: 0.9rem; }
-  .profile-avatar { width: 72px; height: 72px; font-size: 1.75rem; }
+  .profile-avatar { width: 50px; height: 50px; font-size: 1.25rem; }
 
   .profile-character { justify-content: center; }
 

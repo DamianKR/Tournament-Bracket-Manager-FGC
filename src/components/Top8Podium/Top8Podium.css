@@ -39,18 +39,21 @@
 /* ── Layout ────────────────────────────────────────────────────────────── */
 .top8-body {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   align-items: stretch;
 }
 
 .top8-champion {
-  flex-shrink: 0;
+  flex: 1 1 35%;
+  min-width: 280px;
   display: flex;
   min-height: 100%;
 }
 
 .top8-grid {
-  flex: 1;
+  flex: 1 1 55%;
+  min-width: 280px;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -58,6 +61,7 @@
 
 .top8-row {
   display: flex;
+  flex-wrap: wrap;
   height: 100%;
   gap: 0.6rem;
 }
@@ -73,8 +77,8 @@
   border-radius: var(--border-radius);
   border: 2px solid var(--primary-mid);
   background: rgba(255,255,255,0.04);
-  /* min-width: 90px; */
-  flex: 1;
+  flex: 1 1 calc(20% - 0.5rem);
+  min-width: 110px;
   transition: transform 0.15s;
 }
 
@@ -84,8 +88,9 @@
 
 /* Champion card is bigger */
 .champion-card {
-  min-width: 450px;
-  min-height: 450px;
+  width: 100%;
+  min-width: 280px;
+  min-height: 320px;
   padding: 1rem 0.75rem 0.75rem;
   border-color: #f0c040;
   background: rgba(240, 192, 64, 0.08);
@@ -115,8 +120,11 @@
 
 /* ── Avatar ─────────────────────────────────────────────────────────────── */
 .top8-avatar {
-  width: 120px;
-  height: 120px;
+  width: min(120px, 75%);
+  height: min(120px, 75%);
+  max-width: 120px;
+  max-height: 120px;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   background: rgba(109, 40, 217, 0.2);
   border: 2px solid var(--primary-mid);
@@ -129,8 +137,11 @@
 }
 
 .champion-avatar {
-  width: 220px;
-  height: 220px;
+  width: min(220px, 70%);
+  height: min(220px, 70%);
+  max-width: 220px;
+  max-height: 220px;
+  aspect-ratio: 1 / 1;
   font-size: 2rem;
   color: #f0c040;
   border-color: #f0c040;
@@ -150,7 +161,7 @@
 .top8-player-name {
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
-  font-size: 1.85rem;
+  font-size: clamp(0.85rem, 2.4vw, 1.85rem);
   color: #fff;
   text-align: center;
   white-space: nowrap;
@@ -160,7 +171,7 @@
 }
 
 .champion-card .top8-player-name {
-  font-size: 2rem;
+  font-size: clamp(1.2rem, 3vw, 2rem);
   font-family: 'Orbitron', sans-serif;
 }
 
@@ -174,16 +185,132 @@
 }
 
 /* ── Responsive ────────────────────────────────────────────────────────── */
-@media (max-width: 600px) {
+
+/* Tablet: apilar campeón arriba y dejar espacio para las 4 cartas por fila */
+@media (max-width: 900px) {
   .top8-body {
     flex-direction: column;
+    align-items: center;
+  }
+
+  .top8-champion {
+    width: 100%;
+  }
+
+  .champion-card {
+    min-width: auto;
+    min-height: auto;
+    width: 100%;
+    max-width: none;
+  }
+
+  .champion-avatar {
+    width: 140px;
+    height: 140px;
+  }
+
+  .top8-grid {
+    width: 100%;
+  }
+
+  .top8-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .top8-player-name {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .top8-podium {
+    padding: 1rem;
+  }
+
+  .top8-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .top8-title {
+    font-size: 1.1rem;
+  }
+
+  .top8-event {
+    font-size: 1rem;
+  }
+
+  .top8-body {
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .top8-champion {
     align-self: center;
+    width: 100%;
+  }
+
+  .champion-card {
+    min-width: auto;
+    min-height: auto;
+    width: 100%;
+    max-width: none;
+    padding: 1rem 0.5rem 0.5rem;
+  }
+
+  .champion-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .champion-card .top8-player-name {
+    font-size: 1.4rem;
+  }
+
+  .top8-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+
+  .top8-row {
+    display: contents;
   }
 
   .top8-card {
-    min-width: 70px;
+    min-width: auto;
+    flex: none;
+    width: 100%;
+    padding: 0.5rem 0.25rem;
+  }
+
+  .top8-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 0.9rem;
+  }
+
+  .top8-rank-badge {
+    font-size: 1rem;
+    top: 3px;
+    left: 4px;
+  }
+
+  .rank-1 { font-size: 1.6rem; }
+  .rank-2 { font-size: 1.4rem; }
+  .rank-3 { font-size: 1.4rem; }
+  .rank-4 { font-size: 1.2rem; }
+  .rank-5 { font-size: 1.1rem; }
+  .rank-7 { font-size: 1.1rem; }
+
+  .top8-player-name {
+    font-size: 1rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
   }
 }
