@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { DuelChallenge } from '@/models/duel';
 import { GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
+import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import { 
   createDuelChallenge, 
   acceptDuelChallenge,
@@ -9,7 +10,7 @@ import {
   getAllChallengesAsync,
   expireOldChallenges,
 } from '@/services/duels/duelService';
-import { getAllParticipants } from '@/services/participants/participantService';
+import { getAllParticipantsAsync } from '@/services/participants/participantService';
 import './ActiveChallenges.css';
 
 interface ActiveChallengesProps {
@@ -24,6 +25,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const [player1Id, setPlayer1Id] = useState('');
   const [player2Id, setPlayer2Id] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'accepted' | 'completed' | 'pending_review'>('all');
+  const [filterParticipantId, setFilterParticipantId] = useState<string | null>(null);
   const [createError, setCreateError] = useState('');
 
   useEffect(() => {
@@ -39,9 +41,12 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
 
   const loadData = async () => {
     await expireOldChallenges();
-    const all = await getAllChallengesAsync();
+    const [all, allParticipants] = await Promise.all([
+      getAllChallengesAsync(),
+      getAllParticipantsAsync(),
+    ]);
     setAllChallenges(all);
-    setParticipants(getAllParticipants());
+    setParticipants(allParticipants);
   };
 
   const handleCreateChallenge = async () => {
@@ -89,9 +94,13 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
-  const filteredChallenges = filterStatus === 'all' 
-    ? sortedChallenges 
-    : sortedChallenges.filter(c => c.status === filterStatus);
+  const filteredChallenges = sortedChallenges.filter(c => {
+    const statusMatch = filterStatus === 'all' || c.status === filterStatus;
+    const participantMatch = !filterParticipantId ||
+      c.challengerId === filterParticipantId ||
+      c.challengedId === filterParticipantId;
+    return statusMatch && participantMatch;
+  });
 
   return (
     <div className="active-challenges">
@@ -106,6 +115,13 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
       </div>
 
       <div className="challenges-filters">
+        <PlayerDropdown
+          participants={participants}
+          selectedId={filterParticipantId}
+          onSelect={setFilterParticipantId}
+          placeholder="Filter by player"
+          className="challenge-player-filter"
+        />
         <button 
           className={`filter-btn ${filterStatus === 'all' ? 'active' : ''}`}
           onClick={() => setFilterStatus('all')}
@@ -143,11 +159,15 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
       {filteredChallenges.length === 0 ? (
         <div className="empty-state card">
           <i className="fas fa-khanda" style={{ fontSize: '3rem', color: 'var(--text-secondary)', marginBottom: '1rem' }} />
-          <h3>No challenges {filterStatus !== 'all' ? filterStatus : 'yet'}</h3>
-          <p className="text-secondary">Create a new challenge to get started</p>
-          <button className="btn-primary mt-2" onClick={() => setShowCreateModal(true)}>
-            <i className="fas fa-plus" /> New Challenge
-          </button>
+          <h3>No challenges found</h3>
+          <p className="text-secondary">
+            {filterParticipantId ? 'Try a different player or status filter' : 'Create a new challenge to get started'}
+          </p>
+          {!filterParticipantId && (
+            <button className="btn-primary mt-2" onClick={() => setShowCreateModal(true)}>
+              <i className="fas fa-plus" /> New Challenge
+            </button>
+          )}
         </div>
       ) : (
         <div className="challenges-list">
