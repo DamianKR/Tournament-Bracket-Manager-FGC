@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import './Dashboard.css';
 
 function Dashboard() {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <div className="dashboard-page">
@@ -27,9 +29,9 @@ function Dashboard() {
         <div className="container">
           <h2 className="dashboard-section-title">What is this?</h2>
           <p className="dashboard-text">
-            A single place to run your competitive gaming community. Create participants, organize
-            tournaments, run weekly leagues, challenge players to ranked duels and track a global
-            ELO ranking that updates automatically as matches resolve.
+            A space built for competitive gaming communities. Register players, organize tournaments,
+            run weekly leagues, challenge others to ranked duels and watch the global ELO ranking
+            evolve as matches get played.
           </p>
         </div>
       </section>
@@ -40,8 +42,8 @@ function Dashboard() {
           <div className="dashboard-steps">
             <div className="dashboard-step card">
               <span className="dashboard-step-number">1</span>
-              <h3>Create Participants</h3>
-              <p>Admins register players with aliases, games and main characters.</p>
+              <h3>Register Players</h3>
+              <p>Build the roster with aliases, games and main characters.</p>
             </div>
             <div className="dashboard-step card">
               <span className="dashboard-step-number">2</span>
@@ -51,7 +53,7 @@ function Dashboard() {
             <div className="dashboard-step card">
               <span className="dashboard-step-number">3</span>
               <h3>Record Results</h3>
-              <p>Admins confirm match winners and weekly league scores.</p>
+              <p>Confirm match winners and keep league scores up to date.</p>
             </div>
             <div className="dashboard-step card">
               <span className="dashboard-step-number">4</span>
@@ -77,7 +79,7 @@ function Dashboard() {
               <p>Weekly round-robin seasons with schedules and standings.</p>
             </div>
             <div className="dashboard-card card" onClick={() => navigate('/events?tab=ranked')}>
-              <i className="fas fa-swords" />
+              <i className="fas fa-khanda" />
               <h3>Ranked Duels</h3>
               <p>Challenge other players to head-to-head ranked matches.</p>
             </div>
@@ -92,14 +94,28 @@ function Dashboard() {
 
       <section className="dashboard-cta">
         <div className="container">
-          <h2 className="dashboard-section-title">Get Started</h2>
-          <p className="dashboard-text">
-            Log in with your account to participate. If you do not have an account, ask an admin to
-            create a participant and user for you.
-          </p>
-          <button className="btn-primary" onClick={() => navigate('/login')}>
-            <i className="fas fa-sign-in-alt" /> Log In
-          </button>
+          {isAuthenticated ? (
+            <>
+              <h2 className="dashboard-section-title">Welcome back{user?.username ? `, ${user.username}` : ''}</h2>
+              <p className="dashboard-text">
+                You're all set. Jump into the latest events, check the rankings or challenge other players.
+              </p>
+              <button className="btn-primary" onClick={() => navigate('/events')}>
+                <i className="fas fa-trophy" /> Go to Events
+              </button>
+            </>
+          ) : (
+            <>
+              <h2 className="dashboard-section-title">Ready to join?</h2>
+              <p className="dashboard-text">
+                Log in with your account to enter tournaments, take part in leagues and track your ranking.
+                New here? Reach out to an admin to get your player profile set up.
+              </p>
+              <button className="btn-primary" onClick={() => navigate('/login')}>
+                <i className="fas fa-sign-in-alt" /> Log In
+              </button>
+            </>
+          )}
         </div>
       </section>
     </div>
