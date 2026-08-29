@@ -24,10 +24,18 @@ import duelsRouter from './server/routes/duels.js';
 import rankedMatchesRouter from './server/routes/rankedMatches.js';
 import authRouter from './server/routes/auth.js';
 
-const PORT = 3001;
+// Render asigna el puerto via PORT; en local usamos 3001
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+
+// Orígenes permitidos:
+// - Local:       localhost:5173 y localhost:5174
+// - Producción:  CORS_ORIGINS (coma-separado) configurado en Render
+const corsOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
+  : ['http://localhost:5173', 'http://localhost:5174'];
 
 const app = express();
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
+app.use(cors({ origin: corsOrigins }));
 app.use(express.json({ limit: '10mb' }));
 
 // ── Health ──────────────────────────────────────────────────────────────

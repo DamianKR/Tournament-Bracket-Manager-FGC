@@ -15,8 +15,15 @@ import LoginPage from './pages/Login/LoginPage';
 import Dashboard from './pages/Dashboard/Dashboard';
 
 function App() {
+  // En GitHub Pages el sitio vive en /Tournament-Bracket-Manager-FGC/.
+  // Vite expone la base configurada como BASE_URL; BrowserRouter necesita
+  // ese prefijo para resolver rutas correctamente.
+  // En local BASE_URL es './' → normalizamos a '/' para que no haya prefijo.
+  const rawBase = import.meta.env.BASE_URL as string;
+  const basename = rawBase === './' || rawBase === '/' ? '/' : rawBase.replace(/\/$/, '');
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AuthProvider>
         <Header />
         <Routes>
