@@ -84,6 +84,7 @@ function ParticipantProfile() {
   const [editCharacterId, setEditCharacterId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
+  const [editSuccess, setEditSuccess] = useState(false);
 
   // Password change (solo propio perfil)
   const [pwCurrent, setPwCurrent] = useState('');
@@ -102,6 +103,7 @@ function ParticipantProfile() {
   const [admRole, setAdmRole] = useState<'admin' | 'user'>('user');
   const [admIsActive, setAdmIsActive] = useState(true);
   const [admError, setAdmError] = useState('');
+  const [admSuccess, setAdmSuccess] = useState(false);
   const [admSaving, setAdmSaving] = useState(false);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -257,7 +259,7 @@ function ParticipantProfile() {
 
   async function handleSave() {
     if (!participant) return;
-    setSaving(true); setEditError('');
+    setSaving(true); setEditError(''); setEditSuccess(false);
     try {
       const updated = await updateParticipant(participant.id, {
         name: editName,
@@ -267,6 +269,7 @@ function ParticipantProfile() {
       });
       setParticipant(updated);
       setStats(computeStats(updated));
+      setEditSuccess(true);
       setTab('overview');
     } catch (err: any) {
       setEditError(err.message);
@@ -296,7 +299,7 @@ function ParticipantProfile() {
     if (admPassword.trim() && admPassword.trim().length < 6) { setAdmError('New password must be at least 6 characters'); return; }
     if (admPassword.trim() && admPassword.trim() !== admConfirm.trim()) { setAdmError('Passwords do not match'); return; }
 
-    setAdmSaving(true); setAdmError('');
+    setAdmSaving(true); setAdmError(''); setAdmSuccess(false);
     try {
       const updates: Parameters<typeof updateUserAccount>[1] = {};
       if (admUsername.trim() !== linkedUser.username) updates.username = admUsername.trim();
@@ -308,6 +311,9 @@ function ParticipantProfile() {
         const updated = await updateUserAccount(linkedUser.id, updates);
         setLinkedUser(updated);
         setAdmPassword(''); setAdmConfirm('');
+        setAdmSuccess(true);
+      } else {
+        setAdmError('No changes to save');
       }
     } catch (err: any) {
       setAdmError(err.message || 'Failed to update account');
@@ -872,6 +878,7 @@ function ParticipantProfile() {
           <div className="card profile-edit-form">
             <h3>Edit Profile</h3>
             {editError && <div className="error-message">{editError}</div>}
+            {editSuccess && <div className="success-message">Profile updated successfully</div>}
             <div className="profile-edit-grid">
               <div className="form-group">
                 <label>Name *</label>
@@ -943,6 +950,7 @@ function ParticipantProfile() {
                 <p className="text-secondary mb-2">{linkedUser ? 'Manage linked login account' : 'No user account linked'}</p>
                 {loadingUser && <p className="text-secondary">Loading account…</p>}
                 {admError && <div className="error-message">{admError}</div>}
+                {admSuccess && <div className="success-message">Account updated successfully</div>}
                 {linkedUser ? (
                   <>
                     <div className="profile-edit-grid">

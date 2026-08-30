@@ -360,25 +360,6 @@ export async function validateDuelChallenge(
   return { valid: true, warnings };
 }
 
-/**
- * Write challenges to localStorage + server
- */
-async function writeChallenges(challenges: DuelChallenge[]): Promise<void> {
-  // Write to localStorage first (instant)
-  lsWriteChallenges(challenges);
-  
-  // Sync to server (fire-and-forget)
-  if (await isServerAvailable()) {
-    fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-      body: JSON.stringify(challenges),
-    }).catch((err) => {
-      console.warn('[Duels] Server challenges write failed:', err);
-      resetServerCache();
-    });
-  }
-}
 
 /**
  * Create a new duel challenge
@@ -524,12 +505,12 @@ export async function expireOldChallenges(): Promise<void> {
   const settings = await getDuelSettingsAsync();
   const all = lsReadChallenges();
   const now = new Date();
-  let changed = false;
+  const expiredIds: string[] = [];
 
   all.forEach(challenge => {
     if (challenge.status === 'pending' && new Date(challenge.expiresAt) < now) {
       challenge.status = 'expired';
-      changed = true;
+      expiredIds.push(challenge.id);
     }
 
     if (challenge.status === 'accepted' && challenge.acceptedAt) {
@@ -537,14 +518,30 @@ export async function expireOldChallenges(): Promise<void> {
       acceptedExpiresAt.setDate(acceptedExpiresAt.getDate() + settings.challengeExpirationDays);
       if (acceptedExpiresAt < now) {
         challenge.status = 'expired';
-        changed = true;
+        expiredIds.push(challenge.id);
       }
     }
   });
 
-  if (changed) {
+  if (expiredIds.length > 0) {
     lsWriteChallenges(all);
-    await writeChallenges(all);
+
+    if (await isServerAvailable()) {
+      await Promise.all(expiredIds.map(async (id) => {
+        try {
+          const res = await fetch(`${API_BASE}/${id}/expire`, {
+            method: 'PUT',
+            headers: getAuthHeader(),
+          });
+          if (!res.ok) {
+            const body = await res.text().catch(() => '');
+            console.warn(`[Duels] Server expire for ${id} failed:`, res.status, body);
+          }
+        } catch (err) {
+          console.warn(`[Duels] Network expire for ${id} failed:`, err);
+        }
+      }));
+    }
   }
 }
 

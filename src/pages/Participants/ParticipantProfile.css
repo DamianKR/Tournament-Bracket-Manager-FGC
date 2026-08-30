@@ -19,6 +19,16 @@
   margin-bottom: 0.75rem;
 }
 
+.error-message {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  color: #f87171;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
 .profile-loading {
   padding: 4rem 0;
   color: var(--text-secondary);

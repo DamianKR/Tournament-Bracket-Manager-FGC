@@ -8,6 +8,7 @@
  * PUT    /api/duels/:id/accept   — accept challenge
  * PUT    /api/duels/:id/decline  — decline challenge
  * PUT    /api/duels/:id/complete — complete challenge (link to match)
+ * PUT    /api/duels/:id/expire   — mark challenge as expired
  * DELETE /api/duels/:id          — delete challenge
  *
  * GET    /api/duels/settings     — get duel settings
@@ -186,6 +187,26 @@ router.put('/:id/complete', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('[Duels] PUT /:id/complete error:', err);
     res.status(500).json({ error: 'Failed to complete challenge' });
+  }
+});
+
+// PUT /api/duels/:id/expire
+// Marks a challenge as expired (pending or accepted)
+router.put('/:id/expire', requireAuth, async (req, res) => {
+  try {
+    const challenge = await duels.findById(req.params.id);
+    if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
+    if (challenge.status !== 'pending' && challenge.status !== 'accepted') {
+      return res.status(400).json({ error: 'Challenge is not active' });
+    }
+
+    challenge.status = 'expired';
+    challenge.expiredAt = new Date().toISOString();
+    await duels.upsert(challenge);
+    res.json(challenge);
+  } catch (err) {
+    console.error('[Duels] PUT /:id/expire error:', err);
+    res.status(500).json({ error: 'Failed to expire challenge' });
   }
 });
 
