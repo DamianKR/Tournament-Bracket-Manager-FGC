@@ -14,10 +14,11 @@ import LeagueScheduleTab from './LeagueScheduleTab';
 import LeagueMyMatchesTab from './LeagueMyMatchesTab';
 import LeaguePendingTab from './LeaguePendingTab';
 import LeagueOptionsTab from './LeagueOptionsTab';
+import LeagueInfoTab from './LeagueInfoTab';
 import Loading from '@/components/Loading/Loading';
 import './LeagueView.css';
 
-type Tab = 'standings' | 'schedule' | 'my-matches' | 'pending' | 'options';
+type Tab = 'info' | 'standings' | 'schedule' | 'my-matches' | 'pending' | 'options';
 
 function LeagueView() {
   const { id } = useParams<{ id: string }>();
@@ -148,11 +149,18 @@ function LeagueView() {
           >
             Options
           </button>
+          <button
+            className={`league-tab ${tab === 'info' ? 'active' : ''}`}
+            onClick={() => setTab('info')}
+          >
+            <i className="fas fa-info-circle" /> Info
+          </button>
         </div>
       </div>
 
       {/* Content */}
       <div className="container league-content">
+        {tab === 'info' && <LeagueInfoTab league={league} />}
         {tab === 'standings' && (
           <LeagueStandingsTab
             standings={standings}

@@ -1,0 +1,81 @@
+.league-info-tab {
+  padding: 1.5rem 0;
+}
+
+.info-hero {
+  text-align: center;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-hero h2 {
+  margin: 0 0 0.5rem;
+  color: var(--primary-color);
+  font-size: 1.75rem;
+}
+
+.league-info-subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  text-transform: capitalize;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.info-card {
+  padding: 1.5rem;
+}
+
+.info-card h3 {
+  margin: 0 0 1rem;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-text {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin: 0.5rem 0 0;
+}
+
+.info-card ul,
+.info-card ol {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.info-card li {
+  margin-bottom: 0.5rem;
+}
+
+.info-card li strong {
+  color: var(--text-secondary);
+}
+
+.info-highlight {
+  grid-column: 1 / -1;
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
+.info-highlight ol li {
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
