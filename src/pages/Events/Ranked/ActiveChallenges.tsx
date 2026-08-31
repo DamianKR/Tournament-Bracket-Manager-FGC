@@ -281,7 +281,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
+                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
                           </option>
                         ))}
                     </select>
@@ -299,7 +299,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
+                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
                           </option>
                         ))}
                     </select>
@@ -326,7 +326,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.name} {p.alias ? `(${p.alias})` : ''} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
+                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
                           </option>
                         ))}
                     </select>

@@ -481,7 +481,7 @@ function AdminFreeMatchRecording({ allParticipants }: { allParticipants: GlobalP
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name}{p.alias ? ` (${p.alias})` : ''} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}
+                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}
                       </option>
                     ))}
                 </select>
@@ -510,7 +510,7 @@ function AdminFreeMatchRecording({ allParticipants }: { allParticipants: GlobalP
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name}{p.alias ? ` (${p.alias})` : ''} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}
+                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}
                       </option>
                     ))}
                 </select>

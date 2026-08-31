@@ -74,8 +74,7 @@ function PlayerDropdown({ participants, selectedId, onSelect, placeholder = 'All
           {selected ? (
             <>
               <i className="fas fa-user" />
-              {selected.name}
-              {selected.alias && <span className="player-alias">({selected.alias})</span>}
+              {selected.alias ? `${selected.alias} (${selected.name})` : selected.name}
             </>
           ) : (
             <>
@@ -128,8 +127,7 @@ function PlayerDropdown({ participants, selectedId, onSelect, placeholder = 'All
               >
                 <i className="fas fa-user" />
                 <div className="player-dropdown-item-info">
-                  <span className="player-dropdown-item-name">{p.name}</span>
-                  {p.alias && <span className="player-dropdown-item-alias">{p.alias}</span>}
+                  <span className="player-dropdown-item-name">{p.alias ? `${p.alias} (${p.name})` : p.name}</span>
                 </div>
                 {selectedId === p.id && <i className="fas fa-check player-dropdown-check" />}
               </button>

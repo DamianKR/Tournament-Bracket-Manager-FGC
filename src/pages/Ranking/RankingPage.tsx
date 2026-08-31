@@ -131,7 +131,8 @@ function RankingPage() {
   // ── Helpers ─────────────────────────────────────────────────────────────
 
   function pName(id: string) {
-    return participantMap.get(id)?.name ?? id;
+    const p = participantMap.get(id);
+    return p ? (p.alias ? `${p.alias} (${p.name})` : p.name) : id;
   }
 
   function deltaLabel(delta: number) {
@@ -247,12 +248,11 @@ function RankingPage() {
                       <td className="rk-col-player">
                         <div className="rk-player">
                           {entry.avatarUrl
-                            ? <img src={entry.avatarUrl} alt={entry.alias || entry.name} className="rk-avatar" />
+                            ? <img src={entry.avatarUrl} alt={entry.alias ? `${entry.alias} (${entry.name})` : entry.name} className="rk-avatar" />
                             : <div className="rk-avatar-placeholder">{(entry.alias || entry.name)[0]?.toUpperCase()}</div>
                           }
                           <div className="rk-player-info">
-                            <span className="rk-player-name">{entry.alias || entry.name}</span>
-                            {entry.alias && entry.name && <span className="rk-player-real-name">{entry.name}</span>}
+                            <span className="rk-player-name">{entry.alias ? `${entry.alias} (${entry.name})` : entry.name}</span>
                           </div>
                         </div>
                       </td>

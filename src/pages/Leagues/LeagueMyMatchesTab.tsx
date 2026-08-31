@@ -21,6 +21,11 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
     return p ? (p.alias?.trim() || p.name) : 'Unknown';
   }
 
+  function getSelectParticipantName(id: string): string {
+    const p = participants.get(id);
+    return p ? (p.alias ? `${p.alias} (${p.name})` : p.name) : 'Unknown';
+  }
+
   const myMatches = useMemo(() => {
     if (!selectedParticipantId) return [];
     return matches.filter(
@@ -113,7 +118,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
           >
             <option value="">-- Choose a player --</option>
             {league.participantIds
-              .map((pid) => ({ id: pid, name: getParticipantName(pid) }))
+              .map((pid) => ({ id: pid, name: getSelectParticipantName(pid) }))
               .sort((a, b) => a.name.localeCompare(b.name))
               .map(({ id, name }) => (
                 <option key={id} value={id}>
