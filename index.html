@@ -5,23 +5,23 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏆%3C/text%3E%3C/svg%3E" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bracket Tournament Manager</title>
-    <!-- GitHub Pages SPA routing: 404.html redirige con ?p=/ruta
+    <!-- GitHub Pages SPA routing: 404.html redirige con ?/ruta
          Este script restaura la ruta real antes de que React cargue. -->
     <script>
       (function(l) {
         if (l.search[1] === '/') {
           var decoded = l.search.slice(1).split('&').map(function(s) {
             return s.replace(/~and~/g, '&');
-          });
+          }).join('?');
           window.history.replaceState(
             null, null,
-            decoded.shift() + (decoded.length ? '?' + decoded.join('&') : '') + l.hash
+            l.pathname.slice(0, -1) + decoded + l.hash
           );
         }
       }(window.location));
     </script>
-    <script type="module" crossorigin src="/Tournament-Bracket-Manager-FGC/assets/index-Cy8mcCqg.js"></script>
-    <link rel="stylesheet" crossorigin href="/Tournament-Bracket-Manager-FGC/assets/index-DgXB7Fnq.css">
+    <script type="module" crossorigin src="/Tournament-Bracket-Manager-FGC/assets/index-kA_k_9rr.js"></script>
+    <link rel="stylesheet" crossorigin href="/Tournament-Bracket-Manager-FGC/assets/index-_Emako_J.css">
   </head>
   <body>
     <div id="root"></div>
