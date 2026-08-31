@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import Header from './components/Header/Header';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminRoute from './components/AdminRoute/AdminRoute';
+import NotificationToast from './components/Notifications/NotificationToast';
 import EventsPage from './pages/Events/EventsPage';
 import CreateTournament from './pages/CreateTournament/CreateTournament';
 import TournamentView from './pages/Tournament/TournamentView';
@@ -13,6 +15,7 @@ import ParticipantProfile from './pages/Participants/ParticipantProfile';
 import RankingPage from './pages/Ranking/RankingPage';
 import LoginPage from './pages/Login/LoginPage';
 import Dashboard from './pages/Dashboard/Dashboard';
+import NotificationsPage from './pages/Notifications/NotificationsPage';
 
 function App() {
   // En GitHub Pages el sitio vive en /Tournament-Bracket-Manager-FGC/.
@@ -25,8 +28,10 @@ function App() {
   return (
     <BrowserRouter basename={basename}>
       <AuthProvider>
-        <Header />
-        <Routes>
+        <NotificationProvider>
+          <Header />
+          <NotificationToast />
+          <Routes>
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
 
@@ -60,6 +65,11 @@ function App() {
           {/* Ranking — público */}
           <Route path="/ranking" element={<RankingPage />} />
 
+          {/* Notifications — solo usuarios autenticados */}
+          <Route path="/notifications" element={
+            <ProtectedRoute><NotificationsPage /></ProtectedRoute>
+          } />
+
           {/* Legacy redirects */}
           <Route path="/create" element={<Navigate to="/events/tournaments/create" replace />} />
           <Route path="/create/:id" element={<Navigate to="/events/tournaments/create/:id" replace />} />
@@ -71,6 +81,7 @@ function App() {
           {/* 404 */}
           <Route path="*" element={<Navigate to="/events" replace />} />
         </Routes>
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   );

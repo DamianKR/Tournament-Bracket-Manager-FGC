@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import NotificationBell from '@/components/Notifications/NotificationBell';
 import './Header.css';
 
 function Header() {
@@ -33,14 +34,18 @@ function Header() {
           <span className="header-logo-text">Bracket Manager</span>
         </div>
 
-        <button
-          className="header-mobile-toggle"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-        >
-          <i className={`fas fa-${menuOpen ? 'times' : 'bars'}`} />
-        </button>
+        {/* Bell always visible on mobile (outside hamburger) */}
+        <div className="header-mobile-actions">
+          {isAuthenticated && <NotificationBell />}
+          <button
+            className="header-mobile-toggle"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+          >
+            <i className={`fas fa-${menuOpen ? 'times' : 'bars'}`} />
+          </button>
+        </div>
 
         <div className={`header-right ${menuOpen ? 'open' : ''}`}>
           <nav className="header-nav">
@@ -68,6 +73,13 @@ function Header() {
           </nav>
 
           <div className="header-divider" />
+
+          {/* Bell in desktop nav */}
+          {isAuthenticated && (
+            <div className="header-bell-desktop">
+              <NotificationBell />
+            </div>
+          )}
 
           <div className="header-auth">
             {isAuthenticated ? (

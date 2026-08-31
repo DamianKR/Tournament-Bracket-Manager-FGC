@@ -1010,5 +1010,21 @@
     "challengedResult": null,
     "metadata": null,
     "expiredAt": "2026-08-31T18:34:48.416Z"
+  },
+  {
+    "id": "duel_1788206758103_i50kz609w",
+    "challengerId": "gp_1786387087046_wnwtadb",
+    "challengedId": "gp_1787112745370_2zahvg8",
+    "type": "normal",
+    "status": "pending",
+    "createdAt": "2026-08-31T20:05:58.105Z",
+    "expiresAt": "2026-09-07T20:05:58.103Z",
+    "acceptedAt": null,
+    "declinedAt": null,
+    "completedAt": null,
+    "matchId": null,
+    "challengerResult": null,
+    "challengedResult": null,
+    "metadata": null
   }
 ]

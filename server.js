@@ -23,7 +23,10 @@ import leaguesRouter from './server/routes/leagues.js';
 import duelsRouter from './server/routes/duels.js';
 import rankedMatchesRouter from './server/routes/rankedMatches.js';
 import authRouter from './server/routes/auth.js';
+import notificationsRouter from './server/routes/notifications.js';
 import { expireAllOldDuels } from './server/services/duelExpiration.js';
+import { notifyExpiringDuels, notifyExpiringLeagueMatches } from './server/services/notificationService.js';
+import { duels, duelSettings, leagueMatches } from './server/db/collections.js';
 
 // Render asigna el puerto via PORT; en local usamos 3001
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
@@ -52,6 +55,7 @@ app.use('/api/ranking', rankingRouter);
 app.use('/api/leagues', leaguesRouter);
 app.use('/api/duels', duelsRouter);
 app.use('/api/ranked-matches', rankedMatchesRouter);
+app.use('/api/notifications', notificationsRouter);
 
 // ── 404 fallback ────────────────────────────────────────────────────────
 app.use((_req, res) => {
@@ -88,6 +92,18 @@ app.listen(PORT, () => {
       console.log(`[DuelExpiration] Expired ${count} duels on startup`);
     }
   });
+
+  // Run notification checks on startup and every hour
+  const runNotificationChecks = () => {
+    notifyExpiringDuels(duels, duelSettings).catch(err =>
+      console.error('[Notifications] duel expiry check failed:', err)
+    );
+    notifyExpiringLeagueMatches(leagueMatches).catch(err =>
+      console.error('[Notifications] league match expiry check failed:', err)
+    );
+  };
+  runNotificationChecks();
+  setInterval(runNotificationChecks, 60 * 60 * 1000); // every hour
 
   setInterval(() => {
     expireAllOldDuels().then((count) => {

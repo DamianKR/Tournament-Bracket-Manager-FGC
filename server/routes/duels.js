@@ -20,6 +20,7 @@ import { duels, duelSettings, participants } from '../db/collections.js';
 import { duelChallengeShape, validateDuelChallenge, duelSettingsShape } from '../models/duel.js';
 import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
 import { expireDuel, expireAllOldDuels } from '../services/duelExpiration.js';
+import { createNotification } from '../services/notificationService.js';
 
 const router = Router();
 
@@ -163,6 +164,22 @@ router.post('/', requireAuth, async (req, res) => {
     }
 
     await duels.upsert(challenge);
+
+    // Notify the challenged player
+    const challengerParticipant = await participants.findById(challengerId);
+    const challengerName = challengerParticipant?.alias || challengerParticipant?.name || 'Someone';
+    const notifMsg = type === 'mandatory'
+      ? `${challengerName} has sent you a MANDATORY duel challenge. You cannot decline it — it goes straight to Record Match.`
+      : `${challengerName} has challenged you to a duel. Accept or decline in the Events section.`;
+
+    createNotification(
+      challengedId,
+      'duel_challenge',
+      type === 'mandatory' ? 'Mandatory Duel Challenge!' : 'New Duel Challenge!',
+      notifMsg,
+      { duelId: challenge.id, challengerId, type }
+    ).catch(err => console.warn('[Duels] Failed to create challenge notification:', err));
+
     res.status(201).json(challenge);
   } catch (err) {
     console.error('[Duels] POST / error:', err);

@@ -69,5 +69,8 @@ export const duelSettings       = col('duel_settings.json',      'duel_settings'
 // Auth
 export const users              = col('users.json',              'users');
 
+// Notificaciones
+export const notifications      = col('notifications.json',      'notifications');
+
 // Legacy — compatibilidad hacia atrás
 export const matches            = col('matches.json',            'matches');

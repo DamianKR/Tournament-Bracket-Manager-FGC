@@ -1,0 +1,16 @@
+[
+  {
+    "id": "notif_1788206758107_u9i68hfrx",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "duel_challenge",
+    "title": "New Duel Challenge!",
+    "message": "KruX has challenged you to a duel. Accept or decline in the Events section.",
+    "read": false,
+    "createdAt": "2026-08-31T20:05:58.107Z",
+    "data": {
+      "duelId": "duel_1788206758103_i50kz609w",
+      "challengerId": "gp_1786387087046_wnwtadb",
+      "type": "normal"
+    }
+  }
+]
