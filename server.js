@@ -23,6 +23,7 @@ import leaguesRouter from './server/routes/leagues.js';
 import duelsRouter from './server/routes/duels.js';
 import rankedMatchesRouter from './server/routes/rankedMatches.js';
 import authRouter from './server/routes/auth.js';
+import { expireAllOldDuels } from './server/services/duelExpiration.js';
 
 // Render asigna el puerto via PORT; en local usamos 3001
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
@@ -80,4 +81,19 @@ app.listen(PORT, () => {
   console.log(`    GET        /api/leagues/:id/standings`);
   console.log(`    POST       /api/leagues/:id/matches/:matchId/result`);
   console.log('');
+
+  // Run duel expiration immediately on startup, then every 5 minutes
+  expireAllOldDuels().then((count) => {
+    if (count > 0) {
+      console.log(`[DuelExpiration] Expired ${count} duels on startup`);
+    }
+  });
+
+  setInterval(() => {
+    expireAllOldDuels().then((count) => {
+      if (count > 0) {
+        console.log(`[DuelExpiration] Expired ${count} duels`);
+      }
+    });
+  }, 5 * 60 * 1000);
 });

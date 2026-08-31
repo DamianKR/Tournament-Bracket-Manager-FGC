@@ -280,7 +280,8 @@ export async function getDuelStats(participantId: string): Promise<DuelStats> {
  */
 export async function validateDuelChallenge(
   challengerId: string,
-  challengedId: string
+  challengedId: string,
+  type: 'normal' | 'mandatory' = 'normal'
 ): Promise<DuelValidationResult> {
   // 1. Can't challenge yourself
   if (challengerId === challengedId) {
@@ -295,13 +296,44 @@ export async function validateDuelChallenge(
     return { valid: false, error: 'One or both participants not found' };
   }
 
-  // 2. Check weekly limit
+  // 2. Check weekly limit (includes both normal and mandatory)
   const challengesThisWeek = await getChallengesThisWeek(challengerId);
   if (challengesThisWeek.length >= settings.maxChallengesPerWeek) {
     return {
       valid: false,
       error: `You have reached your weekly limit of ${settings.maxChallengesPerWeek} challenges`,
     };
+  }
+
+  // 2b. If mandatory: check weekly limit (only 1 mandatory per week total)
+  if (type === 'mandatory') {
+    const mandatoryThisWeek = challengesThisWeek.filter(c => c.type === 'mandatory');
+    if (mandatoryThisWeek.length >= 1) {
+      return {
+        valid: false,
+        error: 'You can only send one mandatory challenge per week',
+      };
+    }
+
+    // 2c. Check monthly limit per opponent (no repeat same opponent with mandatory in same month)
+    const all = await getAllChallengesAsync();
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const mandatoryToSameOpponentThisMonth = all.filter(
+      c =>
+        c.type === 'mandatory' &&
+        c.challengerId === challengerId &&
+        c.challengedId === challengedId &&
+        new Date(c.createdAt) >= monthStart
+    );
+
+    if (mandatoryToSameOpponentThisMonth.length > 0) {
+      return {
+        valid: false,
+        error: 'You cannot challenge the same opponent with a mandatory duel twice in the same month',
+      };
+    }
   }
 
   // 3. Check ELO restriction (can't challenge someone too far below)
@@ -366,10 +398,11 @@ export async function validateDuelChallenge(
  */
 export async function createDuelChallenge(
   challengerId: string,
-  challengedId: string
+  challengedId: string,
+  type: 'normal' | 'mandatory' = 'normal'
 ): Promise<DuelChallenge | null> {
   // Validate first
-  const validation = await validateDuelChallenge(challengerId, challengedId);
+  const validation = await validateDuelChallenge(challengerId, challengedId, type);
   if (!validation.valid) {
     throw new Error(validation.error || 'Challenge validation failed');
   }
@@ -382,9 +415,11 @@ export async function createDuelChallenge(
     id: `duel_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     challengerId,
     challengedId,
-    status: 'pending',
+    type,
+    status: type === 'mandatory' ? 'accepted' : 'pending', // Mandatory challenges skip pending
     createdAt: new Date().toISOString(),
     expiresAt: expiresAt.toISOString(),
+    ...(type === 'mandatory' && { acceptedAt: new Date().toISOString() }),
   };
 
   // Add to localStorage cache
@@ -541,6 +576,17 @@ export async function expireOldChallenges(): Promise<void> {
           console.warn(`[Duels] Network expire for ${id} failed:`, err);
         }
       }));
+
+      // Reload from server after expiring to get updated ELO penalties
+      try {
+        const res = await fetch(API_BASE);
+        if (res.ok) {
+          const serverData = await res.json();
+          lsWriteChallenges(serverData);
+        }
+      } catch (err) {
+        console.warn('[Duels] Failed to reload after expiration:', err);
+      }
     }
   }
 }

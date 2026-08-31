@@ -26,6 +26,7 @@ export const DEFAULT_DUEL_SETTINGS: DuelSettings = {
 };
 
 export type DuelChallengeStatus = 'pending' | 'accepted' | 'completed' | 'expired' | 'declined' | 'pending_review';
+export type DuelType = 'normal' | 'mandatory';
 
 export interface DuelResult {
   winnerId: string;
@@ -37,6 +38,7 @@ export interface DuelChallenge {
   id: string;
   challengerId: string;
   challengedId: string;
+  type: DuelType; // 'normal' or 'mandatory'
   
   status: DuelChallengeStatus;
   

@@ -5,6 +5,7 @@
  * @property {string} id
  * @property {string} challengerId
  * @property {string} challengedId
+ * @property {'normal'|'mandatory'} type
  * @property {'pending'|'accepted'|'declined'|'completed'|'expired'|'pending_review'} status
  * @property {string} createdAt
  * @property {string} expiresAt
@@ -17,15 +18,16 @@
  * @property {Object|null} metadata
  */
 
-export function duelChallengeShape(id, challengerId, challengedId, expiresAt) {
+export function duelChallengeShape(id, challengerId, challengedId, expiresAt, type = 'normal') {
   return {
     id,
     challengerId,
     challengedId,
-    status: 'pending',
+    type,
+    status: type === 'mandatory' ? 'accepted' : 'pending',
     createdAt: new Date().toISOString(),
     expiresAt,
-    acceptedAt: null,
+    acceptedAt: type === 'mandatory' ? new Date().toISOString() : null,
     declinedAt: null,
     completedAt: null,
     matchId: null,

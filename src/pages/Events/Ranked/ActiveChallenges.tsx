@@ -24,7 +24,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [player1Id, setPlayer1Id] = useState('');
   const [player2Id, setPlayer2Id] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'accepted' | 'completed' | 'pending_review'>('all');
+  const [duelType, setDuelType] = useState<'normal' | 'mandatory'>('normal');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'accepted' | 'completed' | 'pending_review' | 'expired'>('all');
   const [filterParticipantId, setFilterParticipantId] = useState<string | null>(null);
   const [createError, setCreateError] = useState('');
 
@@ -40,7 +41,10 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   }, [isAdmin, user, showCreateModal]);
 
   const loadData = async () => {
+    // First expire old challenges (this may update ELO on server)
     await expireOldChallenges();
+    
+    // Then reload everything to get updated state
     const [all, allParticipants] = await Promise.all([
       getAllChallengesAsync(),
       getAllParticipantsAsync(),
@@ -54,12 +58,13 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     setCreateError('');
     
     try {
-      const challenge = await createDuelChallenge(player1Id, player2Id);
+      const challenge = await createDuelChallenge(player1Id, player2Id, duelType);
       if (challenge) {
         await loadData();
         setShowCreateModal(false);
         setPlayer1Id('');
         setPlayer2Id('');
+        setDuelType('normal');
       }
     } catch (err: any) {
       setCreateError(err.message || 'Failed to create challenge');
@@ -153,6 +158,12 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
           onClick={() => setFilterStatus('completed')}
         >
           Completed ({allChallenges.filter(c => c.status === 'completed').length})
+        </button>
+        <button 
+          className={`filter-btn ${filterStatus === 'expired' ? 'active' : ''}`}
+          onClick={() => setFilterStatus('expired')}
+        >
+          Expired ({allChallenges.filter(c => c.status === 'expired').length})
         </button>
       </div>
 
@@ -266,6 +277,34 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
             <div className="modal-body">
               {createError && <div className="error-message">{createError}</div>}
               
+              <div className="form-group">
+                <label>Duel Type</label>
+                <div className="duel-type-selector">
+                  <label className="duel-type-option">
+                    <input
+                      type="radio"
+                      name="duelType"
+                      value="normal"
+                      checked={duelType === 'normal'}
+                      onChange={() => setDuelType('normal')}
+                    />
+                    <span>Normal Challenge</span>
+                    <small>Can be declined. Double ELO penalty if opponent doesn't confirm after expiration.</small>
+                  </label>
+                  <label className="duel-type-option">
+                    <input
+                      type="radio"
+                      name="duelType"
+                      value="mandatory"
+                      checked={duelType === 'mandatory'}
+                      onChange={() => setDuelType('mandatory')}
+                    />
+                    <span>Mandatory Challenge</span>
+                    <small>Cannot be declined. Triple ELO penalty if opponent doesn't confirm. Only 1 per opponent per month.</small>
+                  </label>
+                </div>
+              </div>
+
               {isAdmin ? (
                 <>
                   <div className="form-group">

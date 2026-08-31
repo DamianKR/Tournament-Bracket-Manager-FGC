@@ -9,7 +9,8 @@ export type { RankedMatch, RankedMatchType, RankedMatchResult } from './rankedMa
 // Re-export duel types
 export type { 
   DuelChallenge, 
-  DuelChallengeStatus, 
+  DuelChallengeStatus,
+  DuelType,
   DuelSettings, 
   DuelValidationResult,
   DuelStats 

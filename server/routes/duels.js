@@ -16,9 +16,10 @@
  */
 
 import { Router } from 'express';
-import { duels, duelSettings } from '../db/collections.js';
+import { duels, duelSettings, participants } from '../db/collections.js';
 import { duelChallengeShape, validateDuelChallenge, duelSettingsShape } from '../models/duel.js';
 import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
+import { expireDuel, expireAllOldDuels } from '../services/duelExpiration.js';
 
 const router = Router();
 
@@ -91,10 +92,14 @@ router.get('/:id', async (req, res) => {
 // POST /api/duels
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { id, challengerId, challengedId, expiresAt } = req.body;
+    const { id, challengerId, challengedId, expiresAt, type = 'normal' } = req.body;
     
     if (!id || !challengerId || !challengedId || !expiresAt) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    if (type !== 'normal' && type !== 'mandatory') {
+      return res.status(400).json({ error: 'Invalid duel type' });
     }
 
     // Non-admin users can only challenge as themselves
@@ -102,7 +107,55 @@ router.post('/', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'You can only create challenges as yourself' });
     }
 
-    const challenge = duelChallengeShape(id, challengerId, challengedId, expiresAt);
+    // Manual expiration trigger (also used by server cron)
+    // Validate mandatory duel limits
+    if (type === 'mandatory') {
+      const all = await duels.getAll();
+      const settings = await duelSettings.getAll();
+      const config = settings.find(s => s.id === 'default') || duelSettingsShape();
+      const now = new Date();
+      
+      // Calculate weekly reset
+      const weeklyResetDay = config.weeklyResetDay ?? 1; // Monday
+      const weeklyResetHour = config.weeklyResetHour ?? 0;
+      const weeklyResetMinute = config.weeklyResetMinute ?? 0;
+      
+      const lastReset = new Date(now);
+      lastReset.setHours(weeklyResetHour, weeklyResetMinute, 0, 0);
+      const daysSinceReset = (now.getDay() - weeklyResetDay + 7) % 7;
+      lastReset.setDate(lastReset.getDate() - daysSinceReset);
+      if (now < lastReset) {
+        lastReset.setDate(lastReset.getDate() - 7);
+      }
+
+      // Check weekly mandatory limit (only 1 per week)
+      const mandatoryThisWeek = all.filter(
+        c =>
+          c.type === 'mandatory' &&
+          c.challengerId === challengerId &&
+          new Date(c.createdAt) >= lastReset
+      );
+
+      if (mandatoryThisWeek.length >= 1) {
+        return res.status(400).json({ error: 'You can only send one mandatory challenge per week' });
+      }
+
+      // Check monthly limit per opponent
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const mandatoryToSameOpponentThisMonth = all.filter(
+        c =>
+          c.type === 'mandatory' &&
+          c.challengerId === challengerId &&
+          c.challengedId === challengedId &&
+          new Date(c.createdAt) >= monthStart
+      );
+
+      if (mandatoryToSameOpponentThisMonth.length > 0) {
+        return res.status(400).json({ error: 'You cannot challenge the same opponent with a mandatory duel twice in the same month' });
+      }
+    }
+
+    const challenge = duelChallengeShape(id, challengerId, challengedId, expiresAt, type);
     const validation = validateDuelChallenge(challenge);
     
     if (!validation.valid) {
@@ -192,17 +245,11 @@ router.put('/:id/complete', requireAuth, async (req, res) => {
 
 // PUT /api/duels/:id/expire
 // Marks a challenge as expired (pending or accepted)
+// Applies ELO penalties if the challenge was accepted and someone didn't confirm
 router.put('/:id/expire', requireAuth, async (req, res) => {
   try {
-    const challenge = await duels.findById(req.params.id);
+    const challenge = await expireDuel(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
-    if (challenge.status !== 'pending' && challenge.status !== 'accepted') {
-      return res.status(400).json({ error: 'Challenge is not active' });
-    }
-
-    challenge.status = 'expired';
-    challenge.expiredAt = new Date().toISOString();
-    await duels.upsert(challenge);
     res.json(challenge);
   } catch (err) {
     console.error('[Duels] PUT /:id/expire error:', err);

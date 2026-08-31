@@ -11,7 +11,8 @@
     "completedAt": null,
     "matchId": null,
     "metadata": null,
-    "expiredAt": "2026-08-30T04:06:54.466Z"
+    "expiredAt": "2026-08-30T04:06:54.466Z",
+    "type": "normal"
   },
   {
     "id": "duel_1787502373858_ds1husaq8",
@@ -24,7 +25,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-23T21:10:28.091Z",
     "matchId": "m_1787519428084_h9f6f1g",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787502648332_t39xqwm6h",
@@ -37,7 +39,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-23T21:10:44.519Z",
     "matchId": "m_1787519444511_ugnslyj",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787517876276_fa6usljid",
@@ -50,7 +53,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-23T21:11:38.944Z",
     "matchId": "m_1787519498937_1y0z4fl",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787517937348_8kk37y6qr",
@@ -63,7 +67,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-23T21:13:40.493Z",
     "matchId": "m_1787519620486_trpxhj6",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787517995036_gdvoiezbp",
@@ -76,7 +81,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-23T21:13:51.950Z",
     "matchId": "m_1787519631943_v7k95ug",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787519656619_2zv0ccogo",
@@ -89,7 +95,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-23T21:14:34.438Z",
     "matchId": "m_1787519674433_rq1b0bf",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787532016707_2rovqdopl",
@@ -102,7 +109,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T00:40:25.225Z",
     "matchId": "m_1787532025218_sqd57np",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787532057633_vvt4bpuo0",
@@ -115,7 +123,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T00:42:44.077Z",
     "matchId": "m_1787532164069_ehz6ooq",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787532087928_d5bllcif4",
@@ -128,7 +137,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T00:42:58.192Z",
     "matchId": "m_1787532178185_af7nhyj",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787532108896_qtmqo6ih0",
@@ -141,7 +151,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T00:43:13.722Z",
     "matchId": "m_1787532193716_d23113l",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787532136645_r273ivzh7",
@@ -154,7 +165,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T00:43:24.850Z",
     "matchId": "m_1787532204843_r9ue91p",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787542146434_uo8xqvpu9",
@@ -167,7 +179,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T03:29:16.124Z",
     "matchId": "m_1787542156116_7vhamnn",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787542215421_j8muebuzg",
@@ -180,7 +193,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T03:30:24.118Z",
     "matchId": "m_1787542224112_ofz19pm",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787550996033_7kfawx93f",
@@ -193,7 +207,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T05:56:53.631Z",
     "matchId": "m_1787551013624_ynn3etw",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787551107446_5uqh1wlvy",
@@ -206,7 +221,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T05:58:53.588Z",
     "matchId": "m_1787551133582_2kiorhx",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787613881856_o17s1bvyl",
@@ -219,7 +235,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-24T23:24:51.396Z",
     "matchId": "m_1787613891389_cyc2xk2",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787628078640_ano6tbjte",
@@ -232,7 +249,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-25T03:22:20.832Z",
     "matchId": "m_1787628140825_ch7i27z",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787689922803_z5i8u27tn",
@@ -245,7 +263,8 @@
     "declinedAt": null,
     "completedAt": null,
     "matchId": null,
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787689946871_2p4vi0d52",
@@ -258,7 +277,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T23:04:53.239Z",
     "matchId": "m_1787785493233_u2avs49",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787689973927_77zrewm5d",
@@ -271,7 +291,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:28:07.600Z",
     "matchId": "m_1787776087592_eq5ee97",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787689987631_p0mmpi6c3",
@@ -284,7 +305,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:28:30.489Z",
     "matchId": "m_1787776110481_0jist53",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787690069400_rfq4aaj76",
@@ -297,7 +319,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-25T20:34:59.652Z",
     "matchId": "m_1787690099645_dv0jyev",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787690179570_nes1e8wuq",
@@ -310,7 +333,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-25T20:37:20.156Z",
     "matchId": "m_1787690240150_s457hz2",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787690197534_dstge61qi",
@@ -323,7 +347,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-25T20:37:28.630Z",
     "matchId": "m_1787690248624_4e033k1",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787690637546_a2xl5io8t",
@@ -336,7 +361,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-25T20:44:15.385Z",
     "matchId": "m_1787690655378_f6at4kx",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787709320541_4z0mc561h",
@@ -349,7 +375,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T01:56:13.652Z",
     "matchId": "m_1787709373642_elag719",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787709361879_5uy2l35vw",
@@ -362,7 +389,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T01:56:30.580Z",
     "matchId": "m_1787709390569_te97v1g",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787775975227_dih1fogin",
@@ -375,7 +403,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:26:48.507Z",
     "matchId": "m_1787776008498_u67jgyd",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787776138710_fcbtii8rm",
@@ -388,7 +417,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:29:09.732Z",
     "matchId": "m_1787776149725_n6wi7na",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787776203209_pfrh6249f",
@@ -401,7 +431,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:30:10.478Z",
     "matchId": "m_1787776210471_mv84qdk",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787776223783_ge1lrfwgh",
@@ -414,7 +445,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:30:29.635Z",
     "matchId": "m_1787776229627_hsz6mhb",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787776280887_u7fykbj3y",
@@ -427,7 +459,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:31:28.486Z",
     "matchId": "m_1787776288478_nqhe2a3",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787776359621_roj4v2zyv",
@@ -440,7 +473,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:32:48.977Z",
     "matchId": "m_1787776368971_pjv6h29",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787776394350_beqv2r31e",
@@ -453,7 +487,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:33:23.032Z",
     "matchId": "m_1787776403025_whbgard",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787776446541_ixhq2yb51",
@@ -466,7 +501,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T23:04:25.863Z",
     "matchId": "m_1787785465855_pcbi1bl",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787776474892_udtzujmz6",
@@ -479,7 +515,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:34:40.477Z",
     "matchId": "m_1787776480471_g2xfabq",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787776498389_y0dtgbqsx",
@@ -492,7 +529,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T20:35:07.472Z",
     "matchId": "m_1787776507464_dp80dhl",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787785515658_ow7df1600",
@@ -505,7 +543,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T23:05:21.335Z",
     "matchId": "m_1787785521327_c1s50mx",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787785533495_4btkpag9f",
@@ -518,7 +557,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T23:05:47.688Z",
     "matchId": "m_1787785547681_81th354",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787785626735_di13c3zm0",
@@ -531,7 +571,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T23:07:11.977Z",
     "matchId": "m_1787785631971_6wwwzav",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787785650930_u3poo05r2",
@@ -544,7 +585,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T23:07:38.182Z",
     "matchId": "m_1787785658176_g20sszv",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787785677204_zhkefg7kt",
@@ -557,7 +599,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T23:08:06.056Z",
     "matchId": "m_1787785686050_qyo55m0",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787785712770_9bvr5d4ay",
@@ -570,7 +613,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T23:08:45.068Z",
     "matchId": "m_1787785725062_6tpgs31",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787785748075_gc2bn3zxi",
@@ -583,7 +627,8 @@
     "declinedAt": null,
     "completedAt": "2026-08-26T23:09:22.007Z",
     "matchId": "m_1787785762001_w2elpm9",
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787875194871_es96mh7sx",
@@ -606,7 +651,8 @@
       "reportedAt": "2026-08-28T00:00:10.337Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787875832465_ra2rzxdzn",
@@ -629,7 +675,8 @@
       "reportedAt": "2026-08-28T00:11:21.131Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787875845537_eugazkvf5",
@@ -652,7 +699,8 @@
       "reportedAt": "2026-08-28T00:11:31.062Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787875865213_8sirn3vkf",
@@ -675,7 +723,8 @@
       "reportedAt": "2026-08-28T00:11:41.002Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787875983551_wm1mg8c6v",
@@ -698,7 +747,8 @@
       "reportedAt": "2026-08-28T00:13:09.689Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787876130133_nexgzsp56",
@@ -721,7 +771,8 @@
       "reportedAt": "2026-08-28T00:15:38.121Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787876168781_pbsc4pcal",
@@ -744,7 +795,8 @@
       "reportedAt": "2026-08-28T00:16:19.166Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787876216262_wrl84jfjj",
@@ -767,7 +819,8 @@
       "reportedAt": "2026-08-28T00:17:02.568Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787876291838_fizaab2np",
@@ -790,7 +843,8 @@
       "reportedAt": "2026-08-28T00:18:17.695Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787876358738_6ukechtb1",
@@ -813,7 +867,8 @@
       "reportedAt": "2026-08-28T00:19:34.264Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787876393726_l3glk9vk5",
@@ -836,7 +891,8 @@
       "reportedAt": "2026-08-28T00:19:59.916Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787877053088_ye166lumu",
@@ -859,7 +915,8 @@
       "reportedAt": "2026-08-28T00:30:59.646Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787877289960_utbrhhd5j",
@@ -882,7 +939,8 @@
       "reportedAt": "2026-08-28T00:34:55.088Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787877331118_skqcqensy",
@@ -905,7 +963,8 @@
       "reportedAt": "2026-08-28T00:35:36.667Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
   },
   {
     "id": "duel_1787882370911_6jj2iypk3",
@@ -928,6 +987,28 @@
       "reportedAt": "2026-08-28T01:59:50.512Z",
       "evidence": null
     },
-    "metadata": null
+    "metadata": null,
+    "type": "normal"
+  },
+  {
+    "id": "duel_1788200999688_cyvfqet5t",
+    "challengerId": "gp_1786387087046_wnwtadb",
+    "challengedId": "gp_1786387234567_aoe1z95",
+    "type": "mandatory",
+    "status": "expired",
+    "createdAt": "2026-08-23T18:29:59.692Z",
+    "expiresAt": "2026-08-30T18:29:59.688Z",
+    "acceptedAt": "2026-08-23T18:29:59.692Z",
+    "declinedAt": null,
+    "completedAt": null,
+    "matchId": null,
+    "challengerResult": {
+      "winnerId": "gp_1786387087046_wnwtadb",
+      "reportedAt": "2026-08-23T18:30:18.295Z",
+      "evidence": null
+    },
+    "challengedResult": null,
+    "metadata": null,
+    "expiredAt": "2026-08-31T18:34:48.416Z"
   }
 ]
