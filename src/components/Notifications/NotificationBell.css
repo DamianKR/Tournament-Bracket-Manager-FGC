@@ -159,6 +159,21 @@
   background: rgba(124, 58, 237, 0.12);
 }
 
+.notif-dropdown-close {
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: color 0.15s;
+  flex-shrink: 0;
+  padding: 0.25rem;
+  outline: none;
+}
+
+.notif-dropdown-close:hover,
+.notif-dropdown-close:focus {
+  color: #ef4444;
+}
+
 /* ── List ────────────────────────────────────────────────────────────────── */
 
 .notif-dropdown-list {

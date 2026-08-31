@@ -35,7 +35,12 @@ export async function createNotification(recipientId, type, title, message, data
     data,
   };
 
-  await notifications.upsert(notification);
+  try {
+    await notifications.upsert(notification);
+  } catch (err) {
+    console.error('[notificationService] createNotification failed:', err.message);
+    throw err;
+  }
   return notification;
 }
 
@@ -45,10 +50,15 @@ export async function createNotification(recipientId, type, title, message, data
  * @returns {Promise<Object[]>}
  */
 export async function getNotificationsForRecipient(recipientId) {
-  const all = await notifications.getAll();
-  return all
-    .filter(n => n.recipientId === recipientId)
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  try {
+    const all = await notifications.getAll();
+    return all
+      .filter(n => n.recipientId === recipientId)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } catch (err) {
+    console.error('[notificationService] getNotificationsForRecipient failed:', err.message);
+    return [];
+  }
 }
 
 /**
@@ -57,12 +67,17 @@ export async function getNotificationsForRecipient(recipientId) {
  * @returns {Promise<Object|null>}
  */
 export async function markNotificationRead(id) {
-  const notif = await notifications.findById(id);
-  if (!notif) return null;
-  notif.read = true;
-  notif.readAt = new Date().toISOString();
-  await notifications.upsert(notif);
-  return notif;
+  try {
+    const notif = await notifications.findById(id);
+    if (!notif) return null;
+    notif.read = true;
+    notif.readAt = new Date().toISOString();
+    await notifications.upsert(notif);
+    return notif;
+  } catch (err) {
+    console.error('[notificationService] markNotificationRead failed:', err.message);
+    return null;
+  }
 }
 
 /**
@@ -71,14 +86,19 @@ export async function markNotificationRead(id) {
  * @returns {Promise<number>} count of marked notifications
  */
 export async function markAllRead(recipientId) {
-  const all = await notifications.getAll();
-  const unread = all.filter(n => n.recipientId === recipientId && !n.read);
-  for (const notif of unread) {
-    notif.read = true;
-    notif.readAt = new Date().toISOString();
-    await notifications.upsert(notif);
+  try {
+    const all = await notifications.getAll();
+    const unread = all.filter(n => n.recipientId === recipientId && !n.read);
+    for (const notif of unread) {
+      notif.read = true;
+      notif.readAt = new Date().toISOString();
+      await notifications.upsert(notif);
+    }
+    return unread.length;
+  } catch (err) {
+    console.error('[notificationService] markAllRead failed:', err.message);
+    return 0;
   }
-  return unread.length;
 }
 
 /**
@@ -87,7 +107,12 @@ export async function markAllRead(recipientId) {
  * @returns {Promise<boolean>}
  */
 export async function deleteNotification(id) {
-  return await notifications.remove(id);
+  try {
+    return await notifications.remove(id);
+  } catch (err) {
+    console.error('[notificationService] deleteNotification failed:', err.message);
+    return false;
+  }
 }
 
 /**
@@ -97,9 +122,16 @@ export async function deleteNotification(id) {
  * @param {import('../db/collections.js').Collection} duelSettings
  */
 export async function notifyExpiringDuels(duels, duelSettings) {
-  const allSettings = await duelSettings.getAll();
+  let allSettings = [];
+  let all = [];
+  try {
+    allSettings = await duelSettings.getAll();
+    all = await duels.getAll();
+  } catch (err) {
+    console.error('[notificationService] notifyExpiringDuels failed to load data:', err.message);
+    return;
+  }
   const settings = allSettings.find(s => s.id === 'default') || { challengeExpirationDays: 7 };
-  const all = await duels.getAll();
   const now = new Date();
   const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
 
@@ -140,7 +172,13 @@ export async function notifyExpiringDuels(duels, duelSettings) {
  * @param {import('../db/collections.js').Collection} leagueMatches
  */
 export async function notifyExpiringLeagueMatches(leagueMatches) {
-  const all = await leagueMatches.getAll();
+  let all = [];
+  try {
+    all = await leagueMatches.getAll();
+  } catch (err) {
+    console.error('[notificationService] notifyExpiringLeagueMatches failed to load matches:', err.message);
+    return;
+  }
   const now = new Date();
   const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
 

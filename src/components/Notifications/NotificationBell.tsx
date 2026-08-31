@@ -98,6 +98,15 @@ export default function NotificationBell() {
               >
                 View all
               </button>
+              <i
+                className="fas fa-times notif-dropdown-close"
+                onClick={() => setOpen(false)}
+                title="Close"
+                role="button"
+                aria-label="Close notifications"
+                tabIndex={0}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setOpen(false); }}
+              />
             </div>
           </div>
 
