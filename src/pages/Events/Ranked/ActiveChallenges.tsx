@@ -9,8 +9,10 @@ import {
   declineDuelChallenge,
   getAllChallengesAsync,
   expireOldChallenges,
+  getDuelSettingsAsync,
 } from '@/services/duels/duelService';
 import { getAllParticipantsAsync } from '@/services/participants/participantService';
+import { DEFAULT_DUEL_SETTINGS, DuelSettings } from '@/models/duel';
 import './ActiveChallenges.css';
 
 interface ActiveChallengesProps {
@@ -21,6 +23,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const { user, isAdmin } = useAuth();
   const [allChallenges, setAllChallenges] = useState<DuelChallenge[]>([]);
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
+  const [settings, setSettings] = useState<DuelSettings>(DEFAULT_DUEL_SETTINGS);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [player1Id, setPlayer1Id] = useState('');
   const [player2Id, setPlayer2Id] = useState('');
@@ -43,14 +46,16 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const loadData = async () => {
     // First expire old challenges (this may update ELO on server)
     await expireOldChallenges();
-    
+
     // Then reload everything to get updated state
-    const [all, allParticipants] = await Promise.all([
+    const [all, allParticipants, duelSettings] = await Promise.all([
       getAllChallengesAsync(),
       getAllParticipantsAsync(),
+      getDuelSettingsAsync(),
     ]);
     setAllChallenges(all);
     setParticipants(allParticipants);
+    setSettings(duelSettings);
   };
 
   const handleCreateChallenge = async () => {
@@ -291,17 +296,22 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     <span>Normal Challenge</span>
                     <small>Can be declined. Double ELO penalty if opponent doesn't confirm after expiration.</small>
                   </label>
-                  <label className="duel-type-option">
-                    <input
-                      type="radio"
-                      name="duelType"
-                      value="mandatory"
-                      checked={duelType === 'mandatory'}
-                      onChange={() => setDuelType('mandatory')}
-                    />
-                    <span>Mandatory Challenge</span>
-                    <small>Cannot be declined. Triple ELO penalty if opponent doesn't confirm. Only 1 per opponent per month.</small>
-                  </label>
+                  {settings.mandatoryDuelsEnabled !== false && (
+                    <label className="duel-type-option">
+                      <input
+                        type="radio"
+                        name="duelType"
+                        value="mandatory"
+                        checked={duelType === 'mandatory'}
+                        onChange={() => setDuelType('mandatory')}
+                      />
+                      <span>Mandatory Challenge</span>
+                      <small>
+                        Cannot be declined. Triple ELO penalty if opponent doesn't confirm.
+                        Only {settings.mandatoryDuelsPerWeek ?? 1} per week per challenger. Only 1 per opponent per month.
+                      </small>
+                    </label>
+                  )}
                 </div>
               </div>
 

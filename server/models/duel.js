@@ -66,5 +66,7 @@ export function duelSettingsShape() {
     weeklyResetDay: 1,    // Monday
     weeklyResetHour: 0,   // Midnight
     weeklyResetMinute: 0,
+    mandatoryDuelsEnabled: true,
+    mandatoryDuelsPerWeek: 1,
   };
 }

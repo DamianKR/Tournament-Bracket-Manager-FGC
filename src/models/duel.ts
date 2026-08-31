@@ -14,6 +14,8 @@ export interface DuelSettings {
   weeklyResetDay: number; // 0=Sunday, 1=Monday, ..., 6=Saturday
   weeklyResetHour: number; // 0-23, default 0 (midnight)
   weeklyResetMinute: number; // 0-59, default 0
+  mandatoryDuelsEnabled: boolean; // Allow mandatory duel challenges
+  mandatoryDuelsPerWeek: number; // Max mandatory duels per challenger per week (default 1)
 }
 
 export const DEFAULT_DUEL_SETTINGS: DuelSettings = {
@@ -23,6 +25,8 @@ export const DEFAULT_DUEL_SETTINGS: DuelSettings = {
   weeklyResetDay: 1, // Monday
   weeklyResetHour: 0, // Midnight
   weeklyResetMinute: 0,
+  mandatoryDuelsEnabled: true,
+  mandatoryDuelsPerWeek: 1,
 };
 
 export type DuelChallengeStatus = 'pending' | 'accepted' | 'completed' | 'expired' | 'declined' | 'pending_review';

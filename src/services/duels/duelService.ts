@@ -305,13 +305,20 @@ export async function validateDuelChallenge(
     };
   }
 
-  // 2b. If mandatory: check weekly limit (only 1 mandatory per week total)
+  // 2b. If mandatory: check if enabled and weekly limit
   if (type === 'mandatory') {
+    if (settings.mandatoryDuelsEnabled === false) {
+      return { valid: false, error: 'Mandatory duels are currently disabled' };
+    }
+
+    const mandatoryPerWeek = typeof settings.mandatoryDuelsPerWeek === 'number'
+      ? Math.max(0, Math.floor(settings.mandatoryDuelsPerWeek))
+      : 1;
     const mandatoryThisWeek = challengesThisWeek.filter(c => c.type === 'mandatory');
-    if (mandatoryThisWeek.length >= 1) {
+    if (mandatoryThisWeek.length >= mandatoryPerWeek) {
       return {
         valid: false,
-        error: 'You can only send one mandatory challenge per week',
+        error: `You can only send ${mandatoryPerWeek} mandatory challenge${mandatoryPerWeek !== 1 ? 's' : ''} per week`,
       };
     }
 

@@ -109,6 +109,50 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
                   Number of days before an unaccepted challenge expires
                 </p>
               </div>
+
+              <div className="form-group">
+                <div className="form-check">
+                  <input
+                    id="mandatoryEnabled"
+                    type="checkbox"
+                    checked={!!localSettings.mandatoryDuelsEnabled}
+                    onChange={e => setLocalSettings({
+                      ...localSettings,
+                      mandatoryDuelsEnabled: e.target.checked
+                    })}
+                  />
+                  <label htmlFor="mandatoryEnabled">
+                    Allow mandatory duels
+                  </label>
+                </div>
+                <p className="form-help">
+                  If disabled, players cannot create mandatory challenges.
+                </p>
+              </div>
+
+              {localSettings.mandatoryDuelsEnabled !== false && (
+                <div className="form-group">
+                  <label htmlFor="mandatoryPerWeek">
+                    Mandatory Duels Per Week
+                    <span className="text-secondary"> (0-10)</span>
+                  </label>
+                  <input
+                    id="mandatoryPerWeek"
+                    type="number"
+                    min="0"
+                    max="10"
+                    value={localSettings.mandatoryDuelsPerWeek ?? 1}
+                    onChange={e => setLocalSettings({
+                      ...localSettings,
+                      mandatoryDuelsPerWeek: Math.max(0, Math.min(10, parseInt(e.target.value) || 0))
+                    })}
+                    className="form-control"
+                  />
+                  <p className="form-help">
+                    Number of mandatory duels a player can create per week. Set to 0 to allow unlimited (not recommended).
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="modal-footer">

@@ -114,6 +114,10 @@ router.post('/', requireAuth, async (req, res) => {
       const all = await duels.getAll();
       const settings = await duelSettings.getAll();
       const config = settings.find(s => s.id === 'default') || duelSettingsShape();
+
+      if (config.mandatoryDuelsEnabled === false) {
+        return res.status(400).json({ error: 'Mandatory duels are currently disabled' });
+      }
       const now = new Date();
       
       // Calculate weekly reset
@@ -129,7 +133,10 @@ router.post('/', requireAuth, async (req, res) => {
         lastReset.setDate(lastReset.getDate() - 7);
       }
 
-      // Check weekly mandatory limit (only 1 per week)
+      // Check weekly mandatory limit
+      const mandatoryPerWeek = typeof config.mandatoryDuelsPerWeek === 'number'
+        ? Math.max(0, Math.floor(config.mandatoryDuelsPerWeek))
+        : 1;
       const mandatoryThisWeek = all.filter(
         c =>
           c.type === 'mandatory' &&
@@ -137,8 +144,10 @@ router.post('/', requireAuth, async (req, res) => {
           new Date(c.createdAt) >= lastReset
       );
 
-      if (mandatoryThisWeek.length >= 1) {
-        return res.status(400).json({ error: 'You can only send one mandatory challenge per week' });
+      if (mandatoryThisWeek.length >= mandatoryPerWeek) {
+        return res.status(400).json({
+          error: `You can only send ${mandatoryPerWeek} mandatory challenge${mandatoryPerWeek !== 1 ? 's' : ''} per week`
+        });
       }
 
       // Check monthly limit per opponent
