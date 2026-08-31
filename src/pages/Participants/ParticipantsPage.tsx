@@ -18,6 +18,7 @@ import {
 import { saveGlobalParticipants } from '@/services/storage/localStorage';
 import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import Loading from '@/components/Loading/Loading';
 import './ParticipantsPage.css';
 
 type SortKey = 'name' | 'wins' | 'tournamentsPlayed' | 'winRate';
@@ -291,7 +292,7 @@ function ParticipantsPage() {
         </div>
 
         {loading ? (
-          <div className="pp-loading text-secondary text-center">Loading participants…</div>
+          <Loading message="Loading participants..." />
         ) : filtered.length === 0 ? (
           <div className="empty-state card">
             {participants.length === 0

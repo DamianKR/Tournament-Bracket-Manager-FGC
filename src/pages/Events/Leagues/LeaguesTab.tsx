@@ -5,6 +5,7 @@ import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/
 import { getGame } from '@/data/games';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import Loading from '@/components/Loading/Loading';
 import './LeaguesTab.css';
 
 function LeaguesTab() {
@@ -35,7 +36,7 @@ function LeaguesTab() {
   if (loading) {
     return (
       <div className="leagues-tab">
-        <div className="loading-state">Loading leagues...</div>
+        <Loading message="Loading leagues..." />
       </div>
     );
   }

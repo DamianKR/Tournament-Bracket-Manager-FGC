@@ -4,6 +4,7 @@ import { League } from '@/models/league';
 import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import Loading from '@/components/Loading/Loading';
 import './LeaguesPage.css';
 
 function LeaguesPage() {
@@ -34,7 +35,7 @@ function LeaguesPage() {
     return (
       <div className="leagues-page">
         <div className="container">
-          <div className="loading-state">Loading leagues...</div>
+          <Loading message="Loading leagues..." />
         </div>
       </div>
     );

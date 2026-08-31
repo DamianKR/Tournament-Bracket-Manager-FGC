@@ -3,12 +3,6 @@
   background-color: var(--bg-secondary);
 }
 
-.loading-state {
-  padding: 4rem 0;
-  text-align: center;
-  color: var(--text-secondary);
-}
-
 /* Header */
 .league-header {
   background: linear-gradient(135deg, var(--primary-dark) 0%, #0f0a1a 100%);

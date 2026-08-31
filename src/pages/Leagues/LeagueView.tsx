@@ -14,6 +14,7 @@ import LeagueScheduleTab from './LeagueScheduleTab';
 import LeagueMyMatchesTab from './LeagueMyMatchesTab';
 import LeaguePendingTab from './LeaguePendingTab';
 import LeagueOptionsTab from './LeagueOptionsTab';
+import Loading from '@/components/Loading/Loading';
 import './LeagueView.css';
 
 type Tab = 'standings' | 'schedule' | 'my-matches' | 'pending' | 'options';
@@ -63,7 +64,7 @@ function LeagueView() {
     return (
       <div className="league-view-page">
         <div className="container">
-          <div className="loading-state">Loading league...</div>
+          <Loading message="Loading league..." />
         </div>
       </div>
     );

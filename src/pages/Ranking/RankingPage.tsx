@@ -17,6 +17,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import RankingInfo from './RankingInfo';
+import Loading from '@/components/Loading/Loading';
 import './RankingPage.css';
 
 type Tab = 'leaderboard' | 'history' | 'info';
@@ -193,7 +194,7 @@ function RankingPage() {
       {/* ── LEADERBOARD TAB ── */}
       {tab === 'leaderboard' && (
         <div className="rk-section">
-          {loadingBoard && <p className="rk-loading">Loading ranking...</p>}
+          {loadingBoard && <Loading message="Loading ranking..." />}
           {boardError && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-triangle-exclamation" /></span>
@@ -301,7 +302,7 @@ function RankingPage() {
             />
           </div>
 
-          {loadingHistory && <p className="rk-loading">Loading history...</p>}
+          {loadingHistory && <Loading message="Loading history..." />}
 
           {!loadingHistory && matchHistory.filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId).length === 0 && (
             <div className="rk-empty">

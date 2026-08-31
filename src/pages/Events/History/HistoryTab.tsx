@@ -5,6 +5,7 @@ import { getAllMatches } from '@/services/ranking/rankingService';
 import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
 import { MatchRecord, GlobalParticipant } from '@/models/types';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
+import Loading from '@/components/Loading/Loading';
 import './HistoryTab.css';
 
 type HistoryFilter = 'all' | 'tournament' | 'league' | 'duel' | 'matchmaking';
@@ -200,11 +201,7 @@ function HistoryTab() {
         </button>
       </div>
 
-      {loading && (
-        <div className="history-loading">
-          <i className="fas fa-spinner fa-spin" /> Loading history...
-        </div>
-      )}
+      {loading && <Loading message="Loading history..." />}
 
       {!loading && filteredMatches.length === 0 && (
         <div className="empty-state card">

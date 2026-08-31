@@ -23,6 +23,7 @@ import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntil
 import { useAuth } from '@/contexts/AuthContext';
 import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccount } from '@/services/auth/authService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import Loading from '@/components/Loading/Loading';
 import './ParticipantProfile.css';
 
 type Tab = 'overview' | 'results' | 'matches' | 'edit';
@@ -353,7 +354,13 @@ function ParticipantProfile() {
   }
 
   if (!participant || !stats) {
-    return <div className="profile-page"><div className="container profile-loading">Loading…</div></div>;
+    return (
+      <div className="profile-page">
+        <div className="container">
+          <Loading message="Loading profile..." />
+        </div>
+      </div>
+    );
   }
 
   const color = avatarColor(participant.name);
@@ -777,11 +784,7 @@ function ParticipantProfile() {
               </div>
             </div>
 
-            {loadingMatches && (
-              <div className="matches-loading">
-                <i className="fas fa-spinner fa-spin" /> Loading matches...
-              </div>
-            )}
+            {loadingMatches && <Loading message="Loading matches..." />}
 
             {!loadingMatches && (() => {
               const filtered = allMatches.filter(m => {
@@ -948,7 +951,7 @@ function ParticipantProfile() {
                 <hr className="profile-password-sep" />
                 <h3>Account Management</h3>
                 <p className="text-secondary mb-2">{linkedUser ? 'Manage linked login account' : 'No user account linked'}</p>
-                {loadingUser && <p className="text-secondary">Loading account…</p>}
+                {loadingUser && <Loading message="Loading account..." />}
                 {admError && <div className="error-message">{admError}</div>}
                 {admSuccess && <div className="success-message">Account updated successfully</div>}
                 {linkedUser ? (
