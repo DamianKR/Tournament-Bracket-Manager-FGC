@@ -4,6 +4,7 @@ import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progression/matchProgression';
 import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
 import { findOrCreateParticipant } from '@/services/participants/participantService';
+import { getAuthHeader } from '@/services/auth/authService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 
@@ -350,11 +351,15 @@ export async function setMatchWinner(
 
       // Sync to server
       try {
-        await fetch(`${SERVER_URL}/api/tournaments/${tournamentId}/matches`, {
+        const res = await fetch(`${SERVER_URL}/api/tournaments/${tournamentId}/matches`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
           body: JSON.stringify(matchRecord),
         });
+        if (!res.ok) {
+          const body = await res.text().catch(() => '');
+          console.warn('[Tournament] Failed to sync match to server:', res.status, body);
+        }
       } catch (err) {
         console.warn('[Tournament] Failed to sync match to server:', err);
       }
