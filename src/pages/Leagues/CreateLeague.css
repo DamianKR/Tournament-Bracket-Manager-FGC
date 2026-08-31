@@ -35,6 +35,7 @@
 
 .form-section input[type="text"],
 .form-section input[type="date"],
+.form-section input[type="time"],
 .form-section select {
   width: 100%;
   padding: 0.625rem 0.875rem;
@@ -45,6 +46,13 @@
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.datetime-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .form-section input:focus,

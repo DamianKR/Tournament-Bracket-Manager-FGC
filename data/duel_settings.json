@@ -6,6 +6,8 @@
     "challengeExpirationDays": 7,
     "weeklyResetDay": 1,
     "weeklyResetHour": 0,
-    "weeklyResetMinute": 0
+    "weeklyResetMinute": 0,
+    "mandatoryDuelsEnabled": true,
+    "mandatoryDuelsPerWeek": 1
   }
 ]

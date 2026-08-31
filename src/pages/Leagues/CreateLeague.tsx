@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllParticipants } from '@/services/participants/participantService';
 import { estimateLeagueDuration, createLeague } from '@/services/leagues/leagueService';
+import { getMidnightInTimeZone, DEFAULT_TIMEZONE } from '@/utils/timeZone';
 import { GlobalParticipant } from '@/models/types';
 import './CreateLeague.css';
 
@@ -19,6 +20,8 @@ function CreateLeague() {
   const [matchesPerPeriod, setMatchesPerPeriod] = useState(2);
   const [periodDays, setPeriodDays] = useState<7 | 14>(7);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startTime, setStartTime] = useState('20:00');
+  const [timeZone, setTimeZone] = useState(DEFAULT_TIMEZONE);
   const [maxNoShows, setMaxNoShows] = useState(3);
   const [playoffsEnabled, setPlayoffsEnabled] = useState(true);
   const [playoffsMultiplier, setPlayoffsMultiplier] = useState(1.5);
@@ -46,18 +49,21 @@ function CreateLeague() {
     }
 
     const fetchEstimate = async () => {
+      const [h, m] = startTime.split(':').map(Number);
+      const midnight = getMidnightInTimeZone(startDate, timeZone);
+      const startIso = new Date(midnight.getTime() + (h * 3600 + m * 60) * 1000).toISOString();
       const result = await estimateLeagueDuration({
         participantCount: selectedIds.size,
         roundsPerOpponent,
         matchesPerPlayerPerPeriod: matchesPerPeriod,
         periodDays,
-        startDate,
+        startDate: startIso,
       });
       setEstimate(result);
     };
 
     fetchEstimate();
-  }, [selectedIds.size, roundsPerOpponent, matchesPerPeriod, periodDays, startDate]);
+  }, [selectedIds.size, roundsPerOpponent, matchesPerPeriod, periodDays, startDate, startTime, timeZone]);
 
   function toggleParticipant(id: string) {
     const newSet = new Set(selectedIds);
@@ -90,6 +96,10 @@ function CreateLeague() {
     setCreating(true);
     setError('');
 
+    const [h, m] = startTime.split(':').map(Number);
+    const midnight = getMidnightInTimeZone(startDate, timeZone);
+    const startIso = new Date(midnight.getTime() + (h * 3600 + m * 60) * 1000).toISOString();
+
     const result = await createLeague({
       name: name.trim(),
       gameId,
@@ -98,7 +108,8 @@ function CreateLeague() {
       gamesPerMatch,
       matchesPerPlayerPerPeriod: matchesPerPeriod,
       periodDays,
-      startDate,
+      startDate: startIso,
+      timeZone,
       maxNoShowsBeforeKick: maxNoShows,
       playoffsEnabled,
       playoffsEloMultiplier: playoffsMultiplier,
@@ -251,12 +262,29 @@ function CreateLeague() {
           </div>
 
           <div className="form-section">
-            <label>Start date</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
+            <label>Start date and time</label>
+            <div className="datetime-row">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
+              <select value={timeZone} onChange={(e) => setTimeZone(e.target.value)}>
+                <option value="America/Havana">America/Havana (Cuba)</option>
+                <option value="America/New_York">America/New_York (EST/EDT)</option>
+                <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
+                <option value="Europe/Madrid">Europe/Madrid (CET/CEST)</option>
+                <option value="UTC">UTC</option>
+              </select>
+            </div>
+            <p className="form-hint">
+              League and matches will start at this exact date and time.
+            </p>
           </div>
 
           {estimate && (

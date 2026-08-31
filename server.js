@@ -25,7 +25,8 @@ import rankedMatchesRouter from './server/routes/rankedMatches.js';
 import authRouter from './server/routes/auth.js';
 import notificationsRouter from './server/routes/notifications.js';
 import { expireAllOldDuels } from './server/services/duelExpiration.js';
-import { notifyExpiringDuels, notifyExpiringLeagueMatches } from './server/services/notificationService.js';
+import { expireAllOldLeagueMatches } from './server/services/leagueExpiration.js';
+import { notifyExpiringDuels, notifyExpiringLeagueMatches, notifyLeagueWeekStart } from './server/services/notificationService.js';
 import { duels, duelSettings, leagueMatches } from './server/db/collections.js';
 
 // Render asigna el puerto via PORT; en local usamos 3001
@@ -93,6 +94,20 @@ app.listen(PORT, () => {
     }
   });
 
+  // Run league match expiration immediately on startup, then every 12 hours
+  expireAllOldLeagueMatches().then((count) => {
+    if (count > 0) {
+      console.log(`[LeagueExpiration] Expired ${count} league matches on startup`);
+    }
+  });
+  setInterval(() => {
+    expireAllOldLeagueMatches().then((count) => {
+      if (count > 0) {
+        console.log(`[LeagueExpiration] Expired ${count} league matches`);
+      }
+    });
+  }, 12 * 60 * 60 * 1000); // every 12 hours
+
   // Run notification checks on startup and every hour
   const runNotificationChecks = () => {
     notifyExpiringDuels(duels, duelSettings).catch(err =>
@@ -100,6 +115,9 @@ app.listen(PORT, () => {
     );
     notifyExpiringLeagueMatches(leagueMatches).catch(err =>
       console.error('[Notifications] league match expiry check failed:', err)
+    );
+    notifyLeagueWeekStart().catch(err =>
+      console.error('[Notifications] league week start check failed:', err)
     );
   };
   runNotificationChecks();

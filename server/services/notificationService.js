@@ -12,7 +12,7 @@
  *   matchmaking          — (reserved for future matchmaking system)
  */
 
-import { notifications } from '../db/collections.js';
+import { notifications, leagues, leagueMatches, participants } from '../db/collections.js';
 
 /**
  * Create a notification for a participant.
@@ -208,6 +208,80 @@ export async function notifyExpiringLeagueMatches(leagueMatches) {
           { matchId: match.id, leagueId: match.leagueId, deadline: match.deadline }
         );
       }
+    }
+  }
+}
+
+/**
+ * Notify participants when a new league week starts.
+ * One notification per participant with their opponent(s) for the week.
+ */
+export async function notifyLeagueWeekStart() {
+  let allLeagues = [];
+  let allMatches = [];
+  try {
+    allLeagues = await leagues.getAll();
+    allMatches = await leagueMatches.getAll();
+  } catch (err) {
+    console.error('[notificationService] notifyLeagueWeekStart failed to load data:', err.message);
+    return;
+  }
+
+  const now = new Date();
+
+  for (const league of allLeagues) {
+    if (league.status !== 'active') continue;
+
+    const weeks = Object.keys(league.weekStartDates || {})
+      .map(Number)
+      .sort((a, b) => a - b);
+
+    for (const week of weeks) {
+      const weekStart = new Date(league.weekStartDates[week]);
+      if (weekStart > now) continue; // week hasn't started
+
+      if (league.notifiedWeeks?.includes(week)) continue; // already notified
+
+      const weekMatches = allMatches.filter(
+        m => m.leagueId === league.id && m.week === week
+      );
+      if (weekMatches.length === 0) continue;
+
+      const opponents = {}; // participantId -> opponent ids
+      for (const match of weekMatches) {
+        if (!opponents[match.participant1Id]) opponents[match.participant1Id] = [];
+        if (!opponents[match.participant2Id]) opponents[match.participant2Id] = [];
+        opponents[match.participant1Id].push(match.participant2Id);
+        opponents[match.participant2Id].push(match.participant1Id);
+      }
+
+      for (const participantId of Object.keys(opponents)) {
+        const opponentIds = [...new Set(opponents[participantId])];
+        const opponentNames = [];
+        for (const id of opponentIds) {
+          try {
+            const p = await participants.findById(id);
+            opponentNames.push(p?.alias?.trim() || p?.name || 'Unknown');
+          } catch {
+            opponentNames.push('Unknown');
+          }
+        }
+
+        await createNotification(
+          participantId,
+          'league_week_start',
+          `League Week ${week} started`,
+          `Week ${week} of ${league.name} has started. Your opponent${opponentNames.length !== 1 ? 's' : ''} this week: ${opponentNames.join(', ')}.`,
+          { leagueId: league.id, week, opponentIds }
+        );
+      }
+
+      // Mark week as notified
+      if (!league.notifiedWeeks) league.notifiedWeeks = [];
+      league.notifiedWeeks.push(week);
+      league.notifiedWeeks = [...new Set(league.notifiedWeeks)].sort((a, b) => a - b);
+      league.updatedAt = new Date().toISOString();
+      await leagues.upsert(league);
     }
   }
 }

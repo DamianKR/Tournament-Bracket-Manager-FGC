@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
+import { formatInTimeZone } from '@/utils/timeZone';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
 import ReportMatchModal from './ReportMatchModal';
 import './LeagueScheduleTab.css';
@@ -13,7 +14,7 @@ interface LeagueScheduleTabProps {
 }
 
 function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: LeagueScheduleTabProps) {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
   const [weekFilter, setWeekFilter] = useState<number | 'all'>('all');
 
@@ -23,9 +24,7 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
   }
 
   function formatDate(dateStr: string | undefined): string {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    return formatInTimeZone(dateStr, league.timeZone || 'America/Havana');
   }
 
   // Calculate the actual current week based on startDate and today
@@ -75,6 +74,9 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
           <div key={week} className="week-section card">
             <div className="week-header">
               <h3>Week {week}</h3>
+              <span className="week-timezone" title="All dates shown in this time zone">
+                {league.timeZone || 'America/Havana'}
+              </span>
               <span className="week-progress">
                 {completed}/{weekMatches.length} completed
               </span>
@@ -86,6 +88,7 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                 const isNoShow = match.status === 'no_show';
                 const winner = match.winnerId;
                 const isFutureWeek = match.week > effectiveCurrentWeek;
+                const matchStarted = !match.scheduledDate || new Date(match.scheduledDate) <= new Date();
 
                 return (
                   <div key={match.id} className={`match-row ${isCompleted ? 'completed' : isFutureWeek ? 'pending future' : 'pending'}`}>
@@ -130,7 +133,8 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                       </span>
                     )}
 
-                    {!isCompleted && !isFutureWeek && isAdmin && (
+                    {!isCompleted && !isFutureWeek && matchStarted && (isAdmin ||
+                      (user?.participantId && (match.participant1Id === user.participantId || match.participant2Id === user.participantId))) && (
                       <button
                         className="btn-primary btn-sm"
                         onClick={() => setSelectedMatch(match)}
@@ -139,7 +143,13 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                       </button>
                     )}
 
-                    {match.scheduledDate && (
+                    {!isCompleted && !isFutureWeek && !matchStarted && (
+                      <span className="match-locked" title={formatDate(match.scheduledDate)}>
+                        <i className="fas fa-lock" /> Starts {formatDate(match.scheduledDate)}
+                      </span>
+                    )}
+
+                    {(isCompleted || matchStarted) && match.scheduledDate && (
                       <div className="match-date">{formatDate(match.scheduledDate)}</div>
                     )}
                   </div>

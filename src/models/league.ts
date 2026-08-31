@@ -23,6 +23,7 @@ export interface League {
   periodDays: 7 | 14;
   startDate: string;
   weekStartDates: Record<number, string>; // { 1: "2026-09-01", 2: "2026-09-08", ... }
+  timeZone: string; // Timezone for all league dates, e.g. "America/Havana"
   
   // No-shows y tiempo de gracia
   maxNoShowsBeforeKick: number;
@@ -54,8 +55,11 @@ export interface LeagueMatch {
   participant2Id: string;
   
   // Estado
-  status: 'scheduled' | 'completed' | 'no_show' | 'pending_review';
+  status: 'scheduled' | 'reported' | 'completed' | 'no_show' | 'pending_review';
   
+  // Reportes (consenso: cada jugador reporta, necesitan coincidir o interviene admin)
+  reportedResults?: LeagueMatchReport[];
+
   // Resultado
   winnerId?: string;
   score?: string; // "2-1", "2-0", etc.
@@ -68,6 +72,17 @@ export interface LeagueMatch {
   // Fechas
   scheduledDate?: string;
   completedDate?: string;
+  deadline?: string; // End of grace period, used for expirations and notifications
+}
+
+export interface LeagueMatchReport {
+  participantId: string;
+  winnerId: string;
+  score: string;
+  isNoShow: boolean;
+  noShowParticipantId?: string;
+  evidence?: string;
+  reportedAt: string;
 }
 
 export interface LeagueStanding {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
-import { reportMatchResult } from '@/services/leagues/leagueService';
+import { useAuth } from '@/contexts/AuthContext';
+import { reportMatchResult, resolveLeagueMatch } from '@/services/leagues/leagueService';
 import './ReportMatchModal.css';
 
 interface ReportMatchModalProps {
@@ -11,12 +12,17 @@ interface ReportMatchModalProps {
   onSuccess: () => void;
 }
 
+const MAX_EVIDENCE_SIZE_MB = 4;
+const MAX_EVIDENCE_SIZE_BYTES = MAX_EVIDENCE_SIZE_MB * 1024 * 1024;
+
 function ReportMatchModal({ league, match, participants, onClose, onSuccess }: ReportMatchModalProps) {
+  const { isAdmin } = useAuth();
   const [winnerId, setWinnerId] = useState(match.participant1Id);
   const [score1, setScore1] = useState(2);
   const [score2, setScore2] = useState(0);
   const [isNoShow, setIsNoShow] = useState(false);
   const [noShowParticipantId, setNoShowParticipantId] = useState(match.participant1Id);
+  const [evidence, setEvidence] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,6 +33,18 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
 
   const winScore = Math.ceil(league.gamesPerMatch / 2);
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_EVIDENCE_SIZE_BYTES) {
+      setError(`Evidence image is too large. Maximum is ${MAX_EVIDENCE_SIZE_MB}MB.`);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => setEvidence(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
   async function handleSubmit() {
     if (!isNoShow && (score1 < winScore && score2 < winScore)) {
       setError(`One player must win ${winScore} games (Best of ${league.gamesPerMatch})`);
@@ -36,12 +54,22 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     setSubmitting(true);
     setError('');
 
-    const result = await reportMatchResult(league.id, match.id, {
+    const baseResult = {
       winnerId: isNoShow ? (noShowParticipantId === match.participant1Id ? match.participant2Id : match.participant1Id) : winnerId,
       score: `${score1}-${score2}`,
       isNoShow,
       noShowParticipantId: isNoShow ? noShowParticipantId : undefined,
-    });
+    };
+
+    let result = null;
+    if (isAdmin && (match.status === 'pending_review' || match.status === 'reported')) {
+      result = await resolveLeagueMatch(league.id, match.id, baseResult);
+    } else {
+      result = await reportMatchResult(league.id, match.id, {
+        ...baseResult,
+        evidence: evidence || undefined,
+      });
+    }
 
     setSubmitting(false);
 
@@ -95,6 +123,24 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
           </div>
 
           {error && <div className="error-message">{error}</div>}
+
+          {match.reportedResults && match.reportedResults.length > 0 && (
+            <div className="reported-results">
+              <h4>Previous reports</h4>
+              {match.reportedResults.map((r) => {
+                const reporter = participants.get(r.participantId);
+                const winner = participants.get(r.winnerId);
+                return (
+                  <div key={r.participantId} className="reported-result">
+                    <strong>{reporter?.alias?.trim() || reporter?.name || 'Unknown'}</strong>:{' '}
+                    {winner?.alias?.trim() || winner?.name || 'Unknown'} wins {r.score}
+                    {r.isNoShow ? ' (no-show)' : ''}
+                    {r.evidence ? ' [with evidence]' : ''}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           <div className="form-section">
             <label className="checkbox-label">
@@ -180,6 +226,18 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
               </div>
             </>
           )}
+
+          {!(isAdmin && (match.status === 'pending_review' || match.status === 'reported')) && (
+            <div className="form-section">
+              <label>Evidence (optional, max {MAX_EVIDENCE_SIZE_MB}MB)</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+              {evidence && <div className="evidence-preview"><img src={evidence} alt="Evidence" /></div>}
+            </div>
+          )}
         </div>
 
         <div className="modal-footer">
@@ -187,7 +245,11 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
             Cancel
           </button>
           <button className="btn-primary" onClick={handleSubmit} disabled={submitting}>
-            {submitting ? 'Submitting...' : 'Submit Result'}
+            {submitting
+              ? 'Submitting...'
+              : isAdmin && match.status === 'pending_review'
+                ? 'Resolve'
+                : 'Submit Result'}
           </button>
         </div>
       </div>

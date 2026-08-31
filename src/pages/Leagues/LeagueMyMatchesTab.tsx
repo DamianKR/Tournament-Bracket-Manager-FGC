@@ -89,7 +89,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
         ) : (
           <>
             <div className="my-match-status">Pending</div>
-            {match.week <= effectiveCurrentWeek ? (
+            {match.week <= effectiveCurrentWeek && (!match.scheduledDate || new Date(match.scheduledDate) <= new Date()) ? (
               <button
                 className="btn-primary btn-sm"
                 onClick={() => setSelectedMatch(match)}
@@ -98,7 +98,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
               </button>
             ) : (
               <span className="match-locked" title={`Locked until Week ${match.week}`}>
-                <i className="fas fa-lock" /> Week {match.week}
+                <i className="fas fa-lock" /> {match.week <= effectiveCurrentWeek ? 'Starts soon' : `Week ${match.week}`}
               </span>
             )}
           </>

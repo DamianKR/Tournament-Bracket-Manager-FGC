@@ -6,6 +6,8 @@
 
 import { League, LeagueMatch, LeagueStanding } from '@/models/league';
 import { SERVER_URL } from '@/services/api/apiClient';
+import { getAuthHeader } from '@/services/auth/authService';
+import { isDateInTimeZonePassed } from '@/utils/timeZone';
 
 // ── API Calls ─────────────────────────────────────────────────────────────
 
@@ -67,6 +69,7 @@ export async function createLeague(config: {
   matchesPerPlayerPerPeriod: number;
   periodDays: 7 | 14;
   startDate: string;
+  timeZone?: string;
   maxNoShowsBeforeKick: number;
   playoffsEnabled: boolean;
   playoffsEloMultiplier: number;
@@ -74,7 +77,7 @@ export async function createLeague(config: {
   try {
     const res = await fetch(`${SERVER_URL}/api/leagues`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(config),
     });
     if (!res.ok) throw new Error('Failed to create league');
@@ -115,12 +118,13 @@ export async function reportMatchResult(
     score: string;
     isNoShow: boolean;
     noShowParticipantId?: string;
+    evidence?: string;
   }
-): Promise<{ match: LeagueMatch; eloChanges: Record<string, number> } | null> {
+): Promise<{ match: LeagueMatch; eloChanges: Record<string, number> | null } | null> {
   try {
-    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/result`, {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/report`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(result),
     });
     if (!res.ok) throw new Error('Failed to report match result');
@@ -131,10 +135,35 @@ export async function reportMatchResult(
   }
 }
 
+export async function resolveLeagueMatch(
+  leagueId: string,
+  matchId: string,
+  result: {
+    winnerId: string;
+    score: string;
+    isNoShow: boolean;
+    noShowParticipantId?: string;
+  }
+): Promise<{ match: LeagueMatch; eloChanges: Record<string, number> } | null> {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(result),
+    });
+    if (!res.ok) throw new Error('Failed to resolve match dispute');
+    return await res.json();
+  } catch (err) {
+    console.error('[LeagueService] resolveLeagueMatch error:', err);
+    return null;
+  }
+}
+
 export async function deleteLeague(id: string): Promise<boolean> {
   try {
     const res = await fetch(`${SERVER_URL}/api/leagues/${id}`, {
       method: 'DELETE',
+      headers: getAuthHeader(),
     });
     return res.ok;
   } catch (err) {
@@ -150,7 +179,14 @@ export async function deleteLeague(id: string): Promise<boolean> {
 export function getLeagueDisplayStatus(league: League): 'pending' | 'active' | 'completed' {
   if (league.status === 'completed') return 'completed';
   if (league.status === 'draft') return 'pending';
-  if (new Date(league.startDate) > new Date()) return 'pending';
+  // If startDate is a full ISO string, compare directly.
+  // If it's only a date (YYYY-MM-DD), compare as calendar date in the league time zone.
+  if (league.startDate.includes('T')) {
+    if (new Date(league.startDate) > new Date()) return 'pending';
+  } else {
+    const timeZone = league.timeZone || 'America/Havana';
+    if (!isDateInTimeZonePassed(league.startDate, timeZone)) return 'pending';
+  }
   return 'active';
 }
 
@@ -161,6 +197,7 @@ export async function expireLeagueMatches(leagueId: string): Promise<number> {
   try {
     const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/expire-matches`, {
       method: 'POST',
+      headers: getAuthHeader(),
     });
     if (!res.ok) throw new Error('Failed to expire matches');
     const data = await res.json();
@@ -183,7 +220,7 @@ export async function markMatchNoShow(
   try {
     const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/mark-no-show`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify({ noShowParticipantId }),
     });
     if (!res.ok) return null;
@@ -201,6 +238,7 @@ export async function cancelMatch(leagueId: string, matchId: string): Promise<bo
   try {
     const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/cancel`, {
       method: 'POST',
+      headers: getAuthHeader(),
     });
     return res.ok;
   } catch (err) {
@@ -246,7 +284,7 @@ export async function banParticipants(
   try {
     const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/ban-participants`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify({ participantIds }),
     });
     if (!res.ok) throw new Error('Failed to ban participants');
