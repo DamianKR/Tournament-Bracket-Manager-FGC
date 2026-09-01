@@ -78,7 +78,7 @@ export async function findOrCreateParticipant(name: string): Promise<GlobalParti
 
 export async function updateParticipant(
   id: string,
-  updates: { name?: string; alias?: string; avatarUrl?: string | null; gameId?: string | null; mainCharacterId?: string | null }
+  updates: { name?: string; alias?: string; avatarUrl?: string | null; gameId?: string | null; mainCharacterId?: string | null; phoneNumber?: string | null }
 ): Promise<GlobalParticipant> {
   const all = loadGlobalParticipants();
   const participant = all.find((p) => p.id === id);
@@ -94,6 +94,7 @@ export async function updateParticipant(
   if (updates.avatarUrl !== undefined) participant.avatarUrl = updates.avatarUrl;
   if (updates.gameId !== undefined) participant.gameId = updates.gameId;
   if (updates.mainCharacterId !== undefined) participant.mainCharacterId = updates.mainCharacterId;
+  if (updates.phoneNumber !== undefined) participant.phoneNumber = updates.phoneNumber?.trim() || undefined;
   participant.updatedAt = new Date().toISOString();
 
   await saveGlobalParticipant(participant);

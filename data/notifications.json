@@ -72,5 +72,1723 @@
       "type": "normal"
     },
     "readAt": "2026-08-31T20:35:31.275Z"
+  },
+  {
+    "id": "notif_1788217395950_k2y1ep0n3",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: You, Akuma.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.950Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395952_v01grfkpb",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Alexs, Rhadam, TQMandreFN.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.952Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787409813244_ymqkq1e",
+        "gp_1787409902362_3u9f0qr",
+        "gp_1786387243524_6er0c9u"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395954_dcgxwjo0n",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Yokai, Yoeeee.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.954Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395955_53b7yrnyi",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: el pepe, Adecty.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.955Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786756661811_fa5pg74",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395957_muzocyya0",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Akuma, WolfCat Silence.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.957Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787798635187_v9qifdf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395958_r1i0n6xk6",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Brian, Alexs.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.959Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786388790209_sr4ldku",
+        "gp_1787409813244_ymqkq1e"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395960_lpq4kn1s4",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Yoeeee, WiikiFox.",
+    "read": true,
+    "createdAt": "2026-08-31T23:03:15.960Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786758755895_bgdf2b9",
+        "gp_1787087788652_q2n124j"
+      ]
+    },
+    "readAt": "2026-08-31T23:05:07.404Z"
+  },
+  {
+    "id": "notif_1788217395961_phiyr14fr",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: KruX, el pepe.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.961Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395962_bwuypupn2",
+    "recipientId": "gp_1787060569919_ov80gcy",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: WolfCat Silence, Sybau.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.962Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787798635187_v9qifdf",
+        "gp_1786808135517_vfoni2a"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395963_onk16fjva",
+    "recipientId": "gp_1787798635187_v9qifdf",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: DeathFrost, Brian.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.963Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787060569919_ov80gcy",
+        "gp_1786388790209_sr4ldku"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395965_kktdpe4yy",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: WiikiFox, Tails.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.965Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395966_5cc432b71",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Delvi, KruX.",
+    "read": true,
+    "createdAt": "2026-08-31T23:03:15.966Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391892402_8intsz3",
+        "gp_1786387087046_wnwtadb"
+      ]
+    },
+    "readAt": "2026-08-31T23:06:09.477Z"
+  },
+  {
+    "id": "notif_1788217395967_qky3qyvt5",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Sybau, Slendy.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.967Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395968_nuitic5ei",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Daysuke, DeathFrost.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.968Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786396304199_u7v6gsb",
+        "gp_1787060569919_ov80gcy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395969_kgt9p6hx6",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Tails, Sementino.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.969Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395970_2nfjn2riv",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Dio, Delvi.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.970Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395971_jtqpbgetx",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Slendy, Grimmjo.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.971Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395973_7flt0j1z6",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: ERNE, Daysuke.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.973Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395974_g2v2goq6u",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Sementino, Pokred.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.974Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393670067_xild06i",
+        "gp_1787202786652_4bme4ih"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395975_c1ah4tj5l",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: ElTarket, Dio.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.975Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395976_q3m821v05",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Grimmjo, Poke.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.976Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395978_nafytt2f9",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Pollo, ERNE.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.978Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787112745370_2zahvg8",
+        "gp_1786420928315_91m6kmr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395979_uuivnbo2a",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Pokred, Pal.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.979Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395980_e0pqzuipq",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Gino, ElTarket.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.980Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786387234567_aoe1z95",
+        "gp_1786648984526_6yyg6ao"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395981_es5fu1hke",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Poke, Olimak.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.981Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395982_n7crc4183",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: negroloko_54, Pollo.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.982Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786420836915_wqj6gv2",
+        "gp_1787112745370_2zahvg8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395983_6slixe698",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Pal, Neuthor.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.983Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395984_1brbpn9ny",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Ismael, Gino.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.984Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395986_37uywjovp",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Olimak, Nelson.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.986Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393655444_41zyrro",
+        "gp_1786399978250_n7msxo5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395987_85rsskuqs",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Soru-san, negroloko_54.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.987Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395988_v36ia7nma",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Neuthor, Virutica JR.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.988Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787069564643_5pithds",
+        "gp_1787176804167_dgzm0z9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395990_fwpbatjbh",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Dante, Ismael.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.990Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395991_ect2sk9qj",
+    "recipientId": "gp_1786391936937_anlwmxy",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Nelson, Manuel(Z).",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.991Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786399978250_n7msxo5",
+        "gp_1786410268124_ja1vgy5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395992_x8djk89ec",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Eknd3las, Soru-san.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.992Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391936937_anlwmxy",
+        "gp_1786756707267_xybm206"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395994_wfm70gse4",
+    "recipientId": "gp_1787409434840_k4h4ski",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Virutica JR, Drakonite.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.994Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786802617779_nnibxrr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395995_ih6hlx5zg",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Ragna, Dante.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.995Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787409434840_k4h4ski",
+        "gp_1787150448285_vlvxdb2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395996_4c6f6sbff",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Manuel(Z), Ghost.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.996Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395997_sq42gaddn",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Verne, Eknd3las.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.997Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787060528167_2mzmy24",
+        "gp_1786391936937_anlwmxy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217395998_6fteyca04",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Drakonite, Daeron.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:15.998Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396000_hftsdwlwn",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: AmorAltras, Ragna.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.000Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393834683_lievrvf",
+        "gp_1787409434840_k4h4ski"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396002_j15f9cdzu",
+    "recipientId": "gp_1786758906647_1ib85c1",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Ghost, Shiro.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.002Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396005_s09woebls",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Yoko, Verne.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.005Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786758906647_1ib85c1",
+        "gp_1787060528167_2mzmy24"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396007_j9vr4v84m",
+    "recipientId": "gp_1787176726649_m106rr7",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Daeron, Oby.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.007Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396008_bstah55xu",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Ev, AmorAltras.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.008Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787176726649_m106rr7",
+        "gp_1786393834683_lievrvf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396009_uq7rzzel8",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Shiro, LiokLiok18.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.009Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396010_bjp3lpryo",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Nilo, Yoko.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.010Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786409261693_7dx00bm",
+        "gp_1786758906647_1ib85c1"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396012_9gx6whf57",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: Oby, Nilo.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.012Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396013_foqoy01rg",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponents this week: LiokLiok18, Ev.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.013Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393783053_ztfg99d",
+        "gp_1787176726649_m106rr7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396014_rhprtrj0f",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponent this week: You.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.014Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408732935_gefziig"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396015_xz8dpkcpg",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponent this week: You.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.015Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408732935_gefziig"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788217396016_a9iexmfdk",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Testing ultimate has started. Your opponent this week: Yokai.",
+    "read": false,
+    "createdAt": "2026-08-31T23:03:16.016Z",
+    "data": {
+      "leagueId": "league_1788215572928_qe71oik",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250706_w7d9wzpwm",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: You, Yokai.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.706Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786802386624_ficm2tl"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250709_c03604za3",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Rhadam, Adecty.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.709Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787409902362_3u9f0qr",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250711_xm76ojx3k",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: You, Akuma.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.711Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250712_tojxw6ky1",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Yokai, Yoeeee.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.712Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250714_7hz0hmqoa",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Alexs, Rhadam, TQMandreFN.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.714Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787409813244_ymqkq1e",
+        "gp_1787409902362_3u9f0qr",
+        "gp_1786387243524_6er0c9u"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250716_oehlgcuuo",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Akuma, WiikiFox.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.716Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787087788652_q2n124j"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250717_6f50krcl8",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: el pepe, Adecty.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.717Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786756661811_fa5pg74",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250718_0pny7vdyt",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Yoeeee, Sybau.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.718Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786758755895_bgdf2b9",
+        "gp_1786808135517_vfoni2a"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250720_qsw01abt5",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Brian, Alexs.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.720Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786388790209_sr4ldku",
+        "gp_1787409813244_ymqkq1e"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250722_valrkj8mu",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: WiikiFox, Tails.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.722Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250723_97ti9acjt",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: KruX, el pepe.",
+    "read": true,
+    "createdAt": "2026-09-01T17:54:10.723Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74"
+      ]
+    },
+    "readAt": "2026-09-01T17:54:31.089Z"
+  },
+  {
+    "id": "notif_1788285250724_9kq4f5q44",
+    "recipientId": "gp_1787060569919_ov80gcy",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Sybau, Slendy.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.724Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250726_fps14fl8j",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: DeathFrost, Brian.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.726Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787060569919_ov80gcy",
+        "gp_1786388790209_sr4ldku"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250727_wgtqyl7f1",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Tails, Sementino.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.727Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250729_plmr4mbln",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Delvi, KruX.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.729Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391892402_8intsz3",
+        "gp_1786387087046_wnwtadb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250730_02co3ov3v",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Slendy, Grimmjo.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.730Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250731_y2xfaz4wp",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Daysuke, DeathFrost.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.731Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786396304199_u7v6gsb",
+        "gp_1787060569919_ov80gcy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250732_lo1s43y6n",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Sementino, Pokred.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.732Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393670067_xild06i",
+        "gp_1787202786652_4bme4ih"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250734_ou6mgjqza",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Dio, Delvi.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.734Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250735_6g3o9yz43",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Grimmjo, Poke.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.735Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250736_dnx9m1r8g",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: ERNE, Daysuke.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.736Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250737_fhznc1c3d",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Pokred, Pal.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.737Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250739_dxgj236cy",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: ElTarket, Dio.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.739Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250740_yvmkktseo",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Poke, Olimak.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.740Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250742_q0mnvbd5x",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Pollo, ERNE.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.742Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787112745370_2zahvg8",
+        "gp_1786420928315_91m6kmr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250743_fkpmk5zz7",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Pal, Neuthor.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.743Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250744_4s248k9k1",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Gino, ElTarket.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.744Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786387234567_aoe1z95",
+        "gp_1786648984526_6yyg6ao"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250746_ssn70x6u5",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Olimak, Nelson.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.746Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393655444_41zyrro",
+        "gp_1786399978250_n7msxo5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250747_t9q7n5qb6",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: negroloko_54, Pollo.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.747Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786420836915_wqj6gv2",
+        "gp_1787112745370_2zahvg8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250748_gjaizp75h",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Neuthor, Virutica JR.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.748Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787069564643_5pithds",
+        "gp_1787176804167_dgzm0z9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250750_tnodop8jt",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Ismael, Gino.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.750Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250751_jmlcu0axx",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Nelson, Manuel(Z).",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.751Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786399978250_n7msxo5",
+        "gp_1786410268124_ja1vgy5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250752_xuudrwc5r",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Soru-san, negroloko_54.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.752Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250754_2k1hll3tw",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Virutica JR, Drakonite.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.754Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786802617779_nnibxrr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250755_k4es5ln8d",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Dante, Ismael.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.755Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250757_90n9yskib",
+    "recipientId": "gp_1786391936937_anlwmxy",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Manuel(Z), Ghost.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.757Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250758_3kybes95w",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Eknd3las, Soru-san.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.758Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391936937_anlwmxy",
+        "gp_1786756707267_xybm206"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250760_k953x9r84",
+    "recipientId": "gp_1787409434840_k4h4ski",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Drakonite, Daeron.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.760Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250762_iidtmxs23",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Ragna, Dante.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.762Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787409434840_k4h4ski",
+        "gp_1787150448285_vlvxdb2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250764_hwd0rls3f",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Ghost, Shiro.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.764Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250765_z4pu2q70a",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Verne, Eknd3las.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.765Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787060528167_2mzmy24",
+        "gp_1786391936937_anlwmxy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250766_jhys2o1x5",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Daeron, Oby.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.766Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250768_k37ic3rdi",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: AmorAltras, Ragna.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.768Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393834683_lievrvf",
+        "gp_1787409434840_k4h4ski"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250769_chdi59xdw",
+    "recipientId": "gp_1786758906647_1ib85c1",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Shiro, LiokLiok18.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.769Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250770_n85j7q4ra",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Yoko, Verne.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.770Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786758906647_1ib85c1",
+        "gp_1787060528167_2mzmy24"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250771_883klpdm6",
+    "recipientId": "gp_1787176726649_m106rr7",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Oby, Nilo.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.771Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250773_7nyfq3ksj",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Ev, AmorAltras.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.773Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787176726649_m106rr7",
+        "gp_1786393834683_lievrvf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250774_vql75qpwf",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: LiokLiok18, Ev.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.774Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393783053_ztfg99d",
+        "gp_1787176726649_m106rr7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250775_t2mkwvo4f",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Nilo, Yoko.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.775Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786409261693_7dx00bm",
+        "gp_1786758906647_1ib85c1"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788285250776_rhusxmltz",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponent this week: Yokai.",
+    "read": false,
+    "createdAt": "2026-09-01T17:54:10.776Z",
+    "data": {
+      "leagueId": "league_1787676805483_z2p436d",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl"
+      ]
+    }
   }
 ]

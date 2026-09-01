@@ -453,6 +453,36 @@
   letter-spacing: 0.02em;
 }
 
+.profile-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 3px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(37, 211, 102, 0.2);
+  border: 1px solid rgba(37, 211, 102, 0.5);
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.profile-phone:hover {
+  background: rgba(37, 211, 102, 0.35);
+}
+
+.profile-phone:active {
+  transform: scale(0.97);
+}
+
+.profile-phone .fab.fa-whatsapp {
+  color: #25d366;
+  font-size: 1rem;
+}
+
 /* ── Tabs ────────────────────────────────────────────────────────────── */
 
 .profile-tabs-bar {
@@ -778,6 +808,17 @@
 
 .profile-edit-form .form-actions {
   margin-top: 1.5rem;
+}
+
+.profile-phone-field {
+  margin-bottom: 1rem;
+}
+
+.profile-phone-field .hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--text-tertiary, var(--text-secondary));
 }
 
 .pp-account-active-toggle label {

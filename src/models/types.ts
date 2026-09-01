@@ -107,6 +107,7 @@ export interface GlobalParticipant {
   tournamentIds: string[];  // FK references — all tournaments this player joined
   gameId: string | null;    // e.g. 'ssbu' — which game this player competes in
   mainCharacterId: string | null; // e.g. 'kirby' — their main character
+  phoneNumber?: string;           // Optional contact number shown on profile
   // ELO Ranking
   eloPoints: number | null; // Current ELO score (null = unranked/no points yet)
   eloRank: string;          // Rank name derived from eloPoints

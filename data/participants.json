@@ -30,9 +30,9 @@
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-08-28T14:21:52.481Z",
-    "eloPoints": 1595,
-    "eloRank": "Diamante"
+    "updatedAt": "2026-08-31T23:06:59.891Z",
+    "eloPoints": 1610,
+    "eloRank": "Vanquisher"
   },
   {
     "gameId": "ssbu",
@@ -579,10 +579,10 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "kirby",
-    "eloPoints": 1521,
+    "eloPoints": 1512,
     "eloRank": "Diamante",
     "createdAt": "2026-08-15T01:52:35.895Z",
-    "updatedAt": "2026-08-24T05:58:53.582Z"
+    "updatedAt": "2026-08-31T22:38:58.071Z"
   },
   {
     "id": "gp_1786758906647_1ib85c1",
@@ -738,10 +738,10 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "diddy_kong",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
+    "eloPoints": 1494,
+    "eloRank": "Platino",
     "createdAt": "2026-08-18T21:16:28.652Z",
-    "updatedAt": "2026-08-18T21:18:49.978Z"
+    "updatedAt": "2026-08-31T23:06:59.892Z"
   },
   {
     "id": "gp_1787112645165_cj7eik8",

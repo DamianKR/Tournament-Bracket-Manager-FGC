@@ -83,6 +83,7 @@ function ParticipantProfile() {
   const [editAlias, setEditAlias] = useState('');
   const [editGameId, setEditGameId] = useState<string | null>(null);
   const [editCharacterId, setEditCharacterId] = useState<string | null>(null);
+  const [editPhone, setEditPhone] = useState('');
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
   const [editSuccess, setEditSuccess] = useState(false);
@@ -127,6 +128,7 @@ function ParticipantProfile() {
         setEditAlias(p.alias ?? '');
         setEditGameId(p.gameId ?? null);
         setEditCharacterId(p.mainCharacterId ?? null);
+        setEditPhone(p.phoneNumber ?? '');
       } catch {
         const p = getParticipant(id);
         if (!p) { setNotFound(true); return; }
@@ -267,6 +269,7 @@ function ParticipantProfile() {
         alias: editAlias,
         gameId: editGameId,
         mainCharacterId: editCharacterId,
+        phoneNumber: editPhone || null,
       });
       setParticipant(updated);
       setStats(computeStats(updated));
@@ -391,6 +394,19 @@ function ParticipantProfile() {
                 <h1 className="profile-name">{participant.name}</h1>
                 {participant.alias && (
                   <span className="profile-alias">{participant.alias}</span>
+                )}
+                {participant.phoneNumber && (
+                  <a
+                    className="profile-phone"
+                    href={`https://wa.me/${participant.phoneNumber.replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    title="Chat on WhatsApp"
+                  >
+                    <i className="fab fa-whatsapp" />
+                    {participant.phoneNumber}
+                  </a>
                 )}
                 {participant.gameId && participant.mainCharacterId && (
                   <span className="profile-character">
@@ -897,6 +913,14 @@ function ParticipantProfile() {
                   onKeyDown={(e) => e.key === 'Enter' && handleSave()}
                   placeholder="Optional short name" />
               </div>
+            </div>
+            <div className="form-group profile-phone-field">
+              <label>WhatsApp / Phone Number</label>
+              <input type="tel" value={editPhone}
+                onChange={(e) => setEditPhone(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                placeholder="+53 5XXXXXXX" />
+              <small className="hint">Visible to everyone. Tapping it on mobile opens WhatsApp.</small>
             </div>
             <CharacterSelect
               gameId={editGameId}
