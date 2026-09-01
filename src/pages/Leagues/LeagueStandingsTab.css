@@ -4,6 +4,16 @@
   gap: 1.25rem;
 }
 
+.admin-actions-bar {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  flex-wrap: wrap;
+}
+
 .standings-header {
   display: flex;
   justify-content: space-between;
@@ -62,6 +72,23 @@
 
 .standing-row.playoff-qualified {
   background-color: rgba(139, 92, 246, 0.05);
+}
+
+.standing-row.selected {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-left: 3px solid #ef4444;
+}
+
+.col-select {
+  width: 40px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.col-select input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
 }
 
 .col-rank {

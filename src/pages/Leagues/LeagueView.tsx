@@ -163,9 +163,11 @@ function LeagueView() {
         {tab === 'info' && <LeagueInfoTab league={league} />}
         {tab === 'standings' && (
           <LeagueStandingsTab
+            leagueId={league.id}
             standings={standings}
             participants={participants}
             playoffsEnabled={league.playoffsEnabled}
+            onRefresh={loadData}
           />
         )}
         {tab === 'schedule' && (

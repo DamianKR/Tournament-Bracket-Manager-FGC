@@ -30,9 +30,10 @@
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-08-31T23:06:59.891Z",
+    "updatedAt": "2026-09-01T17:56:56.379Z",
     "eloPoints": 1610,
-    "eloRank": "Vanquisher"
+    "eloRank": "Vanquisher",
+    "phoneNumber": "+5353211080"
   },
   {
     "gameId": "ssbu",
@@ -189,8 +190,8 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:56:23.115Z",
-    "updatedAt": "2026-08-26T23:09:22.001Z",
-    "eloPoints": 1486,
+    "updatedAt": "2026-09-01T18:26:11.089Z",
+    "eloPoints": 1476,
     "eloRank": "Platino"
   },
   {
@@ -275,8 +276,8 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T20:27:50.067Z",
-    "updatedAt": "2026-08-22T14:35:09.859Z",
-    "eloPoints": 1513,
+    "updatedAt": "2026-09-01T18:27:36.749Z",
+    "eloPoints": 1524,
     "eloRank": "Diamante"
   },
   {
@@ -340,8 +341,8 @@
       "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T20:30:50.039Z",
-    "updatedAt": "2026-08-28T14:22:33.613Z",
-    "eloPoints": 1518,
+    "updatedAt": "2026-09-01T18:27:36.748Z",
+    "eloPoints": 1517,
     "eloRank": "Diamante"
   },
   {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { reportMatchResult, resolveLeagueMatch } from '@/services/leagues/leagueService';
@@ -25,6 +25,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
   const [evidence, setEvidence] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const submittingRef = useRef(false);
 
   const p1 = participants.get(match.participant1Id);
   const p2 = participants.get(match.participant2Id);
@@ -46,11 +47,17 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
   }
 
   async function handleSubmit() {
+    if (submittingRef.current) {
+      console.log('[ReportMatchModal] Already submitting, ignoring duplicate click');
+      return;
+    }
+
     if (!isNoShow && (score1 < winScore && score2 < winScore)) {
       setError(`One player must win ${winScore} games (Best of ${league.gamesPerMatch})`);
       return;
     }
 
+    submittingRef.current = true;
     setSubmitting(true);
     setError('');
 
@@ -71,6 +78,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
       });
     }
 
+    submittingRef.current = false;
     setSubmitting(false);
 
     if (!result) {

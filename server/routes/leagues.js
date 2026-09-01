@@ -96,7 +96,19 @@ async function applyLeagueMatchElo(match) {
   match.participant1EloChange = eloChange1;
   match.participant2EloChange = eloChange2;
   match.completedDate = new Date().toISOString();
-  await leagueMatches.upsert(match);
+  
+  console.log(`[applyLeagueMatchElo] Saving match ${match.id} with status=${match.status}`);
+  const savedMatch = await leagueMatches.upsert(match);
+  console.log(`[applyLeagueMatchElo] Match ${match.id} saved successfully`);
+  
+  // Verify the match was saved
+  const verification = await leagueMatches.findById(match.id);
+  if (!verification) {
+    console.error(`[applyLeagueMatchElo] CRITICAL: Match ${match.id} not found after upsert!`);
+    throw new Error('Match disappeared after save');
+  }
+  console.log(`[applyLeagueMatchElo] Match ${match.id} verified in DB with status=${verification.status}`);
+  
   return { [match.participant1Id]: eloChange1, [match.participant2Id]: eloChange2 };
 }
 
@@ -685,6 +697,7 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
         if (!roundData) continue;
 
         for (const [p1, p2] of roundData.pairings) {
+          const deadline = new Date(weekStart.getTime() + (league.periodDays + (league.gracePeriodDays || 30)) * 24 * 60 * 60 * 1000);
           newMatches.push({
             id: generateId('lmatch'),
             leagueId: league.id,
@@ -694,6 +707,7 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
             participant2Id: p2,
             status: 'scheduled',
             scheduledDate: weekStart.toISOString(),
+            deadline: deadline.toISOString(),
           });
         }
       }
@@ -783,10 +797,15 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
   try {
     const { winnerId, score, isNoShow, noShowParticipantId, evidence } = req.body;
 
+    // Re-fetch match to avoid race conditions
     const match = await leagueMatches.findById(req.params.matchId);
-    if (!match) return res.status(404).json({ error: 'Match not found' });
+    if (!match) {
+      console.error(`[Leagues] Match not found: ${req.params.matchId}`);
+      return res.status(404).json({ error: 'Match not found' });
+    }
     if (match.leagueId !== req.params.id) return res.status(400).json({ error: 'Match does not belong to this league' });
     if (match.status !== 'scheduled' && match.status !== 'reported') {
+      console.log(`[Leagues] Match ${req.params.matchId} status is ${match.status}, cannot report`);
       return res.status(400).json({ error: 'Match already completed or in review' });
     }
 
@@ -831,20 +850,30 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
 
     const otherReport = match.reportedResults.find(r => r.participantId !== reporterId);
     if (otherReport) {
+      console.log(`[Leagues] Match ${req.params.matchId}: Both players reported. Checking consensus...`);
       if (otherReport.winnerId === winnerId && otherReport.isNoShow === !!isNoShow) {
+        console.log(`[Leagues] Match ${req.params.matchId}: Consensus reached, applying ELO...`);
         match.winnerId = winnerId;
         match.score = score;
         match.noShowParticipantId = isNoShow ? noShowParticipantId : undefined;
-        const eloChanges = await applyLeagueMatchElo(match);
-        return res.json({ match, eloChanges });
+        try {
+          const eloChanges = await applyLeagueMatchElo(match);
+          console.log(`[Leagues] Match ${req.params.matchId}: ELO applied successfully, status=${match.status}`);
+          return res.json({ match, eloChanges });
+        } catch (eloErr) {
+          console.error(`[Leagues] Match ${req.params.matchId}: ELO application failed:`, eloErr);
+          throw eloErr;
+        }
       }
 
       // Results differ: admin must resolve
+      console.log(`[Leagues] Match ${req.params.matchId}: Results differ, moving to pending_review`);
       match.status = 'pending_review';
       await leagueMatches.upsert(match);
       return res.json({ match, eloChanges: null });
     }
 
+    console.log(`[Leagues] Match ${req.params.matchId}: First report, marking as 'reported'`);
     match.status = 'reported';
     await leagueMatches.upsert(match);
     res.json({ match, eloChanges: null });
@@ -878,6 +907,115 @@ router.post('/:id/matches/:matchId/resolve', requireAuth, requireAdmin, async (r
   } catch (err) {
     console.error('[Leagues] POST /:id/matches/:matchId/resolve error:', err);
     res.status(500).json({ error: 'Failed to resolve match dispute' });
+  }
+});
+
+// GET /api/leagues/:id/matches/:matchId/debug — debug match state (admin only)
+router.get('/:id/matches/:matchId/debug', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const match = await leagueMatches.findById(req.params.matchId);
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    
+    const allMatches = await leagueMatches.getAll();
+    const leagueMatchList = allMatches.filter(m => m.leagueId === req.params.id);
+    const weekMatches = leagueMatchList.filter(m => m.week === match.week);
+    
+    res.json({
+      match,
+      exists: !!match,
+      totalLeagueMatches: leagueMatchList.length,
+      weekMatches: weekMatches.length,
+      weekMatchIds: weekMatches.map(m => m.id),
+    });
+  } catch (err) {
+    console.error('[Leagues] GET /:id/matches/:matchId/debug error:', err);
+    res.status(500).json({ error: 'Failed to debug match' });
+  }
+});
+
+// POST /api/leagues/:id/regenerate-schedule — regenerate remaining matches (admin only)
+router.post('/:id/regenerate-schedule', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const league = await leagues.findById(req.params.id);
+    if (!league) return res.status(404).json({ error: 'League not found' });
+
+    // Get active participants (not banned)
+    const activeParticipants = league.participantIds.filter(pid => !league.bannedParticipantIds.includes(pid));
+
+    if (activeParticipants.length < 2) {
+      return res.status(400).json({ error: 'League needs at least 2 active participants' });
+    }
+
+    // Get all matches
+    const allMatches = await leagueMatches.getAll();
+    const leagueMatchList = allMatches.filter(m => m.leagueId === league.id);
+
+    // Separate completed/no_show matches from scheduled/pending_review
+    const completedMatches = leagueMatchList.filter(m => 
+      m.status === 'completed' || m.status === 'no_show'
+    );
+    const futureMatches = leagueMatchList.filter(m => 
+      m.status === 'scheduled' || m.status === 'pending_review' || m.status === 'reported'
+    );
+
+    // Delete all future matches (we'll regenerate)
+    for (const match of futureMatches) {
+      await leagueMatches.remove(match.id);
+    }
+
+    // Regenerate schedule with active participants
+    const pairings = generateRoundRobinPairings(activeParticipants, league.roundsPerOpponent);
+    const weekDistribution = distributeIntoWeeks(pairings, league.matchesPerPlayerPerPeriod, activeParticipants.length);
+
+    // Recalculate week start dates
+    const start = new Date(league.startDate);
+    const weekStartDates = {};
+    const newMatches = [];
+
+    for (const { week, rounds } of weekDistribution) {
+      const weekStart = new Date(start.getTime() + (week - 1) * league.periodDays * 24 * 60 * 60 * 1000);
+      weekStartDates[week] = weekStart.toISOString();
+
+      for (const roundNum of rounds) {
+        const roundData = pairings.find(p => p.round === roundNum);
+        if (!roundData) continue;
+
+        for (const [p1, p2] of roundData.pairings) {
+          const deadline = new Date(weekStart.getTime() + (league.periodDays + (league.gracePeriodDays || 30)) * 24 * 60 * 60 * 1000);
+          newMatches.push({
+            id: generateId('lmatch'),
+            leagueId: league.id,
+            round: roundNum,
+            week,
+            participant1Id: p1,
+            participant2Id: p2,
+            status: 'scheduled',
+            scheduledDate: weekStart.toISOString(),
+            deadline: deadline.toISOString(),
+          });
+        }
+      }
+    }
+
+    // Save new matches
+    for (const match of newMatches) {
+      await leagueMatches.upsert(match);
+    }
+
+    // Update league
+    league.weekStartDates = weekStartDates;
+    league.updatedAt = new Date().toISOString();
+    await leagues.upsert(league);
+
+    res.json({
+      activeParticipants: activeParticipants.length,
+      newMatchesCreated: newMatches.length,
+      completedMatchesPreserved: completedMatches.length,
+      deletedMatches: futureMatches.length,
+    });
+  } catch (err) {
+    console.error('[Leagues] POST /:id/regenerate-schedule error:', err);
+    res.status(500).json({ error: 'Failed to regenerate schedule' });
   }
 });
 

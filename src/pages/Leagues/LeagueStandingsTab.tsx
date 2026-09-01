@@ -1,15 +1,26 @@
+import { useState } from 'react';
 import { LeagueStanding, GlobalParticipant } from '@/models/types';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { banParticipants, regenerateSchedule } from '@/services/leagues/leagueService';
+import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './LeagueStandingsTab.css';
 
 interface LeagueStandingsTabProps {
+  leagueId: string;
   standings: LeagueStanding[];
   participants: Map<string, GlobalParticipant>;
   playoffsEnabled: boolean;
+  onRefresh: () => void;
 }
 
-function LeagueStandingsTab({ standings, participants, playoffsEnabled }: LeagueStandingsTabProps) {
+function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled, onRefresh }: LeagueStandingsTabProps) {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showBanConfirm, setShowBanConfirm] = useState(false);
+  const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   function getParticipantName(id: string): string {
     const p = participants.get(id);
@@ -21,8 +32,67 @@ function LeagueStandingsTab({ standings, participants, playoffsEnabled }: League
     return change > 0 ? `+${change}` : `${change}`;
   }
 
+  function toggleSelection(id: string) {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setSelectedIds(newSet);
+  }
+
+  async function handleBanSelected() {
+    if (selectedIds.size === 0) return;
+    setProcessing(true);
+    try {
+      const result = await banParticipants(leagueId, Array.from(selectedIds));
+      if (result) {
+        setSelectedIds(new Set());
+        setShowBanConfirm(false);
+        onRefresh();
+      }
+    } finally {
+      setProcessing(false);
+    }
+  }
+
+  async function handleRegenerateSchedule() {
+    setProcessing(true);
+    try {
+      const result = await regenerateSchedule(leagueId);
+      if (result) {
+        setShowRegenerateConfirm(false);
+        onRefresh();
+      }
+    } finally {
+      setProcessing(false);
+    }
+  }
+
   return (
     <div className="standings-tab">
+      {isAdmin && (
+        <div className="admin-actions-bar">
+          <button
+            className="btn-outline btn-sm"
+            onClick={() => setShowRegenerateConfirm(true)}
+            disabled={processing}
+          >
+            <i className="fas fa-sync" /> Regenerate Schedule
+          </button>
+          {selectedIds.size > 0 && (
+            <button
+              className="btn-danger btn-sm"
+              onClick={() => setShowBanConfirm(true)}
+              disabled={processing}
+            >
+              <i className="fas fa-ban" /> Ban {selectedIds.size} Player{selectedIds.size > 1 ? 's' : ''}
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="card">
         <div className="standings-header">
           <h3>Standings</h3>
@@ -35,6 +105,7 @@ function LeagueStandingsTab({ standings, participants, playoffsEnabled }: League
           <table className="standings-table">
             <thead>
               <tr>
+                {isAdmin && <th className="col-select"></th>}
                 <th className="col-rank">#</th>
                 <th className="col-player">Player</th>
                 <th className="col-stat">MP</th>
@@ -47,13 +118,23 @@ function LeagueStandingsTab({ standings, participants, playoffsEnabled }: League
             <tbody>
               {standings.map((s) => {
                 const isPlayoffQualified = playoffsEnabled && s.rank <= 8;
+                const isSelected = selectedIds.has(s.participantId);
                 return (
                   <tr
                     key={s.participantId}
-                    className={`standing-row ${isPlayoffQualified ? 'playoff-qualified' : ''}`}
-                    onClick={() => navigate(`/participants/${s.participantId}`)}
+                    className={`standing-row ${isPlayoffQualified ? 'playoff-qualified' : ''} ${isSelected ? 'selected' : ''}`}
                   >
-                    <td className="col-rank">
+                    {isAdmin && (
+                      <td className="col-select" onClick={(e) => { e.stopPropagation(); toggleSelection(s.participantId); }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelection(s.participantId)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </td>
+                    )}
+                    <td className="col-rank" onClick={() => navigate(`/participants/${s.participantId}`)}>
                       <span className={`rank-badge rank-${s.rank}`}>
                         {s.rank === 1 && '🥇'}
                         {s.rank === 2 && '🥈'}
@@ -61,7 +142,7 @@ function LeagueStandingsTab({ standings, participants, playoffsEnabled }: League
                         {s.rank > 3 && s.rank}
                       </span>
                     </td>
-                    <td className="col-player">
+                    <td className="col-player" onClick={() => navigate(`/participants/${s.participantId}`)}>
                       <div className="player-cell">
                         <span className="player-name">{getParticipantName(s.participantId)}</span>
                         {s.noShows > 0 && (
@@ -71,11 +152,11 @@ function LeagueStandingsTab({ standings, participants, playoffsEnabled }: League
                         )}
                       </div>
                     </td>
-                    <td className="col-stat">{s.matchesPlayed}</td>
-                    <td className="col-stat text-success">{s.wins}</td>
-                    <td className="col-stat text-danger">{s.losses}</td>
-                    <td className="col-stat font-bold">{s.currentElo}</td>
-                    <td className={`col-stat ${s.eloChange >= 0 ? 'text-success' : 'text-danger'}`}>
+                    <td className="col-stat" onClick={() => navigate(`/participants/${s.participantId}`)}>{s.matchesPlayed}</td>
+                    <td className="col-stat text-success" onClick={() => navigate(`/participants/${s.participantId}`)}>{s.wins}</td>
+                    <td className="col-stat text-danger" onClick={() => navigate(`/participants/${s.participantId}`)}>{s.losses}</td>
+                    <td className="col-stat font-bold" onClick={() => navigate(`/participants/${s.participantId}`)}>{s.currentElo}</td>
+                    <td className={`col-stat ${s.eloChange >= 0 ? 'text-success' : 'text-danger'}`} onClick={() => navigate(`/participants/${s.participantId}`)}>
                       {formatEloChange(s.eloChange)}
                     </td>
                   </tr>
@@ -91,6 +172,28 @@ function LeagueStandingsTab({ standings, participants, playoffsEnabled }: League
           </div>
         )}
       </div>
+
+      {showBanConfirm && (
+        <ConfirmModal
+          isOpen={showBanConfirm}
+          title="Ban Players"
+          message={`Are you sure you want to ban ${selectedIds.size} player(s)? This will remove them from the league and regenerate all future matches.`}
+          onConfirm={handleBanSelected}
+          onCancel={() => setShowBanConfirm(false)}
+          confirmText="Ban Players"
+        />
+      )}
+
+      {showRegenerateConfirm && (
+        <ConfirmModal
+          isOpen={showRegenerateConfirm}
+          title="Regenerate Schedule"
+          message="This will delete all scheduled, reported, and pending_review matches and regenerate them using the corrected algorithm. Completed and no_show matches will be preserved. Continue?"
+          onConfirm={handleRegenerateSchedule}
+          onCancel={() => setShowRegenerateConfirm(false)}
+          confirmText="Regenerate"
+        />
+      )}
     </div>
   );
 }

@@ -295,3 +295,27 @@ export async function banParticipants(
     return null;
   }
 }
+
+/**
+ * Regenerate league schedule (preserves completed matches, regenerates future ones)
+ */
+export async function regenerateSchedule(
+  leagueId: string
+): Promise<{
+  activeParticipants: number;
+  newMatchesCreated: number;
+  completedMatchesPreserved: number;
+  deletedMatches: number;
+} | null> {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/regenerate-schedule`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    });
+    if (!res.ok) throw new Error('Failed to regenerate schedule');
+    return await res.json();
+  } catch (err) {
+    console.error('[LeagueService] regenerateSchedule error:', err);
+    return null;
+  }
+}
