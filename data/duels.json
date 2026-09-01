@@ -1106,5 +1106,53 @@
     "challengerResult": null,
     "challengedResult": null,
     "metadata": null
+  },
+  {
+    "id": "duel_1788293450570_1by9klzzr",
+    "challengerId": "gp_1786387087046_wnwtadb",
+    "challengedId": "gp_1786408686972_s4nl3vz",
+    "type": "normal",
+    "status": "accepted",
+    "createdAt": "2026-09-01T20:10:50.571Z",
+    "expiresAt": "2026-09-08T20:10:50.570Z",
+    "acceptedAt": "2026-09-01T20:11:22.178Z",
+    "declinedAt": null,
+    "completedAt": null,
+    "matchId": null,
+    "challengerResult": null,
+    "challengedResult": null,
+    "metadata": null
+  },
+  {
+    "id": "duel_1788293747951_w2l07ywug",
+    "challengerId": "gp_1786387087046_wnwtadb",
+    "challengedId": "gp_1786393850039_1imzf6x",
+    "type": "normal",
+    "status": "accepted",
+    "createdAt": "2026-09-01T20:15:47.958Z",
+    "expiresAt": "2026-09-08T20:15:47.951Z",
+    "acceptedAt": "2026-09-01T20:16:30.829Z",
+    "declinedAt": null,
+    "completedAt": null,
+    "matchId": null,
+    "challengerResult": null,
+    "challengedResult": null,
+    "metadata": null
+  },
+  {
+    "id": "duel_1788293804127_obfd89jci",
+    "challengerId": "gp_1786393850039_1imzf6x",
+    "challengedId": "gp_1786387087046_wnwtadb",
+    "type": "mandatory",
+    "status": "accepted",
+    "createdAt": "2026-09-01T20:16:44.129Z",
+    "expiresAt": "2026-09-08T20:16:44.127Z",
+    "acceptedAt": "2026-09-01T20:16:44.129Z",
+    "declinedAt": null,
+    "completedAt": null,
+    "matchId": null,
+    "challengerResult": null,
+    "challengedResult": null,
+    "metadata": null
   }
 ]

@@ -22,6 +22,8 @@ import {
 } from '../utils/leagueScheduler.js';
 import { calculateMatchElo, getRankName } from '../utils/eloEngine.js';
 import { notifyAdminsOfBanEligibility } from '../services/leagueExpiration.js';
+import { createNotification } from '../services/notificationService.js';
+import { scheduleLeagueNotifications } from '../services/notificationScheduler.js';
 import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
 
 const router = Router();
@@ -336,6 +338,9 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     for (const match of matchRecords) {
       await leagueMatches.upsert(match);
     }
+
+    // Schedule future notifications for each league week start
+    scheduleLeagueNotifications(league);
     
     res.status(201).json({ league, matchesCreated: matchRecords.length });
   } catch (err) {
@@ -723,6 +728,9 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
     league.updatedAt = new Date().toISOString();
     await leagues.upsert(league);
 
+    // Re-schedule notifications for the new schedule
+    scheduleLeagueNotifications(league);
+
     res.json({
       bannedCount: participantIds.length,
       activeParticipants: activeParticipants.length,
@@ -1006,6 +1014,9 @@ router.post('/:id/regenerate-schedule', requireAuth, requireAdmin, async (req, r
     league.weekStartDates = weekStartDates;
     league.updatedAt = new Date().toISOString();
     await leagues.upsert(league);
+
+    // Re-schedule notifications for the new schedule
+    scheduleLeagueNotifications(league);
 
     res.json({
       activeParticipants: activeParticipants.length,

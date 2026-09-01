@@ -1,3 +1,5 @@
+import type { AppNotification } from './notification';
+
 /**
  * Auth model types
  *
@@ -21,6 +23,7 @@ export interface AuthUser {
 export interface AuthSession {
   token: string;
   user: AuthUser;
+  notifications: AppNotification[];
 }
 
 /** Usuario almacenado en contexto — sin campos sensibles de BD */

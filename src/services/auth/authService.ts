@@ -49,7 +49,7 @@ export async function login(username: string, password: string): Promise<AuthSes
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Login failed');
   storeToken(data.token);
-  return data as AuthSession;
+  return { ...data, notifications: data.notifications || [] } as AuthSession;
 }
 
 /** Cierra sesión localmente (el token vive en localStorage). */

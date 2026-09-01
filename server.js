@@ -26,8 +26,7 @@ import authRouter from './server/routes/auth.js';
 import notificationsRouter from './server/routes/notifications.js';
 import { expireAllOldDuels } from './server/services/duelExpiration.js';
 import { expireAllOldLeagueMatches } from './server/services/leagueExpiration.js';
-import { notifyExpiringDuels, notifyExpiringLeagueMatches, notifyLeagueWeekStart } from './server/services/notificationService.js';
-import { duels, duelSettings, leagueMatches } from './server/db/collections.js';
+import { reschedulableLeagueNotifications } from './server/services/notificationScheduler.js';
 
 // Render asigna el puerto via PORT; en local usamos 3001
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
@@ -57,6 +56,11 @@ app.use('/api/leagues', leaguesRouter);
 app.use('/api/duels', duelsRouter);
 app.use('/api/ranked-matches', rankedMatchesRouter);
 app.use('/api/notifications', notificationsRouter);
+
+// GET /api/health — lightweight ping to keep Render free instance awake
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true, timestamp: new Date().toISOString() });
+});
 
 // ── 404 fallback ────────────────────────────────────────────────────────
 app.use((_req, res) => {
@@ -108,20 +112,10 @@ app.listen(PORT, () => {
     });
   }, 12 * 60 * 60 * 1000); // every 12 hours
 
-  // Run notification checks on startup and every hour
-  const runNotificationChecks = () => {
-    notifyExpiringDuels(duels, duelSettings).catch(err =>
-      console.error('[Notifications] duel expiry check failed:', err)
-    );
-    notifyExpiringLeagueMatches(leagueMatches).catch(err =>
-      console.error('[Notifications] league match expiry check failed:', err)
-    );
-    notifyLeagueWeekStart().catch(err =>
-      console.error('[Notifications] league week start check failed:', err)
-    );
-  };
-  runNotificationChecks();
-  setInterval(runNotificationChecks, 60 * 60 * 1000); // every hour
+  // Reschedule any pending league week notifications on startup (setTimeout is in-memory only)
+  reschedulableLeagueNotifications().catch(err =>
+    console.error('[Notifications] Failed to reschedule league week notifications:', err)
+  );
 
   setInterval(() => {
     expireAllOldDuels().then((count) => {

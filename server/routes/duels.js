@@ -211,6 +211,53 @@ router.put('/:id/accept', requireAuth, async (req, res) => {
     challenge.status = 'accepted';
     challenge.acceptedAt = new Date().toISOString();
     await duels.upsert(challenge);
+
+    // Notify the challenger that the duel was accepted
+    try {
+      const challengedParticipant = await participants.findById(challenge.challengedId);
+      const challengedName = challengedParticipant?.alias || challengedParticipant?.name || 'Your opponent';
+      await createNotification(
+        challenge.challengerId,
+        'duel_accepted',
+        'Duel Accepted!',
+        `${challengedName} accepted your duel challenge. Play and record the result before it expires.`,
+        { duelId: challenge.id, challengedId: challenge.challengedId }
+      );
+      console.log(`[Duels] Created accept notification for challenger ${challenge.challengerId}`);
+    } catch (err) {
+      console.warn('[Duels] Failed to create accept notification:', err);
+    }
+
+    // Schedule expiring notification for ~3 days before the deadline
+    try {
+      const settings = await duelSettings.getAll().then(s => s.find(x => x.id === 'default') || { challengeExpirationDays: 7 });
+      const acceptedExpiresAt = new Date(challenge.acceptedAt);
+      acceptedExpiresAt.setDate(acceptedExpiresAt.getDate() + settings.challengeExpirationDays);
+      const warnAt = new Date(acceptedExpiresAt.getTime() - 3 * 24 * 60 * 60 * 1000);
+
+      if (warnAt > new Date()) {
+        await createNotification(
+          challenge.challengerId,
+          'duel_expiring',
+          'Duel expiring soon',
+          `Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.`,
+          { duelId: challenge.id, expiresAt: acceptedExpiresAt.toISOString() },
+          warnAt.toISOString()
+        );
+        await createNotification(
+          challenge.challengedId,
+          'duel_expiring',
+          'Duel expiring soon',
+          `A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.`,
+          { duelId: challenge.id, expiresAt: acceptedExpiresAt.toISOString() },
+          warnAt.toISOString()
+        );
+        console.log(`[Duels] Scheduled expiring notifications for duel ${challenge.id}`);
+      }
+    } catch (err) {
+      console.warn('[Duels] Failed to schedule expiring notification:', err);
+    }
+
     res.json(challenge);
   } catch (err) {
     console.error('[Duels] PUT /:id/accept error:', err);

@@ -7,7 +7,7 @@
     "role": "admin",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.682Z",
-    "lastLoginAt": "2026-09-01T18:33:14.777Z"
+    "lastLoginAt": "2026-09-01T20:17:30.492Z"
   },
   {
     "id": "user_1787803682684_psoq3qr",
@@ -17,7 +17,7 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.892Z",
-    "lastLoginAt": "2026-09-01T17:56:05.611Z"
+    "lastLoginAt": "2026-09-01T20:22:54.284Z"
   },
   {
     "id": "user_1787803682892_c3ay3q8",
@@ -27,7 +27,7 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:03.101Z",
-    "lastLoginAt": "2026-09-01T17:57:12.388Z"
+    "lastLoginAt": "2026-09-01T20:19:51.765Z"
   },
   {
     "id": "user_1787803683102_713roxo",
@@ -157,7 +157,7 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:05.838Z",
-    "lastLoginAt": "2026-09-01T18:25:45.286Z"
+    "lastLoginAt": "2026-09-01T20:16:08.840Z"
   },
   {
     "id": "user_1787803685838_vj6fyen",
@@ -197,7 +197,7 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:06.690Z",
-    "lastLoginAt": null
+    "lastLoginAt": "2026-09-01T20:10:58.754Z"
   },
   {
     "id": "user_1787803686690_hge3qqs",

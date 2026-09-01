@@ -21,9 +21,11 @@ import { notifications, leagues, leagueMatches, participants } from '../db/colle
  * @param {string} title         - Short title
  * @param {string} message       - Full message body
  * @param {Object} [data]        - Extra context (duelId, leagueId, matchId, etc.)
+ * @param {string} [scheduledAt] - ISO date when the notification becomes visible (optional, default now)
  * @returns {Promise<Object>}
  */
-export async function createNotification(recipientId, type, title, message, data = null) {
+export async function createNotification(recipientId, type, title, message, data = null, scheduledAt = null) {
+  const now = new Date().toISOString();
   const notification = {
     id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     recipientId,
@@ -31,7 +33,8 @@ export async function createNotification(recipientId, type, title, message, data
     title,
     message,
     read: false,
-    createdAt: new Date().toISOString(),
+    createdAt: now,
+    scheduledAt: scheduledAt || now,
     data,
   };
 
@@ -45,16 +48,17 @@ export async function createNotification(recipientId, type, title, message, data
 }
 
 /**
- * Get all notifications for a recipient, sorted newest first.
+ * Get all notifications for a recipient that are ready to show, sorted newest first.
  * @param {string} recipientId
  * @returns {Promise<Object[]>}
  */
 export async function getNotificationsForRecipient(recipientId) {
   try {
     const all = await notifications.getAll();
+    const now = new Date().toISOString();
     return all
-      .filter(n => n.recipientId === recipientId)
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      .filter(n => n.recipientId === recipientId && (n.scheduledAt ? n.scheduledAt <= now : true))
+      .sort((a, b) => new Date(b.scheduledAt || b.createdAt) - new Date(a.scheduledAt || a.createdAt));
   } catch (err) {
     console.error('[notificationService] getNotificationsForRecipient failed:', err.message);
     return [];
@@ -228,6 +232,7 @@ export async function notifyLeagueWeekStart() {
   }
 
   const now = new Date();
+  const NOTIFICATION_WINDOW_MINUTES = 30; // Notify up to 30 minutes before week starts
 
   for (const league of allLeagues) {
     if (league.status !== 'active') continue;
@@ -238,9 +243,13 @@ export async function notifyLeagueWeekStart() {
 
     for (const week of weeks) {
       const weekStart = new Date(league.weekStartDates[week]);
-      if (weekStart > now) continue; // week hasn't started
+      const notificationTime = new Date(weekStart.getTime() - NOTIFICATION_WINDOW_MINUTES * 60 * 1000);
+      
+      // Skip if notification time hasn't arrived yet
+      if (now < notificationTime) continue;
 
-      if (league.notifiedWeeks?.includes(week)) continue; // already notified
+      // Skip if already notified
+      if (league.notifiedWeeks?.includes(week)) continue;
 
       const weekMatches = allMatches.filter(
         m => m.leagueId === league.id && m.week === week
@@ -282,6 +291,8 @@ export async function notifyLeagueWeekStart() {
       league.notifiedWeeks = [...new Set(league.notifiedWeeks)].sort((a, b) => a - b);
       league.updatedAt = new Date().toISOString();
       await leagues.upsert(league);
+      
+      console.log(`[notifyLeagueWeekStart] Notified ${Object.keys(opponents).length} participants for league "${league.name}" week ${week}`);
     }
   }
 }

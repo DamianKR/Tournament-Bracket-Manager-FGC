@@ -7,6 +7,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { SessionUser } from '@/models/auth';
+import type { AppNotification } from '@/models/notification';
 import {
   login as authLogin,
   logout as authLogout,
@@ -22,6 +23,10 @@ interface AuthContextType {
   isAuthenticated: boolean;
   /** true si el usuario tiene rol admin. */
   isAdmin: boolean;
+  /** Notificaciones recibidas en el login más reciente, o null si no hay. */
+  loginNotifications: AppNotification[] | null;
+  /** Consume las notificaciones de login (para que otro contexto las use una sola vez). */
+  consumeLoginNotifications: () => AppNotification[];
   /** Intenta hacer login. Lanza Error con mensaje si falla. */
   login: (username: string, password: string) => Promise<void>;
   /** Cierra sesión y limpia el contexto. */
@@ -35,6 +40,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loginNotifications, setLoginNotifications] = useState<AppNotification[] | null>(null);
 
   // Restaurar sesión al montar
   useEffect(() => {
@@ -51,11 +57,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       role: session.user.role,
       participantId: session.user.participantId,
     });
+    setLoginNotifications(session.notifications || []);
   }, []);
+
+  const consumeLoginNotifications = useCallback(() => {
+    const notifs = loginNotifications ?? [];
+    setLoginNotifications(null);
+    return notifs;
+  }, [loginNotifications]);
 
   const logout = useCallback(() => {
     authLogout();
     setUser(null);
+    setLoginNotifications(null);
   }, []);
 
   const refreshUser = useCallback(async () => {
@@ -68,6 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     isAuthenticated: user !== null,
     isAdmin: user?.role === 'admin',
+    loginNotifications,
+    consumeLoginNotifications,
     login,
     logout,
     refreshUser,

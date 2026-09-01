@@ -43,11 +43,11 @@ interface NotificationContextValue {
 
 const NotificationContext = createContext<NotificationContextValue | null>(null);
 
-const POLL_INTERVAL_MS = 30 * 1000; // poll every 30 seconds
+const POLL_INTERVAL_MS = 3 * 60 * 1000; // example poll every 5 minutes for new notifications
 const TOAST_DURATION_MS = 10 * 1000; // 10 seconds
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, consumeLoginNotifications } = useAuth();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [loading, setLoading] = useState(false);
@@ -112,7 +112,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
   }, [isAuthenticated, user, addToast]);
 
-  // Load on auth change, poll every 30s
+  // Load on auth change, poll every 5 minutes
   useEffect(() => {
     if (!isAuthenticated) {
       setNotifications([]);
@@ -125,6 +125,28 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     const interval = setInterval(refresh, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [isAuthenticated, refresh]);
+
+  // Consume login notifications (delivered immediately in the login response)
+  useEffect(() => {
+    if (!isAuthenticated || !user?.participantId) return;
+    const loginNotifs = consumeLoginNotifications();
+    if (!loginNotifs || loginNotifs.length === 0) return;
+
+    setNotifications(loginNotifs);
+    const unread = loginNotifs.filter(n => !n.read);
+    if (unread.length === 1) {
+      addToast({ id: unread[0].id, title: unread[0].title, message: unread[0].message, type: unread[0].type });
+    } else if (unread.length > 1) {
+      addToast({
+        id: 'login-summary',
+        title: 'You have notifications',
+        message: `You have ${unread.length} unread notifications. Check the bell icon.`,
+        type: 'summary',
+      });
+    }
+    prevUnreadIds.current = new Set(unread.map(n => n.id));
+    isFirstLoad.current = false;
+  }, [isAuthenticated, user, consumeLoginNotifications, addToast]);
 
   const markRead = useCallback(async (id: string) => {
     await markNotificationReadAsync(id);

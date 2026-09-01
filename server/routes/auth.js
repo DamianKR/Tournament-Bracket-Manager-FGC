@@ -23,6 +23,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET, JWT_EXPIRY, requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
 import { users } from '../db/collections.js';
+import { getNotificationsForRecipient } from '../services/notificationService.js';
 
 const router = Router();
 const SALT_ROUNDS = 12;
@@ -122,7 +123,22 @@ router.post('/login', async (req, res) => {
   await users.upsert(user);
 
   const token = signToken(user);
-  res.json({ token, user: safeUser(user) });
+
+  // Load unread notifications on login so the user sees them immediately
+  let notifications = [];
+  try {
+    if (user.participantId) {
+      notifications = await getNotificationsForRecipient(user.participantId);
+    }
+  } catch (err) {
+    console.error('[Auth] Failed to load notifications on login:', err);
+  }
+
+  res.json({
+    token,
+    user: safeUser(user),
+    notifications,
+  });
 });
 
 // ── POST /api/auth/logout ─────────────────────────────────────────────────
