@@ -71,6 +71,7 @@ export async function createLeague(config: {
   startDate: string;
   timeZone?: string;
   maxNoShowsBeforeKick: number;
+  gracePeriodDays?: number;
   playoffsEnabled: boolean;
   playoffsEloMultiplier: number;
 }): Promise<{ league: League; matchesCreated: number } | null> {

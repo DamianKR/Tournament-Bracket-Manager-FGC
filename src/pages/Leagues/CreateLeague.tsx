@@ -23,6 +23,7 @@ function CreateLeague() {
   const [startTime, setStartTime] = useState('20:00');
   const [timeZone, setTimeZone] = useState(DEFAULT_TIMEZONE);
   const [maxNoShows, setMaxNoShows] = useState(3);
+  const [gracePeriodDays, setGracePeriodDays] = useState(30);
   const [playoffsEnabled, setPlayoffsEnabled] = useState(true);
   const [playoffsMultiplier, setPlayoffsMultiplier] = useState(1.5);
 
@@ -111,6 +112,7 @@ function CreateLeague() {
       startDate: startIso,
       timeZone,
       maxNoShowsBeforeKick: maxNoShows,
+      gracePeriodDays,
       playoffsEnabled,
       playoffsEloMultiplier: playoffsMultiplier,
     });
@@ -322,6 +324,20 @@ function CreateLeague() {
             </select>
             <p className="form-hint">
               Players who don't show up lose ELO as if they lost the match.
+            </p>
+          </div>
+
+          <div className="form-section">
+            <label>Grace period days</label>
+            <input
+              type="number"
+              min={0}
+              max={90}
+              value={gracePeriodDays}
+              onChange={(e) => setGracePeriodDays(Number(e.target.value))}
+            />
+            <p className="form-hint">
+              Extra days after each week to finish and report matches (0 = none).
             </p>
           </div>
 

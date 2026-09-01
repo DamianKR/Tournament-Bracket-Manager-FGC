@@ -243,6 +243,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       startDate,
       timeZone,
       maxNoShowsBeforeKick,
+      gracePeriodDays,
       playoffsEnabled,
       playoffsEloMultiplier,
     } = req.body;
@@ -269,7 +270,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       timeZone: timeZone || 'America/Havana',
       weekStartDates: {}, // Will be populated below
       maxNoShowsBeforeKick: maxNoShowsBeforeKick || 3,
-      gracePeriodDays: 30, // Default: 30 días de gracia
+      gracePeriodDays: gracePeriodDays ?? 30,
       playoffsEnabled: playoffsEnabled ?? true,
       playoffsEloMultiplier: playoffsEloMultiplier || 1.5,
       status: 'active',
