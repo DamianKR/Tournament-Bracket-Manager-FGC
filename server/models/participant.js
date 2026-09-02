@@ -22,8 +22,8 @@ export function participantShape(id, name, alias = '', communityId = 'community_
     avatarUrl: null,
     tournamentIds: [],
     communityId,
-    eloPoints: 1500,
-    eloRank: 'Diamante',
+    eloPoints: null,
+    eloRank: 'Sin puntos',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

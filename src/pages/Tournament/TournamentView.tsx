@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { Tournament } from '@/models/types';
 import { getTournament, setMatchWinner, undoMatchResult } from '@/services/tournament/tournamentService';
-import { useAuth } from '@/contexts/AuthContext';
+
 import Sidebar from '@/components/Sidebar/Sidebar';
 import BracketView from '@/components/Bracket/BracketView';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
@@ -15,8 +15,7 @@ type ViewMode = 'bracket' | 'participants';
 function TournamentView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getPath } = useCommunity();
-  const { isAdmin } = useAuth();
+  const { getPath, canAdminCurrentCommunity } = useCommunity();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('bracket');
   const [error, setError] = useState('');
@@ -159,9 +158,9 @@ function TournamentView() {
               <BracketView
                 bracket={tournament.bracket}
                 participants={tournament.participants}
-                onMatchResult={isAdmin ? handleMatchResult : undefined}
-                onRevertMatch={isAdmin && tournament.status !== 'completed' ? handleRevertMatch : undefined}
-                readOnly={tournament.status === 'completed' || !isAdmin}
+                onMatchResult={canAdminCurrentCommunity ? handleMatchResult : undefined}
+                onRevertMatch={canAdminCurrentCommunity && tournament.status !== 'completed' ? handleRevertMatch : undefined}
+                readOnly={tournament.status === 'completed' || !canAdminCurrentCommunity}
               />
             )}
 

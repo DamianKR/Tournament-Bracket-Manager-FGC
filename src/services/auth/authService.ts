@@ -146,7 +146,7 @@ export async function createUserAccount(
 /** Actualiza username / password / isActive / role de un usuario. */
 export async function updateUserAccount(
   userId: string,
-  updates: Partial<{ username: string; password: string; isActive: boolean; role: AuthUser['role'] }>
+  updates: Partial<{ username: string; password: string; isActive: boolean; role: AuthUser['role']; communityId: string | null }>
 ): Promise<AuthUser> {
   const res = await fetch(`${SERVER_URL}/api/auth/users/${userId}`, {
     method: 'PUT',

@@ -89,10 +89,15 @@ router.post('/', requireAuth, async (req, res) => {
         }
 
         // Server has no ELO yet (old record) — take whatever incoming has, or default.
+        // Explicit null eloPoints means the participant is unranked (no matches yet).
+        const eloPoints = incoming.eloPoints === undefined ? 1500 : incoming.eloPoints;
+        const eloRank = incoming.eloRank === undefined
+          ? (eloPoints === null ? 'Sin puntos' : 'Diamante')
+          : incoming.eloRank;
         return {
           ...incoming,
-          eloPoints: incoming.eloPoints ?? 1500,
-          eloRank:   incoming.eloRank   ?? 'Diamante',
+          eloPoints,
+          eloRank,
           communityId,
         };
       });

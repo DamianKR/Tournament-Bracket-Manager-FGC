@@ -13,7 +13,7 @@ import {
   type LeaderboardEntry,
 } from '@/services/ranking/rankingService';
 import type { MatchRecord } from '@/models/types';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
@@ -25,8 +25,7 @@ type Tab = 'leaderboard' | 'history' | 'info';
 
 function RankingPage() {
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
-  const { currentCommunity, getPath } = useCommunity();
+  const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
   const [tab, setTab] = useState<Tab>('leaderboard');
 
@@ -166,7 +165,7 @@ function RankingPage() {
           <p className="rk-subtitle">Competitive scoring system — start at 1500 pts</p>
         </div>
         <div className="rk-header-right">
-          {isAdmin && (
+          {canAdminCurrentCommunity && (
             <div className="rk-reset-btns">
               <button
                 className="rk-reset-btn soft"
@@ -334,7 +333,7 @@ function RankingPage() {
                 <div key={m.id} className="card rk-history-card">
                   <div className="rk-history-top">
                     <span className="rk-history-date">{formatDate(m.createdAt)}</span>
-                    {isAdmin && (
+                    {canAdminCurrentCommunity && (
                       <button
                         className="rk-history-delete"
                         title="Delete record (does not revert ELO)"

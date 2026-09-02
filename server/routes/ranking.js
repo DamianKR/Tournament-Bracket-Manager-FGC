@@ -184,6 +184,9 @@ router.post('/match', requireAuth, async (req, res) => {
 router.post('/reset/hard', requireAuth, requireAdmin, async (req, res) => {
   try {
     const communityId = getTargetCommunityId(req.user, req.body.communityId);
+    if (!isInUserScope(req.user, communityId)) {
+      return res.status(403).json({ error: 'Cannot reset ranking for this community' });
+    }
     const all = await participants.getAll();
     const resetPoints = 1500;
     const resetRank   = getRankName(resetPoints);
@@ -220,6 +223,9 @@ router.post('/reset/hard', requireAuth, requireAdmin, async (req, res) => {
 router.post('/reset/soft', requireAuth, requireAdmin, async (req, res) => {
   try {
     const communityId = getTargetCommunityId(req.user, req.body.communityId);
+    if (!isInUserScope(req.user, communityId)) {
+      return res.status(403).json({ error: 'Cannot reset ranking for this community' });
+    }
     const all = await participants.getAll();
 
     const updated = all.map((p) => {

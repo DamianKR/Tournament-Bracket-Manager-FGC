@@ -19,9 +19,22 @@ interface CommunityContextValue {
   setCommunityId: (id: string) => void;
   refresh: () => Promise<void>;
   getPath: (path: string) => string;
+  /**
+   * true if the logged-in user belongs to the community currently being viewed,
+   * OR if the user is a superadmin (global access).
+   * Use this to gate any write/action UI (buttons, forms, etc.).
+   */
+  isInMyCommunity: boolean;
+  /**
+   * true if the user is an admin-level role AND is in their own community.
+   * Shorthand for: isAdmin && isInMyCommunity.
+   */
+  canAdminCurrentCommunity: boolean;
 }
 
 const CommunityContext = createContext<CommunityContextValue | null>(null);
+
+const ALL_ADMIN_ROLES = ['superadmin', 'community_admin', 'admin'] as const;
 
 export function CommunityProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -59,12 +72,24 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     refresh();
   }, [refresh]);
 
+  // A user "owns" the current community if they are superadmin OR their communityId matches.
+  const isInMyCommunity =
+    user?.role === 'superadmin' ||
+    (user != null && user.communityId === currentCommunity?.id);
+
+  const canAdminCurrentCommunity =
+    isInMyCommunity &&
+    user != null &&
+    (ALL_ADMIN_ROLES as readonly string[]).includes(user.role);
+
   const value: CommunityContextValue = {
     currentCommunity,
     allCommunities,
     setCommunityId,
     refresh,
     getPath,
+    isInMyCommunity,
+    canAdminCurrentCommunity,
   };
 
   return (

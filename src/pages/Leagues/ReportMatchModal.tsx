@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
-import { useAuth } from '@/contexts/AuthContext';
+
+import { useCommunity } from '@/contexts/CommunityContext';
 import { reportMatchResult, resolveLeagueMatch } from '@/services/leagues/leagueService';
 import './ReportMatchModal.css';
 
@@ -16,7 +17,7 @@ const MAX_EVIDENCE_SIZE_MB = 4;
 const MAX_EVIDENCE_SIZE_BYTES = MAX_EVIDENCE_SIZE_MB * 1024 * 1024;
 
 function ReportMatchModal({ league, match, participants, onClose, onSuccess }: ReportMatchModalProps) {
-  const { isAdmin } = useAuth();
+  const { canAdminCurrentCommunity } = useCommunity();
   const [winnerId, setWinnerId] = useState(match.participant1Id);
   const [score1, setScore1] = useState(2);
   const [score2, setScore2] = useState(0);
@@ -69,7 +70,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     };
 
     let result = null;
-    if (isAdmin && (match.status === 'pending_review' || match.status === 'reported')) {
+    if (canAdminCurrentCommunity && (match.status === 'pending_review' || match.status === 'reported')) {
       result = await resolveLeagueMatch(league.id, match.id, baseResult);
     } else {
       result = await reportMatchResult(league.id, match.id, {
@@ -235,7 +236,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
             </>
           )}
 
-          {!(isAdmin && (match.status === 'pending_review' || match.status === 'reported')) && (
+          {!(canAdminCurrentCommunity && (match.status === 'pending_review' || match.status === 'reported')) && (
             <div className="form-section">
               <label>Evidence (optional, max {MAX_EVIDENCE_SIZE_MB}MB)</label>
               <input
@@ -255,7 +256,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
           <button className="btn-primary" onClick={handleSubmit} disabled={submitting}>
             {submitting
               ? 'Submitting...'
-              : isAdmin && match.status === 'pending_review'
+              : canAdminCurrentCommunity && match.status === 'pending_review'
                 ? 'Resolve'
                 : 'Submit Result'}
           </button>

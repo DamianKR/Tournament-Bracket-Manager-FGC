@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { LeagueStanding, GlobalParticipant } from '@/models/types';
 import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { banParticipants, regenerateSchedule } from '@/services/leagues/leagueService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './LeagueStandingsTab.css';
@@ -17,8 +17,7 @@ interface LeagueStandingsTabProps {
 
 function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled, onRefresh }: LeagueStandingsTabProps) {
   const navigate = useNavigate();
-  const { getPath } = useCommunity();
-  const { isAdmin } = useAuth();
+  const { getPath, canAdminCurrentCommunity } = useCommunity();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBanConfirm, setShowBanConfirm] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
@@ -74,7 +73,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
 
   return (
     <div className="standings-tab">
-      {isAdmin && (
+      {canAdminCurrentCommunity && (
         <div className="admin-actions-bar">
           <button
             className="btn-outline btn-sm"
@@ -107,7 +106,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
           <table className="standings-table">
             <thead>
               <tr>
-                {isAdmin && <th className="col-select"></th>}
+                {canAdminCurrentCommunity && <th className="col-select"></th>}
                 <th className="col-rank">#</th>
                 <th className="col-player">Player</th>
                 <th className="col-stat">MP</th>
@@ -126,7 +125,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
                     key={s.participantId}
                     className={`standing-row ${isPlayoffQualified ? 'playoff-qualified' : ''} ${isSelected ? 'selected' : ''}`}
                   >
-                    {isAdmin && (
+                    {canAdminCurrentCommunity && (
                       <td className="col-select" onClick={(e) => { e.stopPropagation(); toggleSelection(s.participantId); }}>
                         <input
                           type="checkbox"

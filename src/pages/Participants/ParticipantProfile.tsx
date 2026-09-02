@@ -42,12 +42,22 @@ function ordinal(n: number): string {
 function ParticipantProfile() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentCommunity, getPath } = useCommunity();
+  const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
   const [searchParams] = useSearchParams();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isCommunityOwner, isSuperAdmin } = useAuth();
   const isOwnProfile = !!(user && user.participantId === id);
-  const canEdit = isAdmin || isOwnProfile;
+  // Can edit profile fields only if in own community AND has admin rights, or is own profile
+  const canEdit = (canAdminCurrentCommunity) || isOwnProfile;
+  // Can manage other people's accounts only if community owner AND in own community
+  const canManageAccounts = canAdminCurrentCommunity && isCommunityOwner;
+
+  // Role options a manager can assign, restricted by their own role
+  const manageableRoles: AuthUser['role'][] = isSuperAdmin
+    ? ['user', 'admin', 'community_admin', 'superadmin']
+    : isCommunityOwner
+      ? ['user', 'admin']
+      : [];
 
   const initialTab = (searchParams.get('tab') as Tab | null) ?? 'overview';
 
@@ -313,6 +323,10 @@ function ParticipantProfile() {
       if (admPassword.trim()) updates.password = admPassword.trim();
       if (admRole !== linkedUser.role) updates.role = admRole;
       if (admIsActive !== linkedUser.isActive) updates.isActive = admIsActive;
+      const targetCommunityId = currentCommunity?.id ?? null;
+      if (admRole !== 'superadmin' && targetCommunityId && linkedUser.communityId !== targetCommunityId) {
+        updates.communityId = targetCommunityId;
+      }
 
       if (Object.keys(updates).length > 0) {
         const updated = await updateUserAccount(linkedUser.id, updates);
@@ -973,7 +987,7 @@ function ParticipantProfile() {
               </>
             )}
 
-            {isAdmin && (
+            {canManageAccounts && (
               <>
                 <hr className="profile-password-sep" />
                 <h3>Account Management</h3>
@@ -1004,15 +1018,18 @@ function ParticipantProfile() {
                             placeholder="Repeat new password" autoComplete="new-password" />
                         </div>
                       )}
-                      <div className="form-group">
-                        <label>Role</label>
-                        <select value={admRole} onChange={e => setAdmRole(e.target.value as AuthUser['role'])}>
-                          <option value="user">User</option>
-                          <option value="admin">Admin Assistant</option>
-                          <option value="community_admin">Community Owner</option>
-                          <option value="superadmin">Superadmin</option>
-                        </select>
-                      </div>
+                      {manageableRoles.length > 0 && (
+                        <div className="form-group">
+                          <label>Role</label>
+                          <select value={admRole} onChange={e => setAdmRole(e.target.value as AuthUser['role'])}>
+                            {manageableRoles.map(r => (
+                              <option key={r} value={r}>
+                                {r === 'superadmin' ? 'Superadmin' : r === 'community_admin' ? 'Community Owner' : r === 'admin' ? 'Admin Assistant' : 'User'}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                       <div className="form-group pp-account-active-toggle">
                         <label>
                           <input

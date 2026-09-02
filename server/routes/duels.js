@@ -52,6 +52,9 @@ router.get('/settings', optionalAuth, async (req, res) => {
 router.put('/settings', requireAuth, requireAdmin, async (req, res) => {
   try {
     const communityId = getTargetCommunityId(req.user, req.body.communityId);
+    if (!isInUserScope(req.user, communityId)) {
+      return res.status(403).json({ error: 'Cannot update settings for this community' });
+    }
     const existing = (await duelSettings.getAll()).find(s => s.communityId === communityId);
     const updated = {
       ...(existing || duelSettingsShape(communityId)),

@@ -118,8 +118,7 @@ async function calculateStandings(leagueId) {
   const league = await leagues.findById(leagueId);
   if (!league) return [];
   
-  const matches = await leagueMatches.getAll();
-  const leagueMatchList = matches.filter(m => m.leagueId === leagueId);
+  const leagueMatchList = await leagueMatches.getByField('leagueId', leagueId);
   
   const standings = new Map();
   
@@ -362,8 +361,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 // GET /api/leagues/:id/matches
 router.get('/:id/matches', async (req, res) => {
   try {
-    const all = await leagueMatches.getAll();
-    const filtered = all.filter(m => m.leagueId === req.params.id);
+    const filtered = await leagueMatches.getByField('leagueId', req.params.id);
     res.json(filtered);
   } catch (err) {
     console.error('[Leagues] GET /:id/matches error:', err);
@@ -394,7 +392,18 @@ router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
     
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
-    
+
+    if (!isInUserScope(req.user, league.communityId)) {
+      return res.status(403).json({ error: 'League is not in your community scope' });
+    }
+
+    const isParticipant = req.user.participantId &&
+      (match.participant1Id === req.user.participantId || match.participant2Id === req.user.participantId);
+    const isAdmin = ['superadmin', 'community_admin', 'admin'].includes(req.user.role);
+    if (!isParticipant && !isAdmin) {
+      return res.status(403).json({ error: 'Only participants or admins can report results' });
+    }
+
     // Get both participants
     const [p1, p2] = await Promise.all([
       participants.findById(match.participant1Id),
@@ -492,9 +501,8 @@ router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
     
     // Check for no-show kick
     if (isNoShow) {
-      const allMatches = await leagueMatches.getAll();
-      const playerMatches = allMatches.filter(m => 
-        m.leagueId === league.id && 
+      const leagueMatchesForNoShow2 = await leagueMatches.getByField('leagueId', league.id);
+      const playerMatches = leagueMatchesForNoShow2.filter(m => 
         m.noShowParticipantId === noShowParticipantId
       );
       
@@ -516,9 +524,11 @@ router.post('/:id/expire-matches', requireAuth, requireAdmin, async (req, res) =
   try {
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
+    if (!isInUserScope(req.user, league.communityId)) {
+      return res.status(403).json({ error: 'League is not in your community scope' });
+    }
 
-    const allMatches = await leagueMatches.getAll();
-    const leagueMatchList = allMatches.filter(m => m.leagueId === league.id);
+    const leagueMatchList = await leagueMatches.getByField('leagueId', league.id);
     
     const now = new Date();
     let expiredCount = 0;
@@ -602,8 +612,8 @@ router.post('/:id/matches/:matchId/mark-no-show', requireAuth, requireAdmin, asy
     await leagueMatches.upsert(match);
 
     // Check for no-show kick eligibility
-    const allMatches = await leagueMatches.getAll();
-    const playerMatches = allMatches.filter(m =>
+    const leagueMatchesForNoShow = await leagueMatches.getByField('leagueId', league.id);
+    const playerMatches = leagueMatchesForNoShow.filter(m =>
       m.leagueId === league.id &&
       m.noShowParticipantId === noShowParticipantId
     );
@@ -677,9 +687,8 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
       return res.status(400).json({ error: 'Cannot ban: league needs at least 2 active participants' });
     }
 
-    // Get all matches
-    const allMatches = await leagueMatches.getAll();
-    const leagueMatchList = allMatches.filter(m => m.leagueId === league.id);
+    // Get all matches for this league
+    const leagueMatchList = await leagueMatches.getByField('leagueId', league.id);
 
     // Separate completed/no_show matches from scheduled/pending_review
     const completedMatches = leagueMatchList.filter(m => 
@@ -759,8 +768,7 @@ router.get('/:id/eligible-for-ban', async (req, res) => {
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
 
-    const allMatches = await leagueMatches.getAll();
-    const leagueMatchList = allMatches.filter(m => m.leagueId === league.id);
+    const leagueMatchList = await leagueMatches.getByField('leagueId', league.id);
 
     const noShowCounts = {};
 
@@ -802,8 +810,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!deleted) return res.status(404).json({ error: 'League not found' });
     
     // Delete all associated matches
-    const all = await leagueMatches.getAll();
-    const toDelete = all.filter(m => m.leagueId === req.params.id);
+    const toDelete = await leagueMatches.getByField('leagueId', req.params.id);
     for (const match of toDelete) {
       await leagueMatches.remove(match.id);
     }
@@ -845,8 +852,9 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
 
     const reporterId = req.user.participantId;
     const isParticipant = reporterId === match.participant1Id || reporterId === match.participant2Id;
-    if (!isParticipant && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Only participants can report results' });
+    const isAdminRole = ['superadmin', 'community_admin', 'admin'].includes(req.user.role);
+    if (!isParticipant && !isAdminRole) {
+      return res.status(403).json({ error: 'Only participants or admins can report results' });
     }
 
     if (!match.reportedResults) match.reportedResults = [];
@@ -863,7 +871,7 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
     if (existing >= 0) match.reportedResults[existing] = report;
     else match.reportedResults.push(report);
 
-    if (req.user.role === 'admin') {
+    if (isAdminRole) {
       match.winnerId = winnerId;
       match.score = score;
       match.noShowParticipantId = isNoShow ? noShowParticipantId : undefined;
@@ -939,8 +947,7 @@ router.get('/:id/matches/:matchId/debug', requireAuth, requireAdmin, async (req,
     const match = await leagueMatches.findById(req.params.matchId);
     if (!match) return res.status(404).json({ error: 'Match not found' });
     
-    const allMatches = await leagueMatches.getAll();
-    const leagueMatchList = allMatches.filter(m => m.leagueId === req.params.id);
+    const leagueMatchList = await leagueMatches.getByField('leagueId', req.params.id);
     const weekMatches = leagueMatchList.filter(m => m.week === match.week);
     
     res.json({
@@ -969,9 +976,8 @@ router.post('/:id/regenerate-schedule', requireAuth, requireAdmin, async (req, r
       return res.status(400).json({ error: 'League needs at least 2 active participants' });
     }
 
-    // Get all matches
-    const allMatches = await leagueMatches.getAll();
-    const leagueMatchList = allMatches.filter(m => m.leagueId === league.id);
+    // Get all matches for this league
+    const leagueMatchList = await leagueMatches.getByField('leagueId', league.id);
 
     // Separate completed/no_show matches from scheduled/pending_review
     const completedMatches = leagueMatchList.filter(m => 

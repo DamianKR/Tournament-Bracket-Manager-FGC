@@ -9,7 +9,7 @@ import {
   getLeagueStandings,
 } from '@/services/leagues/leagueService';
 import { getAllParticipantsAsync } from '@/services/participants/participantService';
-import { useAuth } from '@/contexts/AuthContext';
+
 import LeagueStandingsTab from './LeagueStandingsTab';
 import LeagueScheduleTab from './LeagueScheduleTab';
 import LeagueMyMatchesTab from './LeagueMyMatchesTab';
@@ -24,9 +24,8 @@ type Tab = 'info' | 'standings' | 'schedule' | 'my-matches' | 'pending' | 'optio
 function LeagueView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentCommunity, getPath } = useCommunity();
+  const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
-  const { isAdmin } = useAuth();
 
   const [league, setLeague] = useState<League | null>(null);
   const [matches, setMatches] = useState<LeagueMatch[]>([]);
@@ -138,7 +137,7 @@ function LeagueView() {
           >
             Matches
           </button>
-          {isAdmin && (
+          {canAdminCurrentCommunity && (
             <button
               className={`league-tab ${tab === 'pending' ? 'active' : ''}`}
               onClick={() => setTab('pending')}
@@ -190,7 +189,7 @@ function LeagueView() {
             onMatchUpdated={loadData}
           />
         )}
-        {tab === 'pending' && isAdmin && (
+        {tab === 'pending' && canAdminCurrentCommunity && (
           <LeaguePendingTab
             league={league}
             matches={matches}

@@ -18,7 +18,7 @@ export function getTargetCommunityId(user, requestedCommunityId) {
 }
 
 export function isInUserScope(user, communityId) {
-  if (!user) return false;
+  if (!user) return true; // Public read access
   if (user.role === 'superadmin') return true;
   return communityId === (user.communityId || DEFAULT_COMMUNITY_ID);
 }

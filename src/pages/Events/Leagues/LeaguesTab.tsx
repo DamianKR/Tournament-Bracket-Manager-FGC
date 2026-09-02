@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { League } from '@/models/league';
 import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
-import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
@@ -11,8 +10,7 @@ import './LeaguesTab.css';
 
 function LeaguesTab() {
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
-  const { currentCommunity, getPath } = useCommunity();
+  const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +49,7 @@ function LeaguesTab() {
           <h1><i className="fas fa-shield-alt" /> Leagues</h1>
           <p className="text-secondary">Seasons of round-robin matches spread across multiple weeks</p>
         </div>
-        {isAdmin && (
+        {canAdminCurrentCommunity && (
           <button className="btn-primary" onClick={() => navigate(getPath('events/leagues/create'))}>
             <i className="fas fa-plus" /> New League
           </button>
@@ -62,7 +60,7 @@ function LeaguesTab() {
         <div className="empty-state card">
           <h3>No leagues yet</h3>
           <p className="text-secondary">Leagues are round-robin seasons with weekly matches and ELO standings.</p>
-          {isAdmin && (
+          {canAdminCurrentCommunity && (
             <button className="btn-primary mt-2" onClick={() => navigate(getPath('events/leagues/create'))}>
               <i className="fas fa-plus" /> New League
             </button>
@@ -117,7 +115,7 @@ function LeaguesTab() {
                   >
                     <i className="fas fa-eye" /> View League
                   </button>
-                  {isAdmin && (
+                  {canAdminCurrentCommunity && (
                     <button
                       className="btn-danger btn-sm"
                       onClick={(e) => {

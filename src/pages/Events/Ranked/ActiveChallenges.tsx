@@ -21,9 +21,14 @@ interface ActiveChallengesProps {
 }
 
 function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
-  const { user, isAdmin } = useAuth();
-  const { currentCommunity } = useCommunity();
+  const { user } = useAuth();
+  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
+
+  // User belongs to this community (or is superadmin)
+  const isAdminHere = canAdminCurrentCommunity;
+  // Regular participant in this community can create/accept challenges
+  const canInteract = isInMyCommunity && user != null;
   const [allChallenges, setAllChallenges] = useState<DuelChallenge[]>([]);
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [settings, setSettings] = useState<DuelSettings>(DEFAULT_DUEL_SETTINGS);
@@ -41,10 +46,10 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
 
   useEffect(() => {
     // Auto-set player1 to current user's participant if not admin
-    if (!isAdmin && user?.participantId && showCreateModal) {
+    if (!isAdminHere && user?.participantId && showCreateModal) {
       setPlayer1Id(user.participantId);
     }
-  }, [isAdmin, user, showCreateModal]);
+  }, [isAdminHere, user, showCreateModal]);
 
   const loadData = async () => {
     if (!communityId) return;
@@ -124,9 +129,11 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
           <h3>Duel Challenges</h3>
           <p className="text-secondary">Manage competitive duel challenges between players</p>
         </div>
-        <button className="btn-primary" onClick={() => setShowCreateModal(true)}>
-          <i className="fas fa-plus" /> New Challenge
-        </button>
+        {canInteract && (
+          <button className="btn-primary" onClick={() => setShowCreateModal(true)}>
+            <i className="fas fa-plus" /> New Challenge
+          </button>
+        )}
       </div>
 
       <div className="challenges-filters">
@@ -155,7 +162,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         >
           Accepted ({allChallenges.filter(c => c.status === 'accepted').length})
         </button>
-        {isAdmin && (
+        {isAdminHere && (
           <button 
             className={`filter-btn ${filterStatus === 'pending_review' ? 'active' : ''}`}
             onClick={() => setFilterStatus('pending_review')}
@@ -182,9 +189,9 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
           <i className="fas fa-khanda" style={{ fontSize: '3rem', color: 'var(--text-secondary)', marginBottom: '1rem' }} />
           <h3>No challenges found</h3>
           <p className="text-secondary">
-            {filterParticipantId ? 'Try a different player or status filter' : 'Create a new challenge to get started'}
+            {filterParticipantId ? 'Try a different player or status filter' : canInteract ? 'Create a new challenge to get started' : 'No active challenges in this community'}
           </p>
-          {!filterParticipantId && (
+          {!filterParticipantId && canInteract && (
             <button className="btn-primary mt-2" onClick={() => setShowCreateModal(true)}>
               <i className="fas fa-plus" /> New Challenge
             </button>
@@ -224,7 +231,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               </div>
 
               <div className="challenge-actions">
-                {challenge.status === 'pending' && (isAdmin || user?.participantId === challenge.challengedId) && (
+                {challenge.status === 'pending' && canInteract && (isAdminHere || user?.participantId === challenge.challengedId) && (
                   <>
                     <button 
                       className="btn-success btn-sm"
@@ -242,9 +249,9 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     </button>
                   </>
                 )}
-                {challenge.status === 'accepted' && (
+                {challenge.status === 'accepted' && canInteract && (
                   <>
-                    {(user?.participantId === challenge.challengerId || user?.participantId === challenge.challengedId || isAdmin) && (
+                    {(user?.participantId === challenge.challengerId || user?.participantId === challenge.challengedId || isAdminHere) && (
                       <button 
                         className="btn-primary btn-sm"
                         onClick={() => handleRecordMatch(challenge)}
@@ -255,7 +262,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     )}
                   </>
                 )}
-                {challenge.status === 'pending_review' && isAdmin && (
+                {challenge.status === 'pending_review' && isAdminHere && (
                   <button 
                     className="btn-warning btn-sm"
                     onClick={() => handleRecordMatch(challenge)}
@@ -320,7 +327,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                 </div>
               </div>
 
-              {isAdmin ? (
+              {isAdminHere ? (
                 <>
                   <div className="form-group">
                     <label>Player 1 (Challenger)</label>

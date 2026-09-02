@@ -30,8 +30,8 @@
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-09-01T22:11:59.989Z",
-    "eloPoints": 1610,
+    "updatedAt": "2026-09-02T21:27:04.450Z",
+    "eloPoints": 1616,
     "eloRank": "Vanquisher",
     "phoneNumber": "+5353211080",
     "communityId": "community_fgc_santa_clara"
@@ -196,8 +196,8 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:56:23.115Z",
-    "updatedAt": "2026-09-01T22:11:59.994Z",
-    "eloPoints": 1476,
+    "updatedAt": "2026-09-02T21:30:30.311Z",
+    "eloPoints": 1463,
     "eloRank": "Platino",
     "communityId": "community_fgc_santa_clara"
   },
@@ -230,9 +230,9 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:58:12.402Z",
-    "updatedAt": "2026-09-01T22:11:59.996Z",
-    "eloPoints": 1492,
-    "eloRank": "Platino",
+    "updatedAt": "2026-09-02T21:30:30.309Z",
+    "eloPoints": 1505,
+    "eloRank": "Diamante",
     "communityId": "community_fgc_santa_clara"
   },
   {
@@ -664,10 +664,10 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "dark_pit",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
+    "eloPoints": 1494,
+    "eloRank": "Platino",
     "createdAt": "2026-08-15T13:59:46.624Z",
-    "updatedAt": "2026-09-01T22:12:00.012Z",
+    "updatedAt": "2026-09-02T21:27:04.452Z",
     "communityId": "community_fgc_santa_clara"
   },
   {
@@ -982,10 +982,10 @@
     "gameId": "ssbu",
     "mainCharacterId": "bayonetta",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": 1500,
+    "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T19:56:04.090Z",
-    "updatedAt": "2026-09-02T19:56:04.090Z"
+    "updatedAt": "2026-09-02T20:28:41.807Z"
   },
   {
     "id": "gp_1788379061334_fbsbbjo",
@@ -996,9 +996,93 @@
     "gameId": "ssbu",
     "mainCharacterId": "bowser",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": 1500,
+    "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T19:57:41.334Z",
-    "updatedAt": "2026-09-02T19:57:41.334Z"
+    "updatedAt": "2026-09-02T20:28:41.812Z"
+  },
+  {
+    "id": "gp_1788380302327_fa06m7d",
+    "name": "User SP 3",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "bowser_jr",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "eloPoints": null,
+    "eloRank": "Sin puntos",
+    "createdAt": "2026-09-02T20:18:22.327Z",
+    "updatedAt": "2026-09-02T20:28:41.813Z"
+  },
+  {
+    "id": "gp_1788380326993_ayjmf6k",
+    "name": "User SP 4",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "chrom",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "eloPoints": null,
+    "eloRank": "Sin puntos",
+    "createdAt": "2026-09-02T20:18:46.993Z",
+    "updatedAt": "2026-09-02T20:28:41.813Z"
+  },
+  {
+    "id": "gp_1788380358539_kjva9yy",
+    "name": "User SP 5",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "cloud",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "eloPoints": null,
+    "eloRank": "Sin puntos",
+    "createdAt": "2026-09-02T20:19:18.539Z",
+    "updatedAt": "2026-09-02T20:28:41.814Z"
+  },
+  {
+    "id": "gp_1788380406731_ryimw0w",
+    "name": "User SP 6",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "corrin",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "eloPoints": null,
+    "eloRank": "Sin puntos",
+    "createdAt": "2026-09-02T20:20:06.731Z",
+    "updatedAt": "2026-09-02T20:28:41.815Z"
+  },
+  {
+    "id": "gp_1788380433042_52zrqcj",
+    "name": "User SP 7",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "diddy_kong",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "eloPoints": null,
+    "eloRank": "Sin puntos",
+    "createdAt": "2026-09-02T20:20:33.042Z",
+    "updatedAt": "2026-09-02T20:28:41.816Z"
+  },
+  {
+    "id": "gp_1788380457855_5sdweh9",
+    "name": "User SP 8",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "falco",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "eloPoints": null,
+    "eloRank": "Sin puntos",
+    "createdAt": "2026-09-02T20:20:57.855Z",
+    "updatedAt": "2026-09-02T20:28:41.817Z"
   }
 ]

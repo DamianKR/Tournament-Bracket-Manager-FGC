@@ -26,12 +26,11 @@ import './ParticipantsPage.css';
 type SortKey = 'name' | 'wins' | 'tournamentsPlayed' | 'winRate';
 
 const DEFAULT_COMMUNITY_ID = 'community_fgc_santa_clara';
-const ROLE_OPTIONS: AuthUser['role'][] = ['user', 'admin', 'community_admin'];
 
 function ParticipantsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { currentCommunity, getPath } = useCommunity();
+  const { currentCommunity, getPath, isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [statsMap, setStatsMap] = useState<Map<string, ComputedStats>>(new Map());
   const [loading, setLoading] = useState(true);
@@ -61,7 +60,18 @@ function ParticipantsPage() {
   }
 
   const communityId = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
-  const canAssignRole = user?.role === 'superadmin' || user?.role === 'community_admin';
+
+  // Only community_admin and superadmin can assign roles.
+  // admin assistants can only create regular 'user' accounts.
+  const canAssignRole = isInMyCommunity && (user?.role === 'superadmin' || user?.role === 'community_admin');
+
+  // Role options visible in the Create form, based on the actor's own role.
+  // - superadmin: can assign any role (including community_admin)
+  // - community_admin: can assign user, admin (NOT community_admin or superadmin to others)
+  // - admin: no role assignment at all (they always create 'user')
+  const roleOptions: AuthUser['role'][] = user?.role === 'superadmin'
+    ? ['user', 'admin', 'community_admin']
+    : ['user', 'admin'];
 
   async function loadAll() {
     setLoading(true);
@@ -186,6 +196,23 @@ function ParticipantsPage() {
 
   // ── Render ────────────────────────────────────────────────────────────
 
+  // Authenticated users that don't belong to this community (non-superadmin)
+  // must not access the participants roster of another community.
+  if (user && !isInMyCommunity) {
+    return (
+      <div className="participants-page">
+        <div className="container">
+          <div className="empty-state card" style={{ marginTop: '2rem' }}>
+            <h3>Acceso restringido</h3>
+            <p className="text-secondary">
+              Los participantes de esta comunidad solo pueden ser gestionados por sus propios miembros.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="participants-page">
       <div className="container">
@@ -195,9 +222,11 @@ function ParticipantsPage() {
             <h1>Participants <span className="pp-count">{participants.length}</span></h1>
             <p className="text-secondary">Global roster — reusable across all tournaments</p>
           </div>
-          <button className="btn-primary" onClick={() => { setShowCreateForm(true); setError(''); }}>
-            + New Participant
-          </button>
+          {canAdminCurrentCommunity && (
+            <button className="btn-primary" onClick={() => { setShowCreateForm(true); setError(''); }}>
+              + New Participant
+            </button>
+          )}
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -256,11 +285,11 @@ function ParticipantsPage() {
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
                     placeholder="Set the participant's password" />
                 </div>
-                {canAssignRole && (
+                {canAssignRole && roleOptions.length > 1 && (
                   <div className="form-group">
                     <label>Role</label>
                     <select value={newRole} onChange={(e) => setNewRole(e.target.value as AuthUser['role'])}>
-                      {ROLE_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                      {roleOptions.map((r) => <option key={r} value={r}>{r}</option>)}
                     </select>
                   </div>
                 )}
@@ -380,8 +409,12 @@ function ParticipantsPage() {
                         </span>
                       );
                     })()}
-                    <button className="btn-icon" onClick={() => goToEdit(p)} title="Edit"><i className="fas fa-pen" /></button>
-                    <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title="Delete"><i className="fas fa-trash" /></button>
+                    {canAdminCurrentCommunity && (
+                      <button className="btn-icon" onClick={() => goToEdit(p)} title="Edit"><i className="fas fa-pen" /></button>
+                    )}
+                    {canAdminCurrentCommunity && (
+                      <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title="Delete"><i className="fas fa-trash" /></button>
+                    )}
                   </div>
                 </div>
               );

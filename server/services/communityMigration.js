@@ -73,6 +73,7 @@ export async function ensureDefaultCommunityAndMigrate() {
     // 5. Assign the default community to all participants that don't have one
     const allParticipants = await participants.getAll();
     let participantsMigrated = 0;
+    let participantsEloFixed = 0;
     for (const participant of allParticipants) {
       if (!participant.communityId) {
         participant.communityId = DEFAULT_COMMUNITY_ID;
@@ -80,9 +81,19 @@ export async function ensureDefaultCommunityAndMigrate() {
         await participants.upsert(participant);
         participantsMigrated++;
       }
+      // Fix unranked participants that were incorrectly defaulted to 1500 points
+      if (participant.eloRank === 'Sin puntos' && participant.eloPoints !== null) {
+        participant.eloPoints = null;
+        participant.updatedAt = new Date().toISOString();
+        await participants.upsert(participant);
+        participantsEloFixed++;
+      }
     }
     if (participantsMigrated > 0) {
       console.log(`[CommunityMigration] Migrated ${participantsMigrated} participants to ${DEFAULT_COMMUNITY_NAME}`);
+    }
+    if (participantsEloFixed > 0) {
+      console.log(`[CommunityMigration] Fixed ${participantsEloFixed} unranked participants (eloPoints set to null)`);
     }
 
     // 6. Assign the default community to existing tournaments, leagues and duels

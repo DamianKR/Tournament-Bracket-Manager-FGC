@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { formatInTimeZone } from '@/utils/timeZone';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
 import ReportMatchModal from './ReportMatchModal';
@@ -14,7 +15,8 @@ interface LeagueScheduleTabProps {
 }
 
 function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: LeagueScheduleTabProps) {
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
+  const { isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
   const [weekFilter, setWeekFilter] = useState<number | 'all'>('all');
 
@@ -133,7 +135,7 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                       </span>
                     )}
 
-                    {!isCompleted && !isFutureWeek && matchStarted && (isAdmin ||
+                    {!isCompleted && !isFutureWeek && matchStarted && isInMyCommunity && (canAdminCurrentCommunity ||
                       (user?.participantId && (match.participant1Id === user.participantId || match.participant2Id === user.participantId))) && (
                       <button
                         className="btn-primary btn-sm"

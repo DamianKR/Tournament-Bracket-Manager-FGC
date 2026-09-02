@@ -251,7 +251,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Testing ultimate has started. Your opponents this week: WiikiFox, Tails.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-08-31T23:03:15.965Z",
     "data": {
       "leagueId": "league_1788215572928_qe71oik",
@@ -260,7 +260,8 @@
         "gp_1787087788652_q2n124j",
         "gp_1786391783115_87zwx03"
       ]
-    }
+    },
+    "readAt": "2026-09-02T21:29:29.383Z"
   },
   {
     "id": "notif_1788217395966_5cc432b71",
@@ -337,7 +338,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Testing ultimate has started. Your opponents this week: Dio, Delvi.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-08-31T23:03:15.970Z",
     "data": {
       "leagueId": "league_1788215572928_qe71oik",
@@ -346,7 +347,8 @@
         "gp_1786393850039_1imzf6x",
         "gp_1786391892402_8intsz3"
       ]
-    }
+    },
+    "readAt": "2026-09-02T21:28:41.109Z"
   },
   {
     "id": "notif_1788217395971_jtqpbgetx",
@@ -1172,7 +1174,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Tails, Sementino.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-01T17:54:10.727Z",
     "data": {
       "leagueId": "league_1787676805483_z2p436d",
@@ -1181,7 +1183,8 @@
         "gp_1786391783115_87zwx03",
         "gp_1786393670067_xild06i"
       ]
-    }
+    },
+    "readAt": "2026-09-02T21:29:29.385Z"
   },
   {
     "id": "notif_1788285250729_plmr4mbln",
@@ -1189,7 +1192,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Smash Ultimate SC League - 1 has started. Your opponents this week: Delvi, KruX.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-01T17:54:10.729Z",
     "data": {
       "leagueId": "league_1787676805483_z2p436d",
@@ -1198,7 +1201,8 @@
         "gp_1786391892402_8intsz3",
         "gp_1786387087046_wnwtadb"
       ]
-    }
+    },
+    "readAt": "2026-09-02T21:28:41.111Z"
   },
   {
     "id": "notif_1788285250730_02co3ov3v",
@@ -1983,7 +1987,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Testing smash has started. Your opponents this week: WiikiFox, Tails, Sementino.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-01T18:20:00.243Z",
     "data": {
       "leagueId": "league_1788286353719_bz8pjt2",
@@ -1993,7 +1997,8 @@
         "gp_1786391783115_87zwx03",
         "gp_1786393670067_xild06i"
       ]
-    }
+    },
+    "readAt": "2026-09-02T21:29:29.388Z"
   },
   {
     "id": "notif_1788286800244_24397ip50",
@@ -2073,7 +2078,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Testing smash has started. Your opponents this week: Dio, Delvi, KruX.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-01T18:20:00.251Z",
     "data": {
       "leagueId": "league_1788286353719_bz8pjt2",
@@ -2083,7 +2088,8 @@
         "gp_1786391892402_8intsz3",
         "gp_1786387087046_wnwtadb"
       ]
-    }
+    },
+    "readAt": "2026-09-02T21:28:36.046Z"
   },
   {
     "id": "notif_1788286800253_hnr1z5jvk",
@@ -2967,7 +2973,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Timing League Creation has started. Your opponents this week: WiikiFox, Tails.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-01T20:21:00.019Z",
     "scheduledAt": "2026-09-01T20:21:00.019Z",
     "data": {
@@ -2977,7 +2983,8 @@
         "gp_1787087788652_q2n124j",
         "gp_1786391783115_87zwx03"
       ]
-    }
+    },
+    "readAt": "2026-09-02T21:29:29.389Z"
   },
   {
     "id": "notif_1788294060020_tm5w9j3l4",
@@ -3597,7 +3604,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Timing League Creation has started. Your opponents this week: Dio, Delvi.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-01T20:21:00.076Z",
     "scheduledAt": "2026-09-01T20:21:00.076Z",
     "data": {
@@ -3607,7 +3614,8 @@
         "gp_1786393850039_1imzf6x",
         "gp_1786391892402_8intsz3"
       ]
-    }
+    },
+    "readAt": "2026-09-02T21:28:31.273Z"
   },
   {
     "id": "notif_1788294060078_10hthq2yo",
@@ -3728,6 +3736,973 @@
     "scheduledAt": "2026-09-01T20:21:00.087Z",
     "data": {
       "leagueId": "league_1788293958929_soe8mlu",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787409813244_ymqkq1e",
+        "gp_1787409902362_3u9f0qr",
+        "gp_1786387243524_6er0c9u"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489620_e8hntrjm9",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: You, Yokai.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.620Z",
+    "scheduledAt": "2026-09-02T21:44:49.620Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786802386624_ficm2tl"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489623_jiqp7skn0",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: You, Akuma.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.623Z",
+    "scheduledAt": "2026-09-02T21:44:49.623Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489625_2rj5as28f",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Yokai, Yoeeee.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.625Z",
+    "scheduledAt": "2026-09-02T21:44:49.625Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489627_vksdfjsku",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: You, Akuma, WolfCat Silence.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.627Z",
+    "scheduledAt": "2026-09-02T21:44:49.627Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787798635187_v9qifdf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489629_be3ryim4v",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Yokai, Yoeeee, WiikiFox.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.629Z",
+    "scheduledAt": "2026-09-02T21:44:49.629Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9",
+        "gp_1787087788652_q2n124j"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489631_460e0l6vz",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Akuma, WolfCat Silence, Sybau.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.631Z",
+    "scheduledAt": "2026-09-02T21:44:49.631Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787798635187_v9qifdf",
+        "gp_1786808135517_vfoni2a"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489634_khc6xxvcq",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Yoeeee, WiikiFox, Tails.",
+    "read": true,
+    "createdAt": "2026-09-02T21:44:49.634Z",
+    "scheduledAt": "2026-09-02T21:44:49.634Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786758755895_bgdf2b9",
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03"
+      ]
+    },
+    "readAt": "2026-09-02T21:45:10.284Z"
+  },
+  {
+    "id": "notif_1788385489636_4gsfrrjw8",
+    "recipientId": "gp_1787060569919_ov80gcy",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: WolfCat Silence, Sybau, Slendy.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.636Z",
+    "scheduledAt": "2026-09-02T21:44:49.636Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787798635187_v9qifdf",
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489639_mfv03x1br",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: WiikiFox, Tails, Sementino.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.639Z",
+    "scheduledAt": "2026-09-02T21:44:49.639Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489641_8pfslriea",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Sybau, Slendy, Grimmjo.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.641Z",
+    "scheduledAt": "2026-09-02T21:44:49.641Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489648_ldj81k5lx",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Tails, Sementino, Pokred.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.648Z",
+    "scheduledAt": "2026-09-02T21:44:49.648Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i",
+        "gp_1787202786652_4bme4ih"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489670_dmi9tk2oh",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Slendy, Grimmjo, Poke.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.670Z",
+    "scheduledAt": "2026-09-02T21:44:49.670Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489679_vn0d3bl1t",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Sementino, Pokred, Pal.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.679Z",
+    "scheduledAt": "2026-09-02T21:44:49.679Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393670067_xild06i",
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489682_rifq94auf",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Grimmjo, Poke, Olimak.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.682Z",
+    "scheduledAt": "2026-09-02T21:44:49.682Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489684_fvx4i86ij",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Pokred, Pal, Neuthor.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.684Z",
+    "scheduledAt": "2026-09-02T21:44:49.684Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489686_o8iylgqhl",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Poke, Olimak, Nelson.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.686Z",
+    "scheduledAt": "2026-09-02T21:44:49.686Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro",
+        "gp_1786399978250_n7msxo5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489688_bpszvtb04",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Pal, Neuthor, Virutica JR.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.688Z",
+    "scheduledAt": "2026-09-02T21:44:49.688Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds",
+        "gp_1787176804167_dgzm0z9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489690_cfaaqz4s7",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Olimak, Nelson, Manuel(Z).",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.690Z",
+    "scheduledAt": "2026-09-02T21:44:49.690Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393655444_41zyrro",
+        "gp_1786399978250_n7msxo5",
+        "gp_1786410268124_ja1vgy5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489692_urmwp35ir",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Neuthor, Virutica JR, Drakonite.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.692Z",
+    "scheduledAt": "2026-09-02T21:44:49.692Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787069564643_5pithds",
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786802617779_nnibxrr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489695_kbkcqhg3t",
+    "recipientId": "gp_1786391936937_anlwmxy",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Nelson, Manuel(Z), Ghost.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.695Z",
+    "scheduledAt": "2026-09-02T21:44:49.695Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786399978250_n7msxo5",
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489697_767o52trv",
+    "recipientId": "gp_1787409434840_k4h4ski",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Virutica JR, Drakonite, Daeron.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.697Z",
+    "scheduledAt": "2026-09-02T21:44:49.697Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489700_abzh676ds",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Manuel(Z), Ghost, Shiro.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.700Z",
+    "scheduledAt": "2026-09-02T21:44:49.700Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489703_dasqbucim",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Drakonite, Daeron, Oby.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.703Z",
+    "scheduledAt": "2026-09-02T21:44:49.703Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489706_z2gg8wdb9",
+    "recipientId": "gp_1786758906647_1ib85c1",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Ghost, Shiro, LiokLiok18.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.706Z",
+    "scheduledAt": "2026-09-02T21:44:49.706Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489710_jzvt2almv",
+    "recipientId": "gp_1787176726649_m106rr7",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Daeron, Oby, Nilo.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.710Z",
+    "scheduledAt": "2026-09-02T21:44:49.710Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489713_4szgctp86",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Shiro, LiokLiok18, Ev.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.713Z",
+    "scheduledAt": "2026-09-02T21:44:49.713Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d",
+        "gp_1787176726649_m106rr7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489716_iu8tmgwgw",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Oby, Nilo, Yoko.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.716Z",
+    "scheduledAt": "2026-09-02T21:44:49.716Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm",
+        "gp_1786758906647_1ib85c1"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489718_y7bhjead4",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: LiokLiok18, Ev, AmorAltras.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.718Z",
+    "scheduledAt": "2026-09-02T21:44:49.718Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393783053_ztfg99d",
+        "gp_1787176726649_m106rr7",
+        "gp_1786393834683_lievrvf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489721_9onravazn",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Nilo, Yoko, Verne.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.721Z",
+    "scheduledAt": "2026-09-02T21:44:49.721Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786409261693_7dx00bm",
+        "gp_1786758906647_1ib85c1",
+        "gp_1787060528167_2mzmy24"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489723_1z2h129qc",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Ev, AmorAltras, Ragna.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.723Z",
+    "scheduledAt": "2026-09-02T21:44:49.723Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787176726649_m106rr7",
+        "gp_1786393834683_lievrvf",
+        "gp_1787409434840_k4h4ski"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489725_7lsew8l3j",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Yoko, Verne, Eknd3las.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.725Z",
+    "scheduledAt": "2026-09-02T21:44:49.725Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786758906647_1ib85c1",
+        "gp_1787060528167_2mzmy24",
+        "gp_1786391936937_anlwmxy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489728_rwopcnok2",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: AmorAltras, Ragna, Dante.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.728Z",
+    "scheduledAt": "2026-09-02T21:44:49.728Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393834683_lievrvf",
+        "gp_1787409434840_k4h4ski",
+        "gp_1787150448285_vlvxdb2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489731_e6809l703",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Verne, Eknd3las, Soru-san.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.731Z",
+    "scheduledAt": "2026-09-02T21:44:49.731Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787060528167_2mzmy24",
+        "gp_1786391936937_anlwmxy",
+        "gp_1786756707267_xybm206"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489734_zvf1dlao0",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Ragna, Dante, Ismael.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.734Z",
+    "scheduledAt": "2026-09-02T21:44:49.734Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787409434840_k4h4ski",
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489736_ofcpov193",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Eknd3las, Soru-san, negroloko_54.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.736Z",
+    "scheduledAt": "2026-09-02T21:44:49.736Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391936937_anlwmxy",
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489739_eifd5wkje",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Dante, Ismael, Gino.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.739Z",
+    "scheduledAt": "2026-09-02T21:44:49.739Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489741_svzkrj06w",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Soru-san, negroloko_54, Pollo.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.741Z",
+    "scheduledAt": "2026-09-02T21:44:49.741Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2",
+        "gp_1787112745370_2zahvg8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489743_xffhkxi4j",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Ismael, Gino, ElTarket.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.743Z",
+    "scheduledAt": "2026-09-02T21:44:49.743Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95",
+        "gp_1786648984526_6yyg6ao"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489746_lxeee31jq",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: negroloko_54, Pollo, ERNE.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.746Z",
+    "scheduledAt": "2026-09-02T21:44:49.746Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786420836915_wqj6gv2",
+        "gp_1787112745370_2zahvg8",
+        "gp_1786420928315_91m6kmr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489748_2wtlzpmo7",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Gino, ElTarket, Dio.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.748Z",
+    "scheduledAt": "2026-09-02T21:44:49.748Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786387234567_aoe1z95",
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489755_i7or8tfvr",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Pollo, ERNE, Daysuke.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.754Z",
+    "scheduledAt": "2026-09-02T21:44:49.754Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787112745370_2zahvg8",
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489757_wzs2bdcdz",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: ElTarket, Dio, Delvi.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.757Z",
+    "scheduledAt": "2026-09-02T21:44:49.757Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489759_5qkcsj6yy",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: ERNE, Daysuke, DeathFrost.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.759Z",
+    "scheduledAt": "2026-09-02T21:44:49.759Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb",
+        "gp_1787060569919_ov80gcy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489761_szdb9ehr2",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Dio, Delvi, KruX.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.761Z",
+    "scheduledAt": "2026-09-02T21:44:49.761Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3",
+        "gp_1786387087046_wnwtadb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489763_4x01ms1yk",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Daysuke, DeathFrost, Brian.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.763Z",
+    "scheduledAt": "2026-09-02T21:44:49.763Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786396304199_u7v6gsb",
+        "gp_1787060569919_ov80gcy",
+        "gp_1786388790209_sr4ldku"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489766_ts66xcs8h",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Delvi, KruX, el pepe.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.766Z",
+    "scheduledAt": "2026-09-02T21:44:49.766Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786391892402_8intsz3",
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489768_ul96sp8xw",
+    "recipientId": "gp_1787798635187_v9qifdf",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: DeathFrost, Brian, Alexs.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.768Z",
+    "scheduledAt": "2026-09-02T21:44:49.768Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1787060569919_ov80gcy",
+        "gp_1786388790209_sr4ldku",
+        "gp_1787409813244_ymqkq1e"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489770_lbz8pqks2",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: KruX, el pepe, Adecty.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.770Z",
+    "scheduledAt": "2026-09-02T21:44:49.770Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489772_l6bfd9iaf",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Brian, Alexs, TQMandreFN.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.772Z",
+    "scheduledAt": "2026-09-02T21:44:49.772Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786388790209_sr4ldku",
+        "gp_1787409813244_ymqkq1e",
+        "gp_1786387243524_6er0c9u"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489774_qji1qcm82",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: el pepe, Adecty, Rhadam.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.774Z",
+    "scheduledAt": "2026-09-02T21:44:49.774Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 1,
+      "opponentIds": [
+        "gp_1786756661811_fa5pg74",
+        "gp_1786387250178_ac5thmv",
+        "gp_1787409902362_3u9f0qr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1788385489776_63xeog2pt",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "league_week_start",
+    "title": "League Week 1 started",
+    "message": "Week 1 of Smash new at last has started. Your opponents this week: Alexs, Rhadam, TQMandreFN.",
+    "read": false,
+    "createdAt": "2026-09-02T21:44:49.776Z",
+    "scheduledAt": "2026-09-02T21:44:49.776Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
       "week": 1,
       "opponentIds": [
         "gp_1787409813244_ymqkq1e",

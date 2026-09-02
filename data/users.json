@@ -7,7 +7,7 @@
     "role": "superadmin",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.682Z",
-    "lastLoginAt": "2026-09-02T15:37:40.234Z",
+    "lastLoginAt": "2026-09-02T21:42:53.067Z",
     "communityId": null,
     "updatedAt": "2026-09-02T15:00:00.000Z"
   },
@@ -19,7 +19,7 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.892Z",
-    "lastLoginAt": "2026-09-02T15:27:28.181Z",
+    "lastLoginAt": "2026-09-02T21:45:03.307Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-01T22:11:59.950Z"
   },
@@ -91,7 +91,7 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:04.148Z",
-    "lastLoginAt": "2026-09-01T18:24:53.570Z",
+    "lastLoginAt": "2026-09-02T21:28:23.303Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-01T22:11:59.955Z"
   },
@@ -115,7 +115,7 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:04.571Z",
-    "lastLoginAt": null,
+    "lastLoginAt": "2026-09-02T21:29:23.216Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-01T22:11:59.957Z"
   },
@@ -627,12 +627,13 @@
     "id": "user_1788378964333_nkd0d4q",
     "participantId": "gp_1788378964090_k9goxlg",
     "username": "usp1",
-    "passwordHash": "$2b$12$cXwpJXz3dcACmKcfRzkmvesROKFMeAc19s62Fh0yKUwrBHIos0pi.",
-    "role": "user",
+    "passwordHash": "$2b$12$qqN1BuMXEYuOh3O9RaQOVu.JQdhUzX1FA8vNaYhnvDC2y42V.58VS",
+    "role": "community_admin",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
     "isActive": true,
     "createdAt": "2026-09-02T19:56:04.333Z",
-    "lastLoginAt": null
+    "lastLoginAt": "2026-09-02T21:05:03.297Z",
+    "updatedAt": "2026-09-02T20:21:23.184Z"
   },
   {
     "id": "user_1788379061578_oni8u0o",
@@ -643,6 +644,72 @@
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
     "isActive": true,
     "createdAt": "2026-09-02T19:57:41.578Z",
+    "lastLoginAt": "2026-09-02T20:32:33.661Z"
+  },
+  {
+    "id": "user_1788380302555_h6q998v",
+    "participantId": "gp_1788380302327_fa06m7d",
+    "username": "usersp3",
+    "passwordHash": "$2b$12$hCHRs.H3XcSsPDcFFTl8jesCWtUhxFzhfggm1PUfgvxglDLFV5p5O",
+    "role": "user",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "isActive": true,
+    "createdAt": "2026-09-02T20:18:22.555Z",
+    "lastLoginAt": null
+  },
+  {
+    "id": "user_1788380327223_3hd8n6f",
+    "participantId": "gp_1788380326993_ayjmf6k",
+    "username": "usersp4",
+    "passwordHash": "$2b$12$fJe6jVeXAe.8kRfzZMCVLeS3TONEx6CDwragFHG0eNrclJoNd3NJq",
+    "role": "user",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "isActive": true,
+    "createdAt": "2026-09-02T20:18:47.223Z",
+    "lastLoginAt": null
+  },
+  {
+    "id": "user_1788380358767_imcnw8d",
+    "participantId": "gp_1788380358539_kjva9yy",
+    "username": "usersp5",
+    "passwordHash": "$2b$12$DAxv0iTYMLev5ZVrGSZi2OBcu2PNcAUEeMyb9etNJDxm1rGm6MG.O",
+    "role": "user",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "isActive": true,
+    "createdAt": "2026-09-02T20:19:18.767Z",
+    "lastLoginAt": null
+  },
+  {
+    "id": "user_1788380406957_6pac4xe",
+    "participantId": "gp_1788380406731_ryimw0w",
+    "username": "usersp6",
+    "passwordHash": "$2b$12$g0ExWSrqxkEWUMYBctxc6.epX9vVegyrda/vfLqM17YpYdUY9qHZe",
+    "role": "user",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "isActive": true,
+    "createdAt": "2026-09-02T20:20:06.957Z",
+    "lastLoginAt": null
+  },
+  {
+    "id": "user_1788380433259_xb5iaca",
+    "participantId": "gp_1788380433042_52zrqcj",
+    "username": "usersp7",
+    "passwordHash": "$2b$12$i58Ei68k77AI9qfLIoB/jOt/QPFIt8bs1P3NQUZ59XPfUCtGJ3kGK",
+    "role": "user",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "isActive": true,
+    "createdAt": "2026-09-02T20:20:33.259Z",
+    "lastLoginAt": null
+  },
+  {
+    "id": "user_1788380458090_lgcp7gb",
+    "participantId": "gp_1788380457855_5sdweh9",
+    "username": "usersp8",
+    "passwordHash": "$2b$12$IdNqbxU3H9fuad1TbplszuCmTLweVoyVxVmsgBiczzmPw8gIAgOwu",
+    "role": "user",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "isActive": true,
+    "createdAt": "2026-09-02T20:20:58.090Z",
     "lastLoginAt": null
   }
 ]

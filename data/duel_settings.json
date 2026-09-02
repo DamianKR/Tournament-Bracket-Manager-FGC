@@ -21,8 +21,8 @@
     "weeklyResetDay": 1,
     "weeklyResetHour": 0,
     "weeklyResetMinute": 0,
-    "mandatoryDuelsEnabled": false,
+    "mandatoryDuelsEnabled": true,
     "mandatoryDuelsPerWeek": 1,
-    "updatedAt": "2026-09-02T19:56:42.934Z"
+    "updatedAt": "2026-09-02T21:05:46.897Z"
   }
 ]

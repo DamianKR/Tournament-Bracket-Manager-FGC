@@ -23,9 +23,11 @@ interface RecordMatchTabProps {
 }
 
 function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTabProps) {
-  const { user, isAdmin } = useAuth();
-  const { currentCommunity } = useCommunity();
+  const { user } = useAuth();
+  const { currentCommunity, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
+  // Only allow write actions if the user is in their own community
+  const isAdminHere = canAdminCurrentCommunity;
 
   // All participants (for selectors)
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
@@ -143,7 +145,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
   }
 
   async function handleAdminResolve() {
-    if (!challenge || !isAdmin) return;
+    if (!challenge || !isAdminHere) return;
     if (!winnerId) { setRecordError('Select who won.'); return; }
 
     setRecording(true);
@@ -190,7 +192,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
   }
 
   // If not admin and no challenge selected, show message
-  if (!isAdmin && !selectedChallengeId) {
+  if (!isAdminHere && !selectedChallengeId) {
     return (
       <div className="record-match-tab">
         <div className="card rk-record-card">
@@ -206,8 +208,8 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
     );
   }
 
-  // If admin but no challenge, allow free match recording
-  if (isAdmin && !selectedChallengeId) {
+  // If admin (in own community) but no challenge, allow free match recording
+  if (isAdminHere && !selectedChallengeId) {
     return <AdminFreeMatchRecording allParticipants={allParticipants} communityId={communityId} />;
   }
 
@@ -283,7 +285,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
             )}
 
             {/* Evidence section for pending_review */}
-            {challenge.status === 'pending_review' && isAdmin && (
+            {challenge.status === 'pending_review' && isAdminHere && (
               <div className="rk-evidence-section">
                 <h4>Reported Results</h4>
                 <div className="rk-evidence-grid">
@@ -356,7 +358,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
             {recordError && <p className="rk-error">{recordError}</p>}
 
             {/* Action buttons */}
-            {challenge.status === 'pending_review' && isAdmin ? (
+            {challenge.status === 'pending_review' && isAdminHere ? (
               <div className="rk-record-actions">
                 <button
                   className="btn btn-primary"
@@ -366,7 +368,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                   {recording ? 'Resolving...' : 'Confirm Winner & Record Match'}
                 </button>
               </div>
-            ) : challenge.status === 'accepted' && isAdmin ? (
+            ) : challenge.status === 'accepted' && isAdminHere ? (
               <div className="rk-record-actions">
                 <button
                   className="btn btn-primary"

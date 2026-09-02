@@ -22,6 +22,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET, JWT_EXPIRY, requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
+import { isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
 import { users } from '../db/collections.js';
 import { getNotificationsForRecipient } from '../services/notificationService.js';
 
@@ -86,7 +87,7 @@ router.post('/setup', async (req, res) => {
     username: username.trim().toLowerCase(),
     passwordHash,
     role: 'superadmin',
-    communityId: 'community_fgc_santa_clara',
+    communityId: null, // superadmin is not tied to a single community
     isActive: true,
     createdAt: new Date().toISOString(),
     lastLoginAt: null,
@@ -189,7 +190,10 @@ router.put('/me/password', requireAuth, async (req, res) => {
 
 router.get('/users', requireAuth, requireAdmin, async (req, res) => {
   const all = await users.getAll();
-  res.json(all.map(safeUser));
+  const filtered = req.user.role === 'superadmin'
+    ? all
+    : all.filter(u => isInUserScope(req.user, u.communityId));
+  res.json(filtered.map(safeUser));
 });
 
 // ── POST /api/auth/users ──────────────────────────────────────────────────
@@ -208,18 +212,33 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
     return res.status(400).json({ error: 'Invalid role' });
   }
 
-  // Role privilege checks
+  // Role privilege checks — strictly enforced by actor's own role
+  // superadmin   → can assign any role
+  // community_admin → can assign 'user' or 'admin' ONLY (not community_admin or superadmin)
+  // admin        → cannot assign roles at all; all new accounts are 'user'
   if (role === 'superadmin' && req.user.role !== 'superadmin') {
     return res.status(403).json({ error: 'Only superadmin can create superadmin users' });
   }
-  if (['community_admin', 'admin'].includes(role) && !['superadmin', 'community_admin'].includes(req.user.role)) {
+  if (role === 'community_admin' && !['superadmin'].includes(req.user.role)) {
+    return res.status(403).json({ error: 'Only superadmin can assign community_admin role' });
+  }
+  if (role === 'admin' && !['superadmin', 'community_admin'].includes(req.user.role)) {
     return res.status(403).json({ error: 'Only community owners can create admin users' });
+  }
+  // admin assistants always create 'user' accounts
+  if (req.user.role === 'admin' && role !== 'user') {
+    return res.status(403).json({ error: 'Admin assistants can only create regular user accounts' });
   }
 
   // Community scope
-  const targetCommunityId = req.user.role === 'superadmin'
-    ? (communityId || req.user.communityId || 'community_fgc_santa_clara')
-    : (req.user.communityId || 'community_fgc_santa_clara');
+  let targetCommunityId = getTargetCommunityId(req.user, communityId);
+  if (role === 'superadmin') {
+    targetCommunityId = null; // superadmin is not tied to a single community
+  }
+
+  if (role !== 'superadmin' && !isInUserScope(req.user, targetCommunityId)) {
+    return res.status(403).json({ error: 'Cannot create user in this community' });
+  }
 
   const all = await users.getAll();
 
@@ -251,11 +270,16 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
 
 router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
-  const { username, password, isActive, role } = req.body;
+  const { username, password, isActive, role, communityId } = req.body;
   const isCommunityOwner = ['superadmin', 'community_admin'].includes(req.user.role);
 
   const user = await users.findById(id);
   if (!user) return res.status(404).json({ error: 'User not found' });
+
+  // A community admin can only modify users in their own community
+  if (!isInUserScope(req.user, user.communityId)) {
+    return res.status(403).json({ error: 'Cannot modify user outside your community scope' });
+  }
 
   if (username !== undefined) {
     const newUsername = username.trim().toLowerCase();
@@ -270,15 +294,33 @@ router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
     user.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
   }
 
-  // Only community owners (or superadmin) can change role / isActive
-  if (!isCommunityOwner && (isActive !== undefined || role !== undefined)) {
+  // Only community owners (or superadmin) can change role / isActive / communityId
+  if (!isCommunityOwner && (isActive !== undefined || role !== undefined || communityId !== undefined)) {
     return res.status(403).json({ error: 'Only community owners can change role or active status' });
+  }
+
+  if (communityId !== undefined && isCommunityOwner) {
+    const targetCommunityId = getTargetCommunityId(req.user, communityId);
+    if (!isInUserScope(req.user, targetCommunityId)) {
+      return res.status(403).json({ error: 'Cannot assign user to this community' });
+    }
+    user.communityId = targetCommunityId;
   }
 
   if (isActive !== undefined) user.isActive = !!isActive;
   if (role !== undefined && ['superadmin', 'community_admin', 'admin', 'user'].includes(role)) {
+    // Strict role-assignment hierarchy:
+    // - Only superadmin can assign superadmin or community_admin
+    // - community_admin can assign user or admin ONLY
+    // - admin cannot change roles at all (already blocked above)
     if (role === 'superadmin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ error: 'Only superadmin can promote to superadmin' });
+    }
+    if (role === 'community_admin' && req.user.role !== 'superadmin') {
+      return res.status(403).json({ error: 'Only superadmin can assign community_admin role' });
+    }
+    if (role === 'superadmin') {
+      user.communityId = null; // superadmin is not tied to a single community
     }
     user.role = role;
   }
@@ -295,6 +337,14 @@ router.delete('/users/:id', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const user = await users.findById(id);
   if (!user) return res.status(404).json({ error: 'User not found' });
+
+  if (!isInUserScope(req.user, user.communityId)) {
+    return res.status(403).json({ error: 'Cannot delete user outside your community scope' });
+  }
+
+  if (user.role === 'superadmin' && req.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Only superadmin can delete superadmin accounts' });
+  }
 
   await users.remove(id);
   res.json({ ok: true });

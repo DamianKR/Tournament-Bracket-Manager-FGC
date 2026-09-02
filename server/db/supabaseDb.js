@@ -43,13 +43,39 @@ function getClient() {
  */
 export function createSupabaseCollection(tableName) {
   return {
-    /** Devuelve todos los registros de la tabla */
+    /** Devuelve todos los registros de la tabla.
+     *
+     * Supabase/PostgREST aplica un límite implícito de 1000 filas por query
+     * (configurable con db-max-rows; el valor por defecto del plan gratuito es 1000).
+     * Si la tabla tiene más de 1000 registros y no usamos paginación, las filas
+     * que superan ese límite no se devuelven — lo cual hacía que matches
+     * recién actualizados (cuyos rows Postgres escribe al final del heap)
+     * desaparecieran de la vista tras un report.
+     *
+     * Esta implementación pagina automáticamente hasta vaciar la tabla.
+     */
     async getAll() {
-      const { data, error } = await getClient()
-        .from(tableName)
-        .select('data');
-      if (error) throw new Error(`[supabaseDb.getAll:${tableName}] ${error.message}`);
-      return (data ?? []).map((row) => row.data);
+      const PAGE_SIZE = 1000;
+      const results = [];
+      let from = 0;
+
+      for (;;) {
+        const { data, error } = await getClient()
+          .from(tableName)
+          .select('data')
+          .range(from, from + PAGE_SIZE - 1);
+
+        if (error) throw new Error(`[supabaseDb.getAll:${tableName}] ${error.message}`);
+
+        const page = data ?? [];
+        for (const row of page) results.push(row.data);
+
+        // Si devolvió menos de PAGE_SIZE estamos en la última página
+        if (page.length < PAGE_SIZE) break;
+        from += PAGE_SIZE;
+      }
+
+      return results;
     },
 
     /** Encuentra un registro por su campo id */
@@ -67,6 +93,41 @@ export function createSupabaseCollection(tableName) {
     async findWhere(predicate) {
       const all = await this.getAll();
       return all.filter(predicate);
+    },
+
+    /**
+     * Devuelve todos los registros cuyo campo de primer nivel `fieldName`
+     * (dentro de la columna JSONB `data`) sea igual a `value`.
+     *
+     * En Supabase usa un filtro de la forma  data->>'fieldName' = 'value'
+     * y pagina automáticamente, evitando el límite de 1000 filas Y
+     * transfiriendo solo los registros relevantes (no toda la tabla).
+     *
+     * Ejemplo: getByField('leagueId', 'league_123') →
+     *   SELECT data FROM league_matches WHERE data->>'leagueId' = 'league_123'
+     */
+    async getByField(fieldName, value) {
+      const PAGE_SIZE = 1000;
+      const results = [];
+      let from = 0;
+
+      for (;;) {
+        const { data, error } = await getClient()
+          .from(tableName)
+          .select('data')
+          .eq(`data->>${fieldName}`, value)
+          .range(from, from + PAGE_SIZE - 1);
+
+        if (error) throw new Error(`[supabaseDb.getByField:${tableName}] ${error.message}`);
+
+        const page = data ?? [];
+        for (const row of page) results.push(row.data);
+
+        if (page.length < PAGE_SIZE) break;
+        from += PAGE_SIZE;
+      }
+
+      return results;
     },
 
     /** Inserta o actualiza un registro (por id) */
