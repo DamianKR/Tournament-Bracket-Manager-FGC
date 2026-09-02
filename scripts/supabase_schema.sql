@@ -12,6 +12,11 @@
 
 -- ── Tablas principales ────────────────────────────────────────────────────
 
+CREATE TABLE IF NOT EXISTS communities (
+  id   TEXT PRIMARY KEY,
+  data JSONB NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS tournaments (
   id   TEXT PRIMARY KEY,
   data JSONB NOT NULL
@@ -84,6 +89,7 @@ CREATE TABLE IF NOT EXISTS matches (
 -- (usada desde el frontend si alguna vez se llama directo) no tenga acceso.
 -- ═══════════════════════════════════════════════════════════════════════════
 
+ALTER TABLE communities        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tournaments        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE participants       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE leagues            ENABLE ROW LEVEL SECURITY;
@@ -99,6 +105,9 @@ ALTER TABLE matches            ENABLE ROW LEVEL SECURITY;
 -- Permitir lectura pública de datos no sensibles (tournaments, participants, leagues)
 -- El servidor usa service_role (no necesita políticas), pero si en el futuro
 -- el frontend llama directo a Supabase, necesitará estas políticas.
+
+CREATE POLICY "Public read communities"
+  ON communities FOR SELECT USING (true);
 
 CREATE POLICY "Public read tournaments"
   ON tournaments FOR SELECT USING (true);
@@ -128,3 +137,15 @@ CREATE POLICY "Public read ranked_matches"
 
 -- CREATE INDEX IF NOT EXISTS idx_leagues_status
 --   ON leagues ((data->>'status'));
+
+-- Índices recomendados para el filtrado por comunidad (imprescindibles en producción)
+-- CREATE INDEX IF NOT EXISTS idx_participants_community
+--   ON participants ((data->>'communityId'));
+-- CREATE INDEX IF NOT EXISTS idx_tournaments_community
+--   ON tournaments ((data->>'communityId'));
+-- CREATE INDEX IF NOT EXISTS idx_leagues_community
+--   ON leagues ((data->>'communityId'));
+-- CREATE INDEX IF NOT EXISTS idx_users_community
+--   ON users ((data->>'communityId'));
+-- CREATE INDEX IF NOT EXISTS idx_league_matches_league
+--   ON league_matches ((data->>'leagueId'));

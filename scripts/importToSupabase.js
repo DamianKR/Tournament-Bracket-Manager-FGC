@@ -39,6 +39,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
 // ── Mapeo archivo JSON → tabla Supabase ────────────────────────────────────
 
 const COLLECTIONS = [
+  { file: 'communities.json',        table: 'communities' },
   { file: 'tournaments.json',        table: 'tournaments' },
   { file: 'participants.json',       table: 'participants' },
   { file: 'leagues.json',            table: 'leagues' },
@@ -48,6 +49,8 @@ const COLLECTIONS = [
   { file: 'duels.json',              table: 'duels' },
   { file: 'duel_settings.json',      table: 'duel_settings' },
   { file: 'users.json',              table: 'users' },
+  { file: 'notifications.json',      table: 'notifications' },
+  { file: 'matches.json',            table: 'matches' },
 ];
 
 // ── Funciones de migración ────────────────────────────────────────────────
