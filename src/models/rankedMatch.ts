@@ -30,7 +30,8 @@ export interface RankedMatch {
   
   // Context
   duelChallengeId?: string; // Links to DuelChallenge if type is 'duel'
-  
+  communityId?: string;       // Community this ranked match belongs to
+
   // Metadata
   date: string;
   notes?: string;

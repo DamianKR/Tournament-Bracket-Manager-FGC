@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { League, LeagueMatch, LeagueStanding } from '@/models/league';
 import { GlobalParticipant } from '@/models/types';
 import {
@@ -23,6 +24,8 @@ type Tab = 'info' | 'standings' | 'schedule' | 'my-matches' | 'pending' | 'optio
 function LeagueView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { currentCommunity, getPath } = useCommunity();
+  const communityId = currentCommunity?.id;
   const { isAdmin } = useAuth();
 
   const [league, setLeague] = useState<League | null>(null);
@@ -34,14 +37,14 @@ function LeagueView() {
   const [notFound, setNotFound] = useState(false);
 
   async function loadData() {
-    if (!id) return;
+    if (!id || !communityId) return;
     setLoading(true);
 
     const [leagueData, matchesData, standingsData, participantsData] = await Promise.all([
       getLeague(id),
       getLeagueMatches(id),
       getLeagueStandings(id),
-      getAllParticipantsAsync(),
+      getAllParticipantsAsync(communityId),
     ]);
 
     if (!leagueData) {
@@ -59,7 +62,7 @@ function LeagueView() {
 
   useEffect(() => {
     loadData();
-  }, [id]);
+  }, [id, communityId]);
 
   if (loading) {
     return (
@@ -77,7 +80,7 @@ function LeagueView() {
         <div className="container">
           <div className="empty-state card">
             <h3>League not found</h3>
-            <button className="btn-outline mt-2" onClick={() => navigate('/leagues')}>
+            <button className="btn-outline mt-2" onClick={() => navigate(getPath('events?tab=leagues'))}>
               ← Back to leagues
             </button>
           </div>
@@ -95,7 +98,7 @@ function LeagueView() {
       {/* Header */}
       <div className="league-header">
         <div className="container">
-          <button className="league-back-btn" onClick={() => navigate('/leagues')}>
+          <button className="league-back-btn" onClick={() => navigate(getPath('events?tab=leagues'))}>
             ← Leagues
           </button>
           <div className="league-header-content">

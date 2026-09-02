@@ -15,7 +15,7 @@ function AdminRoute({ children }: AdminRouteProps) {
 
   if (isLoading) return null;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (!isAdmin) return <Navigate to="/events" replace />;
+  if (!isAdmin) return <Navigate to="/communities" replace />;
 
   return <>{children}</>;
 }

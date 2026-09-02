@@ -2,9 +2,11 @@
  * JWT Middleware
  *
  * Provides:
- *   requireAuth   — cualquier usuario autenticado
- *   requireAdmin  — solo role === 'admin'
- *   optionalAuth  — adjunta user si hay token, pero no bloquea si no lo hay
+ *   requireAuth          — cualquier usuario autenticado
+ *   requireAdmin         — superadmin, community_admin o admin
+ *   requireSuperAdmin    — solo superadmin
+ *   requireCommunityAdmin— superadmin o community_admin
+ *   optionalAuth         — adjunta user si hay token, pero no bloquea si no lo hay
  *
  * Ruta de migración → Supabase:
  *   Supabase genera sus propios JWT. Reemplazar jwt.verify() por
@@ -36,10 +38,29 @@ export function requireAuth(req, res, next) {
   }
 }
 
-/** Requiere rol admin. Debe usarse DESPUÉS de requireAuth. */
+const ALL_ADMIN_ROLES = ['superadmin', 'community_admin', 'admin'];
+const COMMUNITY_OWNER_ROLES = ['superadmin', 'community_admin'];
+
+/** Cualquier usuario con privilegios admin (admin asistente, community owner o superadmin). */
 export function requireAdmin(req, res, next) {
-  if (!req.user || req.user.role !== 'admin') {
+  if (!req.user || !ALL_ADMIN_ROLES.includes(req.user.role)) {
     return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+}
+
+/** Solo superadmin. */
+export function requireSuperAdmin(req, res, next) {
+  if (!req.user || req.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Superadmin access required' });
+  }
+  next();
+}
+
+/** Community owner (community_admin) o superadmin. Puede dar/quitar admin. */
+export function requireCommunityAdmin(req, res, next) {
+  if (!req.user || !COMMUNITY_OWNER_ROLES.includes(req.user.role)) {
+    return res.status(403).json({ error: 'Community owner access required' });
   }
   next();
 }

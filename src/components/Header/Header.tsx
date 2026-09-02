@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import NotificationBell from '@/components/Notifications/NotificationBell';
 import './Header.css';
 
@@ -8,7 +9,11 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAdmin, isAuthenticated, logout } = useAuth();
+  const { currentCommunity } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const communityMatch = location.pathname.match(/^\/c\/([^/]+)/);
+  const communityId = communityMatch?.[1];
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -18,7 +23,7 @@ function Header() {
   function handleLogout() {
     logout();
     setMenuOpen(false);
-    navigate('/events');
+    navigate('/communities');
   }
 
   function handleNav(path: string) {
@@ -32,6 +37,12 @@ function Header() {
         <div className="header-logo" onClick={() => { setMenuOpen(false); navigate('/'); }}>
           <span className="header-logo-icon"><i className="fas fa-trophy" aria-hidden="true" /></span>
           <span className="header-logo-text">Bracket Manager</span>
+        </div>
+
+        <div className="header-community">
+          {currentCommunity && (
+            <span className="header-community-name">{currentCommunity.name}</span>
+          )}
         </div>
 
         {/* Bell always visible on mobile (outside hamburger) */}
@@ -49,27 +60,44 @@ function Header() {
 
         <div className={`header-right ${menuOpen ? 'open' : ''}`}>
           <nav className="header-nav">
-            <button
-              className={`header-nav-item ${isActive('/events') ? 'active' : ''}`}
-              onClick={() => handleNav('/events')}
-            >
-              Events
-            </button>
-            <button
-              className={`header-nav-item ${isActive('/ranking') ? 'active' : ''}`}
-              onClick={() => handleNav('/ranking')}
-            >
-              Ranking
-            </button>
-            {/* Participants solo visible para admin en el header */}
-            {isAdmin && (
-              <button
-                className={`header-nav-item ${isActive('/participants') ? 'active' : ''}`}
-                onClick={() => handleNav('/participants')}
-              >
-                Participants
-              </button>
+            {communityId && (
+              <>
+                <button
+                  className={`header-nav-item ${isActive(`/c/${communityId}/events`) ? 'active' : ''}`}
+                  onClick={() => handleNav(`/c/${communityId}/events`)}
+                >
+                  Events
+                </button>
+                <button
+                  className={`header-nav-item ${isActive(`/c/${communityId}/ranking`) ? 'active' : ''}`}
+                  onClick={() => handleNav(`/c/${communityId}/ranking`)}
+                >
+                  Ranking
+                </button>
+                {/* {isAuthenticated && (
+                  <button
+                    className={`header-nav-item ${isActive(`/c/${communityId}/notifications`) ? 'active' : ''}`}
+                    onClick={() => handleNav(`/c/${communityId}/notifications`)}
+                  >
+                    Notifications
+                  </button>
+                )} */}
+                {isAdmin && (
+                  <button
+                    className={`header-nav-item ${isActive(`/c/${communityId}/participants`) ? 'active' : ''}`}
+                    onClick={() => handleNav(`/c/${communityId}/participants`)}
+                  >
+                    Participants
+                  </button>
+                )}
+              </>
             )}
+            <button
+              className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
+              onClick={() => handleNav('/communities')}
+            >
+              Communities
+            </button>
           </nav>
 
           <div className="header-divider" />
@@ -86,7 +114,7 @@ function Header() {
               <div className="header-user-pill">
                 <span
                   className={`header-username ${user?.participantId ? 'clickable' : ''}`}
-                  onClick={() => user?.participantId && handleNav(`/participants/${user.participantId}`)}
+                  onClick={() => user?.participantId && handleNav(currentCommunity ? `/c/${currentCommunity.id}/participants/${user.participantId}` : '/communities')}
                   title={user?.participantId ? 'View profile' : user!.username}
                 >
                   <i className="fas fa-user-circle" />

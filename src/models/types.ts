@@ -86,6 +86,7 @@ export interface Tournament {
   participants: Participant[];
   bracket: Bracket | null;
   championId: string | null;
+  communityId: string;          // Community this tournament belongs to
   createdAt: string;
   updatedAt: string;
 }
@@ -108,6 +109,7 @@ export interface GlobalParticipant {
   gameId: string | null;    // e.g. 'ssbu' — which game this player competes in
   mainCharacterId: string | null; // e.g. 'kirby' — their main character
   phoneNumber?: string;           // Optional contact number shown on profile
+  communityId: string;            // Community this participant belongs to
   // ELO Ranking
   eloPoints: number | null; // Current ELO score (null = unranked/no points yet)
   eloRank: string;          // Rank name derived from eloPoints
@@ -152,6 +154,7 @@ export interface MatchRecord {
   playerBRankBefore: string;
   playerARankAfter: string;
   playerBRankAfter: string;
+  communityId?: string;
   createdAt: string;
 }
 

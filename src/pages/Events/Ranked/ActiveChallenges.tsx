@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { DuelChallenge } from '@/models/duel';
 import { GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import { 
   createDuelChallenge, 
@@ -21,6 +22,8 @@ interface ActiveChallengesProps {
 
 function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const { user, isAdmin } = useAuth();
+  const { currentCommunity } = useCommunity();
+  const communityId = currentCommunity?.id;
   const [allChallenges, setAllChallenges] = useState<DuelChallenge[]>([]);
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [settings, setSettings] = useState<DuelSettings>(DEFAULT_DUEL_SETTINGS);
@@ -34,7 +37,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [communityId]);
 
   useEffect(() => {
     // Auto-set player1 to current user's participant if not admin
@@ -44,14 +47,15 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   }, [isAdmin, user, showCreateModal]);
 
   const loadData = async () => {
+    if (!communityId) return;
     // First expire old challenges (this may update ELO on server)
-    await expireOldChallenges();
+    await expireOldChallenges(communityId);
 
     // Then reload everything to get updated state
     const [all, allParticipants, duelSettings] = await Promise.all([
-      getAllChallengesAsync(),
-      getAllParticipantsAsync(),
-      getDuelSettingsAsync(),
+      getAllChallengesAsync(communityId),
+      getAllParticipantsAsync(communityId),
+      getDuelSettingsAsync(communityId),
     ]);
     setAllChallenges(all);
     setParticipants(allParticipants);
@@ -63,7 +67,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     setCreateError('');
     
     try {
-      const challenge = await createDuelChallenge(player1Id, player2Id, duelType);
+      if (!communityId) return;
+      const challenge = await createDuelChallenge(player1Id, player2Id, duelType, communityId);
       if (challenge) {
         await loadData();
         setShowCreateModal(false);

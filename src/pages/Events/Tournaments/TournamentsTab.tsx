@@ -4,6 +4,7 @@ import { Tournament } from '@/models/types';
 import { getAllTournaments, removeTournament } from '@/services/tournament/tournamentService';
 import { loadTournamentsAsync, saveTournaments } from '@/services/storage/localStorage';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './TournamentsTab.css';
 
@@ -12,12 +13,14 @@ function TournamentsTab() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const { currentCommunity, getPath } = useCommunity();
+  const communityId = currentCommunity?.id;
 
   useEffect(() => {
     // Show localStorage immediately (instant), then refresh from server
-    const cached = getAllTournaments();
+    const cached = getAllTournaments(communityId);
     applySort(cached);
-    loadTournamentsAsync().then((serverData) => {
+    loadTournamentsAsync(communityId).then((serverData) => {
       // If server returned empty but localStorage has data → push localStorage to server
       if (serverData.length === 0 && cached.length > 0) {
         saveTournaments(cached);
@@ -26,7 +29,7 @@ function TournamentsTab() {
         applySort(serverData);
       }
     });
-  }, []);
+  }, [communityId]);
 
   const applySort = (data: Tournament[]) => {
     const sorted = [...data].sort((a, b) =>
@@ -36,15 +39,15 @@ function TournamentsTab() {
   };
 
   const handleCreateNew = () => {
-    navigate('/events/tournaments/create');
+    navigate(getPath('events/tournaments/create'));
   };
 
   const handleOpenTournament = (id: string) => {
     const tournament = tournaments.find(t => t.id === id);
     if (tournament?.status === 'setup') {
-      navigate(`/events/tournaments/create/${id}`);
+      navigate(getPath(`events/tournaments/create/${id}`));
     } else {
-      navigate(`/events/tournaments/${id}`);
+      navigate(getPath(`events/tournaments/${id}`));
     }
   };
 
@@ -59,7 +62,7 @@ function TournamentsTab() {
   const confirmDelete = () => {
     if (!deleteTarget) return;
     removeTournament(deleteTarget.id);
-    applySort(getAllTournaments());
+    applySort(getAllTournaments(communityId));
     setDeleteTarget(null);
   };
 
@@ -142,7 +145,7 @@ function TournamentsTab() {
               <div className="tournament-card-actions">
                 <button
                   className="btn-outline"
-                  onClick={() => tournament.status === 'setup' ? navigate(`/events/tournaments/create/${tournament.id}`) : navigate(`/events/tournaments/${tournament.id}`)}
+                  onClick={() => tournament.status === 'setup' ? navigate(getPath(`events/tournaments/create/${tournament.id}`)) : navigate(getPath(`events/tournaments/${tournament.id}`))}
                 >
                   <i className={tournament.status === 'setup' ? 'fas fa-pen' : 'fas fa-eye'} />
                   {tournament.status === 'setup' ? ' Continue Setup' : ' View Bracket'}

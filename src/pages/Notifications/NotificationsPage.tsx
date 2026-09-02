@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { AppNotification } from '@/models/notification';
 import './NotificationsPage.css';
@@ -34,15 +35,16 @@ function timeAgo(dateStr: string): string {
 export default function NotificationsPage() {
   const { notifications, unreadCount, markRead, markAllRead, deleteNotification, loading } = useNotifications();
   const navigate = useNavigate();
+  const { getPath } = useCommunity();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   async function handleClick(notif: AppNotification) {
     if (!notif.read) await markRead(notif.id);
     if (notif.type === 'duel_challenge' || notif.type === 'duel_expiring') {
-      navigate('/events?tab=ranked');
+      navigate(getPath('events?tab=ranked'));
     } else if (notif.type === 'league_week_start' || notif.type === 'league_match_expiring') {
-      if (notif.data?.leagueId) navigate(`/events/leagues/${notif.data.leagueId}`);
-      else navigate('/events?tab=leagues');
+      if (notif.data?.leagueId) navigate(getPath(`events/leagues/${notif.data.leagueId}`));
+      else navigate(getPath('events?tab=leagues'));
     }
   }
 

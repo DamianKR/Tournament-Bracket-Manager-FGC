@@ -18,13 +18,14 @@
  * @property {Object|null} metadata
  */
 
-export function rankedMatchShape(id, matchType, playerAId, playerBId, winnerId, eloData) {
+export function rankedMatchShape(id, matchType, playerAId, playerBId, winnerId, eloData, communityId) {
   return {
     id,
     matchType,
     playerAId,
     playerBId,
     winnerId,
+    communityId: communityId || null,
     score: null,
     playerAEloBefore: eloData.playerAEloBefore,
     playerBEloBefore: eloData.playerBEloBefore,
@@ -45,5 +46,8 @@ export function validateRankedMatch(obj) {
   if (typeof obj.playerAId !== 'string' || !obj.playerAId) errors.push('Missing playerAId');
   if (typeof obj.playerBId !== 'string' || !obj.playerBId) errors.push('Missing playerBId');
   if (typeof obj.winnerId !== 'string' || !obj.winnerId) errors.push('Missing winnerId');
+  if (obj.communityId !== undefined && obj.communityId !== null && typeof obj.communityId !== 'string') {
+    errors.push('Invalid communityId');
+  }
   return { valid: errors.length === 0, errors };
 }

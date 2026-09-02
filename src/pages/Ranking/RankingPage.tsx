@@ -14,6 +14,7 @@ import {
 } from '@/services/ranking/rankingService';
 import type { MatchRecord } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import RankingInfo from './RankingInfo';
@@ -25,6 +26,8 @@ type Tab = 'leaderboard' | 'history' | 'info';
 function RankingPage() {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const { currentCommunity, getPath } = useCommunity();
+  const communityId = currentCommunity?.id;
   const [tab, setTab] = useState<Tab>('leaderboard');
 
   // Leaderboard
@@ -55,35 +58,37 @@ function RankingPage() {
     setLoadingBoard(true);
     setBoardError('');
     try {
-      const data = await getLeaderboard();
+      const data = await getLeaderboard(communityId);
       setLeaderboard(data);
     } catch {
       setBoardError('Could not load the ranking. Is the server running?');
     } finally {
       setLoadingBoard(false);
     }
-  }, []);
+  }, [communityId]);
 
   const loadHistory = useCallback(async () => {
+    if (!communityId) return;
     setLoadingHistory(true);
     try {
-      const data = await getAllMatches();
+      const data = await getAllMatches(communityId);
       setMatchHistory(data as unknown as MatchRecord[]);
     } catch {
       // silently fail
     } finally {
       setLoadingHistory(false);
     }
-  }, []);
+  }, [communityId]);
 
   useEffect(() => {
-    // Load participants for selectors — cached first, then server
-    const cached = getAllParticipants();
+    if (!communityId) return;
+    // Load participants for selectors — cached first, then server (filtered by community)
+    const cached = getAllParticipants(communityId);
     if (cached.length) setAllParticipants(cached);
-    getAllParticipantsAsync().then((data) => { if (data.length) setAllParticipants(data); });
+    getAllParticipantsAsync(communityId).then((data) => { if (data.length) setAllParticipants(data); });
 
     loadLeaderboard();
-  }, [loadLeaderboard]);
+  }, [loadLeaderboard, communityId]);
 
   useEffect(() => {
     if (tab === 'history') loadHistory();
@@ -111,7 +116,7 @@ function RankingPage() {
     setShowSoftConfirm(false);
     setResetting(true);
     try {
-      await softResetRanking();
+      await softResetRanking(communityId);
       await loadLeaderboard();
       if (tab === 'history') await loadHistory();
     } catch { /* silently fail */ }
@@ -122,9 +127,13 @@ function RankingPage() {
     setShowHardConfirm2(false);
     setResetting(true);
     try {
-      await hardResetRanking();
+      await hardResetRanking(communityId);
       await loadLeaderboard();
-      setMatchHistory([]);
+      if (tab === 'history') {
+        await loadHistory();
+      } else {
+        setMatchHistory([]);
+      }
     } catch { /* silently fail */ }
     finally { setResetting(false); }
   }
@@ -215,7 +224,7 @@ function RankingPage() {
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-trophy" /></span>
               <p>No participants yet.</p>
-              <button className="btn btn-primary" onClick={() => navigate('/participants')}>
+              <button className="btn btn-primary" onClick={() => navigate(getPath('participants'))}>
                 Go to Participants
               </button>
             </div>
@@ -237,7 +246,7 @@ function RankingPage() {
                     <tr
                       key={entry.id}
                       className={`rk-row ${entry.position != null && entry.position <= 5 ? 'legend-row' : ''}`}
-                      onClick={() => navigate(`/participants/${entry.id}`)}
+                      onClick={() => navigate(getPath(`participants/${entry.id}`))}
                     >
                       <td className="rk-col-pos">
                         <span className={`rk-pos ${entry.position != null && entry.position <= 3 ? `top${entry.position}` : ''}`}>

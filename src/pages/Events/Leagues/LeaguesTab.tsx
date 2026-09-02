@@ -4,6 +4,7 @@ import { League } from '@/models/league';
 import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import './LeaguesTab.css';
@@ -11,17 +12,19 @@ import './LeaguesTab.css';
 function LeaguesTab() {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const { currentCommunity, getPath } = useCommunity();
+  const communityId = currentCommunity?.id;
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     loadLeagues();
-  }, []);
+  }, [communityId]);
 
   async function loadLeagues() {
     setLoading(true);
-    const data = await getAllLeagues();
+    const data = await getAllLeagues(communityId);
     setLeagues(data);
     setLoading(false);
   }
@@ -49,7 +52,7 @@ function LeaguesTab() {
           <p className="text-secondary">Seasons of round-robin matches spread across multiple weeks</p>
         </div>
         {isAdmin && (
-          <button className="btn-primary" onClick={() => navigate('/events/leagues/create')}>
+          <button className="btn-primary" onClick={() => navigate(getPath('events/leagues/create'))}>
             <i className="fas fa-plus" /> New League
           </button>
         )}
@@ -60,7 +63,7 @@ function LeaguesTab() {
           <h3>No leagues yet</h3>
           <p className="text-secondary">Leagues are round-robin seasons with weekly matches and ELO standings.</p>
           {isAdmin && (
-            <button className="btn-primary mt-2" onClick={() => navigate('/events/leagues/create')}>
+            <button className="btn-primary mt-2" onClick={() => navigate(getPath('events/leagues/create'))}>
               <i className="fas fa-plus" /> New League
             </button>
           )}
@@ -76,7 +79,7 @@ function LeaguesTab() {
               <div
                 key={league.id}
                 className="league-card card"
-                onClick={() => navigate(`/events/leagues/${league.id}`)}
+                onClick={() => navigate(getPath(`events/leagues/${league.id}`))}
               >
                 <div className="league-card-header">
                   <h3 className="league-card-title">{league.name}</h3>
@@ -109,7 +112,7 @@ function LeaguesTab() {
                     className="btn-outline"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/events/leagues/${league.id}`);
+                      navigate(getPath(`events/leagues/${league.id}`));
                     }}
                   >
                     <i className="fas fa-eye" /> View League

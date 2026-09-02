@@ -47,6 +47,7 @@ function signToken(user) {
       username: user.username,
       role: user.role,
       participantId: user.participantId ?? null,
+      communityId: user.communityId ?? null,
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRY }
@@ -84,7 +85,8 @@ router.post('/setup', async (req, res) => {
     participantId: null,
     username: username.trim().toLowerCase(),
     passwordHash,
-    role: 'admin',
+    role: 'superadmin',
+    communityId: 'community_fgc_santa_clara',
     isActive: true,
     createdAt: new Date().toISOString(),
     lastLoginAt: null,
@@ -194,7 +196,7 @@ router.get('/users', requireAuth, requireAdmin, async (req, res) => {
 // Admin crea una cuenta para un participant existente.
 
 router.post('/users', requireAuth, requireAdmin, async (req, res) => {
-  const { participantId, username, password, role = 'user' } = req.body;
+  const { participantId, username, password, role = 'user', communityId } = req.body;
 
   if (!participantId || !username?.trim() || !password?.trim()) {
     return res.status(400).json({ error: 'participantId, username and password are required' });
@@ -202,9 +204,22 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
   if (password.length < 6) {
     return res.status(400).json({ error: 'Password must be at least 6 characters' });
   }
-  if (!['admin', 'user'].includes(role)) {
-    return res.status(400).json({ error: 'Role must be admin or user' });
+  if (!['superadmin', 'community_admin', 'admin', 'user'].includes(role)) {
+    return res.status(400).json({ error: 'Invalid role' });
   }
+
+  // Role privilege checks
+  if (role === 'superadmin' && req.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Only superadmin can create superadmin users' });
+  }
+  if (['community_admin', 'admin'].includes(role) && !['superadmin', 'community_admin'].includes(req.user.role)) {
+    return res.status(403).json({ error: 'Only community owners can create admin users' });
+  }
+
+  // Community scope
+  const targetCommunityId = req.user.role === 'superadmin'
+    ? (communityId || req.user.communityId || 'community_fgc_santa_clara')
+    : (req.user.communityId || 'community_fgc_santa_clara');
 
   const all = await users.getAll();
 
@@ -222,6 +237,7 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
     username: username.trim().toLowerCase(),
     passwordHash,
     role,
+    communityId: targetCommunityId,
     isActive: true,
     createdAt: new Date().toISOString(),
     lastLoginAt: null,
@@ -236,6 +252,7 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
 router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { username, password, isActive, role } = req.body;
+  const isCommunityOwner = ['superadmin', 'community_admin'].includes(req.user.role);
 
   const user = await users.findById(id);
   if (!user) return res.status(404).json({ error: 'User not found' });
@@ -252,8 +269,19 @@ router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
     if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
     user.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
   }
+
+  // Only community owners (or superadmin) can change role / isActive
+  if (!isCommunityOwner && (isActive !== undefined || role !== undefined)) {
+    return res.status(403).json({ error: 'Only community owners can change role or active status' });
+  }
+
   if (isActive !== undefined) user.isActive = !!isActive;
-  if (role !== undefined && ['admin', 'user'].includes(role)) user.role = role;
+  if (role !== undefined && ['superadmin', 'community_admin', 'admin', 'user'].includes(role)) {
+    if (role === 'superadmin' && req.user.role !== 'superadmin') {
+      return res.status(403).json({ error: 'Only superadmin can promote to superadmin' });
+    }
+    user.role = role;
+  }
   user.updatedAt = new Date().toISOString();
 
   await users.upsert(user);

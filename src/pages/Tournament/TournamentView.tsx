@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { Tournament } from '@/models/types';
 import { getTournament, setMatchWinner, undoMatchResult } from '@/services/tournament/tournamentService';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,6 +15,7 @@ type ViewMode = 'bracket' | 'participants';
 function TournamentView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { getPath } = useCommunity();
   const { isAdmin } = useAuth();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('bracket');
@@ -60,7 +62,7 @@ function TournamentView() {
   };
 
   const handleBackToDashboard = () => {
-    navigate('/');
+    navigate(getPath('events'));
   };
 
   if (!tournament) {

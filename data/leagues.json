@@ -96,10 +96,11 @@
     "status": "active",
     "currentWeek": 1,
     "createdAt": "2026-09-01T18:12:33.719Z",
-    "updatedAt": "2026-09-01T18:40:41.391Z",
+    "updatedAt": "2026-09-01T22:12:00.029Z",
     "notifiedWeeks": [
       1
-    ]
+    ],
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "league_1788293958929_soe8mlu",
@@ -225,9 +226,10 @@
     "status": "active",
     "currentWeek": 1,
     "createdAt": "2026-09-01T20:19:18.929Z",
-    "updatedAt": "2026-09-01T20:21:00.089Z",
+    "updatedAt": "2026-09-01T22:12:00.029Z",
     "notifiedWeeks": [
       1
-    ]
+    ],
+    "communityId": "community_fgc_santa_clara"
   }
 ]

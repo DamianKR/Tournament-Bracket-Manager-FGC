@@ -1,10 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { CommunityProvider } from './contexts/CommunityContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import Header from './components/Header/Header';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminRoute from './components/AdminRoute/AdminRoute';
 import NotificationToast from './components/Notifications/NotificationToast';
+import CommunityLayout from './components/CommunityLayout/CommunityLayout';
 import EventsPage from './pages/Events/EventsPage';
 import CreateTournament from './pages/CreateTournament/CreateTournament';
 import TournamentView from './pages/Tournament/TournamentView';
@@ -16,6 +18,8 @@ import RankingPage from './pages/Ranking/RankingPage';
 import LoginPage from './pages/Login/LoginPage';
 import Dashboard from './pages/Dashboard/Dashboard';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
+import CommunitiesPage from './pages/Communities/CommunitiesPage';
+import CommunityDashboard from './pages/CommunityDashboard/CommunityDashboard';
 
 function App() {
   // En GitHub Pages el sitio vive en /Tournament-Bracket-Manager-FGC/.
@@ -28,60 +32,74 @@ function App() {
   return (
     <BrowserRouter basename={basename}>
       <AuthProvider>
-        <NotificationProvider>
-          <Header />
-          <NotificationToast />
-          <Routes>
-          {/* Auth */}
-          <Route path="/login" element={<LoginPage />} />
+        <CommunityProvider>
+          <NotificationProvider>
+            <Header />
+            <NotificationToast />
+            <Routes>
+              {/* Auth */}
+              <Route path="/login" element={<LoginPage />} />
 
-          {/* Dashboard - landing page pública */}
-          <Route path="/" element={<Dashboard />} />
+              {/* Dashboard - landing page pública */}
+              <Route path="/" element={<Dashboard />} />
 
-          {/* Events - main hub (público, las sub-tabs se gestionan internamente) */}
-          <Route path="/events" element={<EventsPage />} />
+              {/* Communities - public list */}
+              <Route path="/communities" element={<CommunitiesPage />} />
 
-          {/* Tournaments — solo usuarios autenticados pueden crear/editar */}
-          <Route path="/events/tournaments/create" element={
-            <ProtectedRoute><CreateTournament /></ProtectedRoute>
-          } />
-          <Route path="/events/tournaments/create/:id" element={
-            <ProtectedRoute><CreateTournament /></ProtectedRoute>
-          } />
-          <Route path="/events/tournaments/:id" element={<TournamentView />} />
+              {/* Community-scoped routes */}
+              <Route path="/c/:communityId/*" element={<CommunityLayout />}>
+                <Route index element={<CommunityDashboard />} />
+                <Route path="events" element={<EventsPage />} />
 
-          {/* Leagues — solo admin puede crear */}
-          <Route path="/events/leagues/create" element={
-            <AdminRoute><CreateLeague /></AdminRoute>
-          } />
-          <Route path="/events/leagues/:id" element={<LeagueView />} />
+                {/* Tournaments — solo usuarios autenticados pueden crear/editar */}
+                <Route path="events/tournaments/create" element={
+                  <ProtectedRoute><CreateTournament /></ProtectedRoute>
+                } />
+                <Route path="events/tournaments/create/:id" element={
+                  <ProtectedRoute><CreateTournament /></ProtectedRoute>
+                } />
+                <Route path="events/tournaments/:id" element={<TournamentView />} />
 
-          {/* Participants — gestión solo para admin; perfiles son públicos */}
-          <Route path="/participants" element={
-            <AdminRoute><ParticipantsPage /></AdminRoute>
-          } />
-          <Route path="/participants/:id" element={<ParticipantProfile />} />
+                {/* Leagues — solo admin puede crear */}
+                <Route path="events/leagues/create" element={
+                  <AdminRoute><CreateLeague /></AdminRoute>
+                } />
+                <Route path="events/leagues/:id" element={<LeagueView />} />
 
-          {/* Ranking — público */}
-          <Route path="/ranking" element={<RankingPage />} />
+                {/* Participants — gestión solo para admin; perfiles son públicos */}
+                <Route path="participants" element={
+                  <AdminRoute><ParticipantsPage /></AdminRoute>
+                } />
+                <Route path="participants/:id" element={<ParticipantProfile />} />
 
-          {/* Notifications — solo usuarios autenticados */}
-          <Route path="/notifications" element={
-            <ProtectedRoute><NotificationsPage /></ProtectedRoute>
-          } />
+                {/* Ranking — público */}
+                <Route path="ranking" element={<RankingPage />} />
 
-          {/* Legacy redirects */}
-          <Route path="/create" element={<Navigate to="/events/tournaments/create" replace />} />
-          <Route path="/create/:id" element={<Navigate to="/events/tournaments/create/:id" replace />} />
-          <Route path="/tournament/:id" element={<Navigate to="/events/tournaments/:id" replace />} />
-          <Route path="/leagues" element={<Navigate to="/events?tab=leagues" replace />} />
-          <Route path="/leagues/create" element={<Navigate to="/events/leagues/create" replace />} />
-          <Route path="/leagues/:id" element={<Navigate to="/events/leagues/:id" replace />} />
+                {/* Notifications — solo usuarios autenticados */}
+                <Route path="notifications" element={
+                  <ProtectedRoute><NotificationsPage /></ProtectedRoute>
+                } />
+              </Route>
 
-          {/* 404 */}
-          <Route path="*" element={<Navigate to="/events" replace />} />
-        </Routes>
-        </NotificationProvider>
+              {/* Legacy redirects */}
+              <Route path="/events" element={<Navigate to="/communities" replace />} />
+              <Route path="/events/*" element={<Navigate to="/communities" replace />} />
+              <Route path="/create" element={<Navigate to="/communities" replace />} />
+              <Route path="/create/:id" element={<Navigate to="/communities" replace />} />
+              <Route path="/tournament/:id" element={<Navigate to="/communities" replace />} />
+              <Route path="/leagues" element={<Navigate to="/communities" replace />} />
+              <Route path="/leagues/create" element={<Navigate to="/communities" replace />} />
+              <Route path="/leagues/:id" element={<Navigate to="/communities" replace />} />
+              <Route path="/ranking" element={<Navigate to="/communities" replace />} />
+              <Route path="/participants" element={<Navigate to="/communities" replace />} />
+              <Route path="/participants/:id" element={<Navigate to="/communities" replace />} />
+              <Route path="/notifications" element={<Navigate to="/communities" replace />} />
+
+              {/* 404 */}
+              <Route path="*" element={<Navigate to="/communities" replace />} />
+            </Routes>
+          </NotificationProvider>
+        </CommunityProvider>
       </AuthProvider>
     </BrowserRouter>
   );

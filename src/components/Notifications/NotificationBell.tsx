@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { AppNotification } from '@/models/notification';
 import './NotificationBell.css';
@@ -29,6 +30,7 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { getPath } = useCommunity();
 
   // Close on outside click
   useEffect(() => {
@@ -50,10 +52,10 @@ export default function NotificationBell() {
     setOpen(false);
     // Navigate based on type
     if (notif.type === 'duel_challenge' || notif.type === 'duel_expiring') {
-      navigate('/events?tab=ranked');
+      navigate(getPath('events?tab=ranked'));
     } else if (notif.type === 'league_week_start' || notif.type === 'league_match_expiring') {
-      if (notif.data?.leagueId) navigate(`/events/leagues/${notif.data.leagueId}`);
-      else navigate('/events?tab=leagues');
+      if (notif.data?.leagueId) navigate(getPath(`events/leagues/${notif.data.leagueId}`));
+      else navigate(getPath('events?tab=leagues'));
     }
   }
 
@@ -94,7 +96,7 @@ export default function NotificationBell() {
               </button>
               <button
                 className="notif-view-all-btn"
-                onClick={() => { setOpen(false); navigate('/notifications'); }}
+                onClick={() => { setOpen(false); navigate(getPath('notifications')); }}
               >
                 View all
               </button>

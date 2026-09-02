@@ -28,23 +28,27 @@ function generateId(): string {
 
 // ── CRUD ─────────────────────────────────────────────────────────────────
 
-export function getAllParticipants(): GlobalParticipant[] {
-  return loadGlobalParticipants();
+export function getAllParticipants(communityId?: string): GlobalParticipant[] {
+  return loadGlobalParticipants(communityId);
 }
 
-export async function getAllParticipantsAsync(): Promise<GlobalParticipant[]> {
-  return loadGlobalParticipantsAsync();
+export async function getAllParticipantsAsync(communityId?: string): Promise<GlobalParticipant[]> {
+  return loadGlobalParticipantsAsync(communityId);
 }
 
-export function getParticipant(id: string): GlobalParticipant | null {
-  return loadGlobalParticipants().find((p) => p.id === id) ?? null;
+export function getParticipant(id: string, communityId?: string): GlobalParticipant | null {
+  const all = loadGlobalParticipants(communityId);
+  return all.find((p) => p.id === id) ?? null;
 }
+
+const DEFAULT_COMMUNITY_ID = 'community_fgc_santa_clara';
 
 export async function createParticipant(
   name: string,
   alias = '',
   gameId: string | null = null,
-  mainCharacterId: string | null = null
+  mainCharacterId: string | null = null,
+  communityId: string = DEFAULT_COMMUNITY_ID
 ): Promise<GlobalParticipant> {
   const trimmedName = name.trim();
   if (!trimmedName) throw new Error('Participant name is required');
@@ -60,6 +64,7 @@ export async function createParticipant(
     tournamentIds: [],
     gameId,
     mainCharacterId,
+    communityId,
     eloPoints: null,
     eloRank: 'Sin puntos',
     createdAt: new Date().toISOString(),
@@ -70,15 +75,18 @@ export async function createParticipant(
   return participant;
 }
 
-export async function findOrCreateParticipant(name: string): Promise<GlobalParticipant> {
+export async function findOrCreateParticipant(
+  name: string,
+  communityId: string = DEFAULT_COMMUNITY_ID
+): Promise<GlobalParticipant> {
   const existing = findGlobalParticipantByName(name);
   if (existing) return existing;
-  return createParticipant(name);
+  return createParticipant(name, '', null, null, communityId);
 }
 
 export async function updateParticipant(
   id: string,
-  updates: { name?: string; alias?: string; avatarUrl?: string | null; gameId?: string | null; mainCharacterId?: string | null; phoneNumber?: string | null }
+  updates: { name?: string; alias?: string; avatarUrl?: string | null; gameId?: string | null; mainCharacterId?: string | null; phoneNumber?: string | null; communityId?: string }
 ): Promise<GlobalParticipant> {
   const all = loadGlobalParticipants();
   const participant = all.find((p) => p.id === id);

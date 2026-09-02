@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import EventsSidebar from './EventsSidebar';
 import TournamentsTab from './Tournaments/TournamentsTab';
 import LeaguesTab from './Leagues/LeaguesTab';
@@ -16,6 +17,7 @@ const AUTH_TABS: EventTab[] = ['ranked', 'history'];
 function EventsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
+  const { currentCommunity } = useCommunity();
 
   function resolveTab(param: string | null): EventTab {
     const t = param as EventTab | null;
@@ -40,6 +42,16 @@ function EventsPage() {
     setActiveTab(tab);
     setSearchParams({ tab });
   };
+
+  if (!currentCommunity) {
+    return (
+      <div className="events-page">
+        <div className="events-content">
+          <p className="text-secondary">Loading community...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="events-page">

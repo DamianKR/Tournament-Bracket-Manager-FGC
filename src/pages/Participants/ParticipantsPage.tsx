@@ -16,6 +16,8 @@ import {
   deleteUserAccount,
 } from '@/services/auth/authService';
 import { saveGlobalParticipants } from '@/services/storage/localStorage';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
@@ -23,8 +25,13 @@ import './ParticipantsPage.css';
 
 type SortKey = 'name' | 'wins' | 'tournamentsPlayed' | 'winRate';
 
+const DEFAULT_COMMUNITY_ID = 'community_fgc_santa_clara';
+const ROLE_OPTIONS: AuthUser['role'][] = ['user', 'admin', 'community_admin'];
+
 function ParticipantsPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { currentCommunity, getPath } = useCommunity();
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [statsMap, setStatsMap] = useState<Map<string, ComputedStats>>(new Map());
   const [loading, setLoading] = useState(true);
@@ -39,6 +46,7 @@ function ParticipantsPage() {
   const [newCharacterId, setNewCharacterId] = useState<string | null>(null);
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [newRole, setNewRole] = useState<AuthUser['role']>('user');
   const [creating, setCreating] = useState(false);
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
@@ -46,34 +54,44 @@ function ParticipantsPage() {
   // ── Account management ────────────────────────────────────────────────
   const [usersMap, setUsersMap] = useState<Map<string, AuthUser>>(new Map());
 
-  useEffect(() => { loadAll(); }, []);
+  useEffect(() => { loadAll(); }, [currentCommunity?.id]);
 
   function refreshStats(data: GlobalParticipant[]) {
     setStatsMap(computeAllStats(data));
   }
 
+  const communityId = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
+  const canAssignRole = user?.role === 'superadmin' || user?.role === 'community_admin';
+
   async function loadAll() {
     setLoading(true);
     try {
-      const cached = getAllParticipants();
+      const cached = getAllParticipants(communityId);
       if (cached.length > 0) { setParticipants(cached); refreshStats(cached); }
 
       const [serverData, userList] = await Promise.all([
-        getAllParticipantsAsync(),
+        getAllParticipantsAsync(communityId),
         listUsers().catch(() => [] as AuthUser[]),
       ]);
 
-      if (serverData.length === 0 && cached.length > 0) {
+      const scoped = serverData;
+
+      if (scoped.length === 0 && cached.length > 0) {
         saveGlobalParticipants(cached);
         setParticipants(cached);
         refreshStats(cached);
       } else {
-        setParticipants(serverData);
-        refreshStats(serverData);
+        setParticipants(scoped);
+        refreshStats(scoped);
       }
 
+      const participantIds = new Set(scoped.length > 0 ? scoped.map((p) => p.id) : cached.map((p) => p.id));
       const map = new Map<string, AuthUser>();
-      userList.forEach(u => { if (u.participantId) map.set(u.participantId, u); });
+      userList.forEach((u) => {
+        if (u.participantId && participantIds.has(u.participantId)) {
+          map.set(u.participantId, u);
+        }
+      });
       setUsersMap(map);
     } finally {
       setLoading(false);
@@ -118,16 +136,16 @@ function ParticipantsPage() {
     if (newPassword.trim().length < 6) { setError('Password must be at least 6 characters'); return; }
     setCreating(true); setError('');
     try {
-      const p = await createParticipant(newName, newAlias, newGameId, newCharacterId);
+      const p = await createParticipant(newName, newAlias, newGameId, newCharacterId, communityId);
       const username = newUsername.trim() || generateUsernameFromName();
-      const u = await createUserAccount(p.id, username, newPassword.trim(), 'user');
+      const u = await createUserAccount(p.id, username, newPassword.trim(), newRole, communityId);
       const next = [...participants, p];
       setParticipants(next); refreshStats(next);
       const nextUsers = new Map(usersMap);
       nextUsers.set(p.id, u);
       setUsersMap(nextUsers);
       setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null);
-      setNewUsername(''); setNewPassword('');
+      setNewUsername(''); setNewPassword(''); setNewRole('user');
       setShowCreateForm(false);
     } catch (err: any) { setError(err.message); }
     finally { setCreating(false); }
@@ -136,7 +154,7 @@ function ParticipantsPage() {
   // ── Edit ──────────────────────────────────────────────────────────────
 
   function goToEdit(p: GlobalParticipant) {
-    navigate(`/participants/${p.id}?tab=edit`);
+    navigate(getPath(`participants/${p.id}`));
   }
 
   // ── Delete ────────────────────────────────────────────────────────────
@@ -228,16 +246,24 @@ function ParticipantsPage() {
                   <label>Username <span className="text-secondary">(auto if empty)</span></label>
                   <input type="text" value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setError(''); }}}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
                     placeholder={generateUsernameFromName() || 'username'} />
                 </div>
                 <div className="form-group">
                   <label>Password *</label>
                   <input type="password" value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setError(''); }}}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
                     placeholder="Set the participant's password" />
                 </div>
+                {canAssignRole && (
+                  <div className="form-group">
+                    <label>Role</label>
+                    <select value={newRole} onChange={(e) => setNewRole(e.target.value as AuthUser['role'])}>
+                      {ROLE_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -268,7 +294,7 @@ function ParticipantsPage() {
               <button className="btn-outline" onClick={() => {
                 setShowCreateForm(false);
                 setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null);
-                setNewUsername(''); setNewPassword(''); setError('');
+                setNewUsername(''); setNewPassword(''); setNewRole('user'); setError('');
               }}>Cancel</button>
               <button className="btn-primary" onClick={handleCreate} disabled={creating}>
                 {creating ? 'Creating…' : 'Create Participant'}
@@ -305,7 +331,7 @@ function ParticipantsPage() {
               const s = getStats(p.id);
               return (
                 <div key={p.id} className="pp-item card">
-                  <div className="pp-item-info" onClick={() => navigate(`/participants/${p.id}`)}>
+                  <div className="pp-item-info" onClick={() => navigate(getPath(`participants/${p.id}`))}>
                     <div className="pp-item-avatar" style={{ background: avatarColor(p.name) }}>
                       {initials(p.name)}
                     </div>
@@ -345,7 +371,7 @@ function ParticipantsPage() {
                       return u ? (
                         <span className={`pp-account-badge ${u.isActive ? 'has-account' : 'inactive-account'}`}>
                           <i className="fas fa-user-check" />
-                          {u.isActive ? u.username : 'Inactive'}
+                          {u.isActive ? `${u.username} (${u.role})` : 'Inactive'}
                         </span>
                       ) : (
                         <span className="pp-account-badge no-account">

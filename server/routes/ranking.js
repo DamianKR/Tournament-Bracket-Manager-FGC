@@ -15,7 +15,8 @@
 import { Router } from 'express';
 import { participants, rankedMatches } from '../db/collections.js';
 import { calculateElo, getRankName, applyLegendTier, RANK_TIERS } from '../utils/eloEngine.js';
-import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
+import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
+import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -35,9 +36,10 @@ function ensureElo(p) {
 
 // ── GET /api/ranking — Leaderboard ────────────────────────────────────────
 
-router.get('/', async (_req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
-    const all = (await participants.getAll()).map(ensureElo);
+    const { communityId } = req.query;
+    const all = filterByCommunity(req.user, (await participants.getAll()).map(ensureElo), communityId);
 
     // Sort: players with points first (desc), then unranked players
     const withPoints = all.filter((p) => p.eloPoints != null)
@@ -71,9 +73,10 @@ router.get('/', async (_req, res) => {
 
 // ── GET /api/ranking/matches — Full match history ─────────────────────────
 
-router.get('/matches', async (_req, res) => {
+router.get('/matches', optionalAuth, async (req, res) => {
   try {
-    const all = await rankedMatches.getAll();
+    const { communityId } = req.query;
+    const all = filterByCommunity(req.user, await rankedMatches.getAll(), communityId);
     const sorted = [...all].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json(sorted);
   } catch (err) {
@@ -87,6 +90,10 @@ router.get('/matches', async (_req, res) => {
 router.post('/match', requireAuth, async (req, res) => {
   try {
     const { playerAId, playerBId, winnerId } = req.body;
+    const communityId = getTargetCommunityId(req.user, req.body.communityId);
+    if (!isInUserScope(req.user, communityId)) {
+      return res.status(403).json({ error: 'Cannot record match in this community' });
+    }
 
     if (!playerAId || !playerBId || !winnerId) {
       return res.status(400).json({ error: 'playerAId, playerBId and winnerId are required' });
@@ -105,6 +112,14 @@ router.post('/match', requireAuth, async (req, res) => {
 
     if (!rawA) return res.status(404).json({ error: `Participant not found: ${playerAId}` });
     if (!rawB) return res.status(404).json({ error: `Participant not found: ${playerBId}` });
+
+    // Both participants must belong to the target community
+    if (
+      (rawA.communityId && rawA.communityId !== communityId) ||
+      (rawB.communityId && rawB.communityId !== communityId)
+    ) {
+      return res.status(403).json({ error: 'Both participants must belong to the target community' });
+    }
 
     const pA = ensureElo(rawA);
     const pB = ensureElo(rawB);
@@ -132,6 +147,7 @@ router.post('/match', requireAuth, async (req, res) => {
       playerBRankBefore:   pB.eloRank,
       playerARankAfter:    newRankA,
       playerBRankAfter:    newRankB,
+      communityId,
       createdAt: new Date().toISOString(),
     };
 
@@ -167,25 +183,30 @@ router.post('/match', requireAuth, async (req, res) => {
 
 router.post('/reset/hard', requireAuth, requireAdmin, async (req, res) => {
   try {
+    const communityId = getTargetCommunityId(req.user, req.body.communityId);
     const all = await participants.getAll();
     const resetPoints = 1500;
     const resetRank   = getRankName(resetPoints);
 
     const updated = all.map((p) => ({
       ...p,
-      eloPoints: resetPoints,
-      eloRank:   resetRank,
-      updatedAt: new Date().toISOString(),
+      eloPoints: p.communityId === communityId ? resetPoints : p.eloPoints,
+      eloRank:   p.communityId === communityId ? resetRank : p.eloRank,
+      updatedAt: p.communityId === communityId ? new Date().toISOString() : p.updatedAt,
     }));
 
     await participants.replaceAll(updated);
-    await rankedMatches.clear();
+
+    // Only clear ranked matches for this community
+    const allMatches = await rankedMatches.getAll();
+    const kept = allMatches.filter(m => m.communityId !== communityId);
+    await rankedMatches.replaceAll(kept);
 
     res.json({
       ok: true,
-      affectedParticipants: updated.length,
-      updatedParticipants: updated,
-      message: 'Hard reset: all players returned to 1500 pts. Match history cleared.',
+      affectedParticipants: updated.filter(p => p.communityId === communityId).length,
+      updatedParticipants: updated.filter(p => p.communityId === communityId),
+      message: 'Hard reset: community players returned to 1500 pts. Community match history cleared.',
     });
   } catch (err) {
     console.error('[Ranking] POST /reset/hard error:', err);
@@ -198,9 +219,11 @@ router.post('/reset/hard', requireAuth, requireAdmin, async (req, res) => {
 
 router.post('/reset/soft', requireAuth, requireAdmin, async (req, res) => {
   try {
+    const communityId = getTargetCommunityId(req.user, req.body.communityId);
     const all = await participants.getAll();
 
     const updated = all.map((p) => {
+      if (p.communityId !== communityId) return p;
       const pts  = p.eloPoints ?? 1500;
       const tier = [...RANK_TIERS].reverse().find((t) => pts >= t.min) ?? RANK_TIERS[0];
       return {
@@ -215,9 +238,9 @@ router.post('/reset/soft', requireAuth, requireAdmin, async (req, res) => {
 
     res.json({
       ok: true,
-      affectedParticipants: updated.length,
-      updatedParticipants: updated,
-      message: 'Soft reset: all players returned to start of their current tier.',
+      affectedParticipants: updated.filter(p => p.communityId === communityId).length,
+      updatedParticipants: updated.filter(p => p.communityId === communityId),
+      message: 'Soft reset: community players returned to start of their current tier.',
     });
   } catch (err) {
     console.error('[Ranking] POST /reset/soft error:', err);
@@ -227,10 +250,11 @@ router.post('/reset/soft', requireAuth, requireAdmin, async (req, res) => {
 
 // ── GET /api/ranking/matches/:participantId — wildcard, must be AFTER fixed paths ──
 
-router.get('/matches/:participantId', async (req, res) => {
+router.get('/matches/:participantId', optionalAuth, async (req, res) => {
   try {
     const { participantId } = req.params;
-    const all = await rankedMatches.getAll();
+    const { communityId } = req.query;
+    const all = filterByCommunity(req.user, await rankedMatches.getAll(), communityId);
     const filtered = all
       .filter((m) => m.playerAId === participantId || m.playerBId === participantId)
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -245,6 +269,11 @@ router.get('/matches/:participantId', async (req, res) => {
 
 router.delete('/matches/:matchId', requireAuth, requireAdmin, async (req, res) => {
   try {
+    const match = await rankedMatches.findById(req.params.matchId);
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    if (!isInUserScope(req.user, match.communityId)) {
+      return res.status(403).json({ error: 'Match is not in your community scope' });
+    }
     const deleted = await rankedMatches.remove(req.params.matchId);
     if (!deleted) return res.status(404).json({ error: 'Match not found' });
     res.json({ ok: true });

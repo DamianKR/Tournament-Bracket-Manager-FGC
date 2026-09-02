@@ -18,22 +18,29 @@
 import { Router } from 'express';
 import { duels, duelSettings, participants } from '../db/collections.js';
 import { duelChallengeShape, validateDuelChallenge, duelSettingsShape } from '../models/duel.js';
-import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
-import { expireDuel, expireAllOldDuels } from '../services/duelExpiration.js';
+import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
+import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
+import { expireDuel } from '../services/duelExpiration.js';
 import { createNotification } from '../services/notificationService.js';
 
 const router = Router();
+
+const ADMIN_ROLES = ['superadmin', 'community_admin', 'admin'];
+function isAdmin(user) {
+  return user && ADMIN_ROLES.includes(user.role);
+}
 
 // Max evidence (base64) size: 6MB string, which is roughly 4.5MB decoded image
 const MAX_EVIDENCE_SIZE_BYTES = 6 * 1024 * 1024;
 
 // ── Settings ──────────────────────────────────────────────────────────────
 
-// GET /api/duels/settings
-router.get('/settings', async (_req, res) => {
+// GET /api/duels/settings?communityId=...
+router.get('/settings', optionalAuth, async (req, res) => {
   try {
+    const communityId = getTargetCommunityId(req.user, req.query.communityId);
     const all = await duelSettings.getAll();
-    const settings = all.find(s => s.id === 'default') || duelSettingsShape();
+    const settings = all.find(s => s.communityId === communityId) || duelSettingsShape(communityId);
     res.json(settings);
   } catch (err) {
     console.error('[Duels] GET /settings error:', err);
@@ -44,7 +51,15 @@ router.get('/settings', async (_req, res) => {
 // PUT /api/duels/settings
 router.put('/settings', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const updated = { id: 'default', ...req.body };
+    const communityId = getTargetCommunityId(req.user, req.body.communityId);
+    const existing = (await duelSettings.getAll()).find(s => s.communityId === communityId);
+    const updated = {
+      ...(existing || duelSettingsShape(communityId)),
+      ...req.body,
+      id: communityId,
+      communityId,
+      updatedAt: new Date().toISOString(),
+    };
     await duelSettings.upsert(updated);
     res.json(updated);
   } catch (err) {
@@ -55,21 +70,24 @@ router.put('/settings', requireAuth, requireAdmin, async (req, res) => {
 
 // ── Challenges ────────────────────────────────────────────────────────────
 
-// GET /api/duels
-router.get('/', async (_req, res) => {
+// GET /api/duels?communityId=...
+router.get('/', optionalAuth, async (req, res) => {
   try {
+    const { communityId } = req.query;
     const data = await duels.getAll();
-    res.json(data);
+    const filtered = filterByCommunity(req.user, data, communityId);
+    res.json(filtered);
   } catch (err) {
     console.error('[Duels] GET / error:', err);
     res.status(500).json({ error: 'Failed to read challenges' });
   }
 });
 
-// GET /api/duels/active
-router.get('/active', async (_req, res) => {
+// GET /api/duels/active?communityId=...
+router.get('/active', optionalAuth, async (req, res) => {
   try {
-    const all = await duels.getAll();
+    const { communityId } = req.query;
+    const all = filterByCommunity(req.user, await duels.getAll(), communityId);
     const active = all.filter(d => d.status === 'pending' || d.status === 'accepted');
     res.json(active);
   } catch (err) {
@@ -79,10 +97,13 @@ router.get('/active', async (_req, res) => {
 });
 
 // GET /api/duels/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const challenge = await duels.findById(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
+    if (!isInUserScope(req.user, challenge.communityId)) {
+      return res.status(403).json({ error: 'Challenge is not in your community scope' });
+    }
     res.json(challenge);
   } catch (err) {
     console.error('[Duels] GET /:id error:', err);
@@ -104,16 +125,36 @@ router.post('/', requireAuth, async (req, res) => {
     }
 
     // Non-admin users can only challenge as themselves
-    if (req.user.role !== 'admin' && req.user.participantId !== challengerId) {
+    if (!isAdmin(req.user) && req.user.participantId !== challengerId) {
       return res.status(403).json({ error: 'You can only create challenges as yourself' });
     }
 
+    const communityId = getTargetCommunityId(req.user, req.body.communityId);
+    if (!isInUserScope(req.user, communityId)) {
+      return res.status(403).json({ error: 'Cannot create challenge in this community' });
+    }
+
+    // Both participants must belong to the target community
+    const [challenger, challenged] = await Promise.all([
+      participants.findById(challengerId),
+      participants.findById(challengedId),
+    ]);
+    if (!challenger || !challenged) {
+      return res.status(404).json({ error: 'One or both participants not found' });
+    }
+    if (
+      (challenger.communityId && challenger.communityId !== communityId) ||
+      (challenged.communityId && challenged.communityId !== communityId)
+    ) {
+      return res.status(403).json({ error: 'Both participants must belong to the target community' });
+    }
+
     // Manual expiration trigger (also used by server cron)
-    // Validate mandatory duel limits
+    // Validate mandatory duel limits (per community)
     if (type === 'mandatory') {
-      const all = await duels.getAll();
+      const all = filterByCommunity(req.user, await duels.getAll(), communityId);
       const settings = await duelSettings.getAll();
-      const config = settings.find(s => s.id === 'default') || duelSettingsShape();
+      const config = settings.find(s => s.communityId === communityId) || duelSettingsShape(communityId);
 
       if (config.mandatoryDuelsEnabled === false) {
         return res.status(400).json({ error: 'Mandatory duels are currently disabled' });
@@ -165,7 +206,7 @@ router.post('/', requireAuth, async (req, res) => {
       }
     }
 
-    const challenge = duelChallengeShape(id, challengerId, challengedId, expiresAt, type);
+    const challenge = duelChallengeShape(id, challengerId, challengedId, expiresAt, type, communityId);
     const validation = validateDuelChallenge(challenge);
     
     if (!validation.valid) {
@@ -204,7 +245,10 @@ router.put('/:id/accept', requireAuth, async (req, res) => {
     if (challenge.status !== 'pending') {
       return res.status(400).json({ error: 'Challenge is not pending' });
     }
-    if (req.user.role !== 'admin' && req.user.participantId !== challenge.challengedId) {
+    if (!isInUserScope(req.user, challenge.communityId)) {
+      return res.status(403).json({ error: 'Challenge is not in your community scope' });
+    }
+    if (!isAdmin(req.user) && req.user.participantId !== challenge.challengedId) {
       return res.status(403).json({ error: 'Only the challenged player or admin can accept' });
     }
 
@@ -273,7 +317,10 @@ router.put('/:id/decline', requireAuth, async (req, res) => {
     if (challenge.status !== 'pending') {
       return res.status(400).json({ error: 'Challenge is not pending' });
     }
-    if (req.user.role !== 'admin' && req.user.participantId !== challenge.challengedId) {
+    if (!isInUserScope(req.user, challenge.communityId)) {
+      return res.status(403).json({ error: 'Challenge is not in your community scope' });
+    }
+    if (!isAdmin(req.user) && req.user.participantId !== challenge.challengedId) {
       return res.status(403).json({ error: 'Only the challenged player or admin can decline' });
     }
 
@@ -293,15 +340,17 @@ router.put('/:id/complete', requireAuth, async (req, res) => {
   try {
     const challenge = await duels.findById(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
+    if (!isInUserScope(req.user, challenge.communityId)) {
+      return res.status(403).json({ error: 'Challenge is not in your community scope' });
+    }
 
     const { matchId } = req.body;
     if (!matchId) return res.status(400).json({ error: 'Missing matchId' });
 
     // Authorize: admin or either participant
-    const isAdmin = req.user.role === 'admin';
-    const isParticipant = req.user.participantId === challenge.challengerId ||
-                          req.user.participantId === challenge.challengedId;
-    if (!isAdmin && !isParticipant) {
+    const userIsParticipant = req.user.participantId === challenge.challengerId ||
+                              req.user.participantId === challenge.challengedId;
+    if (!isAdmin(req.user) && !userIsParticipant) {
       return res.status(403).json({ error: 'Only the duel participants or admin can complete' });
     }
 
@@ -331,8 +380,13 @@ router.put('/:id/expire', requireAuth, async (req, res) => {
 });
 
 // DELETE /api/duels/:id
-router.delete('/:id', requireAuth, async (req, res) => {
+router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
+    const challenge = await duels.findById(req.params.id);
+    if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
+    if (!isInUserScope(req.user, challenge.communityId)) {
+      return res.status(403).json({ error: 'Challenge is not in your community scope' });
+    }
     const deleted = await duels.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Challenge not found' });
     res.json({ success: true });
@@ -348,7 +402,10 @@ router.put('/:id/report-result', requireAuth, async (req, res) => {
   try {
     const challenge = await duels.findById(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
-    
+    if (!isInUserScope(req.user, challenge.communityId)) {
+      return res.status(403).json({ error: 'Challenge is not in your community scope' });
+    }
+
     if (challenge.status !== 'accepted') {
       return res.status(400).json({ error: 'Challenge must be accepted before reporting results' });
     }
@@ -356,8 +413,8 @@ router.put('/:id/report-result', requireAuth, async (req, res) => {
     // Check if user is one of the participants
     const isChallenger = req.user.participantId === challenge.challengerId;
     const isChallenged = req.user.participantId === challenge.challengedId;
-    
-    if (!isChallenger && !isChallenged && req.user.role !== 'admin') {
+
+    if (!isChallenger && !isChallenged && !isAdmin(req.user)) {
       return res.status(403).json({ error: 'Only participants can report results' });
     }
 
@@ -381,7 +438,7 @@ router.put('/:id/report-result', requireAuth, async (req, res) => {
     };
 
     // Admin can confirm directly without consensus
-    if (req.user.role === 'admin') {
+    if (isAdmin(req.user)) {
       challenge.challengerResult = { ...result, evidence: null };
       challenge.challengedResult = { ...result, evidence: null };
       challenge.status = 'completed';
@@ -424,7 +481,10 @@ router.put('/:id/resolve-conflict', requireAuth, requireAdmin, async (req, res) 
   try {
     const challenge = await duels.findById(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
-    
+    if (!isInUserScope(req.user, challenge.communityId)) {
+      return res.status(403).json({ error: 'Challenge is not in your community scope' });
+    }
+
     if (challenge.status !== 'pending_review') {
       return res.status(400).json({ error: 'Challenge is not pending review' });
     }

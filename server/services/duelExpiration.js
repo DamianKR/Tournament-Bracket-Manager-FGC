@@ -6,6 +6,7 @@
  */
 
 import { duels, participants, duelSettings } from '../db/collections.js';
+import { duelSettingsShape } from '../models/duel.js';
 import { calculateElo, getRankName } from '../utils/eloEngine.js';
 
 /**
@@ -92,15 +93,15 @@ export async function expireDuel(id) {
  */
 export async function expireAllOldDuels() {
   const allSettings = await duelSettings.getAll();
-  const settings = allSettings.find(s => s.id === 'default') || {
-    challengeExpirationDays: 7,
-  };
+  const settingsByCommunity = new Map(allSettings.map(s => [s.communityId, s]));
+  const getSettings = (communityId) => settingsByCommunity.get(communityId) || duelSettingsShape(communityId);
 
   const all = await duels.getAll();
   const now = new Date();
   const expiredIds = [];
 
   for (const challenge of all) {
+    const settings = getSettings(challenge.communityId || 'community_fgc_santa_clara');
     let shouldExpire = false;
 
     if (challenge.status === 'pending' && new Date(challenge.expiresAt) < now) {

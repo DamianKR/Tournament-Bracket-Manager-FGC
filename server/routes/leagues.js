@@ -22,9 +22,9 @@ import {
 } from '../utils/leagueScheduler.js';
 import { calculateMatchElo, getRankName } from '../utils/eloEngine.js';
 import { notifyAdminsOfBanEligibility } from '../services/leagueExpiration.js';
-import { createNotification } from '../services/notificationService.js';
 import { scheduleLeagueNotifications } from '../services/notificationScheduler.js';
-import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
+import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
+import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -100,7 +100,7 @@ async function applyLeagueMatchElo(match) {
   match.completedDate = new Date().toISOString();
   
   console.log(`[applyLeagueMatchElo] Saving match ${match.id} with status=${match.status}`);
-  const savedMatch = await leagueMatches.upsert(match);
+  await leagueMatches.upsert(match);
   console.log(`[applyLeagueMatchElo] Match ${match.id} saved successfully`);
   
   // Verify the match was saved
@@ -200,11 +200,13 @@ async function calculateStandings(leagueId) {
 
 // ── Routes ────────────────────────────────────────────────────────────────
 
-// GET /api/leagues
-router.get('/', async (_req, res) => {
+// GET /api/leagues?communityId=...
+router.get('/', optionalAuth, async (req, res) => {
   try {
+    const { communityId } = req.query;
     const data = await leagues.getAll();
-    res.json(data);
+    const filtered = filterByCommunity(req.user, data, communityId);
+    res.json(filtered);
   } catch (err) {
     console.error('[Leagues] GET / error:', err);
     res.status(500).json({ error: 'Failed to read leagues' });
@@ -212,10 +214,13 @@ router.get('/', async (_req, res) => {
 });
 
 // GET /api/leagues/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
+    if (!isInUserScope(req.user, league.communityId)) {
+      return res.status(403).json({ error: 'League is not in your community scope' });
+    }
     res.json(league);
   } catch (err) {
     console.error('[Leagues] GET /:id error:', err);
@@ -269,7 +274,11 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     
     const validGamesPerMatch = [3, 5, 7, 9].includes(gamesPerMatch) ? gamesPerMatch : 3;
     const validRoundsPerOpponent = [1, 2, 3].includes(roundsPerOpponent) ? roundsPerOpponent : 1;
-    
+    const communityId = getTargetCommunityId(req.user, req.body.communityId);
+    if (!isInUserScope(req.user, communityId)) {
+      return res.status(403).json({ error: 'Cannot create league in this community' });
+    }
+
     const league = {
       id: generateId('league'),
       name,
@@ -287,6 +296,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       gracePeriodDays: gracePeriodDays ?? 30,
       playoffsEnabled: playoffsEnabled ?? true,
       playoffsEloMultiplier: playoffsEloMultiplier || 1.5,
+      communityId,
       status: 'active',
       currentWeek: 1,
       createdAt: new Date().toISOString(),
@@ -569,7 +579,7 @@ router.post('/:id/matches/:matchId/mark-no-show', requireAuth, requireAdmin, asy
       await participants.upsert({
         ...p1,
         eloPoints: result.newEloA,
-        eloRank: getRankFromElo(result.newEloA),
+        eloRank: getRankName(result.newEloA),
         updatedAt: new Date().toISOString(),
       });
     } else {
@@ -577,7 +587,7 @@ router.post('/:id/matches/:matchId/mark-no-show', requireAuth, requireAdmin, asy
       await participants.upsert({
         ...p2,
         eloPoints: result.newEloB,
-        eloRank: getRankFromElo(result.newEloB),
+        eloRank: getRankName(result.newEloB),
         updatedAt: new Date().toISOString(),
       });
     }
@@ -783,6 +793,11 @@ router.get('/:id/eligible-for-ban', async (req, res) => {
 // DELETE /api/leagues/:id
 router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
+    const league = await leagues.findById(req.params.id);
+    if (!league) return res.status(404).json({ error: 'League not found' });
+    if (!isInUserScope(req.user, league.communityId)) {
+      return res.status(403).json({ error: 'League is not in your community scope' });
+    }
     const deleted = await leagues.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'League not found' });
     

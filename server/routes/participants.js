@@ -17,16 +17,19 @@
 import { Router } from 'express';
 import { participants, tournaments, leagues, leagueMatches } from '../db/collections.js';
 import { validateParticipant } from '../models/participant.js';
+import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
+import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
 
 const router = Router();
 
 // ── Routes ────────────────────────────────────────────────────────────────
 
-// GET /api/participants
-router.get('/', async (_req, res) => {
+// GET /api/participants?communityId=...
+router.get('/', optionalAuth, async (req, res) => {
   try {
+    const { communityId } = req.query;
     const data = await participants.getAll();
-    res.json(data);
+    res.json(filterByCommunity(req.user, data, communityId));
   } catch (err) {
     console.error('[Participants] GET / error:', err);
     res.status(500).json({ error: 'Failed to read participants' });
@@ -34,10 +37,13 @@ router.get('/', async (_req, res) => {
 });
 
 // GET /api/participants/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const p = await participants.findById(req.params.id);
     if (!p) return res.status(404).json({ error: 'Participant not found' });
+    if (!isInUserScope(req.user, p.communityId)) {
+      return res.status(403).json({ error: 'Participant is not in your community scope' });
+    }
     res.json(p);
   } catch (err) {
     console.error('[Participants] GET /:id error:', err);
@@ -48,7 +54,7 @@ router.get('/:id', async (req, res) => {
 // POST /api/participants
 // - Array body  → merge sync (preserves ELO fields from JSON if incoming record lacks them)
 // - Object body → upsert single participant
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     if (Array.isArray(req.body)) {
       // Load existing records so we can preserve ELO data that the frontend
@@ -56,19 +62,29 @@ router.post('/', async (req, res) => {
       const existing = await participants.getAll();
       const existingMap = new Map(existing.map((p) => [p.id, p]));
 
+      // Reject bulk sync if it tries to write to a community outside the user's scope
+      const invalidCommunity = req.body.some((incoming) => {
+        const communityId = getTargetCommunityId(req.user, incoming.communityId);
+        return !isInUserScope(req.user, communityId);
+      });
+      if (invalidCommunity) {
+        return res.status(403).json({ error: 'Cannot sync participants outside your community scope' });
+      }
+
       const merged = req.body.map((incoming) => {
         const current = existingMap.get(incoming.id);
-        if (!current) return incoming; // new record — nothing to preserve
+        const communityId = getTargetCommunityId(req.user, incoming.communityId);
 
         // ELO fields are only written by the ranking engine (server-side).
         // If the server already has eloPoints, always keep the server value —
         // the frontend bulk-sync never has fresher ELO data because ranking
         // writes bypass localStorage and go straight to the JSON via upsert.
-        if (current.eloPoints !== undefined) {
+        if (current && current.eloPoints !== undefined) {
           return {
             ...incoming,
             eloPoints: current.eloPoints,
             eloRank:   current.eloRank,
+            communityId,
           };
         }
 
@@ -77,6 +93,7 @@ router.post('/', async (req, res) => {
           ...incoming,
           eloPoints: incoming.eloPoints ?? 1500,
           eloRank:   incoming.eloRank   ?? 'Diamante',
+          communityId,
         };
       });
 
@@ -86,6 +103,10 @@ router.post('/', async (req, res) => {
 
     // Single object upsert
     const body = req.body;
+    body.communityId = getTargetCommunityId(req.user, body.communityId);
+    if (!isInUserScope(req.user, body.communityId)) {
+      return res.status(403).json({ error: 'Cannot create participant in this community' });
+    }
     const { valid, errors } = validateParticipant(body);
     if (!valid) return res.status(400).json({ error: 'Invalid participant data', details: errors });
 
@@ -104,13 +125,18 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/participants/:id — upsert (create if not exists, update if exists)
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   try {
     const existing = await participants.findById(req.params.id);
+
+    if (existing && !isInUserScope(req.user, existing.communityId)) {
+      return res.status(403).json({ error: 'Participant is not in your community scope' });
+    }
 
     if (!existing) {
       // CREATE: body must contain the full participant object from the frontend
       const body = { ...req.body, id: req.params.id };
+      if (!body.communityId) body.communityId = getTargetCommunityId(req.user);
       const { valid, errors } = validateParticipant(body);
       if (!valid) return res.status(400).json({ error: 'Invalid data', details: errors });
 
@@ -146,6 +172,7 @@ router.put('/:id', async (req, res) => {
       avatarUrl: avatarUrl !== undefined ? avatarUrl : existing.avatarUrl,
       // Allow stats to be overwritten if sent (for full sync)
       stats: stats ?? existing.stats,
+      communityId: getTargetCommunityId(req.user, req.body.communityId),
       updatedAt: new Date().toISOString(),
     };
 
@@ -161,8 +188,13 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/participants/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
+    const p = await participants.findById(req.params.id);
+    if (!p) return res.status(404).json({ error: 'Participant not found' });
+    if (!isInUserScope(req.user, p.communityId)) {
+      return res.status(403).json({ error: 'Participant is not in your community scope' });
+    }
     const deleted = await participants.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Participant not found' });
     res.json({ ok: true });

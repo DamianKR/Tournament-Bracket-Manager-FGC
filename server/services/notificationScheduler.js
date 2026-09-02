@@ -1,21 +1,19 @@
 /**
  * Notification Scheduler
  *
- * Schedules future notification creation using setTimeout.
- * When a league week starts, notifications are created at that exact moment.
+ * Schedules future notifications using setTimeout.
+ * When a league week starts, notifications are created at that moment.
  *
  * Why not cron?
  *   - We don't want constant server load checking nothing.
  *   - Events (league week start, match deadline, duel expiry) are known at creation time.
  *   - We compute the exact date and schedule a one-shot timeout.
  *
- * Why not scheduledAt on pre-created notifications?
- *   - Pre-creating thousands of notifications at league creation is slow.
- *   - setTimeout is cheap (just an in-memory timer).
- *
- * Persistence:
- *   - If the server restarts, reschedulableLeagueNotifications() is called on startup.
- *   - It reads all active leagues and schedules remaining weeks.
+ * Strategy:
+ *   - At any time, only the next unnotified week of each league is scheduled.
+ *   - When that week fires, the scheduler chains to the following week.
+ *   - On server restart, reschedulableLeagueNotifications() re-queues the next
+ *     unnotified week per league (and fires any weeks that already started).
  */
 
 import { createNotification } from './notificationService.js';
@@ -24,6 +22,7 @@ import { leagues, leagueMatches, participants } from '../db/collections.js';
 const activeTimeouts = new Map();
 
 const MINUTE_MS = 60 * 1000;
+const MAX_TIMEOUT_MS = 2147483647; // setTimeout max (~24.8 days)
 
 /**
  * Calculate when a notification should fire (with a small lead time).
@@ -37,36 +36,6 @@ function msUntil(date) {
   const now = new Date();
   const d = new Date(date);
   return d - now;
-}
-
-/**
- * Build opponent names for a participant for a specific week.
- */
-async function buildWeekOpponentMap(leagueId, week, participantIds) {
-  const allMatches = await leagueMatches.getAll();
-  const weekMatches = allMatches.filter(m => m.leagueId === leagueId && m.week === week);
-
-  const opponents = {};
-  for (const id of participantIds) opponents[id] = new Set();
-
-  for (const match of weekMatches) {
-    opponents[match.participant1Id].add(match.participant2Id);
-    opponents[match.participant2Id].add(match.participant1Id);
-  }
-
-  const allParticipants = await participants.getAll();
-  const participantMap = new Map(allParticipants.map(p => [p.id, p]));
-
-  const result = {};
-  for (const id of participantIds) {
-    const opponentIds = [...opponents[id]];
-    const opponentNames = opponentIds.map(oid => {
-      const p = participantMap.get(oid);
-      return p ? (p.alias?.trim() || p.name) : 'Unknown';
-    });
-    result[id] = { opponentIds, opponentNames };
-  }
-  return result;
 }
 
 /**
@@ -119,6 +88,11 @@ async function fireLeagueWeekNotifications(league, week) {
     }
 
     console.log(`[notificationScheduler] Created week ${week} notifications for league "${reloaded.name}"`);
+
+    // Chain to the next unnotified week
+    await scheduleLeagueNotifications(reloaded).catch(err =>
+      console.error(`[notificationScheduler] Failed to schedule next week for league ${reloaded.id}:`, err)
+    );
   } catch (err) {
     console.error(`[notificationScheduler] Failed to create week ${week} notifications for league ${league.id}:`, err);
   }
@@ -132,7 +106,7 @@ export function scheduleLeagueWeekNotification(league, week, weekStartDate) {
   if (activeTimeouts.has(key)) return;
 
   const fireAt = notificationTimeFor(new Date(weekStartDate));
-  const delay = msUntil(fireAt);
+  let delay = msUntil(fireAt);
 
   if (delay <= 0) {
     // Already started, fire immediately
@@ -140,58 +114,68 @@ export function scheduleLeagueWeekNotification(league, week, weekStartDate) {
     return;
   }
 
+  if (delay > MAX_TIMEOUT_MS) {
+    // setTimeout cannot handle delays > ~24.8 days.
+    // Schedule a wake-up at the max delay and re-check then.
+    const timeout = setTimeout(() => {
+      activeTimeouts.delete(key);
+      scheduleLeagueWeekNotification(league, week, weekStartDate);
+    }, MAX_TIMEOUT_MS);
+
+    activeTimeouts.set(key, timeout);
+    console.log(`[notificationScheduler] Scheduled week ${week} notification for league "${league.name}" (long delay, re-check at ${new Date(Date.now() + MAX_TIMEOUT_MS).toISOString()})`);
+    return;
+  }
+
   const timeout = setTimeout(() => {
     activeTimeouts.delete(key);
     fireLeagueWeekNotifications(league, week);
-  }, Math.min(delay, 2147483647)); // setTimeout max is ~24.8 days
+  }, delay);
 
   activeTimeouts.set(key, timeout);
   console.log(`[notificationScheduler] Scheduled week ${week} notification for league "${league.name}" at ${fireAt.toISOString()}`);
 }
 
 /**
- * Schedule all future week notifications for a league.
+ * Schedule the next pending week notification for a league.
  * Call this when a league is created or regenerated.
  */
-export function scheduleLeagueNotifications(league) {
+export async function scheduleLeagueNotifications(league) {
   if (league.status !== 'active') return;
+
   const weeks = Object.keys(league.weekStartDates || {}).map(Number).sort((a, b) => a - b);
+  const now = new Date();
+
   for (const week of weeks) {
     if (league.notifiedWeeks?.includes(week)) continue;
-    scheduleLeagueWeekNotification(league, week, league.weekStartDates[week]);
+
+    const weekStart = new Date(league.weekStartDates[week]);
+    const fireAt = notificationTimeFor(weekStart);
+
+    if (fireAt <= now) {
+      // Week already started (or about to). Fire and let it chain to the next.
+      await fireLeagueWeekNotifications(league, week);
+    } else {
+      // Future week — schedule a timeout and stop; the chain will handle the rest later.
+      scheduleLeagueWeekNotification(league, week, league.weekStartDates[week]);
+    }
+    return; // only handle the next actionable week; chain covers the rest
   }
 }
 
 /**
- * Reschedule all pending league week notifications on server startup.
+ * Reschedule the next pending league week notification on server startup.
  * Also fires any weeks that started while the server was asleep/off.
  */
 export async function reschedulableLeagueNotifications() {
   try {
     const all = await leagues.getAll();
     const active = all.filter(l => l.status === 'active');
-    const now = new Date();
 
     for (const league of active) {
-      const weeks = Object.keys(league.weekStartDates || {}).map(Number).sort((a, b) => a - b);
-
-      for (const week of weeks) {
-        const weekStart = new Date(league.weekStartDates[week]);
-        const fireAt = notificationTimeFor(weekStart);
-
-        if (fireAt <= now) {
-          // Week already started (or about to). Fire if not already notified.
-          if (!league.notifiedWeeks?.includes(week)) {
-            await fireLeagueWeekNotifications(league, week);
-          }
-        } else {
-          // Future week — schedule a timeout
-          if (!league.notifiedWeeks?.includes(week)) {
-            scheduleLeagueWeekNotification(league, week, league.weekStartDates[week]);
-          }
-        }
-      }
+      await scheduleLeagueNotifications(league);
     }
+
     console.log(`[notificationScheduler] Rescheduled/caught up notifications for ${active.length} active leagues`);
   } catch (err) {
     console.error('[notificationScheduler] Failed to reschedule league notifications:', err);

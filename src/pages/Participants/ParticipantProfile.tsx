@@ -21,6 +21,7 @@ import { getCharacterImageUrl } from '@/utils/characterImage';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
 import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccount } from '@/services/auth/authService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
@@ -41,6 +42,8 @@ function ordinal(n: number): string {
 function ParticipantProfile() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { currentCommunity, getPath } = useCommunity();
+  const communityId = currentCommunity?.id;
   const [searchParams] = useSearchParams();
   const { user, isAdmin } = useAuth();
   const isOwnProfile = !!(user && user.participantId === id);
@@ -102,7 +105,7 @@ function ParticipantProfile() {
   const [admUsername, setAdmUsername] = useState('');
   const [admPassword, setAdmPassword] = useState('');
   const [admConfirm, setAdmConfirm] = useState('');
-  const [admRole, setAdmRole] = useState<'admin' | 'user'>('user');
+  const [admRole, setAdmRole] = useState<AuthUser['role']>('user');
   const [admIsActive, setAdmIsActive] = useState(true);
   const [admError, setAdmError] = useState('');
   const [admSuccess, setAdmSuccess] = useState(false);
@@ -112,14 +115,14 @@ function ParticipantProfile() {
   const [deleteSaving, setDeleteSaving] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || !communityId) return;
     (async () => {
       try {
         const [tournaments, ls] = await Promise.all([
           loadTournamentsForParticipantAsync(id),
           getParticipantLeagueStats(id),
         ]);
-        const p = getParticipant(id);
+        const p = getParticipant(id, communityId);
         if (!p) { setNotFound(true); return; }
         setParticipant(p);
         setStats(computeStats(p, tournaments));
@@ -130,7 +133,7 @@ function ParticipantProfile() {
         setEditCharacterId(p.mainCharacterId ?? null);
         setEditPhone(p.phoneNumber ?? '');
       } catch {
-        const p = getParticipant(id);
+        const p = getParticipant(id, communityId);
         if (!p) { setNotFound(true); return; }
         setParticipant(p);
         setStats(computeStats(p));
@@ -138,30 +141,30 @@ function ParticipantProfile() {
       }
 
       // Load ELO ranking entry (fire-and-forget — graceful if server is down)
-      getLeaderboard().then((board) => {
+      getLeaderboard(communityId).then((board) => {
         const entry = board.find((e) => e.id === id) ?? null;
         setRankEntry(entry);
       }).catch(() => {});
 
       // Load duel stats
-      getDuelStats(id).then(dStats => {
+      getDuelStats(id, communityId).then(dStats => {
         setDuelStats(dStats);
       });
-      
+
       // Load next reset time
-      getDuelSettingsAsync().then(settings => {
+      getDuelSettingsAsync(communityId).then(settings => {
         const nextReset = getNextWeeklyReset(settings);
         setNextResetText(formatTimeUntilReset(nextReset));
       });
     })();
-  }, [id]);
+  }, [id, communityId]);
 
   // Load matches when Matches tab is opened
   useEffect(() => {
-    if (tab === 'matches' && id && allMatches.length === 0) {
+    if (tab === 'matches' && id && communityId && allMatches.length === 0) {
       loadMatches();
     }
-  }, [tab, id]);
+  }, [tab, id, communityId]);
 
   // Load linked user account (admin only)
   useEffect(() => {
@@ -198,13 +201,13 @@ function ParticipantProfile() {
   }
 
   async function loadMatches() {
-    if (!id) return;
+    if (!id || !communityId) return;
     setLoadingMatches(true);
     try {
       const [tournamentMatches, rankedMatches, allParticipants] = await Promise.all([
-        getAllTournamentMatchesAsync(),
-        getAllMatches(),
-        getAllParticipantsAsync().then(data => data.length > 0 ? data : []),
+        getAllTournamentMatchesAsync(communityId),
+        getAllMatches(communityId),
+        getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : []),
       ]);
 
       const participantMap = new Map(allParticipants.map((p: GlobalParticipant) => [p.id, p]));
@@ -333,7 +336,7 @@ function ParticipantProfile() {
       await removeParticipant(participant.id);
       if (linkedUser) await deleteUserAccount(linkedUser.id);
       setShowDeleteConfirm(false);
-      navigate('/participants');
+      navigate(getPath('participants'));
     } catch (err: any) {
       setEditError(err.message || 'Failed to delete participant');
     } finally {
@@ -347,7 +350,7 @@ function ParticipantProfile() {
         <div className="container">
           <div className="empty-state card">
             <h3>Participant not found</h3>
-            <button className="btn-outline mt-2" onClick={() => navigate('/participants')}>
+            <button className="btn-outline mt-2" onClick={() => navigate(getPath('participants'))}>
               ← Back to roster
             </button>
           </div>
@@ -377,7 +380,7 @@ function ParticipantProfile() {
       {/* ── Banner + avatar ── */}
       <div className="profile-banner" style={{ background: bannerBg, '--avatar-color': color } as React.CSSProperties}>
         <div className="profile-banner-inner container">
-          <button className="profile-back-btn" onClick={() => navigate('/participants')}>
+          <button className="profile-back-btn" onClick={() => navigate(getPath('participants'))}>
             ← Roster
           </button>
           <div className="profile-banner-body">
@@ -437,7 +440,7 @@ function ParticipantProfile() {
                 <div
                   className={`profile-elo-widget ${isLegend ? 'profile-elo-widget--legend' : ''}`}
                   style={{ '--elo-color': col } as React.CSSProperties}
-                  onClick={() => navigate('/ranking')}
+                  onClick={() => navigate(getPath('ranking'))}
                   title="View full ranking"
                 >
                   {/* Glow layer */}
@@ -607,7 +610,7 @@ function ParticipantProfile() {
                 <h3><i className="fas fa-swords" /> Ranked Duels</h3>
                 <button
                   className="btn-outline btn-sm"
-                  onClick={() => navigate('/events?tab=ranked')}
+                  onClick={() => navigate(getPath('events?tab=ranked'))}
                 >
                   Challenge Players →
                 </button>
@@ -690,7 +693,7 @@ function ParticipantProfile() {
                   <div className="profile-results-list">
                     {stats.placements.map((pl) => (
                       <div key={pl.tournamentId} className="profile-result-row"
-                        onClick={() => navigate(`/events/tournaments/${pl.tournamentId}`)}>
+                        onClick={() => navigate(getPath(`events/tournaments/${pl.tournamentId}`))}>
                         <span className="prr-medal">{PLACEMENT_MEDAL[pl.position] ?? <i className="fas fa-gamepad" />}</span>
                         <div className="prr-info">
                           <span className="prr-name">{pl.tournamentName}</span>
@@ -717,7 +720,7 @@ function ParticipantProfile() {
                   <div className="profile-results-list">
                     {leagueStats!.leagues.map((pl: LeagueResultEntry) => (
                       <div key={pl.leagueId} className="profile-result-row"
-                        onClick={() => navigate(`/events/leagues/${pl.leagueId}`)}>
+                        onClick={() => navigate(getPath(`events/leagues/${pl.leagueId}`))}>
                         <span className={`prr-medal prr-rank rank-${pl.rank}`}>
                           {pl.rank <= 3 ? PLACEMENT_MEDAL[pl.rank] : pl.rank}
                         </span>
@@ -853,7 +856,7 @@ function ParticipantProfile() {
                             <span className="match-item-vs">vs</span>
                             <span 
                               className="match-item-opponent-name"
-                              onClick={() => navigate(`/participants/${opponentId}`)}
+                              onClick={() => navigate(getPath(`participants/${opponentId}`))}
                             >
                               {opponentName || 'Unknown'}
                             </span>
@@ -1003,9 +1006,11 @@ function ParticipantProfile() {
                       )}
                       <div className="form-group">
                         <label>Role</label>
-                        <select value={admRole} onChange={e => setAdmRole(e.target.value as 'admin' | 'user')}>
+                        <select value={admRole} onChange={e => setAdmRole(e.target.value as AuthUser['role'])}>
                           <option value="user">User</option>
-                          <option value="admin">Admin</option>
+                          <option value="admin">Admin Assistant</option>
+                          <option value="community_admin">Community Owner</option>
+                          <option value="superadmin">Superadmin</option>
                         </select>
                       </div>
                       <div className="form-group pp-account-active-toggle">

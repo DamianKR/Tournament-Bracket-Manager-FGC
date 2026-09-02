@@ -10,15 +10,17 @@
 import { Router } from 'express';
 import { rankedMatches } from '../db/collections.js';
 import { rankedMatchShape, validateRankedMatch } from '../models/rankedMatch.js';
-import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
+import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
+import { filterByCommunity } from '../utils/communityScope.js';
 
 const router = Router();
 
-// GET /api/ranked-matches
-router.get('/', async (_req, res) => {
+// GET /api/ranked-matches?communityId=...
+router.get('/', optionalAuth, async (req, res) => {
   try {
+    const { communityId } = req.query;
     const data = await rankedMatches.getAll();
-    res.json(data);
+    res.json(filterByCommunity(req.user, data, communityId));
   } catch (err) {
     console.error('[RankedMatches] GET / error:', err);
     res.status(500).json({ error: 'Failed to read ranked matches' });
@@ -40,13 +42,13 @@ router.get('/:id', async (req, res) => {
 // POST /api/ranked-matches
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { id, matchType, playerAId, playerBId, winnerId, eloData } = req.body;
-    
+    const { id, matchType, playerAId, playerBId, winnerId, eloData, communityId } = req.body;
+
     if (!id || !matchType || !playerAId || !playerBId || !winnerId || !eloData) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const match = rankedMatchShape(id, matchType, playerAId, playerBId, winnerId, eloData);
+    const match = rankedMatchShape(id, matchType, playerAId, playerBId, winnerId, eloData, communityId);
     const validation = validateRankedMatch(match);
     
     if (!validation.valid) {

@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import './Dashboard.css';
 
 function Dashboard() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { getPath } = useCommunity();
 
   return (
     <div className="dashboard-page">
@@ -15,10 +17,10 @@ function Dashboard() {
             Local-first brackets, weekly leagues, ranked duels and ELO tracking for your community.
           </p>
           <div className="dashboard-hero-actions">
-            <button className="btn-primary" onClick={() => navigate('/events')}>
-              <i className="fas fa-trophy" /> Explore Events
+            <button className="btn-primary" onClick={() => navigate('/communities')}>
+              <i className="fas fa-users" /> Explore Communities
             </button>
-            <button className="btn-outline" onClick={() => navigate('/ranking')}>
+            <button className="btn-outline" onClick={() => navigate(getPath('ranking'))}>
               <i className="fas fa-chart-line" /> View Ranking
             </button>
           </div>
@@ -68,22 +70,22 @@ function Dashboard() {
         <div className="container">
           <h2 className="dashboard-section-title">Areas</h2>
           <div className="dashboard-cards">
-            <div className="dashboard-card card" onClick={() => navigate('/events')}>
+            <div className="dashboard-card card" onClick={() => navigate(getPath('events'))}>
               <i className="fas fa-trophy" />
               <h3>Tournaments</h3>
               <p>Single and double elimination brackets with optional ELO rewards.</p>
             </div>
-            <div className="dashboard-card card" onClick={() => navigate('/events?tab=leagues')}>
+            <div className="dashboard-card card" onClick={() => navigate(getPath('events?tab=leagues'))}>
               <i className="fas fa-calendar-alt" />
               <h3>Leagues</h3>
               <p>Weekly round-robin seasons with schedules and standings.</p>
             </div>
-            <div className="dashboard-card card" onClick={() => navigate('/events?tab=ranked')}>
+            <div className="dashboard-card card" onClick={() => navigate(getPath('events?tab=ranked'))}>
               <i className="fas fa-khanda" />
               <h3>Ranked Duels</h3>
               <p>Challenge other players to head-to-head ranked matches.</p>
             </div>
-            <div className="dashboard-card card" onClick={() => navigate('/ranking')}>
+            <div className="dashboard-card card" onClick={() => navigate(getPath('ranking'))}>
               <i className="fas fa-list-ol" />
               <h3>Ranking</h3>
               <p>Global ELO leaderboard, match history and progression.</p>
@@ -100,8 +102,8 @@ function Dashboard() {
               <p className="dashboard-text">
                 You're all set. Jump into the latest events, check the rankings or challenge other players.
               </p>
-              <button className="btn-primary" onClick={() => navigate('/events')}>
-                <i className="fas fa-trophy" /> Go to Events
+              <button className="btn-primary" onClick={() => navigate('/communities')}>
+                <i className="fas fa-users" /> Go to Communities
               </button>
             </>
           ) : (

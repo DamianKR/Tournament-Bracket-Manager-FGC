@@ -1010,9 +1010,10 @@
     },
     "championId": "1786158565219-fnti1me01",
     "createdAt": "2026-08-08T03:09:18.338Z",
-    "updatedAt": "2026-08-08T17:56:17.448Z",
+    "updatedAt": "2026-09-01T22:12:00.029Z",
     "type": "singles",
-    "gameId": null
+    "gameId": null,
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "1786802844864-5bjdz2hif",
@@ -2091,7 +2092,7 @@
     },
     "championId": "1786802852787-pjz04haav",
     "createdAt": "2026-08-15T14:07:24.864Z",
-    "updatedAt": "2026-08-22T14:35:09.851Z",
+    "updatedAt": "2026-09-01T22:12:00.029Z",
     "type": "singles",
     "gameId": null,
     "eloApplied": true,
@@ -2324,7 +2325,8 @@
         "_pointsEarned": 22,
         "_position": 4
       }
-    ]
+    ],
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "1787069005182-knkndcjgv",
@@ -3041,8 +3043,9 @@
     },
     "championId": null,
     "createdAt": "2026-08-18T16:03:25.182Z",
-    "updatedAt": "2026-08-29T17:59:12.661Z",
-    "teamSize": 3
+    "updatedAt": "2026-09-01T22:12:00.029Z",
+    "teamSize": 3,
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "1787926905258-q0tw79fm2",
@@ -3336,9 +3339,10 @@
     },
     "championId": "1787926908371-6kqqc3if4",
     "createdAt": "2026-08-28T14:21:45.258Z",
-    "updatedAt": "2026-08-29T14:04:59.677Z",
+    "updatedAt": "2026-09-01T22:12:00.029Z",
     "bracketSeeded": true,
     "eloApplied": true,
-    "eloUpdates": []
+    "eloUpdates": [],
+    "communityId": "community_fgc_santa_clara"
   }
 ]

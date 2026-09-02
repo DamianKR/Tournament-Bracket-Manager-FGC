@@ -24,9 +24,11 @@ import duelsRouter from './server/routes/duels.js';
 import rankedMatchesRouter from './server/routes/rankedMatches.js';
 import authRouter from './server/routes/auth.js';
 import notificationsRouter from './server/routes/notifications.js';
+import communitiesRouter from './server/routes/communities.js';
 import { expireAllOldDuels } from './server/services/duelExpiration.js';
 import { expireAllOldLeagueMatches } from './server/services/leagueExpiration.js';
 import { reschedulableLeagueNotifications } from './server/services/notificationScheduler.js';
+import { ensureDefaultCommunityAndMigrate } from './server/services/communityMigration.js';
 
 // Render asigna el puerto via PORT; en local usamos 3001
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
@@ -56,6 +58,7 @@ app.use('/api/leagues', leaguesRouter);
 app.use('/api/duels', duelsRouter);
 app.use('/api/ranked-matches', rankedMatchesRouter);
 app.use('/api/notifications', notificationsRouter);
+app.use('/api/communities', communitiesRouter);
 
 // GET /api/health — lightweight ping to keep Render free instance awake
 app.get('/api/health', (_req, res) => {
@@ -90,6 +93,11 @@ app.listen(PORT, () => {
   console.log(`    GET        /api/leagues/:id/standings`);
   console.log(`    POST       /api/leagues/:id/matches/:matchId/result`);
   console.log('');
+
+  // Fase 1 community migration: ensure default community and assign communityId to existing data
+  ensureDefaultCommunityAndMigrate().catch(err =>
+    console.error('[Server] Community migration failed:', err)
+  );
 
   // Run duel expiration immediately on startup, then every 5 minutes
   expireAllOldDuels().then((count) => {

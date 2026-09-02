@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useCommunity } from '@/contexts/CommunityContext';
 import './ParticipantName.css';
 
 interface ParticipantNameProps {
@@ -9,12 +10,13 @@ interface ParticipantNameProps {
 
 function ParticipantName({ id, name, className = '' }: ParticipantNameProps) {
   const navigate = useNavigate();
+  const { getPath } = useCommunity();
   return (
     <span
       className={`participant-link ${className}`}
       onClick={(e) => {
         e.stopPropagation();
-        navigate(`/participants/${id}`);
+        navigate(getPath(`participants/${id}`));
       }}
       title="View profile"
     >

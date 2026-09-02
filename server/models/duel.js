@@ -18,11 +18,12 @@
  * @property {Object|null} metadata
  */
 
-export function duelChallengeShape(id, challengerId, challengedId, expiresAt, type = 'normal') {
+export function duelChallengeShape(id, challengerId, challengedId, expiresAt, type = 'normal', communityId = 'community_fgc_santa_clara') {
   return {
     id,
     challengerId,
     challengedId,
+    communityId,
     type,
     status: type === 'mandatory' ? 'accepted' : 'pending',
     createdAt: new Date().toISOString(),
@@ -46,6 +47,9 @@ export function validateDuelChallenge(obj) {
   if (!['pending', 'accepted', 'declined', 'completed', 'expired', 'pending_review'].includes(obj.status)) {
     errors.push('Invalid status');
   }
+  if (obj.communityId !== undefined && typeof obj.communityId !== 'string') {
+    errors.push('Invalid communityId');
+  }
   return { valid: errors.length === 0, errors };
 }
 
@@ -58,8 +62,10 @@ export function validateDuelChallenge(obj) {
  * @property {number} challengeExpirationDays
  */
 
-export function duelSettingsShape() {
+export function duelSettingsShape(communityId = 'community_fgc_santa_clara') {
   return {
+    id: communityId,
+    communityId,
     maxChallengesPerWeek: 10,
     eloRestriction: 300,
     challengeExpirationDays: 7,
@@ -68,5 +74,6 @@ export function duelSettingsShape() {
     weeklyResetMinute: 0,
     mandatoryDuelsEnabled: true,
     mandatoryDuelsPerWeek: 1,
+    updatedAt: new Date().toISOString(),
   };
 }

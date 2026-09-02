@@ -1,20 +1,24 @@
 import { useEffect, useState } from 'react';
 import { DuelSettings, DEFAULT_DUEL_SETTINGS } from '@/models/duel';
 import { getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
+import { useCommunity } from '@/contexts/CommunityContext';
 import './DuelInfo.css';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 function DuelInfo() {
+  const { currentCommunity } = useCommunity();
+  const communityId = currentCommunity?.id;
   const [settings, setSettings] = useState<DuelSettings>(DEFAULT_DUEL_SETTINGS);
   const [nextResetText, setNextResetText] = useState('');
 
   useEffect(() => {
     loadSettings();
-  }, []);
+  }, [communityId]);
 
   const loadSettings = async () => {
-    const currentSettings = await getDuelSettingsAsync();
+    if (!communityId) return;
+    const currentSettings = await getDuelSettingsAsync(communityId);
     setSettings(currentSettings);
     const nextReset = getNextWeeklyReset(currentSettings);
     setNextResetText(formatTimeUntilReset(nextReset));

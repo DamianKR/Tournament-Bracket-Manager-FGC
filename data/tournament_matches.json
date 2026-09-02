@@ -13,7 +13,9 @@
     "createdAt": "2026-08-22T13:58:40.215Z",
     "player1GlobalId": "gp_1786387250178_ac5thmv",
     "player2GlobalId": "gp_1786387243524_6er0c9u",
-    "winnerGlobalId": "gp_1786387243524_6er0c9u"
+    "winnerGlobalId": "gp_1786387243524_6er0c9u",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787407782081_htxkbr9ss",
@@ -29,7 +31,9 @@
     "createdAt": "2026-08-22T14:09:42.081Z",
     "player1GlobalId": "gp_1786387234567_aoe1z95",
     "player2GlobalId": "gp_1786387250178_ac5thmv",
-    "winnerGlobalId": "gp_1786387234567_aoe1z95"
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787409307471_bibsa40sm",
@@ -45,7 +49,9 @@
     "createdAt": "2026-08-22T14:35:07.471Z",
     "player1GlobalId": "gp_1786387243524_6er0c9u",
     "player2GlobalId": "gp_1786387234567_aoe1z95",
-    "winnerGlobalId": "gp_1786387234567_aoe1z95"
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787409309851_twxkeykfg",
@@ -61,7 +67,9 @@
     "createdAt": "2026-08-22T14:35:09.851Z",
     "player1GlobalId": "gp_1786387243524_6er0c9u",
     "player2GlobalId": "gp_1786387234567_aoe1z95",
-    "winnerGlobalId": "gp_1786387234567_aoe1z95"
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m2_winner",
@@ -77,7 +85,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 1,
     "matchNumber": 2,
-    "createdAt": "2026-08-08T17:49:15.448Z"
+    "createdAt": "2026-08-08T17:49:15.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m6_winner",
@@ -93,7 +103,9 @@
     "winnerGlobalId": "gp_1786761981144_462dv5s",
     "round": 1,
     "matchNumber": 6,
-    "createdAt": "2026-08-08T17:49:11.448Z"
+    "createdAt": "2026-08-08T17:49:11.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m8_winner",
@@ -109,7 +121,9 @@
     "winnerGlobalId": "gp_1786393834683_lievrvf",
     "round": 1,
     "matchNumber": 8,
-    "createdAt": "2026-08-08T17:49:09.448Z"
+    "createdAt": "2026-08-08T17:49:09.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m10_winner",
@@ -125,7 +139,9 @@
     "winnerGlobalId": null,
     "round": 1,
     "matchNumber": 10,
-    "createdAt": "2026-08-08T17:49:07.448Z"
+    "createdAt": "2026-08-08T17:49:07.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m14_winner",
@@ -141,7 +157,9 @@
     "winnerGlobalId": null,
     "round": 1,
     "matchNumber": 14,
-    "createdAt": "2026-08-08T17:49:03.448Z"
+    "createdAt": "2026-08-08T17:49:03.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m16_winner",
@@ -157,7 +175,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 1,
     "matchNumber": 16,
-    "createdAt": "2026-08-08T17:49:01.448Z"
+    "createdAt": "2026-08-08T17:49:01.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m1_winner",
@@ -173,7 +193,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 2,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:50:16.448Z"
+    "createdAt": "2026-08-08T17:50:16.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m2_winner",
@@ -189,7 +211,9 @@
     "winnerGlobalId": null,
     "round": 2,
     "matchNumber": 2,
-    "createdAt": "2026-08-08T17:50:15.448Z"
+    "createdAt": "2026-08-08T17:50:15.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m3_winner",
@@ -205,7 +229,9 @@
     "winnerGlobalId": null,
     "round": 2,
     "matchNumber": 3,
-    "createdAt": "2026-08-08T17:50:14.448Z"
+    "createdAt": "2026-08-08T17:50:14.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m4_winner",
@@ -221,7 +247,9 @@
     "winnerGlobalId": "gp_1786393834683_lievrvf",
     "round": 2,
     "matchNumber": 4,
-    "createdAt": "2026-08-08T17:50:13.448Z"
+    "createdAt": "2026-08-08T17:50:13.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m5_winner",
@@ -237,7 +265,9 @@
     "winnerGlobalId": null,
     "round": 2,
     "matchNumber": 5,
-    "createdAt": "2026-08-08T17:50:12.448Z"
+    "createdAt": "2026-08-08T17:50:12.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m6_winner",
@@ -253,7 +283,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 2,
     "matchNumber": 6,
-    "createdAt": "2026-08-08T17:50:11.448Z"
+    "createdAt": "2026-08-08T17:50:11.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m7_winner",
@@ -269,7 +301,9 @@
     "winnerGlobalId": null,
     "round": 2,
     "matchNumber": 7,
-    "createdAt": "2026-08-08T17:50:10.448Z"
+    "createdAt": "2026-08-08T17:50:10.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m8_winner",
@@ -285,7 +319,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 2,
     "matchNumber": 8,
-    "createdAt": "2026-08-08T17:50:09.448Z"
+    "createdAt": "2026-08-08T17:50:09.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m1_winner",
@@ -301,7 +337,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 3,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:51:16.448Z"
+    "createdAt": "2026-08-08T17:51:16.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m2_winner",
@@ -317,7 +355,9 @@
     "winnerGlobalId": "gp_1786393834683_lievrvf",
     "round": 3,
     "matchNumber": 2,
-    "createdAt": "2026-08-08T17:51:15.448Z"
+    "createdAt": "2026-08-08T17:51:15.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m3_winner",
@@ -333,7 +373,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 3,
     "matchNumber": 3,
-    "createdAt": "2026-08-08T17:51:14.448Z"
+    "createdAt": "2026-08-08T17:51:14.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m4_winner",
@@ -349,7 +391,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 3,
     "matchNumber": 4,
-    "createdAt": "2026-08-08T17:51:13.448Z"
+    "createdAt": "2026-08-08T17:51:13.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m1_winner",
@@ -365,7 +409,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 4,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:52:16.448Z"
+    "createdAt": "2026-08-08T17:52:16.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m2_winner",
@@ -381,7 +427,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 4,
     "matchNumber": 2,
-    "createdAt": "2026-08-08T17:52:15.448Z"
+    "createdAt": "2026-08-08T17:52:15.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r5_m1_winner",
@@ -397,7 +445,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 5,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:53:16.448Z"
+    "createdAt": "2026-08-08T17:53:16.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m1_loser",
@@ -413,7 +463,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 2,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:50:11.448Z"
+    "createdAt": "2026-08-08T17:50:11.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m3_loser",
@@ -429,7 +481,9 @@
     "winnerGlobalId": "gp_1786761981144_462dv5s",
     "round": 2,
     "matchNumber": 3,
-    "createdAt": "2026-08-08T17:50:09.448Z"
+    "createdAt": "2026-08-08T17:50:09.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m4_loser",
@@ -445,7 +499,9 @@
     "winnerGlobalId": null,
     "round": 2,
     "matchNumber": 4,
-    "createdAt": "2026-08-08T17:50:08.448Z"
+    "createdAt": "2026-08-08T17:50:08.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m5_loser",
@@ -461,7 +517,9 @@
     "winnerGlobalId": null,
     "round": 2,
     "matchNumber": 5,
-    "createdAt": "2026-08-08T17:50:07.448Z"
+    "createdAt": "2026-08-08T17:50:07.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m7_loser",
@@ -477,7 +535,9 @@
     "winnerGlobalId": null,
     "round": 2,
     "matchNumber": 7,
-    "createdAt": "2026-08-08T17:50:05.448Z"
+    "createdAt": "2026-08-08T17:50:05.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m8_loser",
@@ -493,7 +553,9 @@
     "winnerGlobalId": "gp_1786399978250_n7msxo5",
     "round": 2,
     "matchNumber": 8,
-    "createdAt": "2026-08-08T17:50:04.448Z"
+    "createdAt": "2026-08-08T17:50:04.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m1_loser",
@@ -509,7 +571,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 3,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:51:11.448Z"
+    "createdAt": "2026-08-08T17:51:11.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m2_loser",
@@ -525,7 +589,9 @@
     "winnerGlobalId": "gp_1786761981144_462dv5s",
     "round": 3,
     "matchNumber": 2,
-    "createdAt": "2026-08-08T17:51:10.448Z"
+    "createdAt": "2026-08-08T17:51:10.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m3_loser",
@@ -541,7 +607,9 @@
     "winnerGlobalId": "gp_1786388790209_sr4ldku",
     "round": 3,
     "matchNumber": 3,
-    "createdAt": "2026-08-08T17:51:09.448Z"
+    "createdAt": "2026-08-08T17:51:09.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m4_loser",
@@ -557,7 +625,9 @@
     "winnerGlobalId": "gp_1786399978250_n7msxo5",
     "round": 3,
     "matchNumber": 4,
-    "createdAt": "2026-08-08T17:51:08.448Z"
+    "createdAt": "2026-08-08T17:51:08.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m1_loser",
@@ -573,7 +643,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 4,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:52:11.448Z"
+    "createdAt": "2026-08-08T17:52:11.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m2_loser",
@@ -589,7 +661,9 @@
     "winnerGlobalId": "gp_1786761981144_462dv5s",
     "round": 4,
     "matchNumber": 2,
-    "createdAt": "2026-08-08T17:52:10.448Z"
+    "createdAt": "2026-08-08T17:52:10.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m3_loser",
@@ -605,7 +679,9 @@
     "winnerGlobalId": "gp_1786388790209_sr4ldku",
     "round": 4,
     "matchNumber": 3,
-    "createdAt": "2026-08-08T17:52:09.448Z"
+    "createdAt": "2026-08-08T17:52:09.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m4_loser",
@@ -621,7 +697,9 @@
     "winnerGlobalId": "gp_1786399978250_n7msxo5",
     "round": 4,
     "matchNumber": 4,
-    "createdAt": "2026-08-08T17:52:08.448Z"
+    "createdAt": "2026-08-08T17:52:08.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r5_m1_loser",
@@ -637,7 +715,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 5,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:53:11.448Z"
+    "createdAt": "2026-08-08T17:53:11.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r5_m2_loser",
@@ -653,7 +733,9 @@
     "winnerGlobalId": "gp_1786388790209_sr4ldku",
     "round": 5,
     "matchNumber": 2,
-    "createdAt": "2026-08-08T17:53:10.448Z"
+    "createdAt": "2026-08-08T17:53:10.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r6_m1_loser",
@@ -669,7 +751,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 6,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:54:11.448Z"
+    "createdAt": "2026-08-08T17:54:11.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r6_m2_loser",
@@ -685,7 +769,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 6,
     "matchNumber": 2,
-    "createdAt": "2026-08-08T17:54:10.448Z"
+    "createdAt": "2026-08-08T17:54:10.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r7_m1_loser",
@@ -701,7 +787,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 7,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:55:11.448Z"
+    "createdAt": "2026-08-08T17:55:11.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r8_m1_loser",
@@ -717,7 +805,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 8,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:56:11.448Z"
+    "createdAt": "2026-08-08T17:56:11.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m1_grand_final",
@@ -733,7 +823,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 1,
     "matchNumber": 1,
-    "createdAt": "2026-08-08T17:49:16.448Z"
+    "createdAt": "2026-08-08T17:49:16.448Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m9_winner",
@@ -749,7 +841,9 @@
     "winnerGlobalId": "gp_1786393655444_41zyrro",
     "round": 1,
     "matchNumber": 9,
-    "createdAt": "2026-08-22T14:28:00.851Z"
+    "createdAt": "2026-08-22T14:28:00.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m10_winner",
@@ -765,7 +859,9 @@
     "winnerGlobalId": "gp_1786756707267_xybm206",
     "round": 1,
     "matchNumber": 10,
-    "createdAt": "2026-08-22T14:27:59.851Z"
+    "createdAt": "2026-08-22T14:27:59.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m11_winner",
@@ -781,7 +877,9 @@
     "winnerGlobalId": "gp_1786399978250_n7msxo5",
     "round": 1,
     "matchNumber": 11,
-    "createdAt": "2026-08-22T14:27:58.851Z"
+    "createdAt": "2026-08-22T14:27:58.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m12_winner",
@@ -797,7 +895,9 @@
     "winnerGlobalId": "gp_1786802617779_nnibxrr",
     "round": 1,
     "matchNumber": 12,
-    "createdAt": "2026-08-22T14:27:57.851Z"
+    "createdAt": "2026-08-22T14:27:57.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m13_winner",
@@ -813,7 +913,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 1,
     "matchNumber": 13,
-    "createdAt": "2026-08-22T14:27:56.851Z"
+    "createdAt": "2026-08-22T14:27:56.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m14_winner",
@@ -829,7 +931,9 @@
     "winnerGlobalId": "gp_1786393850039_1imzf6x",
     "round": 1,
     "matchNumber": 14,
-    "createdAt": "2026-08-22T14:27:55.851Z"
+    "createdAt": "2026-08-22T14:27:55.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m15_winner",
@@ -845,7 +949,9 @@
     "winnerGlobalId": "gp_1786393670067_xild06i",
     "round": 1,
     "matchNumber": 15,
-    "createdAt": "2026-08-22T14:27:54.851Z"
+    "createdAt": "2026-08-22T14:27:54.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m16_winner",
@@ -861,7 +967,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 1,
     "matchNumber": 16,
-    "createdAt": "2026-08-22T14:27:53.851Z"
+    "createdAt": "2026-08-22T14:27:53.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m2_winner",
@@ -877,7 +985,9 @@
     "winnerGlobalId": "gp_1786802386624_ficm2tl",
     "round": 2,
     "matchNumber": 2,
-    "createdAt": "2026-08-22T14:29:07.851Z"
+    "createdAt": "2026-08-22T14:29:07.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m3_winner",
@@ -893,7 +1003,9 @@
     "winnerGlobalId": "gp_1786393834683_lievrvf",
     "round": 2,
     "matchNumber": 3,
-    "createdAt": "2026-08-22T14:29:06.851Z"
+    "createdAt": "2026-08-22T14:29:06.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m4_winner",
@@ -909,7 +1021,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 2,
     "matchNumber": 4,
-    "createdAt": "2026-08-22T14:29:05.851Z"
+    "createdAt": "2026-08-22T14:29:05.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m5_winner",
@@ -925,7 +1039,9 @@
     "winnerGlobalId": "gp_1786393655444_41zyrro",
     "round": 2,
     "matchNumber": 5,
-    "createdAt": "2026-08-22T14:29:04.851Z"
+    "createdAt": "2026-08-22T14:29:04.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m6_winner",
@@ -941,7 +1057,9 @@
     "winnerGlobalId": "gp_1786399978250_n7msxo5",
     "round": 2,
     "matchNumber": 6,
-    "createdAt": "2026-08-22T14:29:03.851Z"
+    "createdAt": "2026-08-22T14:29:03.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m7_winner",
@@ -957,7 +1075,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 2,
     "matchNumber": 7,
-    "createdAt": "2026-08-22T14:29:02.851Z"
+    "createdAt": "2026-08-22T14:29:02.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m8_winner",
@@ -973,7 +1093,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 2,
     "matchNumber": 8,
-    "createdAt": "2026-08-22T14:29:01.851Z"
+    "createdAt": "2026-08-22T14:29:01.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m1_winner",
@@ -989,7 +1111,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 3,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T14:30:08.851Z"
+    "createdAt": "2026-08-22T14:30:08.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m2_winner",
@@ -1005,7 +1129,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 3,
     "matchNumber": 2,
-    "createdAt": "2026-08-22T14:30:07.851Z"
+    "createdAt": "2026-08-22T14:30:07.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m3_winner",
@@ -1021,7 +1147,9 @@
     "winnerGlobalId": "gp_1786399978250_n7msxo5",
     "round": 3,
     "matchNumber": 3,
-    "createdAt": "2026-08-22T14:30:06.851Z"
+    "createdAt": "2026-08-22T14:30:06.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m4_winner",
@@ -1037,7 +1165,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 3,
     "matchNumber": 4,
-    "createdAt": "2026-08-22T14:30:05.851Z"
+    "createdAt": "2026-08-22T14:30:05.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m1_winner",
@@ -1053,7 +1183,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 4,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T14:31:08.851Z"
+    "createdAt": "2026-08-22T14:31:08.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m2_winner",
@@ -1069,7 +1201,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 4,
     "matchNumber": 2,
-    "createdAt": "2026-08-22T14:31:07.851Z"
+    "createdAt": "2026-08-22T14:31:07.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m5_loser",
@@ -1085,7 +1219,9 @@
     "winnerGlobalId": "gp_1786808135517_vfoni2a",
     "round": 1,
     "matchNumber": 5,
-    "createdAt": "2026-08-22T14:27:59.851Z"
+    "createdAt": "2026-08-22T14:27:59.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m6_loser",
@@ -1101,7 +1237,9 @@
     "winnerGlobalId": "gp_1786757329455_8ijcyo8",
     "round": 1,
     "matchNumber": 6,
-    "createdAt": "2026-08-22T14:27:58.851Z"
+    "createdAt": "2026-08-22T14:27:58.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m7_loser",
@@ -1117,7 +1255,9 @@
     "winnerGlobalId": "gp_1786396304199_u7v6gsb",
     "round": 1,
     "matchNumber": 7,
-    "createdAt": "2026-08-22T14:27:57.851Z"
+    "createdAt": "2026-08-22T14:27:57.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m8_loser",
@@ -1133,7 +1273,9 @@
     "winnerGlobalId": "gp_1786648984526_6yyg6ao",
     "round": 1,
     "matchNumber": 8,
-    "createdAt": "2026-08-22T14:27:56.851Z"
+    "createdAt": "2026-08-22T14:27:56.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m5_loser",
@@ -1149,7 +1291,9 @@
     "winnerGlobalId": "gp_1786808135517_vfoni2a",
     "round": 2,
     "matchNumber": 5,
-    "createdAt": "2026-08-22T14:28:59.851Z"
+    "createdAt": "2026-08-22T14:28:59.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m6_loser",
@@ -1165,7 +1309,9 @@
     "winnerGlobalId": "gp_1786391783115_87zwx03",
     "round": 2,
     "matchNumber": 6,
-    "createdAt": "2026-08-22T14:28:58.851Z"
+    "createdAt": "2026-08-22T14:28:58.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m7_loser",
@@ -1181,7 +1327,9 @@
     "winnerGlobalId": "gp_1786396304199_u7v6gsb",
     "round": 2,
     "matchNumber": 7,
-    "createdAt": "2026-08-22T14:28:57.851Z"
+    "createdAt": "2026-08-22T14:28:57.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m8_loser",
@@ -1197,7 +1345,9 @@
     "winnerGlobalId": "gp_1786756661811_fa5pg74",
     "round": 2,
     "matchNumber": 8,
-    "createdAt": "2026-08-22T14:28:56.851Z"
+    "createdAt": "2026-08-22T14:28:56.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m1_loser",
@@ -1213,7 +1363,9 @@
     "winnerGlobalId": "gp_1786393670067_xild06i",
     "round": 3,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T14:30:03.851Z"
+    "createdAt": "2026-08-22T14:30:03.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m2_loser",
@@ -1229,7 +1381,9 @@
     "winnerGlobalId": "gp_1786756707267_xybm206",
     "round": 3,
     "matchNumber": 2,
-    "createdAt": "2026-08-22T14:30:02.851Z"
+    "createdAt": "2026-08-22T14:30:02.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m3_loser",
@@ -1245,7 +1399,9 @@
     "winnerGlobalId": "gp_1786808135517_vfoni2a",
     "round": 3,
     "matchNumber": 3,
-    "createdAt": "2026-08-22T14:30:01.851Z"
+    "createdAt": "2026-08-22T14:30:01.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m4_loser",
@@ -1261,7 +1417,9 @@
     "winnerGlobalId": "gp_1786396304199_u7v6gsb",
     "round": 3,
     "matchNumber": 4,
-    "createdAt": "2026-08-22T14:30:00.851Z"
+    "createdAt": "2026-08-22T14:30:00.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m1_loser",
@@ -1277,7 +1435,9 @@
     "winnerGlobalId": "gp_1786393670067_xild06i",
     "round": 4,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T14:31:03.851Z"
+    "createdAt": "2026-08-22T14:31:03.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m2_loser",
@@ -1293,7 +1453,9 @@
     "winnerGlobalId": "gp_1786393834683_lievrvf",
     "round": 4,
     "matchNumber": 2,
-    "createdAt": "2026-08-22T14:31:02.851Z"
+    "createdAt": "2026-08-22T14:31:02.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m3_loser",
@@ -1309,7 +1471,9 @@
     "winnerGlobalId": "gp_1786808135517_vfoni2a",
     "round": 4,
     "matchNumber": 3,
-    "createdAt": "2026-08-22T14:31:01.851Z"
+    "createdAt": "2026-08-22T14:31:01.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m4_loser",
@@ -1325,7 +1489,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 4,
     "matchNumber": 4,
-    "createdAt": "2026-08-22T14:31:00.851Z"
+    "createdAt": "2026-08-22T14:31:00.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r5_m2_loser",
@@ -1341,7 +1507,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 5,
     "matchNumber": 2,
-    "createdAt": "2026-08-22T14:32:02.851Z"
+    "createdAt": "2026-08-22T14:32:02.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r6_m1_loser",
@@ -1357,7 +1525,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 6,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T14:33:03.851Z"
+    "createdAt": "2026-08-22T14:33:03.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r6_m2_loser",
@@ -1373,7 +1543,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 6,
     "matchNumber": 2,
-    "createdAt": "2026-08-22T14:33:02.851Z"
+    "createdAt": "2026-08-22T14:33:02.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r7_m1_loser",
@@ -1389,7 +1561,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 7,
     "matchNumber": 1,
-    "createdAt": "2026-08-22T14:34:03.851Z"
+    "createdAt": "2026-08-22T14:34:03.851Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m1_winner",
@@ -1405,7 +1579,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 1,
     "matchNumber": 1,
-    "createdAt": "2026-08-29T14:01:58.677Z"
+    "createdAt": "2026-08-29T14:01:58.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m2_winner",
@@ -1421,7 +1597,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 1,
     "matchNumber": 2,
-    "createdAt": "2026-08-29T14:01:57.677Z"
+    "createdAt": "2026-08-29T14:01:57.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m3_winner",
@@ -1437,7 +1615,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 1,
     "matchNumber": 3,
-    "createdAt": "2026-08-29T14:01:56.677Z"
+    "createdAt": "2026-08-29T14:01:56.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m4_winner",
@@ -1453,7 +1633,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 1,
     "matchNumber": 4,
-    "createdAt": "2026-08-29T14:01:55.677Z"
+    "createdAt": "2026-08-29T14:01:55.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m1_winner",
@@ -1469,7 +1651,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 2,
     "matchNumber": 1,
-    "createdAt": "2026-08-29T14:02:58.677Z"
+    "createdAt": "2026-08-29T14:02:58.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m2_winner",
@@ -1485,7 +1669,9 @@
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "round": 2,
     "matchNumber": 2,
-    "createdAt": "2026-08-29T14:02:57.677Z"
+    "createdAt": "2026-08-29T14:02:57.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r3_m1_winner",
@@ -1501,7 +1687,9 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 3,
     "matchNumber": 1,
-    "createdAt": "2026-08-29T14:03:58.677Z"
+    "createdAt": "2026-08-29T14:03:58.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m1_loser",
@@ -1517,7 +1705,9 @@
     "winnerGlobalId": "gp_1786393834683_lievrvf",
     "round": 1,
     "matchNumber": 1,
-    "createdAt": "2026-08-29T14:01:53.677Z"
+    "createdAt": "2026-08-29T14:01:53.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m2_loser",
@@ -1533,7 +1723,9 @@
     "winnerGlobalId": "gp_1786399978250_n7msxo5",
     "round": 1,
     "matchNumber": 2,
-    "createdAt": "2026-08-29T14:01:52.677Z"
+    "createdAt": "2026-08-29T14:01:52.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m1_loser",
@@ -1549,7 +1741,9 @@
     "winnerGlobalId": "gp_1786387087046_wnwtadb",
     "round": 2,
     "matchNumber": 1,
-    "createdAt": "2026-08-29T14:02:53.677Z"
+    "createdAt": "2026-08-29T14:02:53.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m2_loser",
@@ -1565,7 +1759,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 2,
     "matchNumber": 2,
-    "createdAt": "2026-08-29T14:02:52.677Z"
+    "createdAt": "2026-08-29T14:02:52.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r3_m1_loser",
@@ -1581,7 +1777,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 3,
     "matchNumber": 1,
-    "createdAt": "2026-08-29T14:03:53.677Z"
+    "createdAt": "2026-08-29T14:03:53.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r4_m1_loser",
@@ -1597,7 +1795,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 4,
     "matchNumber": 1,
-    "createdAt": "2026-08-29T14:04:53.677Z"
+    "createdAt": "2026-08-29T14:04:53.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m1_grand_final",
@@ -1613,7 +1813,9 @@
     "winnerGlobalId": "gp_1786387250178_ac5thmv",
     "round": 1,
     "matchNumber": 1,
-    "createdAt": "2026-08-29T14:01:58.677Z"
+    "createdAt": "2026-08-29T14:01:58.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m1_grand_final",
@@ -1629,6 +1831,8 @@
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "round": 2,
     "matchNumber": 1,
-    "createdAt": "2026-08-29T14:02:58.677Z"
+    "createdAt": "2026-08-29T14:02:58.677Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:12:00.029Z"
   }
 ]

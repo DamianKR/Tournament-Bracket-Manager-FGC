@@ -1,6 +1,7 @@
 [
   {
-    "id": "default",
+    "id": "community_fgc_santa_clara",
+    "communityId": "community_fgc_santa_clara",
     "maxChallengesPerWeek": 5,
     "eloRestriction": 250,
     "challengeExpirationDays": 7,
@@ -8,6 +9,20 @@
     "weeklyResetHour": 0,
     "weeklyResetMinute": 0,
     "mandatoryDuelsEnabled": true,
-    "mandatoryDuelsPerWeek": 1
+    "mandatoryDuelsPerWeek": 1,
+    "updatedAt": "2026-09-02T15:00:00.000Z"
+  },
+  {
+    "id": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "maxChallengesPerWeek": 6,
+    "eloRestriction": 300,
+    "challengeExpirationDays": 7,
+    "weeklyResetDay": 1,
+    "weeklyResetHour": 0,
+    "weeklyResetMinute": 0,
+    "mandatoryDuelsEnabled": false,
+    "mandatoryDuelsPerWeek": 1,
+    "updatedAt": "2026-09-02T19:56:42.934Z"
   }
 ]

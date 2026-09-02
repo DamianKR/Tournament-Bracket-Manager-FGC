@@ -11,9 +11,10 @@ import { isDateInTimeZonePassed } from '@/utils/timeZone';
 
 // ── API Calls ─────────────────────────────────────────────────────────────
 
-export async function getAllLeagues(): Promise<League[]> {
+export async function getAllLeagues(communityId?: string): Promise<League[]> {
   try {
-    const res = await fetch(`${SERVER_URL}/api/leagues`);
+    const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+    const res = await fetch(`${SERVER_URL}/api/leagues${query}`);
     if (!res.ok) throw new Error('Failed to fetch leagues');
     return await res.json();
   } catch (err) {
@@ -74,6 +75,7 @@ export async function createLeague(config: {
   gracePeriodDays?: number;
   playoffsEnabled: boolean;
   playoffsEloMultiplier: number;
+  communityId?: string;
 }): Promise<{ league: League; matchesCreated: number } | null> {
   try {
     const res = await fetch(`${SERVER_URL}/api/leagues`, {

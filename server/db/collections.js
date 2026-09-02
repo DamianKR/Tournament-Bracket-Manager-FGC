@@ -53,6 +53,7 @@ function col(jsonFile, supabaseTable) {
   return createCollection(path.join(DATA_DIR, jsonFile));
 }
 
+export const communities        = col('communities.json',        'communities');
 export const tournaments        = col('tournaments.json',        'tournaments');
 export const participants       = col('participants.json',       'participants');
 export const leagues            = col('leagues.json',            'leagues');

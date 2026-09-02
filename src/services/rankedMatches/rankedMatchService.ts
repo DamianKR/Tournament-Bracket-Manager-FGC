@@ -15,6 +15,7 @@
  */
 
 import { RankedMatch } from '@/models/rankedMatch';
+import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 
 const API_BASE = `${SERVER_URL}/api/ranked-matches`;
@@ -25,7 +26,12 @@ const LS_KEY = 'bracket_ranked_matches';
 function lsReadMatches(): RankedMatch[] {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const data = JSON.parse(raw) as RankedMatch[];
+    return data.map((m) => ({
+      ...m,
+      communityId: m.communityId || DEFAULT_COMMUNITY_ID,
+    }));
   } catch {
     return [];
   }
@@ -42,33 +48,41 @@ function lsWriteMatches(data: RankedMatch[]): void {
 // ── Public API ────────────────────────────────────────────────────────────
 
 /** Obtiene todas las partidas ranked (sync desde localStorage). */
-export function getAllRankedMatches(): RankedMatch[] {
-  return lsReadMatches();
+export function getAllRankedMatches(communityId?: string): RankedMatch[] {
+  const all = lsReadMatches();
+  return communityId ? all.filter(m => m.communityId === communityId) : all;
 }
 
 /** Obtiene todas las partidas ranked (async desde servidor, fallback a localStorage). */
-export async function getAllRankedMatchesAsync(): Promise<RankedMatch[]> {
+export async function getAllRankedMatchesAsync(communityId?: string): Promise<RankedMatch[]> {
+  const cached = getAllRankedMatches(communityId);
+  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
   if (await isServerAvailable()) {
     try {
-      const res = await fetch(API_BASE);
+      const res = await fetch(`${API_BASE}${query}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.length > 0 || lsReadMatches().length === 0) {
+        // Merge this community slice into cache instead of overwriting all.
+        if (communityId) {
+          const all = lsReadMatches();
+          const others = all.filter(m => m.communityId !== communityId);
+          lsWriteMatches([...others, ...data]);
+        } else if (data.length > 0 || lsReadMatches().length === 0) {
           lsWriteMatches(data);
         }
-        return data.length > 0 ? data : lsReadMatches();
+        return data.length > 0 ? data : cached;
       }
     } catch (err) {
       console.warn('[RankedMatches] Server read failed:', err);
       resetServerCache();
     }
   }
-  return lsReadMatches();
+  return cached;
 }
 
 /** Obtiene una partida ranked por ID. */
-export async function getRankedMatch(id: string): Promise<RankedMatch | null> {
-  const all = await getAllRankedMatchesAsync();
+export async function getRankedMatch(id: string, communityId?: string): Promise<RankedMatch | null> {
+  const all = await getAllRankedMatchesAsync(communityId);
   return all.find(m => m.id === id) ?? null;
 }
 
@@ -86,7 +100,8 @@ export async function createRankedMatch(
     player1EloChange: number;
     player2EloChange: number;
   },
-  duelChallengeId?: string
+  duelChallengeId?: string,
+  communityId?: string
 ): Promise<RankedMatch | null> {
   const match: RankedMatch = {
     id: `ranked_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -98,6 +113,7 @@ export async function createRankedMatch(
     ...eloData,
     date: new Date().toISOString(),
     duelChallengeId,
+    communityId,
   };
 
   // Guardar en localStorage primero (instantáneo)
@@ -143,13 +159,13 @@ export async function deleteRankedMatch(id: string): Promise<boolean> {
 }
 
 /** Obtiene partidas ranked de un jugador específico. */
-export async function getPlayerRankedMatches(playerId: string): Promise<RankedMatch[]> {
-  const all = await getAllRankedMatchesAsync();
+export async function getPlayerRankedMatches(playerId: string, communityId?: string): Promise<RankedMatch[]> {
+  const all = await getAllRankedMatchesAsync(communityId);
   return all.filter(m => m.player1Id === playerId || m.player2Id === playerId);
 }
 
 /** Obtiene partidas ranked por tipo. */
-export async function getRankedMatchesByType(matchType: 'duel' | 'matchmaking'): Promise<RankedMatch[]> {
-  const all = await getAllRankedMatchesAsync();
+export async function getRankedMatchesByType(matchType: 'duel' | 'matchmaking', communityId?: string): Promise<RankedMatch[]> {
+  const all = await getAllRankedMatchesAsync(communityId);
   return all.filter(m => m.type === matchType);
 }

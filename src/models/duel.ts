@@ -8,6 +8,8 @@
  */
 
 export interface DuelSettings {
+  id?: string;
+  communityId?: string;
   maxChallengesPerWeek: number; // 1-50, configurable
   eloRestriction: number; // Default: 300 (can't challenge 300+ ELO below you)
   challengeExpirationDays: number; // Default: 7 days to accept/complete
@@ -19,6 +21,7 @@ export interface DuelSettings {
 }
 
 export const DEFAULT_DUEL_SETTINGS: DuelSettings = {
+  communityId: 'community_fgc_santa_clara',
   maxChallengesPerWeek: 10,
   eloRestriction: 300,
   challengeExpirationDays: 7,
@@ -42,6 +45,7 @@ export interface DuelChallenge {
   id: string;
   challengerId: string;
   challengedId: string;
+  communityId: string; // Community this duel belongs to
   type: DuelType; // 'normal' or 'mandatory'
   
   status: DuelChallengeStatus;

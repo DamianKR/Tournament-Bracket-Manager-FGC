@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { EventTab } from './EventsPage';
 import './EventsSidebar.css';
 
@@ -10,11 +11,12 @@ interface EventsSidebarProps {
 
 function EventsSidebar({ activeTab, onTabChange }: EventsSidebarProps) {
   const { isAuthenticated } = useAuth();
+  const { getPath } = useCommunity();
   const navigate = useNavigate();
 
   function handleAuthTab(tab: EventTab) {
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: `/events?tab=${tab}` } });
+      navigate('/login', { state: { from: getPath(`events?tab=${tab}`) } });
       return;
     }
     onTabChange(tab);

@@ -9,6 +9,7 @@ export interface League {
   id: string;
   name: string;
   gameId: string;
+  communityId: string; // Community this league belongs to
   
   // Participantes
   participantIds: string[]; // GlobalParticipant IDs

@@ -32,14 +32,6 @@ function lsPatchParticipants(updated: GlobalParticipant[]): void {
   }
 }
 
-function lsReplaceAllParticipants(updated: GlobalParticipant[]): void {
-  try {
-    localStorage.setItem(LS_PARTICIPANTS_KEY, JSON.stringify(updated));
-  } catch {
-    // non-critical
-  }
-}
-
 const API_BASE = `${SERVER_URL}/api/ranking`;
 
 // ── Types ─────────────────────────────────────────────────────────────────
@@ -115,22 +107,25 @@ export function getRankIcon(rank: string): string {
 // ── API calls ─────────────────────────────────────────────────────────────
 
 /** Fetches the full leaderboard sorted by ELO descending. */
-export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
-  const res = await fetch(API_BASE);
+export async function getLeaderboard(communityId?: string): Promise<LeaderboardEntry[]> {
+  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+  const res = await fetch(`${API_BASE}${query}`);
   if (!res.ok) throw new Error(`Failed to load leaderboard: ${res.status}`);
   return res.json();
 }
 
 /** Fetches full match history (newest first). */
-export async function getAllMatches(): Promise<MatchRecord[]> {
-  const res = await fetch(`${API_BASE}/matches`);
+export async function getAllMatches(communityId?: string): Promise<MatchRecord[]> {
+  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+  const res = await fetch(`${API_BASE}/matches${query}`);
   if (!res.ok) throw new Error(`Failed to load matches: ${res.status}`);
   return res.json();
 }
 
 /** Fetches match history for a single participant. */
-export async function getMatchesForParticipant(participantId: string): Promise<MatchRecord[]> {
-  const res = await fetch(`${API_BASE}/matches/${participantId}`);
+export async function getMatchesForParticipant(participantId: string, communityId?: string): Promise<MatchRecord[]> {
+  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+  const res = await fetch(`${API_BASE}/matches/${participantId}${query}`);
   if (!res.ok) throw new Error(`Failed to load matches: ${res.status}`);
   return res.json();
 }
@@ -143,12 +138,13 @@ export async function recordMatch(
   playerAId: string,
   playerBId: string,
   winnerId: string,
-  matchType: 'duel' | 'matchmaking' | 'free' = 'free'
+  matchType: 'duel' | 'matchmaking' | 'free' = 'free',
+  communityId?: string
 ): Promise<MatchResult> {
   const res = await fetch(`${API_BASE}/match`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ playerAId, playerBId, winnerId, matchType }),
+    body: JSON.stringify({ playerAId, playerBId, winnerId, matchType, communityId }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -171,23 +167,31 @@ export async function deleteMatch(matchId: string): Promise<void> {
 }
 
 /** Hard reset: all participants → 1500 pts. Clears match history. Syncs localStorage. */
-export async function hardResetRanking(): Promise<{ affectedParticipants: number }> {
-  const res = await fetch(`${API_BASE}/reset/hard`, { method: 'POST' });
+export async function hardResetRanking(communityId?: string): Promise<{ affectedParticipants: number }> {
+  const res = await fetch(`${API_BASE}/reset/hard`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(communityId ? { communityId } : {}),
+  });
   if (!res.ok) throw new Error(`Hard reset failed: ${res.status}`);
   const data = await res.json();
   if (Array.isArray(data.updatedParticipants)) {
-    lsReplaceAllParticipants(data.updatedParticipants as GlobalParticipant[]);
+    lsPatchParticipants(data.updatedParticipants as GlobalParticipant[]);
   }
   return data;
 }
 
 /** Soft reset: each participant → start of their current tier. Syncs localStorage. */
-export async function softResetRanking(): Promise<{ affectedParticipants: number }> {
-  const res = await fetch(`${API_BASE}/reset/soft`, { method: 'POST' });
+export async function softResetRanking(communityId?: string): Promise<{ affectedParticipants: number }> {
+  const res = await fetch(`${API_BASE}/reset/soft`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(communityId ? { communityId } : {}),
+  });
   if (!res.ok) throw new Error(`Soft reset failed: ${res.status}`);
   const data = await res.json();
   if (Array.isArray(data.updatedParticipants)) {
-    lsReplaceAllParticipants(data.updatedParticipants as GlobalParticipant[]);
+    lsPatchParticipants(data.updatedParticipants as GlobalParticipant[]);
   }
   return data;
 }

@@ -2930,7 +2930,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Timing League Creation has started. Your opponents this week: Yoeeee, WiikiFox.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-01T20:21:00.016Z",
     "scheduledAt": "2026-09-01T20:21:00.016Z",
     "data": {
@@ -2940,7 +2940,8 @@
         "gp_1786758755895_bgdf2b9",
         "gp_1787087788652_q2n124j"
       ]
-    }
+    },
+    "readAt": "2026-09-01T22:13:48.808Z"
   },
   {
     "id": "notif_1788294060017_nfdfyt4zj",

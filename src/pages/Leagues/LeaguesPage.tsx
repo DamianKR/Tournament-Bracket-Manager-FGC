@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { League } from '@/models/league';
 import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
@@ -9,17 +10,20 @@ import './LeaguesPage.css';
 
 function LeaguesPage() {
   const navigate = useNavigate();
+  const { currentCommunity, getPath } = useCommunity();
+  const communityId = currentCommunity?.id;
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     loadLeagues();
-  }, []);
+  }, [communityId]);
 
   async function loadLeagues() {
+    if (!communityId) return;
     setLoading(true);
-    const data = await getAllLeagues();
+    const data = await getAllLeagues(communityId);
     setLeagues(data);
     setLoading(false);
   }
@@ -49,7 +53,7 @@ function LeaguesPage() {
             <h1><i className="fas fa-trophy" /> Leagues</h1>
             <p className="text-secondary">Seasons of round-robin matches spread across multiple weeks</p>
           </div>
-          <button className="btn-primary" onClick={() => navigate('/leagues/create')}>
+          <button className="btn-primary" onClick={() => navigate(getPath('events/leagues/create'))}>
             <i className="fas fa-plus" /> New League
           </button>
         </div>
@@ -58,7 +62,7 @@ function LeaguesPage() {
           <div className="empty-state card">
             <h3>No leagues yet</h3>
             <p className="text-secondary">Create a round-robin league and track weekly matches and ELO standings.</p>
-            <button className="btn-primary mt-2" onClick={() => navigate('/leagues/create')}>
+            <button className="btn-primary mt-2" onClick={() => navigate(getPath('events/leagues/create'))}>
               <i className="fas fa-plus" /> New League
             </button>
           </div>
@@ -73,7 +77,7 @@ function LeaguesPage() {
                 <div
                   key={league.id}
                   className="league-card card"
-                  onClick={() => navigate(`/events/leagues/${league.id}`)}
+                  onClick={() => navigate(getPath(`events/leagues/${league.id}`))}
                 >
                   <div className="league-card-header">
                     <h3 className="league-card-title">{league.name}</h3>

@@ -20,9 +20,13 @@ export default defineConfig({
     port: 5173, // Puerto para producción
     strictPort: true,
   },
+  build: {
+    chunkSizeWarningLimit: 1000,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+    dedupe: ['react', 'react-dom', 'scheduler'],
   },
 })

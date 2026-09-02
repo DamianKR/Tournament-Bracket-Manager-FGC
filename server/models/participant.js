@@ -14,13 +14,14 @@
  * @property {string}   updatedAt
  */
 
-export function participantShape(id, name, alias = '') {
+export function participantShape(id, name, alias = '', communityId = 'community_fgc_santa_clara') {
   return {
     id,
     name,
     alias,
     avatarUrl: null,
     tournamentIds: [],
+    communityId,
     eloPoints: 1500,
     eloRank: 'Diamante',
     createdAt: new Date().toISOString(),
@@ -33,5 +34,8 @@ export function validateParticipant(obj) {
   if (!obj || typeof obj !== 'object') return { valid: false, errors: ['Not an object'] };
   if (typeof obj.id !== 'string' || !obj.id) errors.push('Missing id');
   if (typeof obj.name !== 'string' || !obj.name.trim()) errors.push('Missing name');
+  if (obj.communityId !== undefined && typeof obj.communityId !== 'string') {
+    errors.push('Invalid communityId');
+  }
   return { valid: errors.length === 0, errors };
 }

@@ -130,12 +130,13 @@ export async function createUserAccount(
   participantId: string,
   username: string,
   password: string,
-  role: 'admin' | 'user' = 'user'
+  role: AuthUser['role'] = 'user',
+  communityId?: string
 ): Promise<AuthUser> {
   const res = await fetch(`${SERVER_URL}/api/auth/users`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ participantId, username, password, role }),
+    body: JSON.stringify({ participantId, username, password, role, communityId }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Failed to create user');
@@ -145,7 +146,7 @@ export async function createUserAccount(
 /** Actualiza username / password / isActive / role de un usuario. */
 export async function updateUserAccount(
   userId: string,
-  updates: Partial<{ username: string; password: string; isActive: boolean; role: 'admin' | 'user' }>
+  updates: Partial<{ username: string; password: string; isActive: boolean; role: AuthUser['role'] }>
 ): Promise<AuthUser> {
   const res = await fetch(`${SERVER_URL}/api/auth/users/${userId}`, {
     method: 'PUT',

@@ -70,7 +70,7 @@
  * @param {TeamSize} [teamSize]
  * @returns {Tournament}
  */
-export function tournamentShape(id, name, mode, type = 'singles', teamSize) {
+export function tournamentShape(id, name, mode, type = 'singles', teamSize, communityId = 'community_fgc_santa_clara') {
   const tournament = {
     id,
     name,
@@ -82,6 +82,7 @@ export function tournamentShape(id, name, mode, type = 'singles', teamSize) {
     participants: [],
     bracket: null,
     championId: null,
+    communityId,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -117,6 +118,10 @@ export function validateTournament(obj) {
   // teamSize is only valid for team tournaments
   if (obj.teamSize !== undefined && ![2, 3, 4, 5].includes(obj.teamSize)) {
     errors.push('Invalid teamSize (must be 2-5 for team tournaments)');
+  }
+  // communityId is required for new tournaments but optional for backward compatibility
+  if (obj.communityId !== undefined && typeof obj.communityId !== 'string') {
+    errors.push('Invalid communityId');
   }
 
   return { valid: errors.length === 0, errors };

@@ -15,17 +15,23 @@ import { getParticipant } from '@/services/participants/participantService';
 import { getAllRankedMatchesAsync } from '@/services/rankedMatches/rankedMatchService';
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
+import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 
 const API_BASE = `${SERVER_URL}/api/duels`;
 const LS_KEY_CHALLENGES = 'bracket_duel_challenges';
-const LS_KEY_SETTINGS = 'bracket_duel_settings';
+const LS_KEY_SETTINGS_PREFIX = 'bracket_duel_settings_';
 
 // ── localStorage helpers ──────────────────────────────────────────────────
 
 function lsReadChallenges(): DuelChallenge[] {
   try {
     const raw = localStorage.getItem(LS_KEY_CHALLENGES);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const data = JSON.parse(raw) as DuelChallenge[];
+    return data.map((c) => ({
+      ...c,
+      communityId: c.communityId || DEFAULT_COMMUNITY_ID,
+    }));
   } catch {
     return [];
   }
@@ -39,18 +45,22 @@ function lsWriteChallenges(data: DuelChallenge[]): void {
   }
 }
 
-function lsReadSettings(): DuelSettings {
+function settingsKey(communityId: string): string {
+  return `${LS_KEY_SETTINGS_PREFIX}${communityId}`;
+}
+
+function lsReadSettings(communityId: string = DEFAULT_COMMUNITY_ID): DuelSettings {
   try {
-    const raw = localStorage.getItem(LS_KEY_SETTINGS);
-    return raw ? JSON.parse(raw) : { ...DEFAULT_DUEL_SETTINGS };
+    const raw = localStorage.getItem(settingsKey(communityId));
+    return raw ? JSON.parse(raw) : { ...DEFAULT_DUEL_SETTINGS, communityId };
   } catch {
-    return { ...DEFAULT_DUEL_SETTINGS };
+    return { ...DEFAULT_DUEL_SETTINGS, communityId };
   }
 }
 
-function lsWriteSettings(data: DuelSettings): void {
+function lsWriteSettings(communityId: string, data: DuelSettings): void {
   try {
-    localStorage.setItem(LS_KEY_SETTINGS, JSON.stringify(data));
+    localStorage.setItem(settingsKey(communityId), JSON.stringify({ ...data, communityId }));
   } catch (err) {
     console.error('[Duels] localStorage settings write failed:', err);
   }
@@ -61,20 +71,21 @@ function lsWriteSettings(data: DuelSettings): void {
 /**
  * Get duel settings (sync from localStorage)
  */
-export function getDuelSettings(): DuelSettings {
-  return lsReadSettings();
+export function getDuelSettings(communityId: string = DEFAULT_COMMUNITY_ID): DuelSettings {
+  return lsReadSettings(communityId);
 }
 
 /**
  * Get duel settings (async from server, fallback to localStorage)
  */
-export async function getDuelSettingsAsync(): Promise<DuelSettings> {
+export async function getDuelSettingsAsync(communityId: string = DEFAULT_COMMUNITY_ID): Promise<DuelSettings> {
   if (await isServerAvailable()) {
     try {
-      const res = await fetch(`${API_BASE}/settings`);
+      const query = `?communityId=${encodeURIComponent(communityId)}`;
+      const res = await fetch(`${API_BASE}/settings${query}`);
       if (res.ok) {
         const data = await res.json();
-        lsWriteSettings(data);
+        lsWriteSettings(communityId, data);
         return data;
       }
     } catch (err) {
@@ -82,19 +93,22 @@ export async function getDuelSettingsAsync(): Promise<DuelSettings> {
       resetServerCache();
     }
   }
-  return lsReadSettings();
+  return lsReadSettings(communityId);
 }
 
 /**
  * Update duel settings (write to localStorage + server)
  */
-export async function updateDuelSettings(newSettings: Partial<DuelSettings>): Promise<DuelSettings> {
-  const current = lsReadSettings();
-  const updated = { ...current, ...newSettings };
-  
+export async function updateDuelSettings(
+  newSettings: Partial<DuelSettings>,
+  communityId: string = DEFAULT_COMMUNITY_ID
+): Promise<DuelSettings> {
+  const current = lsReadSettings(communityId);
+  const updated = { ...current, ...newSettings, communityId };
+
   // Write to localStorage first (instant)
-  lsWriteSettings(updated);
-  
+  lsWriteSettings(communityId, updated);
+
   // Sync to server (fire-and-forget)
   if (await isServerAvailable()) {
     fetch(`${API_BASE}/settings`, {
@@ -106,7 +120,7 @@ export async function updateDuelSettings(newSettings: Partial<DuelSettings>): Pr
       resetServerCache();
     });
   }
-  
+
   return updated;
 }
 
@@ -120,24 +134,30 @@ export function getAllChallenges(): DuelChallenge[] {
 }
 
 /**
- * Get all challenges (async from server, fallback to localStorage)
+ * Get all challenges (async from server, fallback to localStorage).
+ * Merges the returned community slice into the local cache instead of replacing everything.
  */
-export async function getAllChallengesAsync(): Promise<DuelChallenge[]> {
+export async function getAllChallengesAsync(communityId?: string): Promise<DuelChallenge[]> {
   if (await isServerAvailable()) {
     try {
-      const res = await fetch(API_BASE);
+      const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+      const res = await fetch(`${API_BASE}${query}`);
       if (res.ok) {
         const data = await res.json();
-        // Only overwrite cache if server has data OR cache is empty
-        if (data.length > 0 || lsReadChallenges().length === 0) {
-          lsWriteChallenges(data);
-        }
-        return data.length > 0 ? data : lsReadChallenges();
+        const existing = lsReadChallenges();
+        const targetCommunity = communityId || DEFAULT_COMMUNITY_ID;
+        const others = existing.filter(c => c.communityId && c.communityId !== targetCommunity);
+        const merged = [...others, ...data];
+        lsWriteChallenges(merged);
+        return data;
       }
     } catch (err) {
       console.warn('[Duels] Server challenges read failed:', err);
       resetServerCache();
     }
+  }
+  if (communityId) {
+    return lsReadChallenges().filter(c => c.communityId === communityId);
   }
   return lsReadChallenges();
 }
@@ -145,16 +165,16 @@ export async function getAllChallengesAsync(): Promise<DuelChallenge[]> {
 /**
  * Get active challenges (pending/accepted)
  */
-export async function getActiveChallenges(): Promise<DuelChallenge[]> {
-  const all = await getAllChallengesAsync();
+export async function getActiveChallenges(communityId?: string): Promise<DuelChallenge[]> {
+  const all = await getAllChallengesAsync(communityId);
   return all.filter(c => c.status === 'pending' || c.status === 'accepted');
 }
 
 /**
  * Get a single challenge by ID
  */
-export async function getDuelChallenge(id: string): Promise<DuelChallenge | null> {
-  const all = await getAllChallengesAsync();
+export async function getDuelChallenge(id: string, communityId?: string): Promise<DuelChallenge | null> {
+  const all = await getAllChallengesAsync(communityId);
   return all.find(c => c.id === id) ?? null;
 }
 
@@ -205,11 +225,11 @@ export function formatTimeUntilReset(nextReset: Date): string {
 /**
  * Get challenges created this week by a player
  */
-export async function getChallengesThisWeek(challengerId: string): Promise<DuelChallenge[]> {
-  const settings = await getDuelSettingsAsync();
+export async function getChallengesThisWeek(challengerId: string, communityId?: string): Promise<DuelChallenge[]> {
+  const settings = await getDuelSettingsAsync(communityId);
   const lastReset = getLastWeeklyReset(settings);
-  
-  const all = await getAllChallengesAsync();
+
+  const all = await getAllChallengesAsync(communityId);
   return all.filter(
     c => c.challengerId === challengerId && new Date(c.createdAt) >= lastReset
   );
@@ -218,11 +238,11 @@ export async function getChallengesThisWeek(challengerId: string): Promise<DuelC
 /**
  * Get duel stats for a player
  */
-export async function getDuelStats(participantId: string): Promise<DuelStats> {
-  const challengesThisWeek = (await getChallengesThisWeek(participantId)).length;
-  const settings = await getDuelSettingsAsync();
+export async function getDuelStats(participantId: string, communityId?: string): Promise<DuelStats> {
+  const challengesThisWeek = (await getChallengesThisWeek(participantId, communityId)).length;
+  const settings = await getDuelSettingsAsync(communityId);
 
-  const all = await getAllChallengesAsync();
+  const all = await getAllChallengesAsync(communityId);
   const pending = all.filter(
     c => (c.challengerId === participantId || c.challengedId === participantId) &&
          c.status === 'pending'
@@ -243,7 +263,7 @@ export async function getDuelStats(participantId: string): Promise<DuelStats> {
   );
 
   // Load ranked matches to determine duel winners
-  const rankedMatches = await getAllRankedMatchesAsync();
+  const rankedMatches = await getAllRankedMatchesAsync(communityId);
   const matchMap = new Map(rankedMatches.map(m => [m.id, m]));
 
   let duelWins = 0;
@@ -281,23 +301,24 @@ export async function getDuelStats(participantId: string): Promise<DuelStats> {
 export async function validateDuelChallenge(
   challengerId: string,
   challengedId: string,
-  type: 'normal' | 'mandatory' = 'normal'
+  type: 'normal' | 'mandatory' = 'normal',
+  communityId: string = DEFAULT_COMMUNITY_ID
 ): Promise<DuelValidationResult> {
   // 1. Can't challenge yourself
   if (challengerId === challengedId) {
     return { valid: false, error: 'Cannot challenge yourself' };
   }
 
-  const settings = await getDuelSettingsAsync();
-  const challenger = getParticipant(challengerId);
-  const challenged = getParticipant(challengedId);
+  const settings = await getDuelSettingsAsync(communityId);
+  const challenger = getParticipant(challengerId, communityId);
+  const challenged = getParticipant(challengedId, communityId);
 
   if (!challenger || !challenged) {
     return { valid: false, error: 'One or both participants not found' };
   }
 
   // 2. Check weekly limit (includes both normal and mandatory)
-  const challengesThisWeek = await getChallengesThisWeek(challengerId);
+  const challengesThisWeek = await getChallengesThisWeek(challengerId, communityId);
   if (challengesThisWeek.length >= settings.maxChallengesPerWeek) {
     return {
       valid: false,
@@ -323,7 +344,7 @@ export async function validateDuelChallenge(
     }
 
     // 2c. Check monthly limit per opponent (no repeat same opponent with mandatory in same month)
-    const all = await getAllChallengesAsync();
+    const all = await getAllChallengesAsync(communityId);
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     
@@ -357,8 +378,8 @@ export async function validateDuelChallenge(
 
   // 4. Check if already challenged this week
   const lastReset = getLastWeeklyReset(settings);
-  
-  const all = await getAllChallengesAsync();
+
+  const all = await getAllChallengesAsync(communityId);
   const alreadyChallenged = all.some(
     c =>
       c.challengerId === challengerId &&
@@ -406,15 +427,16 @@ export async function validateDuelChallenge(
 export async function createDuelChallenge(
   challengerId: string,
   challengedId: string,
-  type: 'normal' | 'mandatory' = 'normal'
+  type: 'normal' | 'mandatory' = 'normal',
+  communityId: string = DEFAULT_COMMUNITY_ID
 ): Promise<DuelChallenge | null> {
   // Validate first
-  const validation = await validateDuelChallenge(challengerId, challengedId, type);
+  const validation = await validateDuelChallenge(challengerId, challengedId, type, communityId);
   if (!validation.valid) {
     throw new Error(validation.error || 'Challenge validation failed');
   }
 
-  const settings = await getDuelSettingsAsync();
+  const settings = await getDuelSettingsAsync(communityId);
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + settings.challengeExpirationDays);
 
@@ -422,6 +444,7 @@ export async function createDuelChallenge(
     id: `duel_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     challengerId,
     challengedId,
+    communityId,
     type,
     status: type === 'mandatory' ? 'accepted' : 'pending', // Mandatory challenges skip pending
     createdAt: new Date().toISOString(),
@@ -543,9 +566,10 @@ export async function completeDuelChallenge(challengeId: string, matchId: string
  * Pending challenges expire after challengeExpirationDays from creation.
  * Accepted challenges expire after challengeExpirationDays from acceptance.
  */
-export async function expireOldChallenges(): Promise<void> {
-  const settings = await getDuelSettingsAsync();
-  const all = lsReadChallenges();
+export async function expireOldChallenges(communityId?: string): Promise<void> {
+  const targetCommunity = communityId || DEFAULT_COMMUNITY_ID;
+  const settings = await getDuelSettingsAsync(targetCommunity);
+  const all = lsReadChallenges().filter(c => !communityId || c.communityId === targetCommunity);
   const now = new Date();
   const expiredIds: string[] = [];
 
@@ -586,10 +610,13 @@ export async function expireOldChallenges(): Promise<void> {
 
       // Reload from server after expiring to get updated ELO penalties
       try {
-        const res = await fetch(API_BASE);
+        const query = `?communityId=${encodeURIComponent(targetCommunity)}`;
+        const res = await fetch(`${API_BASE}${query}`);
         if (res.ok) {
           const serverData = await res.json();
-          lsWriteChallenges(serverData);
+          const existing = lsReadChallenges();
+          const others = existing.filter(c => c.communityId !== targetCommunity);
+          lsWriteChallenges([...others, ...serverData]);
         }
       } catch (err) {
         console.warn('[Duels] Failed to reload after expiration:', err);

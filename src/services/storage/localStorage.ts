@@ -20,6 +20,7 @@
 
 import { Tournament, GlobalParticipant } from '@/models/types';
 import { STORAGE_KEYS } from '@/constants/tournament';
+import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import {
   SERVER_URL,
   isServerAvailable,
@@ -53,7 +54,12 @@ async function _supabaseSyncParticipants(data: GlobalParticipant[]): Promise<voi
 function lsReadTournaments(): Tournament[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.TOURNAMENTS);
-    return raw ? (JSON.parse(raw) as Tournament[]) : [];
+    if (!raw) return [];
+    const data = JSON.parse(raw) as Tournament[];
+    return data.map((t) => ({
+      ...t,
+      communityId: t.communityId || DEFAULT_COMMUNITY_ID,
+    }));
   } catch {
     return [];
   }
@@ -67,10 +73,16 @@ function lsWriteTournaments(data: Tournament[]): void {
   }
 }
 
-async function readAllTournaments(): Promise<Tournament[]> {
+function filterByCommunityId<T extends { communityId?: string }>(items: T[], communityId?: string): T[] {
+  if (!communityId) return items;
+  return items.filter((i) => i.communityId === communityId);
+}
+
+async function readAllTournaments(communityId?: string): Promise<Tournament[]> {
   if (await isServerAvailable()) {
     try {
-      const res = await fetch(`${SERVER_URL}/api/tournaments`);
+      const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+      const res = await fetch(`${SERVER_URL}/api/tournaments${query}`);
       if (res.ok) {
         const data = (await res.json()) as Tournament[];
         // Only overwrite localStorage if server has data OR localStorage is also empty.
@@ -78,7 +90,7 @@ async function readAllTournaments(): Promise<Tournament[]> {
         if (data.length > 0 || lsReadTournaments().length === 0) {
           lsWriteTournaments(data);
         }
-        return data.length > 0 ? data : lsReadTournaments();
+        return data.length > 0 ? filterByCommunityId(data, communityId) : filterByCommunityId(lsReadTournaments(), communityId);
       }
     } catch (err) {
       console.warn('[Storage] Local server tournaments read failed:', err);
@@ -87,9 +99,9 @@ async function readAllTournaments(): Promise<Tournament[]> {
   }
   if (hasSupabase()) {
     const data = await _supabaseLoadTournaments();
-    if (data) { lsWriteTournaments(data); return data; }
+    if (data) { lsWriteTournaments(data); return filterByCommunityId(data, communityId); }
   }
-  return lsReadTournaments();
+  return filterByCommunityId(lsReadTournaments(), communityId);
 }
 
 async function writeAllTournaments(data: Tournament[]): Promise<void> {
@@ -130,8 +142,8 @@ export function loadTournaments(): Tournament[] {
   return lsReadTournaments();
 }
 
-export async function loadTournamentsAsync(): Promise<Tournament[]> {
-  return readAllTournaments();
+export async function loadTournamentsAsync(communityId?: string): Promise<Tournament[]> {
+  return readAllTournaments(communityId);
 }
 
 export async function loadTournamentsForParticipantAsync(participantId: string): Promise<Tournament[]> {
@@ -212,6 +224,7 @@ function lsReadParticipants(): GlobalParticipant[] {
       gameId: p.gameId ?? null,
       mainCharacterId: p.mainCharacterId ?? null,
       tournamentIds: p.tournamentIds ?? [],
+      communityId: p.communityId || DEFAULT_COMMUNITY_ID,
     }));
   } catch {
     return [];
@@ -226,17 +239,22 @@ function lsWriteParticipants(data: GlobalParticipant[]): void {
   }
 }
 
-async function readAllParticipants(): Promise<GlobalParticipant[]> {
+async function readAllParticipants(communityId?: string): Promise<GlobalParticipant[]> {
+  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
   if (await isServerAvailable()) {
     try {
-      const res = await fetch(`${SERVER_URL}/api/participants`);
+      const res = await fetch(`${SERVER_URL}/api/participants${query}`);
       if (res.ok) {
         const data = (await res.json()) as GlobalParticipant[];
-        // Only overwrite localStorage if server has data OR localStorage is also empty.
-        if (data.length > 0 || lsReadParticipants().length === 0) {
+        // Merge this community slice into the cache instead of replacing everything.
+        if (communityId) {
+          const existing = lsReadParticipants();
+          const others = existing.filter((p) => p.communityId !== communityId);
+          lsWriteParticipants([...others, ...data]);
+        } else if (data.length > 0 || lsReadParticipants().length === 0) {
           lsWriteParticipants(data);
         }
-        return data.length > 0 ? data : lsReadParticipants();
+        return data.length > 0 ? data : lsReadParticipants().filter((p) => !communityId || p.communityId === communityId);
       }
     } catch (err) {
       console.warn('[Storage] Local server participants read failed:', err);
@@ -247,7 +265,8 @@ async function readAllParticipants(): Promise<GlobalParticipant[]> {
     const data = await _supabaseLoadParticipants();
     if (data) { lsWriteParticipants(data); return data; }
   }
-  return lsReadParticipants();
+  const cached = lsReadParticipants();
+  return communityId ? cached.filter((p) => p.communityId === communityId) : cached;
 }
 
 // Exactamente igual que writeAllTournaments pero para participants
@@ -269,12 +288,13 @@ async function writeAllParticipants(data: GlobalParticipant[]): Promise<void> {
 
 // ── GlobalParticipants public API ───────────────────────────────────────
 
-export function loadGlobalParticipants(): GlobalParticipant[] {
-  return lsReadParticipants();
+export function loadGlobalParticipants(communityId?: string): GlobalParticipant[] {
+  const all = lsReadParticipants();
+  return communityId ? all.filter((p) => p.communityId === communityId) : all;
 }
 
-export async function loadGlobalParticipantsAsync(): Promise<GlobalParticipant[]> {
-  return readAllParticipants();
+export async function loadGlobalParticipantsAsync(communityId?: string): Promise<GlobalParticipant[]> {
+  return readAllParticipants(communityId);
 }
 
 export async function saveGlobalParticipants(data: GlobalParticipant[]): Promise<void> {

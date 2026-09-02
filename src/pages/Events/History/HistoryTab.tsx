@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
 import { getAllMatches } from '@/services/ranking/rankingService';
 import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
@@ -30,6 +31,8 @@ interface UnifiedMatch {
 
 function HistoryTab() {
   const navigate = useNavigate();
+  const { currentCommunity, getPath } = useCommunity();
+  const communityId = currentCommunity?.id;
   const [filter, setFilter] = useState<HistoryFilter>('all');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [matches, setMatches] = useState<UnifiedMatch[]>([]);
@@ -38,15 +41,16 @@ function HistoryTab() {
 
   useEffect(() => {
     loadHistory();
-  }, []);
+  }, [communityId]);
 
   const loadHistory = async () => {
+    if (!communityId) return;
     setLoading(true);
     try {
       const [tournamentMatches, rankedMatches, participants] = await Promise.all([
-        getAllTournamentMatchesAsync(),
-        getAllMatches(),
-        getAllParticipantsAsync().then(data => data.length > 0 ? data : getAllParticipants()),
+        getAllTournamentMatchesAsync(communityId),
+        getAllMatches(communityId),
+        getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : getAllParticipants(communityId)),
       ]);
 
       setAllParticipants(participants);
@@ -211,7 +215,7 @@ function HistoryTab() {
             {filter === 'duel' ? 'Create challenges in Ranked Match to get started' : 'Play some matches to see them here'}
           </p>
           {filter === 'duel' && (
-            <button className="btn-primary mt-2" onClick={() => navigate('/events?tab=ranked')}>
+            <button className="btn-primary mt-2" onClick={() => navigate(getPath('events?tab=ranked'))}>
               <i className="fas fa-swords" /> Go to Ranked
             </button>
           )}

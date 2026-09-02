@@ -12,8 +12,9 @@ import type { AppNotification } from './notification';
 export interface AuthUser {
   id: string;
   username: string;
-  role: 'admin' | 'user';
+  role: 'superadmin' | 'community_admin' | 'admin' | 'user';
   participantId: string | null;
+  communityId: string | null;
   isActive: boolean;
   createdAt: string;
   lastLoginAt: string | null;
@@ -30,6 +31,7 @@ export interface AuthSession {
 export interface SessionUser {
   id: string;
   username: string;
-  role: 'admin' | 'user';
+  role: 'superadmin' | 'community_admin' | 'admin' | 'user';
   participantId: string | null;
+  communityId: string | null;
 }

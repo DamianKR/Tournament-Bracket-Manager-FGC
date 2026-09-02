@@ -13,15 +13,18 @@ import { Router } from 'express';
 import { tournaments, tournamentMatches } from '../db/collections.js';
 import { validateTournament } from '../models/tournament.js';
 import { applyTournamentElo } from '../utils/tournamentElo.js';
-import { requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
+import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
+import { filterByCommunity, getTargetCommunityId, isInUserScope } from '../utils/communityScope.js';
 
 const router = Router();
 
-// GET /api/tournaments
-router.get('/', async (_req, res) => {
+// GET /api/tournaments?communityId=...
+router.get('/', optionalAuth, async (req, res) => {
   try {
+    const { communityId } = req.query;
     const data = await tournaments.getAll();
-    res.json(data);
+    const filtered = filterByCommunity(req.user, data, communityId);
+    res.json(filtered);
   } catch (err) {
     console.error('[Tournaments] GET / error:', err);
     res.status(500).json({ error: 'Failed to read tournaments' });
@@ -30,11 +33,12 @@ router.get('/', async (_req, res) => {
 
 // ── Tournament Match records (for history) — registered BEFORE /:id to avoid capture
 
-// GET /api/tournaments/matches
-router.get('/matches', async (_req, res) => {
+// GET /api/tournaments/matches?communityId=...
+router.get('/matches', optionalAuth, async (req, res) => {
   try {
+    const { communityId } = req.query;
     const all = await tournamentMatches.getAll();
-    res.json(all);
+    res.json(filterByCommunity(req.user, all, communityId));
   } catch (err) {
     console.error('[Tournaments] GET /matches error:', err);
     res.status(500).json({ error: 'Failed to read tournament matches' });
@@ -42,10 +46,13 @@ router.get('/matches', async (_req, res) => {
 });
 
 // GET /api/tournaments/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const tournament = await tournaments.findById(req.params.id);
     if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+    if (!isInUserScope(req.user, tournament.communityId)) {
+      return res.status(403).json({ error: 'Tournament is not in your community scope' });
+    }
     res.json(tournament);
   } catch (err) {
     console.error('[Tournaments] GET /:id error:', err);
@@ -70,6 +77,11 @@ router.post('/', requireAuth, async (req, res) => {
 
     for (const t of req.body) {
       const prev = existingMap.get(t.id);
+      const targetCommunityId = prev?.communityId || getTargetCommunityId(req.user, t.communityId);
+      if (!isInUserScope(req.user, targetCommunityId)) {
+        return res.status(403).json({ error: 'Cannot modify a tournament outside your community scope' });
+      }
+      t.communityId = targetCommunityId;
       const becomesCompleted = t.status === 'completed' && (!prev || prev.status !== 'completed');
       const alreadyApplied   = t.eloApplied || (prev && prev.eloApplied);
 
@@ -119,6 +131,13 @@ router.put('/:id', requireAuth, async (req, res) => {
 
     const existing = await tournaments.findById(req.params.id);
 
+    // Community scope: cannot modify/create a tournament outside your community
+    const targetCommunityId = existing?.communityId || getTargetCommunityId(req.user, body.communityId);
+    if (!isInUserScope(req.user, targetCommunityId)) {
+      return res.status(403).json({ error: 'Tournament is not in your community scope' });
+    }
+    body.communityId = targetCommunityId;
+
     // When a tournament transitions to 'completed', award ELO points for placements once.
     const becomesCompleted = body.status === 'completed' && (!existing || existing.status !== 'completed');
     const alreadyApplied   = body.eloApplied || (existing && existing.eloApplied);
@@ -146,6 +165,11 @@ router.put('/:id', requireAuth, async (req, res) => {
 // DELETE /api/tournaments/:id
 router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
+    const tournament = await tournaments.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+    if (!isInUserScope(req.user, tournament.communityId)) {
+      return res.status(403).json({ error: 'Tournament is not in your community scope' });
+    }
     const deleted = await tournaments.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Tournament not found' });
     res.json({ ok: true });
@@ -155,8 +179,8 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
-// DELETE /api/tournaments — clear all
-router.delete('/', requireAuth, requireAdmin, async (_req, res) => {
+// DELETE /api/tournaments — clear all (superadmin only)
+router.delete('/', requireAuth, requireSuperAdmin, async (_req, res) => {
   try {
     await tournaments.clear();
     res.json({ ok: true });

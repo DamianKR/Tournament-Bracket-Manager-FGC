@@ -17,7 +17,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as any)?.from ?? '/events';
+  const from = (location.state as any)?.from ?? '/communities';
 
   const [needsSetup, setNeedsSetup] = useState(false);
   const [checkingSetup, setCheckingSetup] = useState(true);
@@ -76,7 +76,7 @@ function LoginPage() {
     setLoading(true);
     try {
       await setupAdmin(username.trim(), password);
-      navigate('/events', { replace: true });
+      navigate('/communities', { replace: true });
     } catch (err: any) {
       setError(err.message || 'Setup failed');
     } finally {

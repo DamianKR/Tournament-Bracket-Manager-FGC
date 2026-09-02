@@ -4,10 +4,14 @@ import { getAllParticipants } from '@/services/participants/participantService';
 import { estimateLeagueDuration, createLeague } from '@/services/leagues/leagueService';
 import { getMidnightInTimeZone, DEFAULT_TIMEZONE } from '@/utils/timeZone';
 import { GlobalParticipant } from '@/models/types';
+import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
+import { useCommunity } from '@/contexts/CommunityContext';
 import './CreateLeague.css';
 
 function CreateLeague() {
   const navigate = useNavigate();
+  const { currentCommunity, getPath } = useCommunity();
+  const communityId = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
 
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -40,8 +44,8 @@ function CreateLeague() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    setAllParticipants(getAllParticipants());
-  }, []);
+    setAllParticipants(getAllParticipants(communityId));
+  }, [communityId]);
 
   useEffect(() => {
     if (selectedIds.size < 2) {
@@ -115,6 +119,7 @@ function CreateLeague() {
       gracePeriodDays,
       playoffsEnabled,
       playoffsEloMultiplier: playoffsMultiplier,
+      communityId: currentCommunity?.id ?? DEFAULT_COMMUNITY_ID,
     });
 
     setCreating(false);
@@ -124,7 +129,7 @@ function CreateLeague() {
       return;
     }
 
-    navigate(`/events/leagues/${result.league.id}`);
+    navigate(getPath(`events/leagues/${result.league.id}`));
   }
 
   return (
@@ -368,7 +373,7 @@ function CreateLeague() {
           )}
 
           <div className="form-actions">
-            <button className="btn-outline" onClick={() => navigate('/leagues')}>
+            <button className="btn-outline" onClick={() => navigate(getPath('events?tab=leagues'))}>
               Cancel
             </button>
             <button

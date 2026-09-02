@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { Participant, GlobalParticipant } from '@/models/types';
 import { getGame, getCharacter } from '@/data/games';
 import {
@@ -58,15 +59,18 @@ function ParticipantsList({
   tournamentMode = false,
 }: ParticipantsListProps) {
   const navigate = useNavigate();
+  const { currentCommunity, getPath } = useCommunity();
+  const communityId = currentCommunity?.id;
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [allGlobal, setAllGlobal] = useState<GlobalParticipant[]>([]);
 
   useEffect(() => {
-    getAllParticipantsAsync()
+    if (!communityId) return;
+    getAllParticipantsAsync(communityId)
       .then(setAllGlobal)
-      .catch(() => setAllGlobal(getAllParticipants()));
-  }, []);
+      .catch(() => setAllGlobal(getAllParticipants(communityId)));
+  }, [communityId]);
 
   const resolveGlobal = (p: IdentityEntity): GlobalParticipant | null => {
     if (p.globalParticipantId) {
@@ -210,7 +214,7 @@ function ParticipantsList({
                         <div key={m.globalParticipantId || m.name}>
                           {renderIdentity(m, () => {
                             if (m.globalParticipantId) {
-                              navigate(`/participants/${m.globalParticipantId}`);
+                              navigate(getPath(`participants/${m.globalParticipantId}`));
                             }
                           }, true)}
                         </div>
@@ -229,7 +233,7 @@ function ParticipantsList({
                   <>
                     {renderIdentity(participant, () => {
                       if (readOnly && participant.globalParticipantId) {
-                        navigate(`/participants/${participant.globalParticipantId}`);
+                        navigate(getPath(`participants/${participant.globalParticipantId}`));
                       }
                     })}
                     {tournamentMode && alive && (

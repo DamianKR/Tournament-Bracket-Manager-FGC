@@ -15,6 +15,8 @@ import {
 } from '@/services/tournament/tournamentService';
 import { searchParticipants } from '@/services/participants/participantService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
+import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
+import { useCommunity } from '@/contexts/CommunityContext';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
 import BracketPreview from '@/components/Bracket/BracketPreview';
@@ -27,6 +29,7 @@ type ViewMode = 'participants' | 'bracket' | 'seeding-preview';
 function CreateTournament() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { currentCommunity, getPath } = useCommunity();
   const [tournamentId, setTournamentId] = useState<string | null>(id || null);
   const [tournamentName, setTournamentName] = useState('');
   const [mode, setMode] = useState<TournamentMode>('double_elimination');
@@ -155,7 +158,8 @@ function CreateTournament() {
         type === 'teams' ? teamSize : undefined,
         type === 'singles' ? seedingMode : undefined,
         type === 'singles' && seedingMode === 'partial' ? partialSeedCount : undefined,
-        givesPoints
+        givesPoints,
+        currentCommunity?.id ?? DEFAULT_COMMUNITY_ID
       );
       setTournamentId(tournament.id);
       setIsCreated(true);
@@ -270,7 +274,7 @@ function CreateTournament() {
     setShowStartConfirm(false);
     try {
       await startTournament(tournamentId);
-      navigate(`/events/tournaments/${tournamentId}`);
+      navigate(getPath(`events/tournaments/${tournamentId}`));
     } catch (err: any) {
       setError(err.message);
     }
@@ -286,7 +290,7 @@ function CreateTournament() {
       .filter(Boolean);
   };
 
-  const handleCancel = () => navigate('/');
+  const handleCancel = () => navigate(getPath('events'));
 
   const sidebarItems = [
     { id: 'setup', label: 'Tournament Setup', active: !isCreated },

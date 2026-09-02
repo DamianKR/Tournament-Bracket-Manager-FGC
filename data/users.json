@@ -4,10 +4,12 @@
     "participantId": null,
     "username": "admin",
     "passwordHash": "$2b$12$7nrR5zi2VBf3ZhzwOZ0CT.bReHkcrwIsW/Rue97SooNOdCRqUqfmG",
-    "role": "admin",
+    "role": "superadmin",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.682Z",
-    "lastLoginAt": "2026-09-01T20:17:30.492Z"
+    "lastLoginAt": "2026-09-02T15:37:40.234Z",
+    "communityId": null,
+    "updatedAt": "2026-09-02T15:00:00.000Z"
   },
   {
     "id": "user_1787803682684_psoq3qr",
@@ -17,7 +19,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.892Z",
-    "lastLoginAt": "2026-09-01T20:22:54.284Z"
+    "lastLoginAt": "2026-09-02T15:27:28.181Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.950Z"
   },
   {
     "id": "user_1787803682892_c3ay3q8",
@@ -27,7 +31,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:03.101Z",
-    "lastLoginAt": "2026-09-01T20:19:51.765Z"
+    "lastLoginAt": "2026-09-01T20:19:51.765Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.951Z"
   },
   {
     "id": "user_1787803683102_713roxo",
@@ -37,7 +43,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:03.309Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.952Z"
   },
   {
     "id": "user_1787803683309_xldg5wn",
@@ -47,7 +55,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:03.524Z",
-    "lastLoginAt": "2026-08-31T20:27:13.804Z"
+    "lastLoginAt": "2026-08-31T20:27:13.804Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.953Z"
   },
   {
     "id": "user_1787803683524_2wfml2k",
@@ -57,7 +67,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:03.731Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.953Z"
   },
   {
     "id": "user_1787803683731_y5kanik",
@@ -67,7 +79,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:03.939Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.954Z"
   },
   {
     "id": "user_1787803683939_74ycpng",
@@ -77,7 +91,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:04.148Z",
-    "lastLoginAt": "2026-09-01T18:24:53.570Z"
+    "lastLoginAt": "2026-09-01T18:24:53.570Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.955Z"
   },
   {
     "id": "user_1787803684148_4gzwgj9",
@@ -87,7 +103,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:04.359Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.956Z"
   },
   {
     "id": "user_1787803684359_h5hzgg2",
@@ -97,7 +115,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:04.571Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.957Z"
   },
   {
     "id": "user_1787803684571_h679m99",
@@ -107,7 +127,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:04.782Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.957Z"
   },
   {
     "id": "user_1787803684782_mqth5kn",
@@ -117,7 +139,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:04.996Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.958Z"
   },
   {
     "id": "user_1787803684996_w7v2urq",
@@ -127,7 +151,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:05.210Z",
-    "lastLoginAt": "2026-09-01T18:27:12.639Z"
+    "lastLoginAt": "2026-09-01T18:27:12.639Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.959Z"
   },
   {
     "id": "user_1787803685210_4od49ye",
@@ -137,7 +163,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:05.418Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.959Z"
   },
   {
     "id": "user_1787803685418_2ssb03n",
@@ -147,7 +175,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:05.627Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.960Z"
   },
   {
     "id": "user_1787803685627_vwifp7b",
@@ -157,7 +187,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:05.838Z",
-    "lastLoginAt": "2026-09-01T20:16:08.840Z"
+    "lastLoginAt": "2026-09-01T20:16:08.840Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.961Z"
   },
   {
     "id": "user_1787803685838_vj6fyen",
@@ -167,7 +199,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:06.053Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.962Z"
   },
   {
     "id": "user_1787803686053_tetjhqz",
@@ -177,7 +211,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:06.269Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.962Z"
   },
   {
     "id": "user_1787803686269_xtwtgfd",
@@ -187,7 +223,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:06.481Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.963Z"
   },
   {
     "id": "user_1787803686481_ezn9d14",
@@ -197,7 +235,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:06.690Z",
-    "lastLoginAt": "2026-09-01T20:10:58.754Z"
+    "lastLoginAt": "2026-09-01T20:10:58.754Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.964Z"
   },
   {
     "id": "user_1787803686690_hge3qqs",
@@ -207,7 +247,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:06.901Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.964Z"
   },
   {
     "id": "user_1787803686901_7ds3ttb",
@@ -217,7 +259,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:07.110Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.965Z"
   },
   {
     "id": "user_1787803687110_mlpw7dr",
@@ -227,7 +271,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:07.318Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.966Z"
   },
   {
     "id": "user_1787803687318_78g5ne5",
@@ -237,7 +283,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:07.529Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.966Z"
   },
   {
     "id": "user_1787803687529_9yv1y7s",
@@ -247,7 +295,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:07.735Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.967Z"
   },
   {
     "id": "user_1787803687735_86f0u6m",
@@ -257,7 +307,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:07.944Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.968Z"
   },
   {
     "id": "user_1787803687944_94p2q5b",
@@ -267,7 +319,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:08.155Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.968Z"
   },
   {
     "id": "user_1787803688155_58s8tr0",
@@ -277,7 +331,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:08.364Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.969Z"
   },
   {
     "id": "user_1787803688364_i7vivwv",
@@ -287,7 +343,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:08.571Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.970Z"
   },
   {
     "id": "user_1787803688571_n4quwnb",
@@ -297,7 +355,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:08.778Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.971Z"
   },
   {
     "id": "user_1787803688778_3c5a7wt",
@@ -307,7 +367,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:08.986Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.972Z"
   },
   {
     "id": "user_1787803688986_zfaerpj",
@@ -317,7 +379,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:09.193Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.972Z"
   },
   {
     "id": "user_1787803689193_6gue3pz",
@@ -327,7 +391,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:09.401Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.973Z"
   },
   {
     "id": "user_1787803689401_7dntiyc",
@@ -337,7 +403,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:09.609Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.974Z"
   },
   {
     "id": "user_1787803689609_ua7osv1",
@@ -347,7 +415,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:09.818Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.974Z"
   },
   {
     "id": "user_1787803689818_ad3xf1e",
@@ -357,7 +427,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:10.027Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.975Z"
   },
   {
     "id": "user_1787803690027_027mxjq",
@@ -367,7 +439,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:10.236Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.976Z"
   },
   {
     "id": "user_1787803690236_zwqdd8s",
@@ -377,7 +451,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:10.445Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.976Z"
   },
   {
     "id": "user_1787803690445_dqv88lx",
@@ -387,7 +463,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:10.652Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.977Z"
   },
   {
     "id": "user_1787803690652_erea5ip",
@@ -397,7 +475,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:10.862Z",
-    "lastLoginAt": "2026-08-31T23:06:02.082Z"
+    "lastLoginAt": "2026-08-31T23:06:02.082Z",
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.977Z"
   },
   {
     "id": "user_1787803690862_xykx3zw",
@@ -407,7 +487,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:11.072Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.978Z"
   },
   {
     "id": "user_1787803691072_b7avqg4",
@@ -417,7 +499,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:11.281Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.979Z"
   },
   {
     "id": "user_1787803691281_0d4kwq2",
@@ -427,7 +511,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:11.493Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.980Z"
   },
   {
     "id": "user_1787803691493_ut63vfz",
@@ -437,7 +523,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:11.701Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.981Z"
   },
   {
     "id": "user_1787803691701_p0v7qs0",
@@ -447,7 +535,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:11.910Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.982Z"
   },
   {
     "id": "user_1787803691910_qgnqp3l",
@@ -457,7 +547,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:12.120Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.982Z"
   },
   {
     "id": "user_1787803692120_atus3vz",
@@ -467,7 +559,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:12.370Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.983Z"
   },
   {
     "id": "user_1787803692370_ppbh08u",
@@ -477,7 +571,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:12.578Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.984Z"
   },
   {
     "id": "user_1787803692578_xa51v6c",
@@ -487,7 +583,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:12.792Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.985Z"
   },
   {
     "id": "user_1787803692792_5m88e8w",
@@ -497,7 +595,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:13.021Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.985Z"
   },
   {
     "id": "user_1787803693021_mt3ylhn",
@@ -507,7 +607,9 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:13.233Z",
-    "lastLoginAt": null
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.986Z"
   },
   {
     "id": "user_1787803693233_xtjbgnp",
@@ -517,6 +619,30 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:13.446Z",
+    "lastLoginAt": null,
+    "communityId": "community_fgc_santa_clara",
+    "updatedAt": "2026-09-01T22:11:59.987Z"
+  },
+  {
+    "id": "user_1788378964333_nkd0d4q",
+    "participantId": "gp_1788378964090_k9goxlg",
+    "username": "usp1",
+    "passwordHash": "$2b$12$cXwpJXz3dcACmKcfRzkmvesROKFMeAc19s62Fh0yKUwrBHIos0pi.",
+    "role": "user",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "isActive": true,
+    "createdAt": "2026-09-02T19:56:04.333Z",
+    "lastLoginAt": null
+  },
+  {
+    "id": "user_1788379061578_oni8u0o",
+    "participantId": "gp_1788379061334_fbsbbjo",
+    "username": "usp2",
+    "passwordHash": "$2b$12$KKdM7frO8N.yMfsd37HC.uWEndImy0tRbv635mDlYCDqWDqfCqaBa",
+    "role": "admin",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "isActive": true,
+    "createdAt": "2026-09-02T19:57:41.578Z",
     "lastLoginAt": null
   }
 ]

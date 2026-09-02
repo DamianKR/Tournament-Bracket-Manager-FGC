@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LeagueStanding, GlobalParticipant } from '@/models/types';
 import { useNavigate } from 'react-router-dom';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { banParticipants, regenerateSchedule } from '@/services/leagues/leagueService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
@@ -16,6 +17,7 @@ interface LeagueStandingsTabProps {
 
 function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled, onRefresh }: LeagueStandingsTabProps) {
   const navigate = useNavigate();
+  const { getPath } = useCommunity();
   const { isAdmin } = useAuth();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBanConfirm, setShowBanConfirm] = useState(false);
@@ -134,7 +136,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
                         />
                       </td>
                     )}
-                    <td className="col-rank" onClick={() => navigate(`/participants/${s.participantId}`)}>
+                    <td className="col-rank" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>
                       <span className={`rank-badge rank-${s.rank}`}>
                         {s.rank === 1 && '🥇'}
                         {s.rank === 2 && '🥈'}
@@ -142,7 +144,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
                         {s.rank > 3 && s.rank}
                       </span>
                     </td>
-                    <td className="col-player" onClick={() => navigate(`/participants/${s.participantId}`)}>
+                    <td className="col-player" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>
                       <div className="player-cell">
                         <span className="player-name">{getParticipantName(s.participantId)}</span>
                         {s.noShows > 0 && (
@@ -152,11 +154,11 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
                         )}
                       </div>
                     </td>
-                    <td className="col-stat" onClick={() => navigate(`/participants/${s.participantId}`)}>{s.matchesPlayed}</td>
-                    <td className="col-stat text-success" onClick={() => navigate(`/participants/${s.participantId}`)}>{s.wins}</td>
-                    <td className="col-stat text-danger" onClick={() => navigate(`/participants/${s.participantId}`)}>{s.losses}</td>
-                    <td className="col-stat font-bold" onClick={() => navigate(`/participants/${s.participantId}`)}>{s.currentElo}</td>
-                    <td className={`col-stat ${s.eloChange >= 0 ? 'text-success' : 'text-danger'}`} onClick={() => navigate(`/participants/${s.participantId}`)}>
+                    <td className="col-stat" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>{s.matchesPlayed}</td>
+                    <td className="col-stat text-success" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>{s.wins}</td>
+                    <td className="col-stat text-danger" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>{s.losses}</td>
+                    <td className="col-stat font-bold" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>{s.currentElo}</td>
+                    <td className={`col-stat ${s.eloChange >= 0 ? 'text-success' : 'text-danger'}`} onClick={() => navigate(getPath(`participants/${s.participantId}`))}>
                       {formatEloChange(s.eloChange)}
                     </td>
                   </tr>

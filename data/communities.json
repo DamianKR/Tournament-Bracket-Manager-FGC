@@ -1,0 +1,20 @@
+[
+  {
+    "id": "community_fgc_santa_clara",
+    "name": "FGC Santa Clara",
+    "shortName": "FGC SC",
+    "description": "Comunidad inicial por defecto",
+    "ownerAdminId": "user_1787803682471_sfmycpv",
+    "createdAt": "2026-09-01T00:00:00.000Z",
+    "updatedAt": "2026-09-01T22:11:59.988Z"
+  },
+  {
+    "id": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "name": "FGC Sancti",
+    "shortName": "FGC SP",
+    "description": "League of the Santispiritus zone",
+    "ownerAdminId": "user_1787803682471_sfmycpv",
+    "createdAt": "2026-09-02T16:33:24.317Z",
+    "updatedAt": "2026-09-02T16:33:24.317Z"
+  }
+]

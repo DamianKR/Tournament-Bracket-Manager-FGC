@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
 import {
   recordMatch,
@@ -23,6 +24,8 @@ interface RecordMatchTabProps {
 
 function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTabProps) {
   const { user, isAdmin } = useAuth();
+  const { currentCommunity } = useCommunity();
+  const communityId = currentCommunity?.id;
 
   // All participants (for selectors)
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
@@ -45,16 +48,17 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
   const participantMap = new Map(allParticipants.map((p) => [p.id, p]));
 
   useEffect(() => {
-    // Load participants for selectors — cached first, then server
-    const cached = getAllParticipants();
+    if (!communityId) return;
+    // Load participants for selectors — cached first, then server (filtered by community)
+    const cached = getAllParticipants(communityId);
     if (cached.length) setAllParticipants(cached);
-    getAllParticipantsAsync().then((data) => { if (data.length) setAllParticipants(data); });
-  }, []);
+    getAllParticipantsAsync(communityId).then((data) => { if (data.length) setAllParticipants(data); });
+  }, [communityId]);
 
   // Auto-populate from selected challenge
   useEffect(() => {
-    if (selectedChallengeId && allParticipants.length > 0) {
-      getDuelChallenge(selectedChallengeId).then(ch => {
+    if (selectedChallengeId && allParticipants.length > 0 && communityId) {
+      getDuelChallenge(selectedChallengeId, communityId).then(ch => {
         if (ch) {
           setChallenge(ch);
           setPlayerAId(ch.challengerId);
@@ -100,7 +104,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
         // If status is now 'completed', both results matched - record the match
         if (updated.status === 'completed') {
-          const result = await recordMatch(playerAId, playerBId, winnerId, 'duel');
+          const result = await recordMatch(playerAId, playerBId, winnerId, 'duel', communityId);
           setLastResult(result);
 
           // Link match to challenge
@@ -148,7 +152,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
       const updated = await resolveConflict(challenge.id, winnerId);
       if (updated) {
         // Record the match with admin's decision
-        const result = await recordMatch(playerAId, playerBId, winnerId, 'duel');
+        const result = await recordMatch(playerAId, playerBId, winnerId, 'duel', communityId);
         setLastResult(result);
         
         // Link match to challenge
@@ -204,7 +208,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
   // If admin but no challenge, allow free match recording
   if (isAdmin && !selectedChallengeId) {
-    return <AdminFreeMatchRecording allParticipants={allParticipants} />;
+    return <AdminFreeMatchRecording allParticipants={allParticipants} communityId={communityId} />;
   }
 
   return (
@@ -410,7 +414,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
 // ── Admin Free Match Recording ────────────────────────────────────────────
 
-function AdminFreeMatchRecording({ allParticipants }: { allParticipants: GlobalParticipant[] }) {
+function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticipants: GlobalParticipant[]; communityId?: string }) {
   const [playerAId, setPlayerAId] = useState('');
   const [playerBId, setPlayerBId] = useState('');
   const [winnerId, setWinnerId] = useState('');
@@ -429,7 +433,7 @@ function AdminFreeMatchRecording({ allParticipants }: { allParticipants: GlobalP
     setRecordError('');
     setLastResult(null);
     try {
-      const result = await recordMatch(playerAId, playerBId, winnerId, 'free');
+      const result = await recordMatch(playerAId, playerBId, winnerId, 'free', communityId);
       setLastResult(result);
 
       // Reset form

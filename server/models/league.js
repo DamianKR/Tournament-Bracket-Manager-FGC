@@ -12,12 +12,13 @@
  * @property {string} updatedAt
  */
 
-export function leagueShape(id, name, game, format) {
+export function leagueShape(id, name, game, format, communityId = 'community_fgc_santa_clara') {
   return {
     id,
     name,
     game,
     format,
+    communityId,
     participants: [],
     status: 'setup',
     createdAt: new Date().toISOString(),
@@ -31,5 +32,8 @@ export function validateLeague(obj) {
   if (typeof obj.id !== 'string' || !obj.id) errors.push('Missing id');
   if (typeof obj.name !== 'string' || !obj.name.trim()) errors.push('Missing name');
   if (!['singles', 'teams'].includes(obj.format)) errors.push('Invalid format');
+  if (obj.communityId !== undefined && typeof obj.communityId !== 'string') {
+    errors.push('Invalid communityId');
+  }
   return { valid: errors.length === 0, errors };
 }

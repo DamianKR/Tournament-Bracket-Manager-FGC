@@ -30,10 +30,11 @@
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-09-01T17:56:56.379Z",
+    "updatedAt": "2026-09-01T22:11:59.989Z",
     "eloPoints": 1610,
     "eloRank": "Vanquisher",
-    "phoneNumber": "+5353211080"
+    "phoneNumber": "+5353211080",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -64,9 +65,10 @@
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-08-28T14:21:48.371Z",
+    "updatedAt": "2026-09-01T22:11:59.990Z",
     "eloPoints": 1626,
-    "eloRank": "Vanquisher"
+    "eloRank": "Vanquisher",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -98,9 +100,10 @@
     "alias": "TQMandreFN",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-08-28T14:21:50.233Z",
+    "updatedAt": "2026-09-01T22:11:59.991Z",
     "eloPoints": 1619,
-    "eloRank": "Vanquisher"
+    "eloRank": "Vanquisher",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -133,9 +136,10 @@
     "alias": "Adecty",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-08-28T14:22:01.029Z",
+    "updatedAt": "2026-09-01T22:11:59.991Z",
     "eloPoints": 1592,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -152,9 +156,10 @@
       "1786158558338-ey6twflzq"
     ],
     "createdAt": "2026-08-10T19:06:30.209Z",
-    "updatedAt": "2026-08-23T03:34:31.184Z",
+    "updatedAt": "2026-09-01T22:11:59.993Z",
     "eloPoints": 1513,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -167,9 +172,10 @@
       "1786763010204-fwzepsyo7"
     ],
     "createdAt": "2026-08-10T19:55:54.729Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z",
+    "updatedAt": "2026-09-01T22:11:59.993Z",
     "eloPoints": null,
-    "eloRank": "Sin puntos"
+    "eloRank": "Sin puntos",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -190,9 +196,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:56:23.115Z",
-    "updatedAt": "2026-09-01T18:26:11.089Z",
+    "updatedAt": "2026-09-01T22:11:59.994Z",
     "eloPoints": 1476,
-    "eloRank": "Platino"
+    "eloRank": "Platino",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -206,9 +213,10 @@
       "1786802844864-5bjdz2hif"
     ],
     "createdAt": "2026-08-10T19:57:30.317Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z",
+    "updatedAt": "2026-09-01T22:11:59.995Z",
     "eloPoints": null,
-    "eloRank": "Sin puntos"
+    "eloRank": "Sin puntos",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -222,9 +230,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:58:12.402Z",
-    "updatedAt": "2026-08-24T00:42:44.069Z",
+    "updatedAt": "2026-09-01T22:11:59.996Z",
     "eloPoints": 1492,
-    "eloRank": "Platino"
+    "eloRank": "Platino",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -238,9 +247,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:58:56.937Z",
-    "updatedAt": "2026-08-19T14:41:47.627Z",
+    "updatedAt": "2026-09-01T22:11:59.996Z",
     "eloPoints": null,
-    "eloRank": "Sin puntos"
+    "eloRank": "Sin puntos",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -256,9 +266,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T20:27:35.444Z",
-    "updatedAt": "2026-08-25T03:22:20.825Z",
+    "updatedAt": "2026-09-01T22:11:59.997Z",
     "eloPoints": 1489,
-    "eloRank": "Platino"
+    "eloRank": "Platino",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -276,9 +287,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T20:27:50.067Z",
-    "updatedAt": "2026-09-01T18:27:36.749Z",
+    "updatedAt": "2026-09-01T22:11:59.998Z",
     "eloPoints": 1524,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -291,9 +303,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T20:29:43.053Z",
-    "updatedAt": "2026-08-22T14:45:23.768Z",
+    "updatedAt": "2026-09-01T22:11:59.998Z",
     "eloPoints": null,
-    "eloRank": "Sin puntos"
+    "eloRank": "Sin puntos",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -317,9 +330,10 @@
       "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T20:30:34.683Z",
-    "updatedAt": "2026-08-28T14:22:13.804Z",
+    "updatedAt": "2026-09-01T22:11:59.999Z",
     "eloPoints": 1580,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -341,9 +355,10 @@
       "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T20:30:50.039Z",
-    "updatedAt": "2026-09-01T18:27:36.748Z",
+    "updatedAt": "2026-09-01T22:12:00.000Z",
     "eloPoints": 1517,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -361,9 +376,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T21:11:44.199Z",
-    "updatedAt": "2026-08-26T23:09:22.001Z",
+    "updatedAt": "2026-09-01T22:12:00.001Z",
     "eloPoints": 1520,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -378,9 +394,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T22:12:14.148Z",
-    "updatedAt": "2026-08-28T00:19:59.920Z",
+    "updatedAt": "2026-09-01T22:12:00.001Z",
     "eloPoints": 1501,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -399,9 +416,10 @@
       "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T22:12:58.250Z",
-    "updatedAt": "2026-08-28T14:22:24.455Z",
+    "updatedAt": "2026-09-01T22:12:00.002Z",
     "eloPoints": 1534,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -414,9 +432,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-11T00:38:06.972Z",
-    "updatedAt": "2026-08-24T00:43:24.843Z",
+    "updatedAt": "2026-09-01T22:12:00.003Z",
     "eloPoints": 1470,
-    "eloRank": "Platino"
+    "eloRank": "Platino",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -431,9 +450,10 @@
       "1786802844864-5bjdz2hif"
     ],
     "createdAt": "2026-08-11T00:38:52.935Z",
-    "updatedAt": "2026-08-26T23:08:45.062Z",
+    "updatedAt": "2026-09-01T22:12:00.004Z",
     "eloPoints": 1464,
-    "eloRank": "Platino"
+    "eloRank": "Platino",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -447,9 +467,10 @@
       "1786802844864-5bjdz2hif"
     ],
     "createdAt": "2026-08-11T00:47:41.693Z",
-    "updatedAt": "2026-08-18T04:00:24.263Z",
+    "updatedAt": "2026-09-01T22:12:00.004Z",
     "eloPoints": null,
-    "eloRank": "Sin puntos"
+    "eloRank": "Sin puntos",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -463,9 +484,10 @@
       "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-11T01:04:28.124Z",
-    "updatedAt": "2026-08-28T14:22:29.260Z",
+    "updatedAt": "2026-09-01T22:12:00.005Z",
     "eloPoints": 1532,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -476,9 +498,10 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-11T04:00:36.915Z",
-    "updatedAt": "2026-08-25T20:37:28.624Z",
+    "updatedAt": "2026-09-01T22:12:00.006Z",
     "eloPoints": 1500,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -492,9 +515,10 @@
       "1786802844864-5bjdz2hif"
     ],
     "createdAt": "2026-08-11T04:02:08.315Z",
-    "updatedAt": "2026-08-25T20:44:15.378Z",
+    "updatedAt": "2026-09-01T22:12:00.006Z",
     "eloPoints": 1503,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "gameId": "ssbu",
@@ -511,9 +535,10 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-13T19:23:04.526Z",
-    "updatedAt": "2026-08-25T03:22:20.825Z",
+    "updatedAt": "2026-09-01T22:12:00.007Z",
     "eloPoints": 1511,
-    "eloRank": "Diamante"
+    "eloRank": "Diamante",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1786756661811_fa5pg74",
@@ -530,7 +555,8 @@
     "eloPoints": 1474,
     "eloRank": "Platino",
     "createdAt": "2026-08-15T01:17:41.811Z",
-    "updatedAt": "2026-08-28T00:35:36.670Z"
+    "updatedAt": "2026-09-01T22:12:00.008Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1786756707267_xybm206",
@@ -547,7 +573,8 @@
     "eloPoints": 1462,
     "eloRank": "Platino",
     "createdAt": "2026-08-15T01:18:27.267Z",
-    "updatedAt": "2026-08-28T00:34:55.093Z"
+    "updatedAt": "2026-09-01T22:12:00.008Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1786757329455_8ijcyo8",
@@ -565,7 +592,8 @@
     "eloPoints": 1500,
     "eloRank": "Diamante",
     "createdAt": "2026-08-15T01:28:49.455Z",
-    "updatedAt": "2026-08-24T05:56:53.624Z"
+    "updatedAt": "2026-09-01T22:12:00.009Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1786758755895_bgdf2b9",
@@ -583,7 +611,8 @@
     "eloPoints": 1512,
     "eloRank": "Diamante",
     "createdAt": "2026-08-15T01:52:35.895Z",
-    "updatedAt": "2026-08-31T22:38:58.071Z"
+    "updatedAt": "2026-09-01T22:12:00.010Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1786758906647_1ib85c1",
@@ -601,7 +630,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-15T01:55:06.647Z",
-    "updatedAt": "2026-08-18T23:03:07.098Z"
+    "updatedAt": "2026-09-01T22:12:00.010Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1786761981144_462dv5s",
@@ -619,7 +649,8 @@
     "eloPoints": 1497,
     "eloRank": "Platino",
     "createdAt": "2026-08-15T02:46:21.144Z",
-    "updatedAt": "2026-08-24T03:30:24.112Z"
+    "updatedAt": "2026-09-01T22:12:00.011Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1786802386624_ficm2tl",
@@ -636,7 +667,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-15T13:59:46.624Z",
-    "updatedAt": "2026-08-20T05:13:52.570Z"
+    "updatedAt": "2026-09-01T22:12:00.012Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1786802617779_nnibxrr",
@@ -653,7 +685,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-15T14:03:37.779Z",
-    "updatedAt": "2026-08-19T04:13:16.552Z"
+    "updatedAt": "2026-09-01T22:12:00.012Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1786808135517_vfoni2a",
@@ -671,7 +704,8 @@
     "eloPoints": 1485,
     "eloRank": "Platino",
     "createdAt": "2026-08-15T15:35:35.517Z",
-    "updatedAt": "2026-08-26T01:56:30.569Z"
+    "updatedAt": "2026-09-01T22:12:00.013Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787060528167_2mzmy24",
@@ -684,7 +718,8 @@
     "eloPoints": 1465,
     "eloRank": "Platino",
     "createdAt": "2026-08-18T13:42:08.167Z",
-    "updatedAt": "2026-08-25T20:44:15.378Z"
+    "updatedAt": "2026-09-01T22:12:00.014Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787060569919_ov80gcy",
@@ -699,7 +734,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-18T13:42:49.919Z",
-    "updatedAt": "2026-08-18T21:18:49.977Z"
+    "updatedAt": "2026-09-01T22:12:00.014Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787069564643_5pithds",
@@ -712,7 +748,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-18T16:12:44.643Z",
-    "updatedAt": "2026-08-18T16:30:29.170Z"
+    "updatedAt": "2026-09-01T22:12:00.016Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787087495865_2esi76p",
@@ -727,7 +764,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-18T21:11:35.865Z",
-    "updatedAt": "2026-08-18T21:18:49.978Z"
+    "updatedAt": "2026-09-01T22:12:00.017Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787087788652_q2n124j",
@@ -742,7 +780,8 @@
     "eloPoints": 1494,
     "eloRank": "Platino",
     "createdAt": "2026-08-18T21:16:28.652Z",
-    "updatedAt": "2026-08-31T23:06:59.892Z"
+    "updatedAt": "2026-09-01T22:12:00.018Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787112645165_cj7eik8",
@@ -757,7 +796,8 @@
     "eloPoints": 1479,
     "eloRank": "Platino",
     "createdAt": "2026-08-19T04:10:45.165Z",
-    "updatedAt": "2026-08-24T05:58:53.582Z"
+    "updatedAt": "2026-09-01T22:12:00.019Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787112745370_2zahvg8",
@@ -772,7 +812,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T04:12:25.370Z",
-    "updatedAt": "2026-08-19T04:13:16.553Z"
+    "updatedAt": "2026-09-01T22:12:00.020Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787150405263_dyjmu7b",
@@ -787,7 +828,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T14:40:05.263Z",
-    "updatedAt": "2026-08-19T14:41:47.629Z"
+    "updatedAt": "2026-09-01T22:12:00.020Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787150448285_vlvxdb2",
@@ -802,7 +844,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T14:40:48.285Z",
-    "updatedAt": "2026-08-19T14:41:47.628Z"
+    "updatedAt": "2026-09-01T22:12:00.021Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787176726649_m106rr7",
@@ -817,7 +860,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T21:58:46.649Z",
-    "updatedAt": "2026-08-19T22:01:21.795Z"
+    "updatedAt": "2026-09-01T22:12:00.022Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787176804167_dgzm0z9",
@@ -832,7 +876,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T22:00:04.167Z",
-    "updatedAt": "2026-08-19T22:01:21.795Z"
+    "updatedAt": "2026-09-01T22:12:00.022Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787202759812_b30336h",
@@ -847,7 +892,8 @@
     "eloPoints": 1472,
     "eloRank": "Platino",
     "createdAt": "2026-08-20T05:12:39.812Z",
-    "updatedAt": "2026-08-24T00:43:13.716Z"
+    "updatedAt": "2026-09-01T22:12:00.023Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787202786652_4bme4ih",
@@ -862,7 +908,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-20T05:13:06.652Z",
-    "updatedAt": "2026-08-20T05:13:52.569Z"
+    "updatedAt": "2026-09-01T22:12:00.024Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787409434840_k4h4ski",
@@ -877,7 +924,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-22T14:37:14.840Z",
-    "updatedAt": "2026-08-22T14:37:47.167Z"
+    "updatedAt": "2026-09-01T22:12:00.025Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787409813244_ymqkq1e",
@@ -892,7 +940,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-22T14:43:33.244Z",
-    "updatedAt": "2026-08-22T14:45:23.769Z"
+    "updatedAt": "2026-09-01T22:12:00.025Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787409902362_3u9f0qr",
@@ -907,7 +956,8 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-22T14:45:02.362Z",
-    "updatedAt": "2026-08-22T14:45:23.768Z"
+    "updatedAt": "2026-09-01T22:12:00.026Z",
+    "communityId": "community_fgc_santa_clara"
   },
   {
     "id": "gp_1787798635187_v9qifdf",
@@ -920,6 +970,35 @@
     "eloPoints": null,
     "eloRank": "Sin puntos",
     "createdAt": "2026-08-27T02:43:55.187Z",
-    "updatedAt": "2026-08-28T02:01:43.743Z"
+    "updatedAt": "2026-09-01T22:12:00.027Z",
+    "communityId": "community_fgc_santa_clara"
+  },
+  {
+    "id": "gp_1788378964090_k9goxlg",
+    "name": "User SP 1",
+    "alias": "USP1",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "bayonetta",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "eloPoints": 1500,
+    "eloRank": "Sin puntos",
+    "createdAt": "2026-09-02T19:56:04.090Z",
+    "updatedAt": "2026-09-02T19:56:04.090Z"
+  },
+  {
+    "id": "gp_1788379061334_fbsbbjo",
+    "name": "User SP 2",
+    "alias": "USP2",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "bowser",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "eloPoints": 1500,
+    "eloRank": "Sin puntos",
+    "createdAt": "2026-09-02T19:57:41.334Z",
+    "updatedAt": "2026-09-02T19:57:41.334Z"
   }
 ]

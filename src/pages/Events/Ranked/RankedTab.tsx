@@ -3,6 +3,7 @@ import { RankedMatchType } from '@/models/types';
 import { DuelSettings as DuelSettingsType, DEFAULT_DUEL_SETTINGS } from '@/models/duel';
 import { getDuelSettingsAsync, updateDuelSettings } from '@/services/duels/duelService';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
 import DuelSettings from './DuelSettings';
 import RecordMatchTab from './RecordMatchTab';
 import ActiveChallenges from './ActiveChallenges';
@@ -13,6 +14,8 @@ type RankedSubTab = 'record' | 'challenges' | 'info';
 
 function RankedTab() {
   const { user, isAdmin } = useAuth();
+  const { currentCommunity } = useCommunity();
+  const communityId = currentCommunity?.id;
   const [matchType, setMatchType] = useState<RankedMatchType>('duel');
   const [subTab, setSubTab] = useState<RankedSubTab>('challenges');
   const [settings, setSettings] = useState<DuelSettingsType>(DEFAULT_DUEL_SETTINGS);
@@ -20,15 +23,17 @@ function RankedTab() {
 
   useEffect(() => {
     loadSettings();
-  }, []);
+  }, [communityId]);
 
   const loadSettings = async () => {
-    const currentSettings = await getDuelSettingsAsync();
+    if (!communityId) return;
+    const currentSettings = await getDuelSettingsAsync(communityId);
     setSettings(currentSettings);
   };
 
   const handleUpdateSettings = async (newSettings: DuelSettingsType) => {
-    await updateDuelSettings(newSettings);
+    if (!communityId) return;
+    await updateDuelSettings(newSettings, communityId);
     setSettings(newSettings);
   };
 

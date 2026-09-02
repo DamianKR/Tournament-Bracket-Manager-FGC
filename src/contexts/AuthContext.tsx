@@ -14,6 +14,9 @@ import {
   getMe,
 } from '@/services/auth/authService';
 
+const ALL_ADMIN_ROLES = ['superadmin', 'community_admin', 'admin'];
+const COMMUNITY_OWNER_ROLES = ['superadmin', 'community_admin'];
+
 interface AuthContextType {
   /** Usuario autenticado o null si no hay sesión. */
   user: SessionUser | null;
@@ -21,8 +24,14 @@ interface AuthContextType {
   isLoading: boolean;
   /** true si hay una sesión activa. */
   isAuthenticated: boolean;
-  /** true si el usuario tiene rol admin. */
+  /** true si el usuario tiene rol admin (cualquier nivel: admin asistente, community owner o superadmin). */
   isAdmin: boolean;
+  /** true si es superadmin. */
+  isSuperAdmin: boolean;
+  /** true si es community owner (community_admin) o superadmin. Puede dar/quitar admin. */
+  isCommunityOwner: boolean;
+  /** true si es admin asistente (no puede dar/quitar admin). */
+  isCommunityAdminAssistant: boolean;
   /** Notificaciones recibidas en el login más reciente, o null si no hay. */
   loginNotifications: AppNotification[] | null;
   /** Consume las notificaciones de login (para que otro contexto las use una sola vez). */
@@ -56,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       username: session.user.username,
       role: session.user.role,
       participantId: session.user.participantId,
+      communityId: session.user.communityId,
     });
     setLoginNotifications(session.notifications || []);
   }, []);
@@ -81,7 +91,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     isLoading,
     isAuthenticated: user !== null,
-    isAdmin: user?.role === 'admin',
+    isAdmin: ALL_ADMIN_ROLES.includes(user?.role ?? ''),
+    isSuperAdmin: user?.role === 'superadmin',
+    isCommunityOwner: COMMUNITY_OWNER_ROLES.includes(user?.role ?? ''),
+    isCommunityAdminAssistant: user?.role === 'admin',
     loginNotifications,
     consumeLoginNotifications,
     login,

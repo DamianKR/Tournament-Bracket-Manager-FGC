@@ -6,6 +6,7 @@ import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, 
 import { findOrCreateParticipant } from '@/services/participants/participantService';
 import { getAuthHeader } from '@/services/auth/authService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
+import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 
 const TM_LS_KEY = 'bracket_tournament_matches';
@@ -20,7 +21,8 @@ export async function createTournament(
   teamSize?: TeamSize,
   seedingMode?: SeedingMode,
   partialSeedCount?: PartialSeedCount,
-  givesPoints: boolean = true
+  givesPoints: boolean = true,
+  communityId: string = DEFAULT_COMMUNITY_ID
 ): Promise<Tournament> {
   const tournament: Tournament = {
     id: generateId(),
@@ -34,6 +36,7 @@ export async function createTournament(
     participants: [],
     bracket: null,
     championId: null,
+    communityId,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -72,8 +75,8 @@ export async function addParticipant(
     throw new Error('Participant name already exists in this tournament');
   }
 
-  // Find existing GlobalParticipant or create a new one
-  const global = await findOrCreateParticipant(trimmed);
+  // Find existing GlobalParticipant or create a new one in this tournament's community
+  const global = await findOrCreateParticipant(trimmed, tournament.communityId);
 
   // Check if this GlobalParticipant is already in the tournament
   if (tournament.participants.some((p: Participant) => p.globalParticipantId === global.id)) {
@@ -131,7 +134,7 @@ export async function addTeam(
   // concurrent JSON writes)
   const members = [];
   for (const name of memberNames) {
-    const global = await findOrCreateParticipant(name.trim());
+    const global = await findOrCreateParticipant(name.trim(), tournament.communityId);
     members.push({
       globalParticipantId: global.id,
       name: global.name,
@@ -335,6 +338,7 @@ export async function setMatchWinner(
         winnerGlobalId: winnerId === match.participant1Id ? (p1?.globalParticipantId ?? null) : (p2?.globalParticipantId ?? null),
         round: match.roundNumber,
         matchNumber: match.matchNumber,
+        communityId: updatedTournament.communityId,
         createdAt: new Date().toISOString(),
       };
 
@@ -388,8 +392,10 @@ export async function undoMatchResult(
 /**
  * Get all tournaments
  */
-export function getAllTournaments(): Tournament[] {
-  return loadTournaments();
+export function getAllTournaments(communityId?: string): Tournament[] {
+  const all = loadTournaments();
+  if (!communityId) return all;
+  return all.filter((t) => t.communityId === communityId);
 }
 
 /**
@@ -429,33 +435,47 @@ export interface TournamentMatchRecord {
   winnerGlobalId: string | null;
   round: number;
   matchNumber: number;
+  communityId?: string;
   createdAt: string;
 }
 
-export function getAllTournamentMatches(): TournamentMatchRecord[] {
+export function getAllTournamentMatches(communityId?: string): TournamentMatchRecord[] {
   try {
     const raw = localStorage.getItem(TM_LS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const all: TournamentMatchRecord[] = raw ? JSON.parse(raw) : [];
+    const withCommunity = all.map((m) => ({
+      ...m,
+      communityId: m.communityId || DEFAULT_COMMUNITY_ID,
+    }));
+    return communityId ? withCommunity.filter(m => m.communityId === communityId) : withCommunity;
   } catch { return []; }
 }
 
-export async function getAllTournamentMatchesAsync(): Promise<TournamentMatchRecord[]> {
+export async function getAllTournamentMatchesAsync(communityId?: string): Promise<TournamentMatchRecord[]> {
+  const cached = getAllTournamentMatches(communityId);
+  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
   if (await isServerAvailable()) {
     try {
-      const res = await fetch(`${SERVER_URL}/api/tournaments/matches`);
+      const res = await fetch(`${SERVER_URL}/api/tournaments/matches${query}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.length > 0 || getAllTournamentMatches().length === 0) {
+        // Merge this community's slice into the cache instead of overwriting everything.
+        if (communityId) {
+          const all = getAllTournamentMatches();
+          const others = all.filter(m => m.communityId !== communityId);
+          const merged = [...others, ...data];
+          localStorage.setItem(TM_LS_KEY, JSON.stringify(merged));
+        } else if (data.length > 0 || cached.length === 0) {
           localStorage.setItem(TM_LS_KEY, JSON.stringify(data));
         }
-        return data.length > 0 ? data : getAllTournamentMatches();
+        return data.length > 0 ? data : cached;
       }
     } catch (err) {
       console.warn('[TournamentMatches] Server read failed:', err);
       resetServerCache();
     }
   }
-  return getAllTournamentMatches();
+  return cached;
 }
 
 export function getTournamentMatchesForTournament(tournamentId: string): TournamentMatchRecord[] {
