@@ -63,6 +63,7 @@ export function createSupabaseCollection(tableName) {
         const { data, error } = await getClient()
           .from(tableName)
           .select('data')
+          .order('id', { ascending: true })   // orden estable obligatorio para paginación correcta
           .range(from, from + PAGE_SIZE - 1);
 
         if (error) throw new Error(`[supabaseDb.getAll:${tableName}] ${error.message}`);
@@ -116,6 +117,7 @@ export function createSupabaseCollection(tableName) {
           .from(tableName)
           .select('data')
           .eq(`data->>${fieldName}`, value)
+          .order('id', { ascending: true })   // orden estable obligatorio para paginación correcta
           .range(from, from + PAGE_SIZE - 1);
 
         if (error) throw new Error(`[supabaseDb.getByField:${tableName}] ${error.message}`);

@@ -28,7 +28,6 @@ import communitiesRouter from './server/routes/communities.js';
 import { expireAllOldDuels } from './server/services/duelExpiration.js';
 import { expireAllOldLeagueMatches } from './server/services/leagueExpiration.js';
 import { reschedulableLeagueNotifications } from './server/services/notificationScheduler.js';
-import { ensureDefaultCommunityAndMigrate } from './server/services/communityMigration.js';
 
 // Render asigna el puerto via PORT; en local usamos 3001
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
@@ -94,11 +93,6 @@ app.listen(PORT, () => {
   console.log(`    POST       /api/leagues/:id/matches/:matchId/result`);
   console.log('');
 
-  // Fase 1 community migration: ensure default community and assign communityId to existing data
-  ensureDefaultCommunityAndMigrate().catch(err =>
-    console.error('[Server] Community migration failed:', err)
-  );
-
   // Run duel expiration immediately on startup, then every 5 minutes
   expireAllOldDuels().then((count) => {
     if (count > 0) {
@@ -106,12 +100,8 @@ app.listen(PORT, () => {
     }
   });
 
-  // Run league match expiration immediately on startup, then every 12 hours
-  expireAllOldLeagueMatches().then((count) => {
-    if (count > 0) {
-      console.log(`[LeagueExpiration] Expired ${count} league matches on startup`);
-    }
-  });
+  // Run league match expiration every 12 hours (NOT on startup to avoid
+  // accidentally touching match statuses right after a deploy).
   setInterval(() => {
     expireAllOldLeagueMatches().then((count) => {
       if (count > 0) {

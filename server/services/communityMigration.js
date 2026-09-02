@@ -31,6 +31,13 @@ export async function ensureDefaultCommunityAndMigrate() {
       console.log(`[CommunityMigration] Created default community: ${DEFAULT_COMMUNITY_NAME}`);
     }
 
+    // ── Early exit: si la comunidad ya tiene owner y hay usuarios migrados,
+    // la migración ya se hizo antes. No hacemos ningún getAll() costoso.
+    if (community.ownerAdminId) {
+      console.log('[CommunityMigration] Already migrated — skipping heavy scan.');
+      return;
+    }
+
     // 2. Ensure at least one superadmin exists (promote first admin if needed)
     const allUsers = await users.getAll();
     let superAdmin = allUsers.find(u => u.role === 'superadmin');

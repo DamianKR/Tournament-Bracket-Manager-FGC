@@ -14,6 +14,7 @@
  */
 
 import jwt from 'jsonwebtoken';
+import { users } from '../db/collections.js';
 
 export const JWT_SECRET =
   process.env.JWT_SECRET || 'bracket-local-dev-secret-change-for-production';
@@ -25,13 +26,32 @@ function extractToken(req) {
   return null;
 }
 
-/** Requiere token válido. Pone req.user con el payload del JWT. */
-export function requireAuth(req, res, next) {
+/**
+ * Requiere token válido. Pone req.user con los datos actuales del usuario
+ * en la base de datos, sobreescribiendo el rol del JWT para evitar
+ * problemas de tokens stale (ej. usuario promovido a superadmin y el
+ * token aún dice 'admin').
+ */
+export async function requireAuth(req, res, next) {
   const token = extractToken(req);
   if (!token) return res.status(401).json({ error: 'Authentication required' });
 
   try {
-    req.user = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await users.findById(decoded.userId);
+
+    if (!user || !user.isActive) {
+      return res.status(401).json({ error: 'User not found or disabled' });
+    }
+
+    // Mezclar token con datos actuales de DB. Los datos de DB ganan
+    // para rol, comunidad, etc., pero conservamos userId del token.
+    req.user = {
+      ...decoded,
+      ...user,
+      userId: user.id,
+    };
+
     next();
   } catch {
     res.status(401).json({ error: 'Invalid or expired token' });
@@ -65,12 +85,19 @@ export function requireCommunityAdmin(req, res, next) {
   next();
 }
 
-/** Adjunta user si hay token válido, pero no bloquea si no hay. */
-export function optionalAuth(req, res, next) {
+/**
+ * Adjunta user si hay token válido, pero no bloquea si no hay.
+ * También refresca el usuario desde DB para tener rol/comunidad actual.
+ */
+export async function optionalAuth(req, res, next) {
   const token = extractToken(req);
   if (token) {
     try {
-      req.user = jwt.verify(token, JWT_SECRET);
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const user = await users.findById(decoded.userId);
+      if (user) {
+        req.user = { ...decoded, ...user, userId: user.id };
+      }
     } catch {
       // token inválido — simplemente no hay user
     }
