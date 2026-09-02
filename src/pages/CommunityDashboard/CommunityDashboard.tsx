@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getCommunity } from '@/services/communities/communityService';
 import type { Community } from '@/models/community';
@@ -8,6 +9,7 @@ import './CommunityDashboard.css';
 export default function CommunityDashboard() {
   const { communityId } = useParams<{ communityId: string }>();
   const { allCommunities, setCommunityId } = useCommunity();
+  const { user } = useAuth();
   const [community, setCommunity] = useState<Community | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,13 +36,19 @@ export default function CommunityDashboard() {
   if (!community) return <div className="community-dashboard not-found">Community not found</div>;
 
   const displayName = community.name;
+  const isMyCommunity = user?.communityId === communityId || user?.role === 'superadmin';
 
   return (
     <div className="community-dashboard">
       <section className="community-hero">
         <div className="container">
           <h1 className="community-title">{displayName}</h1>
-          <p className="community-subtitle">Community home</p>
+          <p className="community-subtitle">
+            Community home
+            {isMyCommunity && user?.role !== 'superadmin' && (
+              <> — <span className="cd-my-community">Tu comunidad</span></>
+            )}
+          </p>
         </div>
       </section>
 

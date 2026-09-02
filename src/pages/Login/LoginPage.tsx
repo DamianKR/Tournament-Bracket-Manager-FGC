@@ -7,17 +7,15 @@
  */
 
 import { useState, useEffect, FormEvent } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAuthStatus, setupAdmin } from '@/services/auth/authService';
+import type { SessionUser } from '@/models/auth';
 import './LoginPage.css';
 
 function LoginPage() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const from = (location.state as any)?.from ?? '/communities';
 
   const [needsSetup, setNeedsSetup] = useState(false);
   const [checkingSetup, setCheckingSetup] = useState(true);
@@ -28,10 +26,12 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Si ya está autenticado, redirigir
+  // Si ya está autenticado, redirigir a su comunidad o al dashboard principal
   useEffect(() => {
-    if (isAuthenticated) navigate(from, { replace: true });
-  }, [isAuthenticated, navigate, from]);
+    if (isAuthenticated && user) {
+      navigate(getPostLoginTarget(user), { replace: true });
+    }
+  }, [isAuthenticated, navigate, user]);
 
   // Verificar si se necesita setup
   useEffect(() => {
@@ -39,6 +39,12 @@ function LoginPage() {
       .then(status => setNeedsSetup(status.needsSetup))
       .finally(() => setCheckingSetup(false));
   }, []);
+
+  function getPostLoginTarget(u: SessionUser): string {
+    // Superadmin va al dashboard principal; todo el resto va a su comunidad.
+    if (u.role === 'superadmin' || !u.communityId) return '/';
+    return `/c/${u.communityId}`;
+  }
 
   async function handleLogin(e: FormEvent) {
     e.preventDefault();
@@ -49,8 +55,8 @@ function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      await login(username.trim(), password);
-      navigate(from, { replace: true });
+      const loggedInUser = await login(username.trim(), password);
+      navigate(getPostLoginTarget(loggedInUser), { replace: true });
     } catch (err: any) {
       setError(err.message || 'Login failed');
     } finally {
@@ -76,7 +82,8 @@ function LoginPage() {
     setLoading(true);
     try {
       await setupAdmin(username.trim(), password);
-      navigate('/communities', { replace: true });
+      // El primer admin es superadmin, así que va al dashboard principal.
+      navigate('/', { replace: true });
     } catch (err: any) {
       setError(err.message || 'Setup failed');
     } finally {

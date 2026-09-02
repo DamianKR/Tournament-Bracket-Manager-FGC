@@ -27,6 +27,11 @@
   margin: 0;
 }
 
+.cd-my-community {
+  color: #22c55e;
+  font-weight: 700;
+}
+
 .community-section {
   padding: 2.5rem 0;
 }

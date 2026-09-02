@@ -36,8 +36,12 @@ interface AuthContextType {
   loginNotifications: AppNotification[] | null;
   /** Consume las notificaciones de login (para que otro contexto las use una sola vez). */
   consumeLoginNotifications: () => AppNotification[];
-  /** Intenta hacer login. Lanza Error con mensaje si falla. */
-  login: (username: string, password: string) => Promise<void>;
+  /**
+   * Intenta hacer login. Lanza Error con mensaje si falla.
+   * Retorna el usuario logueado para que el caller pueda decidir
+   * la redirección inmediata (comunidad propia vs dashboard principal).
+   */
+  login: (username: string, password: string) => Promise<SessionUser>;
   /** Cierra sesión y limpia el contexto. */
   logout: () => void;
   /** Actualiza el usuario en contexto (por ejemplo tras un cambio de username). */
@@ -60,14 +64,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (username: string, password: string) => {
     const session = await authLogin(username, password);
-    setUser({
+    const loggedInUser: SessionUser = {
       id: session.user.id,
       username: session.user.username,
       role: session.user.role,
       participantId: session.user.participantId,
       communityId: session.user.communityId,
-    });
+    };
+    setUser(loggedInUser);
     setLoginNotifications(session.notifications || []);
+    return loggedInUser;
   }, []);
 
   const consumeLoginNotifications = useCallback(() => {

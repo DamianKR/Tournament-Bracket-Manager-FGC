@@ -9,11 +9,16 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAdmin, isAuthenticated, logout } = useAuth();
-  const { currentCommunity } = useCommunity();
+  const { currentCommunity, allCommunities } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const communityMatch = location.pathname.match(/^\/c\/([^/]+)/);
   const communityId = communityMatch?.[1];
+
+  // Comunidad a la que pertenece el usuario logueado, no la que está viendo.
+  const userCommunity = user?.communityId
+    ? allCommunities.find((c) => c.id === user.communityId)
+    : null;
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -120,7 +125,14 @@ function Header() {
                   <i className="fas fa-user-circle" />
                   <span className="header-username-text">{user!.username}</span>
                 </span>
-                {isAdmin && <span className="header-role-badge">Admin</span>}
+                {userCommunity && (
+                  <span className="header-community-badge" title={`Member of ${userCommunity.name}`}>
+                    {userCommunity.shortName || userCommunity.name}
+                  </span>
+                )}
+                {user?.role === 'superadmin' && <span className="header-role-badge">Superadmin</span>}
+                {user?.role === 'community_admin' && <span className="header-role-badge">Owner</span>}
+                {user?.role === 'admin' && <span className="header-role-badge">Admin</span>}
                 <button className="header-logout-btn" onClick={handleLogout} title="Sign out" aria-label="Sign out">
                   <i className="fas fa-sign-out-alt" />
                 </button>

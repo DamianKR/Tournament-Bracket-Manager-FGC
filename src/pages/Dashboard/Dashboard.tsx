@@ -100,7 +100,9 @@ function Dashboard() {
             <>
               <h2 className="dashboard-section-title">Welcome back{user?.username ? `, ${user.username}` : ''}</h2>
               <p className="dashboard-text">
-                You're all set. Jump into the latest events, check the rankings or challenge other players.
+                {user?.role === 'superadmin'
+                  ? 'You are the global superadmin. Use this dashboard to manage all communities.'
+                  : 'You are all set. Jump into the latest events, check the rankings or challenge other players.'}
               </p>
               <button className="btn-primary" onClick={() => navigate('/communities')}>
                 <i className="fas fa-users" /> Go to Communities
