@@ -2,13 +2,14 @@
  * Community model for the backend
  */
 
-export function communityShape(id, name, shortName, ownerAdminId) {
+export function communityShape(id, name, shortName, ownerAdminId, isPublic = true) {
   return {
     id,
     name,
     shortName,
     description: '',
     ownerAdminId,
+    isPublic,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

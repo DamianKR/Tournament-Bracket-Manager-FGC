@@ -23,6 +23,7 @@ export default function CommunityDashboard() {
   const [editName, setEditName] = useState('');
   const [editShort, setEditShort] = useState('');
   const [editDesc, setEditDesc] = useState('');
+  const [editIsPublic, setEditIsPublic] = useState(true);
   const [editError, setEditError] = useState('');
   const [editSaving, setEditSaving] = useState(false);
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
@@ -79,6 +80,7 @@ export default function CommunityDashboard() {
     setEditName(community.name);
     setEditShort(community.shortName ?? '');
     setEditDesc(community.description ?? '');
+    setEditIsPublic(community.isPublic !== false);
     setEditError('');
     setEditOpen(true);
   }
@@ -93,7 +95,7 @@ export default function CommunityDashboard() {
     setEditSaving(true);
     setEditError('');
     try {
-      const updated = await updateCommunity(communityId, editName.trim(), editShort.trim(), editDesc.trim());
+      const updated = await updateCommunity(communityId, editName.trim(), editShort.trim(), editDesc.trim(), editIsPublic);
       setCommunity(updated);
       await refresh();
       setEditOpen(false);
@@ -110,7 +112,12 @@ export default function CommunityDashboard() {
         <div className="container">
           <h1 className="community-title">{displayName}</h1>
           {community.shortName && (
-            <p className="cd-short-name">{community.shortName}</p>
+            <p className="cd-short-name">
+              {community.shortName}
+              <span className={`cd-visibility ${community.isPublic !== false ? 'public' : 'private'}`}>
+                {t(community.isPublic !== false ? 'communities.public' : 'communities.private')}
+              </span>
+            </p>
           )}
           <p className="community-subtitle">
             {community.description || t('communityDashboard.communityHome')}
@@ -165,6 +172,17 @@ export default function CommunityDashboard() {
                       onChange={(e) => setEditDesc(e.target.value)}
                       rows={3}
                     />
+                  </div>
+                  <div className="form-group">
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={editIsPublic}
+                        onChange={(e) => setEditIsPublic(e.target.checked)}
+                      />
+                      <span>{t('communities.isPublic')}</span>
+                    </label>
+                    <p className="form-help">{t('communities.isPublicHint')}</p>
                   </div>
                 </div>
                 <div className="cd-edit-actions">

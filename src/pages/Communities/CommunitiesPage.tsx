@@ -16,6 +16,7 @@ function CommunitiesPage() {
   const [name, setName] = useState('');
   const [shortName, setShortName] = useState('');
   const [description, setDescription] = useState('');
+  const [isPublic, setIsPublic] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -24,6 +25,7 @@ function CommunitiesPage() {
     setName('');
     setShortName('');
     setDescription('');
+    setIsPublic(true);
     setError(null);
   }
 
@@ -44,6 +46,7 @@ function CommunitiesPage() {
     setName(community.name);
     setShortName(community.shortName);
     setDescription(community.description ?? '');
+    setIsPublic(community.isPublic !== false);
     setError(null);
     setShowCreate(true);
   }
@@ -61,7 +64,7 @@ function CommunitiesPage() {
     if (editingCommunity) {
       setUpdating(true);
       try {
-        await updateCommunity(editingCommunity.id, name.trim(), shortName.trim(), description.trim());
+        await updateCommunity(editingCommunity.id, name.trim(), shortName.trim(), description.trim(), isPublic);
         resetForm();
         setShowCreate(false);
         setEditingCommunity(null);
@@ -76,7 +79,7 @@ function CommunitiesPage() {
 
     setCreating(true);
     try {
-      await createCommunity(name.trim(), shortName.trim(), description.trim());
+      await createCommunity(name.trim(), shortName.trim(), description.trim(), isPublic);
       resetForm();
       setShowCreate(false);
       await refresh();
@@ -113,6 +116,11 @@ function CommunitiesPage() {
                   <Link to={`/c/${c.id}`} className="communities-link">
                     <span className="communities-name">{c.name}</span>
                     <span className="communities-short">{c.shortName}</span>
+                    {isSuperAdmin && (
+                      <span className={`communities-visibility ${c.isPublic !== false ? 'public' : 'private'}`}>
+                        {t(c.isPublic !== false ? 'communities.public' : 'communities.private')}
+                      </span>
+                    )}
                     {currentCommunity?.id === c.id && <span className="communities-current">{t('communities.current')}</span>}
                   </Link>
                   {canEdit(c) && (
@@ -188,6 +196,17 @@ function CommunitiesPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
+              </div>
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={isPublic}
+                    onChange={(e) => setIsPublic(e.target.checked)}
+                  />
+                  <span>{t('communities.isPublic')}</span>
+                </label>
+                <p className="form-help">{t('communities.isPublicHint')}</p>
               </div>
               {error && <p className="communities-error">{error}</p>}
               <div className="communities-form-actions">

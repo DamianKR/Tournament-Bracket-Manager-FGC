@@ -16,14 +16,14 @@ function Dashboard() {
         <div className="container">
           {currentCommunity ? (
             <>
-              <h1 className="dashboard-title">{t('dashboard.title')}<br />{currentCommunity.name}</h1>
+              <h1 className="dashboard-title">{t('dashboard.title')}</h1>
               {currentCommunity.shortName && (
                 <p className="dashboard-hero-shortname">{currentCommunity.shortName}</p>
               )}
               <p className="dashboard-subtitle">{t('dashboard.subtitle')}</p>
-              <p className="dashboard-subtitle">
+              {/* <p className="dashboard-subtitle">
                 {currentCommunity.description || t('dashboard.yourCommunity')}
-              </p>
+              </p> */}
               <div className="dashboard-hero-actions">
                 <button className="btn-primary" onClick={() => navigate(getPath('events'))}>
                   <i className="fas fa-trophy" /> {t('header.events')}

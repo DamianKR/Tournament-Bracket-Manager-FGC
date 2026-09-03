@@ -126,6 +126,29 @@
   gap: 0.75rem;
 }
 
+.cd-edit-form .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cd-edit-form .checkbox-label input[type="checkbox"] {
+  width: auto;
+  min-width: 1.1rem;
+  min-height: 1.1rem;
+  cursor: pointer;
+  margin: 0;
+}
+
+.cd-edit-form .form-help {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0 1.7rem;
+}
+
 .cd-my-community {
   color: #22c55e;
   font-weight: 700;
@@ -138,6 +161,29 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.cd-visibility {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cd-visibility.public {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.cd-visibility.private {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
 }
 
 .cd-section-intro {

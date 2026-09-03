@@ -5,8 +5,9 @@
     "shortName": "FGC SC",
     "description": "Comunidad FGC en Santa Clara para promover los juegos de lucha",
     "ownerAdminId": "user_1787803682471_sfmycpv",
+    "isPublic": true,
     "createdAt": "2026-09-01T00:00:00.000Z",
-    "updatedAt": "2026-09-03T14:52:57.886Z"
+    "updatedAt": "2026-09-03T21:03:25.829Z"
   },
   {
     "id": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
@@ -14,7 +15,8 @@
     "shortName": "FGC SP",
     "description": "League of the Santispiritus zone",
     "ownerAdminId": "user_1787803682471_sfmycpv",
+    "isPublic": false,
     "createdAt": "2026-09-02T16:33:24.317Z",
-    "updatedAt": "2026-09-02T16:33:24.317Z"
+    "updatedAt": "2026-09-03T21:06:16.307Z"
   }
 ]

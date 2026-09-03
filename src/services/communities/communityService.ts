@@ -10,16 +10,16 @@ import { getAuthHeader } from '@/services/auth/authService';
 
 const API_BASE = `${SERVER_URL}/api/communities`;
 
-/** Fetches all communities. */
+/** Fetches all communities the current user is allowed to see. */
 export async function getAllCommunities(): Promise<Community[]> {
-  const res = await fetch(API_BASE);
+  const res = await fetch(API_BASE, { headers: getAuthHeader() });
   if (!res.ok) throw new Error(`Failed to load communities: ${res.status}`);
   return res.json() as Promise<Community[]>;
 }
 
 /** Fetches a single community by id. */
 export async function getCommunity(id: string): Promise<Community> {
-  const res = await fetch(`${API_BASE}/${id}`);
+  const res = await fetch(`${API_BASE}/${id}`, { headers: getAuthHeader() });
   if (!res.ok) throw new Error(`Failed to load community: ${res.status}`);
   return res.json() as Promise<Community>;
 }
@@ -28,12 +28,13 @@ export async function getCommunity(id: string): Promise<Community> {
 export async function createCommunity(
   name: string,
   shortName: string,
-  description?: string
+  description?: string,
+  isPublic = true
 ): Promise<Community> {
   const res = await fetch(API_BASE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ name, shortName, description }),
+    body: JSON.stringify({ name, shortName, description, isPublic }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -47,12 +48,13 @@ export async function updateCommunity(
   id: string,
   name: string,
   shortName: string,
-  description?: string
+  description?: string,
+  isPublic?: boolean
 ): Promise<Community> {
   const res = await fetch(`${API_BASE}/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ name, shortName, description }),
+    body: JSON.stringify({ name, shortName, description, isPublic }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));

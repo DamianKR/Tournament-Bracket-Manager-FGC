@@ -1,8 +1,8 @@
 /**
  * Communities routes
  *
- * GET    /api/communities      — list all (public)
- * GET    /api/communities/:id  — get one (public)
+ * GET    /api/communities      — list all (filtered by visibility + membership)
+ * GET    /api/communities/:id  — get one (filtered by visibility + membership)
  * POST   /api/communities      — create a new community (superadmin only)
  */
 
@@ -10,16 +10,24 @@ import { Router } from 'express';
 import { randomUUID } from 'crypto';
 import { communities } from '../db/collections.js';
 import { communityShape, validateCommunity } from '../models/community.js';
-import { requireAuth, requireSuperAdmin } from '../utils/jwtMiddleware.js';
+import { requireAuth, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
 import { isInUserScope } from '../utils/communityScope.js';
 
 const router = Router();
 
+function canViewCommunity(user, community) {
+  if (community.isPublic !== false) return true;
+  if (!user) return false;
+  if (user.role === 'superadmin') return true;
+  return isInUserScope(user, community.id);
+}
+
 // GET /api/communities
-router.get('/', async (_req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const all = await communities.getAll();
-    res.json(all);
+    const visible = all.filter((c) => canViewCommunity(req.user, c));
+    res.json(visible);
   } catch (err) {
     console.error('[Communities] GET / error:', err);
     res.status(500).json({ error: 'Failed to read communities' });
@@ -27,10 +35,13 @@ router.get('/', async (_req, res) => {
 });
 
 // GET /api/communities/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const community = await communities.findById(req.params.id);
     if (!community) return res.status(404).json({ error: 'Community not found' });
+    if (!canViewCommunity(req.user, community)) {
+      return res.status(404).json({ error: 'Community not found' });
+    }
     res.json(community);
   } catch (err) {
     console.error('[Communities] GET /:id error:', err);
@@ -41,7 +52,7 @@ router.get('/:id', async (req, res) => {
 // POST /api/communities — superadmin only
 router.post('/', requireAuth, requireSuperAdmin, async (req, res) => {
   try {
-    const { id, name, shortName, description } = req.body;
+    const { id, name, shortName, description, isPublic } = req.body;
 
     if (typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({ error: 'Missing name' });
@@ -56,8 +67,8 @@ router.post('/', requireAuth, requireSuperAdmin, async (req, res) => {
       return res.status(409).json({ error: 'Community id already exists' });
     }
 
-    // The user who creates the community becomes its owner (superadmin now; any authenticated user in the future).
-    const newCommunity = communityShape(finalId, name.trim(), shortName.trim(), req.user.userId);
+    const isPublicValue = typeof isPublic === 'boolean' ? isPublic : true;
+    const newCommunity = communityShape(finalId, name.trim(), shortName.trim(), req.user.userId, isPublicValue);
     newCommunity.description = typeof description === 'string' ? description.trim() : '';
     newCommunity.updatedAt = new Date().toISOString();
 
@@ -77,7 +88,7 @@ router.post('/', requireAuth, requireSuperAdmin, async (req, res) => {
 // PUT /api/communities/:id — superadmin o community_admin de esa comunidad
 router.put('/:id', requireAuth, async (req, res) => {
   try {
-    const { name, shortName, description } = req.body;
+    const { name, shortName, description, isPublic } = req.body;
     const community = await communities.findById(req.params.id);
     if (!community) return res.status(404).json({ error: 'Community not found' });
 
@@ -99,6 +110,9 @@ router.put('/:id', requireAuth, async (req, res) => {
     }
     if (typeof description === 'string') {
       community.description = description.trim();
+    }
+    if (typeof isPublic === 'boolean') {
+      community.isPublic = isPublic;
     }
     community.updatedAt = new Date().toISOString();
 

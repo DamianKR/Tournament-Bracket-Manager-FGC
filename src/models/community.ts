@@ -11,6 +11,7 @@ export interface Community {
   shortName: string;
   description?: string;
   ownerAdminId: string;
+  isPublic?: boolean;
   createdAt: string;
   updatedAt: string;
 }
