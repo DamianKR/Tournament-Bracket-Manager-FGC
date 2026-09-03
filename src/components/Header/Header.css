@@ -176,6 +176,39 @@
   color: #fff;
 }
 
+.header-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0.15rem;
+  margin-right: 0.5rem;
+}
+
+.header-lang-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.header-lang-btn:hover {
+  color: #fff;
+}
+
+.header-lang-btn.active {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
 .header-logout-btn,
 .header-login-btn {
   display: flex;
@@ -330,7 +363,7 @@
   border-radius: 999px;
   padding: 0.35rem 0.9rem 0.35rem 0.65rem;
   color: #fff;
-  font-size: 0.85rem;
+  font-size: 0.70rem;
   font-weight: 700;
   font-family: var(--font-display);
   text-shadow: 0 1px 2px rgba(0,0,0,0.25);

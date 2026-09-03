@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
@@ -23,6 +24,7 @@ interface RecordMatchTabProps {
 }
 
 function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTabProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { currentCommunity, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
@@ -88,7 +90,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
   async function handleReportResult() {
     if (!challenge) return;
-    if (!winnerId) { setRecordError('Select who won.'); return; }
+    if (!winnerId) { setRecordError(t('ranked.duelInfo.record.selectWon')); return; }
 
     setRecording(true);
     setRecordError('');
@@ -132,13 +134,13 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
             setTimeout(() => onMatchRecorded(), 2000);
           }
         } else if (updated.status === 'pending_review') {
-          setRecordError('Results don\'t match. Waiting for admin review or other participant to report.');
+          setRecordError(t('ranked.duelInfo.record.resultsMismatch'));
         } else {
-          setRecordError('Result reported. Waiting for other participant to report.');
+          setRecordError(t('ranked.duelInfo.record.resultReported'));
         }
       }
     } catch (err: unknown) {
-      setRecordError(err instanceof Error ? err.message : 'Error reporting result.');
+      setRecordError(err instanceof Error ? err.message : t('ranked.duelInfo.record.errorRecord'));
     } finally {
       setRecording(false);
     }
@@ -146,7 +148,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
   async function handleAdminResolve() {
     if (!challenge || !isAdminHere) return;
-    if (!winnerId) { setRecordError('Select who won.'); return; }
+    if (!winnerId) { setRecordError(t('ranked.duelInfo.record.selectWon')); return; }
 
     setRecording(true);
     setRecordError('');
@@ -181,7 +183,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
         }
       }
     } catch (err: unknown) {
-      setRecordError(err instanceof Error ? err.message : 'Error resolving conflict.');
+      setRecordError(err instanceof Error ? err.message : t('ranked.duelInfo.record.errorResolve'));
     } finally {
       setRecording(false);
     }
@@ -197,10 +199,10 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
       <div className="record-match-tab">
         <div className="card rk-record-card">
           <div className="rk-record-notice">
-            <i className="fas fa-info-circle" /> 
+            <i className="fas fa-info-circle" />
             <div>
-              <h3>Report Match Results</h3>
-              <p>To report a match result, accept a challenge from the "Manage Challenges" tab and click "Report Result".</p>
+              <h3>{t('ranked.duelInfo.record.title')}</h3>
+              <p>{t('ranked.duelInfo.record.reportInstructions', { challenges: t('ranked.challenges.title'), reportResult: t('ranked.challenges.reportResult') })}</p>
             </div>
           </div>
         </div>
@@ -219,11 +221,11 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
         <div className="rk-record-header">
           <span className="rk-record-icon"><i className="fas fa-gamepad" /></span>
           <div>
-            <h2>{challenge?.status === 'pending_review' ? 'Resolve Conflict' : 'Report Match Result'}</h2>
+            <h2>{challenge?.status === 'pending_review' ? t('ranked.duelInfo.record.resolveConflict') : t('ranked.duelInfo.record.title')}</h2>
             <p>
-              {challenge?.status === 'pending_review' 
-                ? 'Both participants reported different results. Review evidence and decide the winner.'
-                : 'Select the winner of this match. If both participants agree, the result will be recorded automatically.'}
+              {challenge?.status === 'pending_review'
+                ? t('ranked.duelInfo.record.resolveDesc')
+                : t('ranked.duelInfo.record.reportDesc')}
             </p>
           </div>
         </div>
@@ -233,7 +235,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
             <div className="rk-matchup">
               {/* Player A */}
               <div className="rk-player-slot">
-                <label className="rk-slot-label">Player 1</label>
+                <label className="rk-slot-label">{t('ranked.duelInfo.record.player1')}</label>
                 <div className="rk-player-locked">
                   {pName(playerAId)}
                 </div>
@@ -246,11 +248,11 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                 )}
               </div>
 
-              <div className="rk-vs">VS</div>
+              <div className="rk-vs">{t('ranked.duelInfo.record.vs')}</div>
 
               {/* Player B */}
               <div className="rk-player-slot">
-                <label className="rk-slot-label">Player 2</label>
+                <label className="rk-slot-label">{t('ranked.duelInfo.record.player2')}</label>
                 <div className="rk-player-locked">
                   {pName(playerBId)}
                 </div>
@@ -266,7 +268,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
             {playerAId && playerBId && (
               <div className="rk-winner-prompt">
-                <p>Who won?</p>
+                <p>{t('ranked.duelInfo.record.whoWon')}</p>
                 <div className="rk-winner-btns">
                   <button
                     className={`rk-winner-btn ${winnerId === playerAId ? 'selected' : ''}`}
@@ -287,26 +289,26 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
             {/* Evidence section for pending_review */}
             {challenge.status === 'pending_review' && isAdminHere && (
               <div className="rk-evidence-section">
-                <h4>Reported Results</h4>
+                <h4>{t('ranked.duelInfo.record.reportedResults')}</h4>
                 <div className="rk-evidence-grid">
                   {challenge.challengerResult && (
                     <div className="rk-evidence-card">
-                      <h5>{pName(challenge.challengerId)} reported:</h5>
-                      <p><strong>Winner:</strong> {pName(challenge.challengerResult.winnerId)}</p>
+                      <h5>{pName(challenge.challengerId)} {t('ranked.duelInfo.record.reported')}</h5>
+                      <p><strong>{t('ranked.duelInfo.record.winner')}</strong> {pName(challenge.challengerResult.winnerId)}</p>
                       {challenge.challengerResult.evidence && (
                         <div className="rk-evidence-image">
-                          <img src={challenge.challengerResult.evidence} alt="Evidence" />
+                          <img src={challenge.challengerResult.evidence} alt={t('ranked.duelInfo.record.evidenceAlt')} />
                         </div>
                       )}
                     </div>
                   )}
                   {challenge.challengedResult && (
                     <div className="rk-evidence-card">
-                      <h5>{pName(challenge.challengedId)} reported:</h5>
-                      <p><strong>Winner:</strong> {pName(challenge.challengedResult.winnerId)}</p>
+                      <h5>{pName(challenge.challengedId)} {t('ranked.duelInfo.record.reported')}</h5>
+                      <p><strong>{t('ranked.duelInfo.record.winner')}</strong> {pName(challenge.challengedResult.winnerId)}</p>
                       {challenge.challengedResult.evidence && (
                         <div className="rk-evidence-image">
-                          <img src={challenge.challengedResult.evidence} alt="Evidence" />
+                          <img src={challenge.challengedResult.evidence} alt={t('ranked.duelInfo.record.evidenceAlt')} />
                         </div>
                       )}
                     </div>
@@ -318,7 +320,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
             {/* Evidence upload for participants */}
             {challenge.status === 'accepted' && isParticipant && !hasReported && (
               <div className="rk-evidence-upload">
-                <label>Evidence (optional - screenshot, max {MAX_EVIDENCE_SIZE_MB}MB)</label>
+                <label>{t('ranked.duelInfo.record.evidence', { size: MAX_EVIDENCE_SIZE_MB })}</label>
                 <input
                   type="file"
                   className="rk-input"
@@ -328,7 +330,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                     setEvidenceError('');
                     if (file) {
                       if (file.size > MAX_EVIDENCE_SIZE_BYTES) {
-                        setEvidenceError(`Image too large. Maximum size is ${MAX_EVIDENCE_SIZE_MB}MB. Your image is ${(file.size / 1024 / 1024).toFixed(2)}MB.`);
+                        setEvidenceError(t('ranked.duelInfo.record.evidenceTooLarge', { max: MAX_EVIDENCE_SIZE_MB, size: (file.size / 1024 / 1024).toFixed(2) }));
                         setEvidenceFile(null);
                         setEvidence('');
                         return;
@@ -346,11 +348,11 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                 {evidenceError && <p className="rk-error">{evidenceError}</p>}
                 {evidence && !evidenceError && (
                   <div className="rk-evidence-preview">
-                    <img src={evidence} alt="Evidence preview" />
+                    <img src={evidence} alt={t('ranked.duelInfo.record.evidencePreviewAlt')} />
                   </div>
                 )}
                 <p className="rk-help-text">
-                  Upload a screenshot of the result. This image will be stored with the challenge until the result is confirmed.
+                  {t('ranked.duelInfo.record.evidenceHelp')}
                 </p>
               </div>
             )}
@@ -365,7 +367,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                   onClick={handleAdminResolve}
                   disabled={recording || !winnerId}
                 >
-                  {recording ? 'Resolving...' : 'Confirm Winner & Record Match'}
+                  {recording ? t('ranked.duelInfo.record.resolving') : t('ranked.duelInfo.record.confirmWinner')}
                 </button>
               </div>
             ) : challenge.status === 'accepted' && isAdminHere ? (
@@ -375,7 +377,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                   onClick={handleReportResult}
                   disabled={recording || !winnerId}
                 >
-                  {recording ? 'Recording...' : 'Confirm & Record Match'}
+                  {recording ? t('ranked.duelInfo.record.recording') : t('ranked.duelInfo.record.confirmRecord')}
                 </button>
               </div>
             ) : challenge.status === 'accepted' && isParticipant && !hasReported ? (
@@ -385,24 +387,22 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                   onClick={handleReportResult}
                   disabled={recording || !winnerId}
                 >
-                  {recording ? 'Reporting...' : 'Report Result'}
+                  {recording ? t('ranked.duelInfo.record.reporting') : t('ranked.duelInfo.record.reportResult')}
                 </button>
               </div>
             ) : hasReported ? (
               <div className="rk-record-notice">
-                <i className="fas fa-check-circle" /> You have already reported your result. Waiting for {
-                  user?.participantId === challenge.challengerId ? pName(challenge.challengedId) : pName(challenge.challengerId)
-                } to report.
+                <i className="fas fa-check-circle" /> {t('ranked.duelInfo.record.alreadyReported', { player: user?.participantId === challenge.challengerId ? pName(challenge.challengedId) : pName(challenge.challengerId) })}
               </div>
             ) : null}
 
             {/* Result feedback */}
             {lastResult && (
               <div className="rk-result-box">
-                <h4>Result recorded!</h4>
+                <h4>{t('ranked.duelInfo.record.resultRecorded')}</h4>
                 <div className="rk-result-row">
                   <ResultCard r={lastResult.playerA} isWinner={lastResult.playerA.id === lastResult.match.winnerId} />
-                  <span className="rk-result-vs">vs</span>
+                  <span className="rk-result-vs">{t('ranked.duelInfo.record.vs')}</span>
                   <ResultCard r={lastResult.playerB} isWinner={lastResult.playerB.id === lastResult.match.winnerId} />
                 </div>
               </div>
@@ -417,6 +417,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 // ── Admin Free Match Recording ────────────────────────────────────────────
 
 function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticipants: GlobalParticipant[]; communityId?: string }) {
+  const { t } = useTranslation();
   const [playerAId, setPlayerAId] = useState('');
   const [playerBId, setPlayerBId] = useState('');
   const [winnerId, setWinnerId] = useState('');
@@ -427,9 +428,9 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
   const participantMap = new Map(allParticipants.map((p) => [p.id, p]));
 
   async function handleRecord() {
-    if (!playerAId || !playerBId) { setRecordError('Select both participants.'); return; }
-    if (playerAId === playerBId) { setRecordError('A participant cannot face itself.'); return; }
-    if (!winnerId) { setRecordError('Select who won.'); return; }
+    if (!playerAId || !playerBId) { setRecordError(t('ranked.duelInfo.record.selectBoth')); return; }
+    if (playerAId === playerBId) { setRecordError(t('ranked.duelInfo.record.sameParticipant')); return; }
+    if (!winnerId) { setRecordError(t('ranked.duelInfo.record.selectWon')); return; }
 
     setRecording(true);
     setRecordError('');
@@ -443,7 +444,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
       setPlayerBId('');
       setWinnerId('');
     } catch (err: unknown) {
-      setRecordError(err instanceof Error ? err.message : 'Error recording match.');
+      setRecordError(err instanceof Error ? err.message : t('ranked.duelInfo.record.errorFreeMatch'));
     } finally {
       setRecording(false);
     }
@@ -459,14 +460,14 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
         <div className="rk-record-header">
           <span className="rk-record-icon"><i className="fas fa-gamepad" /></span>
           <div>
-            <h2>Record Free Match</h2>
-            <p>Record a match that wasn't part of a challenge. ELO points are calculated and updated automatically.</p>
+            <h2>{t('ranked.duelInfo.record.adminTitle')}</h2>
+            <p>{t('ranked.duelInfo.record.reportDesc')}</p>
           </div>
         </div>
 
         {allParticipants.length < 2 && (
           <div className="rk-warn">
-            You need at least 2 participants to record a match.
+            {t('ranked.duelInfo.record.needParticipants')}
           </div>
         )}
 
@@ -475,19 +476,19 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
             <div className="rk-matchup">
               {/* Player A */}
               <div className="rk-player-slot">
-                <label className="rk-slot-label">Player 1</label>
+                <label className="rk-slot-label">{t('ranked.duelInfo.record.player1')}</label>
                 <select
                   className="rk-select"
                   value={playerAId}
                   onChange={(e) => { setPlayerAId(e.target.value); setWinnerId(''); setLastResult(null); }}
                 >
-                  <option value="">— Select player —</option>
+                  <option value="">{t('ranked.duelInfo.record.selectPlayer')}</option>
                   {allParticipants
                     .filter((p) => p.id !== playerBId)
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}
+                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.duelInfo.record.pts')}` : t('ranked.duelInfo.record.unranked')}
                       </option>
                     ))}
                 </select>
@@ -500,23 +501,23 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
                 )}
               </div>
 
-              <div className="rk-vs">VS</div>
+              <div className="rk-vs">{t('common.vs').toUpperCase()}</div>
 
               {/* Player B */}
               <div className="rk-player-slot">
-                <label className="rk-slot-label">Player 2</label>
+                <label className="rk-slot-label">{t('ranked.duelInfo.record.player2')}</label>
                 <select
                   className="rk-select"
                   value={playerBId}
                   onChange={(e) => { setPlayerBId(e.target.value); setWinnerId(''); setLastResult(null); }}
                 >
-                  <option value="">— Select player —</option>
+                  <option value="">{t('ranked.duelInfo.record.selectPlayer')}</option>
                   {allParticipants
                     .filter((p) => p.id !== playerAId)
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {p.eloPoints != null ? `${p.eloPoints} pts` : 'unranked'}
+                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.duelInfo.record.pts')}` : t('ranked.duelInfo.record.unranked')}
                       </option>
                     ))}
                 </select>
@@ -532,7 +533,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
 
             {playerAId && playerBId && (
               <div className="rk-winner-prompt">
-                <p>Who won?</p>
+                <p>{t('ranked.duelInfo.record.whoWon')}</p>
                 <div className="rk-winner-btns">
                   <button
                     className={`rk-winner-btn ${winnerId === playerAId ? 'selected' : ''}`}
@@ -558,17 +559,17 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
                 onClick={handleRecord}
                 disabled={recording || !playerAId || !playerBId || !winnerId}
               >
-                {recording ? 'Calculating...' : 'Confirm Result'}
+                {recording ? t('ranked.duelInfo.record.calculating') : t('ranked.duelInfo.record.confirmResult')}
               </button>
             </div>
 
             {/* Result feedback */}
             {lastResult && (
               <div className="rk-result-box">
-                <h4>Result recorded!</h4>
+                <h4>{t('ranked.duelInfo.record.resultRecorded')}</h4>
                 <div className="rk-result-row">
                   <ResultCard r={lastResult.playerA} isWinner={lastResult.playerA.id === lastResult.match.winnerId} />
-                  <span className="rk-result-vs">vs</span>
+                  <span className="rk-result-vs">{t('ranked.duelInfo.record.vs')}</span>
                   <ResultCard r={lastResult.playerB} isWinner={lastResult.playerB.id === lastResult.match.winnerId} />
                 </div>
               </div>
@@ -591,6 +592,7 @@ function EloPreview({
   isWinner: boolean;
   onSetWinner: () => void;
 }) {
+  const { t } = useTranslation();
   const pts = participant.eloPoints;
   const rank = participant.eloRank;
   return (
@@ -598,9 +600,9 @@ function EloPreview({
       <span className="rk-elo-rank-icon"><i className={getRankIcon(rank)} /></span>
       <div>
         <span className="rk-elo-rank-name" style={{ color: getRankColor(rank) }}>{rank}</span>
-        <span className="rk-elo-pts">{pts != null ? `${pts.toLocaleString()} pts` : 'unranked'}</span>
+        <span className="rk-elo-pts">{pts != null ? `${pts.toLocaleString()} ${t('ranked.duelInfo.record.pts')}` : t('ranked.duelInfo.record.unranked')}</span>
       </div>
-      {isWinner && <span className="rk-winner-crown"><i className="fas fa-crown" /> Winner</span>}
+      {isWinner && <span className="rk-winner-crown"><i className="fas fa-crown" /> {t('ranked.duelInfo.record.winnerLabel')}</span>}
     </div>
   );
 }
@@ -624,6 +626,7 @@ function ResultCard({
   r: { name: string; pointsBefore: number; pointsAfter: number; delta: number; rankBefore: string; rankAfter: string };
   isWinner: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div className={`rk-result-card ${isWinner ? 'winner' : 'loser'}`}>
       <span className="rk-result-name">{isWinner ? <i className="fas fa-crown" /> : ''} {r.name}</span>
@@ -631,7 +634,7 @@ function ResultCard({
         {r.pointsBefore} → <strong>{r.pointsAfter}</strong>
       </span>
       <span className={`rk-result-delta ${r.delta >= 0 ? 'positive' : 'negative'}`}>
-        {r.delta >= 0 ? '+' : ''}{r.delta} pts
+        {r.delta >= 0 ? '+' : ''}{r.delta} {t('ranked.duelInfo.record.pts')}
       </span>
       {r.rankBefore !== r.rankAfter && (
         <span className="rk-result-rankup">

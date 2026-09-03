@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import EventsSidebar from './EventsSidebar';
@@ -15,6 +16,7 @@ export type EventTab = 'tournaments' | 'leagues' | 'ranked' | 'history';
 const AUTH_TABS: EventTab[] = ['ranked', 'history'];
 
 function EventsPage() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
   const { currentCommunity } = useCommunity();
@@ -47,7 +49,7 @@ function EventsPage() {
     return (
       <div className="events-page">
         <div className="events-content">
-          <p className="text-secondary">Loading community...</p>
+          <p className="text-secondary">{t('events.loadingCommunity')}</p>
         </div>
       </div>
     );

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
 import { expireLeagueMatches, cancelMatch, getEligibleForBan, banParticipants, markMatchNoShow } from '@/services/leagues/leagueService';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
@@ -13,6 +14,7 @@ interface LeaguePendingTabProps {
 }
 
 function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: LeaguePendingTabProps) {
+  const { t } = useTranslation();
   const [expiring, setExpiring] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
   const [selectedAbsent, setSelectedAbsent] = useState('');
@@ -49,7 +51,7 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
 
   function getParticipantName(id: string): string {
     const p = participants.get(id);
-    return p ? (p.alias?.trim() || p.name) : 'Unknown';
+    return p ? (p.alias?.trim() || p.name) : t('tournament.bracket.unknown');
   }
 
   async function handleExpireMatches() {
@@ -156,12 +158,12 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
           <div className="ban-warning-content">
             <i className="fas fa-exclamation-triangle" />
             <div>
-              <strong>{banWarning.alias || banWarning.name}</strong> has reached {banWarning.noShowCount} no-shows and is eligible for ban.
+              {t('league.pending.banWarning', { name: banWarning.alias || banWarning.name, count: banWarning.noShowCount })}
             </div>
           </div>
           <div className="ban-warning-actions">
             <button className="btn-outline btn-sm" onClick={() => setBanWarning(null)}>
-              Keep in League
+              {t('league.pending.keepInLeague')}
             </button>
             <button
               className="btn-danger btn-sm"
@@ -172,7 +174,7 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
                 onMatchUpdated();
               }}
             >
-              Ban Player
+              {t('league.pending.banPlayer')}
             </button>
           </div>
         </div>
@@ -184,15 +186,15 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
           <div className="eligible-content">
             <i className="fas fa-user-times" />
             <div>
-              <strong>{eligibleForBan.length} player{eligibleForBan.length > 1 ? 's' : ''}</strong> eligible for ban
+              {t('league.pending.eligibleBanner', { count: eligibleForBan.length })}
             </div>
           </div>
           <div className="eligible-actions">
             <button className="btn-outline btn-sm" onClick={() => setShowBanModal(true)}>
-              <i className="fas fa-list" /> View Players
+              <i className="fas fa-list" /> {t('league.pending.viewPlayers')}
             </button>
             <button className="btn-danger btn-sm" onClick={handleBanAllEligible} disabled={processing}>
-              <i className="fas fa-ban" /> Ban All Eligible
+              <i className="fas fa-ban" /> {t('league.pending.banAllEligible')}
             </button>
           </div>
         </div>
@@ -200,10 +202,9 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
 
       <div className="pending-header card">
         <div>
-          <h3>Pending Review</h3>
+          <h3>{t('league.pending.title')}</h3>
           <p className="text-secondary">
-            Matches that passed the grace period ({league.gracePeriodDays} days) without being reported.
-            You can mark the absent player or cancel the match.
+            {t('league.pending.description', { days: league.gracePeriodDays })}
           </p>
         </div>
         <button
@@ -211,15 +212,15 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
           onClick={handleExpireMatches}
           disabled={expiring}
         >
-          <i className="fas fa-sync" /> {expiring ? 'Checking...' : 'Check for Expired Matches'}
+          <i className="fas fa-sync" /> {expiring ? t('league.pending.checking') : t('league.pending.checkExpired')}
         </button>
       </div>
 
       {pendingReviewMatches.length === 0 ? (
         <div className="empty-state card">
           <i className="fas fa-check-circle" style={{ fontSize: '3rem', color: 'var(--primary-color)', marginBottom: '1rem' }} />
-          <h3>No matches pending review</h3>
-          <p className="text-secondary">All matches are either scheduled, completed, or within the grace period.</p>
+          <h3>{t('league.pending.emptyTitle')}</h3>
+          <p className="text-secondary">{t('league.pending.emptyDesc')}</p>
         </div>
       ) : (
         <div className="pending-matches-list">
@@ -231,7 +232,7 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
               <div key={match.id} className="pending-match-card card">
                 <div className="pending-match-info">
                   <div className="pending-match-week">
-                    <i className="fas fa-calendar" /> Week {match.week} • Round {match.round}
+                    <i className="fas fa-calendar" /> {t('league.pending.matchWeekRound', { week: match.week, round: match.round })}
                   </div>
                   <div className="pending-match-players">
                     <ParticipantName
@@ -239,7 +240,7 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
                       name={getParticipantName(match.participant1Id)}
                       className="pending-player-name"
                     />
-                    <span className="pending-vs">vs</span>
+                    <span className="pending-vs">{t('league.schedule.vs')}</span>
                     <ParticipantName
                       id={match.participant2Id}
                       name={getParticipantName(match.participant2Id)}
@@ -248,7 +249,7 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
                   </div>
                   <div className="pending-match-meta">
                     <span className="pending-expired-date">
-                      <i className="fas fa-hourglass-end" /> Expired: {graceEnd.toLocaleDateString()}
+                      <i className="fas fa-hourglass-end" /> {t('league.pending.expired', { date: graceEnd.toLocaleDateString() })}
                     </span>
                   </div>
                 </div>
@@ -257,13 +258,13 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
                     className="btn-outline btn-sm"
                     onClick={() => openNoShowModal(match)}
                   >
-                    <i className="fas fa-user-times" /> Mark No-Show
+                    <i className="fas fa-user-times" /> {t('league.pending.markNoShow')}
                   </button>
                   <button
                     className="btn-outline btn-sm"
                     onClick={() => openCancelModal(match)}
                   >
-                    <i className="fas fa-ban" /> Cancel Match
+                    <i className="fas fa-ban" /> {t('league.pending.cancelMatch')}
                   </button>
                 </div>
               </div>
@@ -276,13 +277,13 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
         <div className="modal-overlay" onClick={() => setShowNoShowModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Mark No-Show</h2>
+              <h2>{t('league.pending.noShowModal.title')}</h2>
               <button className="btn-icon" onClick={() => setShowNoShowModal(false)}>
                 <i className="fas fa-times" />
               </button>
             </div>
             <div className="modal-body">
-              <p>Select which player was absent:</p>
+              <p>{t('league.pending.noShowModal.description')}</p>
               <div className="radio-group">
                 <label>
                   <input
@@ -302,15 +303,15 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
                 </label>
               </div>
               <p className="text-secondary" style={{ marginTop: '1rem' }}>
-                The absent player will lose ELO and receive a no-show count.
+                {t('league.pending.noShowModal.absentHint')}
               </p>
             </div>
             <div className="modal-footer">
               <button className="btn-outline" onClick={() => setShowNoShowModal(false)} disabled={processing}>
-                Cancel
+                {t('league.pending.noShowModal.cancel')}
               </button>
               <button className="btn-danger" onClick={handleMarkNoShow} disabled={processing}>
-                {processing ? 'Processing...' : 'Confirm No-Show'}
+                {processing ? t('league.pending.noShowModal.processing') : t('league.pending.noShowModal.confirm')}
               </button>
             </div>
           </div>
@@ -320,12 +321,12 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
       {showCancelModal && selectedMatch && (
         <ConfirmModal
           isOpen={showCancelModal}
-          title="Cancel Match"
-          message={`Are you sure you want to cancel this match? No ELO changes or penalties will be applied.`}
+          title={t('league.pending.cancelConfirm.title')}
+          message={t('league.pending.cancelConfirm.message')}
           onConfirm={handleCancelMatch}
           onCancel={() => setShowCancelModal(false)}
-          confirmText="Cancel Match"
-          cancelText="Keep Match"
+          confirmText={t('league.pending.cancelConfirm.confirm')}
+          cancelText={t('league.pending.cancelConfirm.cancel')}
         />
       )}
 
@@ -334,14 +335,14 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
         <div className="modal-overlay" onClick={() => setShowBanModal(false)}>
           <div className="modal-content ban-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Players Eligible for Ban</h2>
+              <h2>{t('league.pending.banModal.title')}</h2>
               <button className="btn-icon" onClick={() => setShowBanModal(false)}>
                 <i className="fas fa-times" />
               </button>
             </div>
             <div className="modal-body">
               <p className="text-secondary">
-                These players have reached {league.maxNoShowsBeforeKick} or more no-shows. Select which ones to ban.
+                {t('league.pending.banModal.description', { max: league.maxNoShowsBeforeKick })}
               </p>
               <div className="ban-list">
                 {eligibleForBan.map(player => (
@@ -354,7 +355,7 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
                     <div className="ban-player-info">
                       <span className="ban-player-name">{player.alias || player.name}</span>
                       <span className="ban-player-count">
-                        {player.noShowCount} no-show{player.noShowCount > 1 ? 's' : ''}
+                        {t('league.pending.banModal.noShowCount', { count: player.noShowCount })}
                       </span>
                     </div>
                   </label>
@@ -362,19 +363,19 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
               </div>
               <div className="ban-warning-text">
                 <i className="fas fa-exclamation-triangle" />
-                Banning players will cancel their future matches and regenerate the schedule with remaining active players.
+                {t('league.pending.banModal.warning')}
               </div>
             </div>
             <div className="modal-footer">
               <button className="btn-outline" onClick={() => setShowBanModal(false)} disabled={processing}>
-                Cancel
+                {t('league.pending.banModal.cancel')}
               </button>
               <button
                 className="btn-danger"
                 onClick={handleBanSelected}
                 disabled={processing || selectedToBan.size === 0}
               >
-                {processing ? 'Banning...' : `Ban Selected (${selectedToBan.size})`}
+                {processing ? t('league.pending.banModal.banning') : t('league.pending.banModal.banSelected', { count: selectedToBan.size })}
               </button>
             </div>
           </div>

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DuelSettings, DEFAULT_DUEL_SETTINGS } from '@/models/duel';
 import { getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
 import { useCommunity } from '@/contexts/CommunityContext';
 import './DuelInfo.css';
 
-const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 function DuelInfo() {
+  const { t } = useTranslation();
   const { currentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
   const [settings, setSettings] = useState<DuelSettings>(DEFAULT_DUEL_SETTINGS);
@@ -24,66 +24,56 @@ function DuelInfo() {
     setNextResetText(formatTimeUntilReset(nextReset));
   };
 
-  const resetDayName = DAYS[settings.weeklyResetDay] ?? 'Monday';
+  const dayNames = t('common.days', { returnObjects: true }) as string[];
+  const resetDayName = dayNames[settings.weeklyResetDay] ?? dayNames[1];
   const resetTime = `${String(settings.weeklyResetHour).padStart(2, '0')}:${String(settings.weeklyResetMinute).padStart(2, '0')}`;
 
   return (
     <div className="duel-info card">
-      <h2><i className="fas fa-info-circle" /> How Duels Work</h2>
+      <h2><i className="fas fa-info-circle" /> {t('ranked.duelInfo.title')}</h2>
 
       <section className="duel-info-section">
-        <h3><i className="fas fa-bolt" /> What are Duels?</h3>
-        <p>
-          Duels are ranked one-vs-one challenges between players. They award ELO points and affect your global ranking.
-          A duel is recorded as a ranked match and uses the standard ELO formula.
-        </p>
+        <h3><i className="fas fa-bolt" /> {t('ranked.duelInfo.whatAreDuels')}</h3>
+        <p>{t('ranked.duelInfo.whatAreDuelsDesc')}</p>
       </section>
 
       <section className="duel-info-section">
-        <h3><i className="fas fa-fire" /> Weekly Challenge Limit</h3>
+        <h3><i className="fas fa-fire" /> {t('ranked.duelInfo.weeklyLimit')}</h3>
         <p>
-          Each player can issue up to <strong>{settings.maxChallengesPerWeek}</strong> challenges per week.
-          The weekly counter resets every <strong>{resetDayName} at {resetTime}</strong>.
+          {t('ranked.duelInfo.weeklyLimitDesc', { max: settings.maxChallengesPerWeek, day: resetDayName, time: resetTime })}
         </p>
         {nextResetText && (
           <p className="duel-info-highlight">
-            <i className="fas fa-clock" /> Next reset in {nextResetText}
+            <i className="fas fa-clock" /> {t('ranked.duelInfo.nextReset', { time: nextResetText })}
           </p>
         )}
       </section>
 
       <section className="duel-info-section">
-        <h3><i className="fas fa-balance-scale" /> ELO Restriction</h3>
+        <h3><i className="fas fa-balance-scale" /> {t('ranked.duelInfo.eloRestriction')}</h3>
         <p>
-          You cannot challenge a player who is more than <strong>{settings.eloRestriction}</strong> ELO points below you.
-          This prevents high-ranked players from farming lower-ranked opponents.
+          {t('ranked.duelInfo.eloRestrictionDesc', { restriction: settings.eloRestriction })}
         </p>
         <p className="duel-info-example">
-          Example: if you have 1700 ELO, you can challenge players down to <strong>{1700 - settings.eloRestriction}</strong> ELO.
+          {t('ranked.duelInfo.eloRestrictionExample', { min: 1700 - settings.eloRestriction })}
         </p>
       </section>
 
       <section className="duel-info-section">
-        <h3><i className="fas fa-hourglass-half" /> Challenge Expiration</h3>
+        <h3><i className="fas fa-hourglass-half" /> {t('ranked.duelInfo.expiration')}</h3>
         <p>
-          A pending challenge expires after <strong>{settings.challengeExpirationDays} days</strong> if not accepted or recorded.
-          Once expired, the challenge is no longer active and does not count against weekly limits.
+          {t('ranked.duelInfo.expirationDesc', { days: settings.challengeExpirationDays })}
         </p>
       </section>
 
       <section className="duel-info-section">
-        <h3><i className="fas fa-shield-alt" /> No Repeat Challenges</h3>
-        <p>
-          You can only challenge the same opponent once per week. Wait until the next weekly reset to challenge them again.
-        </p>
+        <h3><i className="fas fa-shield-alt" /> {t('ranked.duelInfo.noRepeat')}</h3>
+        <p>{t('ranked.duelInfo.noRepeatDesc')}</p>
       </section>
 
       <section className="duel-info-section">
-        <h3><i className="fas fa-trophy" /> ELO Points</h3>
-        <p>
-          Winning a duel increases your ELO; losing decreases it. The amount depends on both players' current ELO and the winner's K-factor.
-          Unranked players (with no points yet) start from 1500 for their first duel.
-        </p>
+        <h3><i className="fas fa-trophy" /> {t('ranked.duelInfo.eloPoints')}</h3>
+        <p>{t('ranked.duelInfo.eloPointsDesc')}</p>
       </section>
     </div>
   );

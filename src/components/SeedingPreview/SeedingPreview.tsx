@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Participant, SeedingMode, PartialSeedCount } from '@/models/types';
 import { applySeed, applyBracketSeeding } from '@/services/seeding/seedingService';
 import { updateTournamentParticipants } from '@/services/tournament/tournamentService';
@@ -23,6 +24,7 @@ function SeedingPreview({
   onConfirm,
   onParticipantsChange,
 }: SeedingPreviewProps) {
+  const { t } = useTranslation();
   const [seededParticipants, setSeededParticipants] = useState<Participant[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
@@ -78,19 +80,19 @@ function SeedingPreview({
   return (
     <div className="seeding-preview">
       <div className="seeding-header">
-        <h2>Seeding Preview</h2>
+        <h2>{t('tournament.seedingPreview.title')}</h2>
         <p className="text-secondary">
-          {seedingMode === 'full' && 'All participants ranked by ELO + win rate'}
-          {seedingMode === 'partial' && `Top ${partialSeedCount} seeded, rest randomized`}
+          {seedingMode === 'full' && t('tournament.seedingPreview.descriptionFull')}
+          {seedingMode === 'partial' && t('tournament.seedingPreview.descriptionPartial', { count: partialSeedCount })}
         </p>
       </div>
 
       <div className="seeding-actions card">
         <button className="btn-outline" onClick={handleReshuffle}>
-          <i className="fas fa-shuffle" /> Re-shuffle unseeded
+          <i className="fas fa-shuffle" /> {t('tournament.seedingPreview.reshuffle')}
         </button>
         <span className="text-secondary">
-          Drag to reorder manually
+          {t('tournament.seedingPreview.dragHint')}
         </span>
       </div>
 
@@ -107,7 +109,7 @@ function SeedingPreview({
               onDragEnd={handleDragEnd}
             >
               <div className="seeding-rank">
-                <span className="seed-number">#{p.seed}</span>
+                <span className="seed-number">{t('tournament.seedingPreview.rank')}{p.seed}</span>
                 {isTopSeed && <i className="fas fa-star seed-star" />}
               </div>
               <div className="seeding-name">{p.name}</div>
@@ -122,10 +124,10 @@ function SeedingPreview({
 
       <div className="form-actions">
         <button className="btn-outline" onClick={onBack}>
-          Back
+          {t('tournament.seedingPreview.back')}
         </button>
         <button className="btn-primary" onClick={handleConfirm}>
-          Confirm & Start Tournament
+          {t('tournament.seedingPreview.confirm')}
         </button>
       </div>
     </div>

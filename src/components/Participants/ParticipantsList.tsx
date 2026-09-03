@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { Participant, GlobalParticipant } from '@/models/types';
@@ -58,6 +59,7 @@ function ParticipantsList({
   readOnly = false,
   tournamentMode = false,
 }: ParticipantsListProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentCommunity, getPath } = useCommunity();
   const communityId = currentCommunity?.id;
@@ -154,7 +156,7 @@ function ParticipantsList({
   if (participants.length === 0) {
     return (
       <div className="participants-empty card">
-        <p className="text-secondary text-center">No participants yet</p>
+        <p className="text-secondary text-center">{t('tournament.participantsList.noParticipants')}</p>
       </div>
     );
   }
@@ -222,11 +224,11 @@ function ParticipantsList({
                     </div>
                     {tournamentMode && alive && (
                       <span className="not-concluded-badge">
-                        <i className="fas fa-hourglass-half" /> Not Concluded
+                        <i className="fas fa-hourglass-half" /> {t('tournament.participantsList.notConcluded')}
                       </span>
                     )}
                     {tournamentMode && participant.eliminated && (
-                      <span className="eliminated-badge">Eliminated</span>
+                      <span className="eliminated-badge">{t('tournament.participantsList.eliminated')}</span>
                     )}
                   </div>
                 ) : (
@@ -238,11 +240,11 @@ function ParticipantsList({
                     })}
                     {tournamentMode && alive && (
                       <span className="not-concluded-badge">
-                        <i className="fas fa-hourglass-half" /> Not Concluded
+                        <i className="fas fa-hourglass-half" /> {t('tournament.participantsList.notConcluded')}
                       </span>
                     )}
                     {tournamentMode && participant.eliminated && (
-                      <span className="eliminated-badge">Eliminated</span>
+                      <span className="eliminated-badge">{t('tournament.participantsList.eliminated')}</span>
                     )}
                   </>
                 )}
@@ -256,7 +258,7 @@ function ParticipantsList({
                     <button
                       className="btn-icon"
                       onClick={() => handleStartEdit(participant)}
-                      title="Edit name"
+                      title={t('tournament.participantsList.editName')}
                     >
                       <i className="fas fa-pencil-alt" />
                     </button>
@@ -265,7 +267,7 @@ function ParticipantsList({
                         className="btn-icon"
                         onClick={() => onMoveUp(participant.id)}
                         disabled={index === 0}
-                        title="Move up"
+                        title={t('tournament.participantsList.moveUp')}
                       >
                         <i className="fas fa-arrow-up" />
                       </button>
@@ -275,7 +277,7 @@ function ParticipantsList({
                         className="btn-icon"
                         onClick={() => onMoveDown(participant.id)}
                         disabled={index === sorted.length - 1}
-                        title="Move down"
+                        title={t('tournament.participantsList.moveDown')}
                       >
                         <i className="fas fa-arrow-down" />
                       </button>
@@ -283,7 +285,7 @@ function ParticipantsList({
                     <button
                       className="btn-icon btn-danger"
                       onClick={() => onRemove(participant.id)}
-                      title="Remove participant"
+                      title={t('tournament.participantsList.remove')}
                     >
                       <i className="fas fa-trash-alt" />
                     </button>

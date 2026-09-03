@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { League } from '@/models/league';
 import { formatInTimeZone } from '@/utils/timeZone';
 import './LeagueInfoTab.css';
@@ -7,98 +8,101 @@ interface LeagueInfoTabProps {
 }
 
 function LeagueInfoTab({ league }: LeagueInfoTabProps) {
+  const { t } = useTranslation();
   const weeks = Object.keys(league.weekStartDates || {}).map(Number).sort((a, b) => a - b);
   const lastWeek = weeks.length > 0 ? Math.max(...weeks) : 0;
-  const lastWeekStart = lastWeek ? formatInTimeZone(league.weekStartDates[lastWeek], league.timeZone) : 'TBD';
+  const lastWeekStart = lastWeek ? formatInTimeZone(league.weekStartDates[lastWeek], league.timeZone) : t('league.info.tbd');
+  const timeZone = league.timeZone || 'America/Havana';
+  const startDate = formatInTimeZone(league.startDate, league.timeZone);
+  const winByGames = Math.ceil(league.gamesPerMatch / 2);
 
   return (
     <div className="league-info-tab">
       <div className="info-hero card">
-        <h2>What is this league?</h2>
+        <h2>{t('league.info.title')}</h2>
         <p className="league-info-subtitle">
-          {league.name} is a round-robin season where every player faces each other over several weeks.
+          {t('league.info.subtitle', { name: league.name })}
         </p>
       </div>
 
       <div className="info-grid">
         <div className="info-card card">
-          <h3><i className="fas fa-globe" /> Time zone</h3>
+          <h3><i className="fas fa-globe" /> {t('league.info.timeZoneTitle')}</h3>
           <p className="info-text">
-            All dates and times are shown in <strong>{league.timeZone || 'America/Havana'}</strong>.
-            The league started on <strong>{formatInTimeZone(league.startDate, league.timeZone)}</strong> and every week begins at the same local time.
+            {t('league.info.timeZoneIntro')} <strong>{timeZone}</strong>{t('league.info.timeZoneMid')} <strong>{startDate}</strong>{t('league.info.timeZoneOutro')}
           </p>
         </div>
 
         <div className="info-card card">
-          <h3><i className="fas fa-calendar-alt" /> Schedule</h3>
+          <h3><i className="fas fa-calendar-alt" /> {t('league.info.scheduleTitle')}</h3>
           <ul>
-            <li><strong>Start:</strong> {formatInTimeZone(league.startDate, league.timeZone)}</li>
-            <li><strong>Period:</strong> {league.periodDays} days per week</li>
-            <li><strong>Total weeks:</strong> {weeks.length}</li>
-            <li><strong>Last week starts:</strong> {lastWeekStart}</li>
-            <li><strong>Matches per player each week:</strong> {league.matchesPerPlayerPerPeriod}</li>
+            <li><strong>{t('league.info.startLabel')}</strong> {startDate}</li>
+            <li><strong>{t('league.info.periodLabel')}</strong> {t('league.info.periodValue', { days: league.periodDays })}</li>
+            <li><strong>{t('league.info.totalWeeksLabel')}</strong> {weeks.length}</li>
+            <li><strong>{t('league.info.lastWeekStartsLabel')}</strong> {lastWeekStart}</li>
+            <li><strong>{t('league.info.matchesPerPlayerLabel')}</strong> {league.matchesPerPlayerPerPeriod}</li>
           </ul>
         </div>
 
         <div className="info-card card">
-          <h3><i className="fas fa-gamepad" /> Match format</h3>
+          <h3><i className="fas fa-gamepad" /> {t('league.info.formatTitle')}</h3>
           <ul>
-            <li><strong>Game:</strong> {league.gameId.toUpperCase()}</li>
-            <li><strong>Best of:</strong> {league.gamesPerMatch} games</li>
-            <li><strong>Rounds per opponent:</strong> {league.roundsPerOpponent}</li>
-            <li><strong>Players:</strong> {league.participantIds.length}</li>
+            <li><strong>{t('league.info.gameLabel')}</strong> {league.gameId.toUpperCase()}</li>
+            <li><strong>{t('league.info.bestOfLabel')}</strong> {league.gamesPerMatch} {t('common.game')}s</li>
+            <li><strong>{t('league.info.roundsPerOpponentLabel')}</strong> {league.roundsPerOpponent}</li>
+            <li><strong>{t('league.info.playersLabel')}</strong> {league.participantIds.length}</li>
           </ul>
           <p className="info-text">
-            Win by taking <strong>{Math.ceil(league.gamesPerMatch / 2)} games</strong>. For example, a Best of 3 is won 2-0 or 2-1.
+            {t('league.info.winByPrefix')} <strong>{winByGames}</strong> {t('league.info.winBySuffix')}
           </p>
         </div>
 
         <div className="info-card card">
-          <h3><i className="fas fa-shield-alt" /> Penalties and grace</h3>
+          <h3><i className="fas fa-shield-alt" /> {t('league.info.penaltiesTitle')}</h3>
           <ul>
-            <li><strong>Grace period:</strong> {league.gracePeriodDays} extra days after each week to report matches</li>
-            <li><strong>No-shows before kick:</strong> {league.maxNoShowsBeforeKick}</li>
-            <li><strong>Playoffs:</strong> {league.playoffsEnabled ? `Top 8 players, ELO multiplied by ${league.playoffsEloMultiplier}` : 'Disabled'}</li>
+            <li><strong>{t('league.info.graceLabel')}</strong> {t('league.info.graceValue', { days: league.gracePeriodDays })}</li>
+            <li><strong>{t('league.info.noShowsLabel')}</strong> {league.maxNoShowsBeforeKick}</li>
+            <li><strong>{t('league.info.playoffsLabel')}</strong> {league.playoffsEnabled ? t('league.info.playoffsEnabled', { multiplier: league.playoffsEloMultiplier }) : t('league.info.playoffsDisabled')}</li>
           </ul>
         </div>
 
         <div className="info-card card info-highlight">
-          <h3><i className="fas fa-info-circle" /> How it works (step by step)</h3>
+          <h3><i className="fas fa-info-circle" /> {t('league.info.howItWorksTitle')}</h3>
           <ol>
             <li>
-              <strong>Weekly assignment:</strong> every Monday (or period start) the Schedule tab updates with your new opponents for the week.
+              <strong>{t('league.info.howItWorks.weeklyAssignment')}</strong>
             </li>
             <li>
-              <strong>Play your match:</strong> contact your opponent and play the match during the week.
+              <strong>{t('league.info.howItWorks.playMatch')}</strong>
             </li>
             <li>
-              <strong>Report the result:</strong> any of the two players can open the match and report the score, winner and optional photo. The match is not final yet.
+              <strong>{t('league.info.howItWorks.reportResult')}</strong>
             </li>
             <li>
-              <strong>Other player confirms:</strong> the opponent opens the same match and reports the same result. When both match, the result is finalized and ELO is updated.
+              <strong>{t('league.info.howItWorks.confirm')}</strong>
             </li>
             <li>
-              <strong>If results differ:</strong> the match goes to Pending Review. An admin will check the evidence and decide the final result.
+              <strong>{t('league.info.howItWorks.differ')}</strong>
             </li>
             <li>
-              <strong>Grace period:</strong> if you cannot play in the exact week, you have <strong>{league.gracePeriodDays} extra days</strong> to finish and report the match.
+              <strong>{t('league.info.howItWorks.grace')}</strong> {t('league.info.howItWorks.graceSuffix', { days: league.gracePeriodDays })}
             </li>
             <li>
-              <strong>No-shows:</strong> if a player does not show up, the present player wins. If a player reaches <strong>{league.maxNoShowsBeforeKick} no-shows</strong>, an admin can kick them from the league.
+              <strong>{t('league.info.howItWorks.noShows')}</strong> {t('league.info.howItWorks.noShowsSuffix', { count: league.maxNoShowsBeforeKick })}
             </li>
             <li>
-              <strong>Standings:</strong> wins and losses update the ELO ranking. Playoffs are available for the Top 8 if enabled.
+              <strong>{t('league.info.howItWorks.standings')}</strong>
             </li>
           </ol>
         </div>
 
         <div className="info-card card">
-          <h3><i className="fas fa-exclamation-circle" /> Important</h3>
+          <h3><i className="fas fa-exclamation-circle" /> {t('league.info.importantTitle')}</h3>
           <ul>
-            <li>Both players must report the same score/winner for the match to count automatically.</li>
-            <li>Always attach a screenshot if the opponent might disagree.</li>
-            <li>After {league.gracePeriodDays} days the match can be marked as expired and reviewed by an admin.</li>
-            <li>If you are not an admin, you cannot resolve conflicts.</li>
+            <li>{t('league.info.important.sameScore')}</li>
+            <li>{t('league.info.important.screenshot')}</li>
+            <li>{t('league.info.important.expired', { days: league.gracePeriodDays })}</li>
+            <li>{t('league.info.important.adminConflict')}</li>
           </ul>
         </div>
       </div>

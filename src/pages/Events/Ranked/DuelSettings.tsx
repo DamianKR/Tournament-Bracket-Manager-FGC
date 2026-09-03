@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DuelSettings as DuelSettingsType } from '@/models/duel';
 import './DuelSettings.css';
 
@@ -8,6 +9,7 @@ interface DuelSettingsProps {
 }
 
 function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [localSettings, setLocalSettings] = useState(settings);
 
@@ -28,14 +30,14 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
   return (
     <>
       <button className="btn-outline btn-sm" onClick={() => setIsOpen(true)}>
-        <i className="fas fa-cog" /> Duel Settings
+        <i className="fas fa-cog" /> {t('ranked.duelInfo.settingsTitle')}
       </button>
 
       {isOpen && (
         <div className="modal-overlay" onClick={handleCancel}>
           <div className="modal-content duel-settings-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2><i className="fas fa-cog" /> Duel Settings</h2>
+              <h2><i className="fas fa-cog" /> {t('ranked.duelInfo.settingsTitle')}</h2>
               <button className="btn-icon" onClick={handleCancel}>
                 <i className="fas fa-times" />
               </button>
@@ -44,8 +46,8 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
             <div className="modal-body">
               <div className="form-group">
                 <label htmlFor="maxChallenges">
-                  Max Challenges Per Week
-                  <span className="text-secondary"> (1-50)</span>
+                  {t('ranked.duelInfo.maxChallengesPerWeek')}
+                  <span className="text-secondary"> (1–50)</span>
                 </label>
                 <input
                   id="maxChallenges"
@@ -60,14 +62,14 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
                   className="form-control"
                 />
                 <p className="form-help">
-                  Maximum number of duel challenges a player can create per week
+                  {t('ranked.duelInfo.maxChallengesPerWeekHelp')}
                 </p>
               </div>
 
               <div className="form-group">
                 <label htmlFor="eloRestriction">
-                  ELO Restriction
-                  <span className="text-secondary"> (points)</span>
+                  {t('ranked.duelInfo.eloRestrictionSetting')}
+                  <span className="text-secondary"> ({t('ranked.duelInfo.pointsSuffix')})</span>
                 </label>
                 <input
                   id="eloRestriction"
@@ -83,15 +85,14 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
                   className="form-control"
                 />
                 <p className="form-help">
-                  Players cannot challenge opponents this many ELO points below them.
-                  Prevents high-ranked players from farming low-ranked players.
+                  {t('ranked.duelInfo.eloRestrictionHelp')}
                 </p>
               </div>
 
               <div className="form-group">
                 <label htmlFor="expiration">
-                  Challenge Expiration
-                  <span className="text-secondary"> (days)</span>
+                  {t('ranked.duelInfo.challengeExpiration')}
+                  <span className="text-secondary"> ({t('ranked.duelInfo.daysSuffix')})</span>
                 </label>
                 <input
                   id="expiration"
@@ -106,7 +107,7 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
                   className="form-control"
                 />
                 <p className="form-help">
-                  Number of days before an unaccepted challenge expires
+                  {t('ranked.duelInfo.challengeExpirationHelp')}
                 </p>
               </div>
 
@@ -122,18 +123,18 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
                     })}
                   />
                   <label htmlFor="mandatoryEnabled">
-                    Allow mandatory duels
+                    {t('ranked.duelInfo.allowMandatoryDuels')}
                   </label>
                 </div>
                 <p className="form-help">
-                  If disabled, players cannot create mandatory challenges.
+                  {t('ranked.duelInfo.allowMandatoryDuelsHelp')}
                 </p>
               </div>
 
               {localSettings.mandatoryDuelsEnabled !== false && (
                 <div className="form-group">
                   <label htmlFor="mandatoryPerWeek">
-                    Mandatory Duels Per Week
+                    {t('ranked.duelInfo.mandatoryPerWeek')}
                     <span className="text-secondary"> (0-10)</span>
                   </label>
                   <input
@@ -149,7 +150,7 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
                     className="form-control"
                   />
                   <p className="form-help">
-                    Number of mandatory duels a player can create per week. Set to 0 to allow unlimited (not recommended).
+                    {t('ranked.duelInfo.mandatoryPerWeekHelp')}
                   </p>
                 </div>
               )}
@@ -157,10 +158,10 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
 
             <div className="modal-footer">
               <button className="btn-outline" onClick={handleCancel}>
-                Cancel
+                {t('ranked.duelInfo.cancel')}
               </button>
               <button className="btn-primary" onClick={handleSave}>
-                <i className="fas fa-save" /> Save Settings
+                <i className="fas fa-save" /> {t('ranked.duelInfo.saveSettings')}
               </button>
             </div>
           </div>

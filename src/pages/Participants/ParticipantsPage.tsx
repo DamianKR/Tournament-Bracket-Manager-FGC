@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { GlobalParticipant, ComputedStats } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
 import { getCharacter, getGame } from '@/data/games';
@@ -28,6 +29,7 @@ type SortKey = 'name' | 'wins' | 'tournamentsPlayed' | 'winRate';
 const DEFAULT_COMMUNITY_ID = 'community_fgc_santa_clara';
 
 function ParticipantsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { currentCommunity, getPath, isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
@@ -141,9 +143,9 @@ function ParticipantsPage() {
   }
 
   async function handleCreate() {
-    if (!newName.trim()) { setError('Name is required'); return; }
-    if (!newPassword.trim()) { setError('Password is required for the login account'); return; }
-    if (newPassword.trim().length < 6) { setError('Password must be at least 6 characters'); return; }
+    if (!newName.trim()) { setError(t('participants.errors.nameRequired')); return; }
+    if (!newPassword.trim()) { setError(t('participants.errors.passwordRequired')); return; }
+    if (newPassword.trim().length < 6) { setError(t('participants.errors.passwordTooShort')); return; }
     setCreating(true); setError('');
     try {
       const p = await createParticipant(newName, newAlias, newGameId, newCharacterId, communityId);
@@ -203,9 +205,9 @@ function ParticipantsPage() {
       <div className="participants-page">
         <div className="container">
           <div className="empty-state card" style={{ marginTop: '2rem' }}>
-            <h3>Acceso restringido</h3>
+            <h3>{t('participants.accessDenied')}</h3>
             <p className="text-secondary">
-              Los participantes de esta comunidad solo pueden ser gestionados por sus propios miembros.
+              {t('participants.accessDeniedDesc')}
             </p>
           </div>
         </div>
@@ -219,12 +221,12 @@ function ParticipantsPage() {
 
         <div className="pp-header">
           <div>
-            <h1>Participants <span className="pp-count">{participants.length}</span></h1>
-            <p className="text-secondary">Global roster — reusable across all tournaments</p>
+            <h1>{t('participants.title')} <span className="pp-count">{participants.length}</span></h1>
+            <p className="text-secondary">{t('participants.subtitle')}</p>
           </div>
           {canAdminCurrentCommunity && (
             <button className="btn-primary" onClick={() => { setShowCreateForm(true); setError(''); }}>
-              + New Participant
+              + {t('participants.newParticipant')}
             </button>
           )}
         </div>
@@ -236,30 +238,30 @@ function ParticipantsPage() {
             <div className="pp-create-header">
               <span className="pp-create-icon"><i className="fas fa-user-plus" /></span>
               <div>
-                <h3>Create New Participant</h3>
-                <p className="text-secondary">Add a new player to the global roster</p>
+                <h3>{t('participants.createTitle')}</h3>
+                <p className="text-secondary">{t('participants.createSubtitle')}</p>
               </div>
             </div>
 
             <div className="pp-create-grid">
               <div className="pp-create-section">
-                <h4>Identity</h4>
+                <h4>{t('participants.identity')}</h4>
                 <div className="form-group">
-                  <label>Name *</label>
+                  <label>{t('participants.name')} *</label>
                   <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') setShowCreateForm(false); }}
-                    placeholder="Player name" autoFocus />
+                    placeholder={t('participants.namePlaceholder')} autoFocus />
                 </div>
                 <div className="form-group">
-                  <label>Alias / Gamertag</label>
+                  <label>{t('participants.alias')}</label>
                   <input type="text" value={newAlias} onChange={(e) => setNewAlias(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') setShowCreateForm(false); }}
-                    placeholder="Optional short name" />
+                    placeholder={t('participants.aliasPlaceholder')} />
                 </div>
               </div>
 
               <div className="pp-create-section">
-                <h4>Game & Main</h4>
+                <h4>{t('participants.gameAndMain')}</h4>
                 <CharacterSelect
                   gameId={newGameId}
                   characterId={newCharacterId}
@@ -269,27 +271,27 @@ function ParticipantsPage() {
               </div>
 
               <div className="pp-create-section">
-                <h4>Login Account</h4>
-                <p className="text-secondary text-sm mb-2">Each participant needs an account to log in.</p>
+                <h4>{t('participants.loginAccount')}</h4>
+                <p className="text-secondary text-sm mb-2">{t('participants.loginAccountHint')}</p>
                 <div className="form-group">
-                  <label>Username <span className="text-secondary">(auto if empty)</span></label>
+                  <label>{t('participants.username')} <span className="text-secondary">{t('participants.usernameAuto')}</span></label>
                   <input type="text" value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
-                    placeholder={generateUsernameFromName() || 'username'} />
+                    placeholder={generateUsernameFromName() || t('participants.usernamePlaceholder')} />
                 </div>
                 <div className="form-group">
-                  <label>Password *</label>
+                  <label>{t('participants.password')} *</label>
                   <input type="password" value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
-                    placeholder="Set the participant's password" />
+                    placeholder={t('participants.passwordPlaceholder')} />
                 </div>
                 {canAssignRole && roleOptions.length > 1 && (
                   <div className="form-group">
-                    <label>Role</label>
+                    <label>{t('participants.role')}</label>
                     <select value={newRole} onChange={(e) => setNewRole(e.target.value as AuthUser['role'])}>
-                      {roleOptions.map((r) => <option key={r} value={r}>{r}</option>)}
+                      {roleOptions.map((r) => <option key={r} value={r}>{t(`participantProfile.edit.roles.${r}`)}</option>)}
                     </select>
                   </div>
                 )}
@@ -297,14 +299,14 @@ function ParticipantsPage() {
             </div>
 
             <div className="pp-create-preview">
-              <h4>Preview</h4>
+              <h4>{t('participants.preview')}</h4>
               <div className="pp-preview-item">
                 <div className="pp-preview-avatar" style={{ background: avatarColor(newName || '?') }}>
                   {initials(newName || '?')}
                 </div>
                 <div className="pp-preview-info">
                   <div className="pp-preview-name-row">
-                    <span className="pp-preview-name">{newName.trim() || 'Player Name'}</span>
+                    <span className="pp-preview-name">{newName.trim() || t('participants.namePlaceholder')}</span>
                     {newAlias.trim() && (
                       <span className="pp-preview-alias">{newAlias.trim()}</span>
                     )}
@@ -324,35 +326,35 @@ function ParticipantsPage() {
                 setShowCreateForm(false);
                 setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null);
                 setNewUsername(''); setNewPassword(''); setNewRole('user'); setError('');
-              }}>Cancel</button>
+              }}>{t('participants.cancel')}</button>
               <button className="btn-primary" onClick={handleCreate} disabled={creating}>
-                {creating ? 'Creating…' : 'Create Participant'}
+                {creating ? t('participants.creating') : t('participants.create')}
               </button>
             </div>
           </div>
         )}
 
         <div className="pp-filters card">
-          <input type="text" className="pp-search" placeholder="Search by name or alias…"
+          <input type="text" className="pp-search" placeholder={t('participants.searchPlaceholder')}
             value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           <div className="pp-sort">
-            <span className="text-secondary text-sm">Sort by:</span>
+            <span className="text-secondary text-sm">{t('participants.sortBy')}</span>
             {(['name', 'wins', 'tournamentsPlayed', 'winRate'] as SortKey[]).map((key) => (
               <button key={key} className={`pp-sort-btn ${sortBy === key ? 'active' : ''}`}
                 onClick={() => setSortBy(key)}>
-                {key === 'name' ? 'Name' : key === 'wins' ? 'Wins' : key === 'tournamentsPlayed' ? 'Played' : 'Win %'}
+                {key === 'name' ? t('participants.sortName') : key === 'wins' ? t('participants.sortWins') : key === 'tournamentsPlayed' ? t('participants.sortPlayed') : t('participants.sortWinRate')}
               </button>
             ))}
           </div>
         </div>
 
         {loading ? (
-          <Loading message="Loading participants..." />
+          <Loading message={t('participants.loading')} />
         ) : filtered.length === 0 ? (
           <div className="empty-state card">
             {participants.length === 0
-              ? <><h3>No participants yet</h3><p className="text-secondary">Create your first participant to get started</p></>
-              : <><h3>No results</h3><p className="text-secondary">No participants match "{searchQuery}"</p></>}
+              ? <><h3>{t('participants.emptyNoParticipants')}</h3><p className="text-secondary">{t('participants.emptyNoParticipantsDesc')}</p></>
+              : <><h3>{t('participants.emptyNoResults')}</h3><p className="text-secondary">{t('participants.emptyNoResultsDesc', { query: searchQuery })}</p></>}
           </div>
         ) : (
           <div className="pp-list">
@@ -380,15 +382,15 @@ function ParticipantsPage() {
                     </div>
                     <div className="pp-item-stats">
                       <span className="pp-stat">
-                        <span className="pp-stat-label">Played</span>
+                        <span className="pp-stat-label">{t('participants.stats.played')}</span>
                         <span className="pp-stat-value">{s.tournamentsPlayed}</span>
                       </span>
                       <span className="pp-stat">
-                        <span className="pp-stat-label"><i className="fas fa-trophy" /> Wins</span>
+                        <span className="pp-stat-label"><i className="fas fa-trophy" /> {t('participants.stats.wins')}</span>
                         <span className="pp-stat-value pp-stat-wins">{s.wins}</span>
                       </span>
                       <span className="pp-stat">
-                        <span className="pp-stat-label">Win %</span>
+                        <span className="pp-stat-label">{t('participants.stats.winRate')}</span>
                         <span className="pp-stat-value">{s.winRate > 0 ? `${s.winRate}%` : '—'}</span>
                       </span>
                     </div>
@@ -400,20 +402,20 @@ function ParticipantsPage() {
                       return u ? (
                         <span className={`pp-account-badge ${u.isActive ? 'has-account' : 'inactive-account'}`}>
                           <i className="fas fa-user-check" />
-                          {u.isActive ? `${u.username} (${u.role})` : 'Inactive'}
+                          {u.isActive ? `${u.username} (${u.role})` : t('participants.accountInactive')}
                         </span>
                       ) : (
                         <span className="pp-account-badge no-account">
                           <i className="fas fa-user-slash" />
-                          No account
+                          {t('participants.noAccount')}
                         </span>
                       );
                     })()}
                     {canAdminCurrentCommunity && (
-                      <button className="btn-icon" onClick={() => goToEdit(p)} title="Edit"><i className="fas fa-pen" /></button>
+                      <button className="btn-icon" onClick={() => goToEdit(p)} title={t('participants.edit')}><i className="fas fa-pen" /></button>
                     )}
                     {canAdminCurrentCommunity && (
-                      <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title="Delete"><i className="fas fa-trash" /></button>
+                      <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title={t('participants.delete')}><i className="fas fa-trash" /></button>
                     )}
                   </div>
                 </div>
@@ -425,11 +427,11 @@ function ParticipantsPage() {
 
       <ConfirmModal
         isOpen={deleteTarget !== null}
-        title="Delete participant"
-        message={deleteTarget ? `Remove "${deleteTarget.name}" from the global roster? This will keep tournaments they played in, but the participant profile will be removed.` : ''}
+        title={t('participants.deleteTitle')}
+        message={deleteTarget ? t('participants.deleteMessage', { name: deleteTarget.name }) : ''}
         onCancel={cancelDelete}
         onConfirm={confirmDelete}
-        confirmText="Delete"
+        confirmText={t('participants.deleteConfirm')}
       />
 
       {/* Account management ahora vive en el perfil del participant */}

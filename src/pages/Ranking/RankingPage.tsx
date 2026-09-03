@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
 import {
@@ -24,9 +25,17 @@ import './RankingPage.css';
 type Tab = 'leaderboard' | 'history' | 'info';
 
 function RankingPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
+
+  function formatRank(rank: string | null | undefined) {
+    if (!rank || rank === 'Sin puntos') return t('common.unranked');
+    if (rank === 'Legend') return t('rankingInfo.rankLegend');
+    return t(`rankingInfo.tierNames.${rank}`);
+  }
+
   const [tab, setTab] = useState<Tab>('leaderboard');
 
   // Leaderboard
@@ -60,7 +69,7 @@ function RankingPage() {
       const data = await getLeaderboard(communityId);
       setLeaderboard(data);
     } catch {
-      setBoardError('Could not load the ranking. Is the server running?');
+      setBoardError(t('ranking.errorTitle'));
     } finally {
       setLoadingBoard(false);
     }
@@ -161,8 +170,8 @@ function RankingPage() {
       <div className="container">
         <div className="rk-header">
         <div>
-          <h1 className="rk-title">Ranking ELO</h1>
-          <p className="rk-subtitle">Competitive scoring system — start at 1500 pts</p>
+          <h1 className="rk-title">{t('ranking.title')}</h1>
+          <p className="rk-subtitle">{t('ranking.subtitle')}</p>
         </div>
         <div className="rk-header-right">
           {canAdminCurrentCommunity && (
@@ -171,29 +180,29 @@ function RankingPage() {
                 className="rk-reset-btn soft"
                 onClick={() => setShowSoftConfirm(true)}
                 disabled={resetting}
-                title="Returns each player to the start of their current tier"
+                title={t('ranking.softResetTooltip')}
               >
-                <i className="fas fa-rotate-left" /> Soft Reset
+                <i className="fas fa-rotate-left" /> {t('ranking.softReset')}
               </button>
               <button
                 className="rk-reset-btn hard"
                 onClick={() => setShowHardConfirm1(true)}
                 disabled={resetting}
-                title="Returns all players to 1500 pts and clears history"
+                title={t('ranking.hardResetTooltip')}
               >
-                <i className="fas fa-triangle-exclamation" /> Hard Reset
+                <i className="fas fa-triangle-exclamation" /> {t('ranking.hardReset')}
               </button>
             </div>
           )}
           <div className="rk-tabs">
             <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => setTab('leaderboard')}>
-              <i className="fas fa-trophy" /> Ranking
+              <i className="fas fa-trophy" /> {t('ranking.tabs.ranking')}
             </button>
             <button className={`rk-tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
-              <i className="fas fa-list" /> History
+              <i className="fas fa-list" /> {t('ranking.tabs.history')}
             </button>
             <button className={`rk-tab ${tab === 'info' ? 'active' : ''}`} onClick={() => setTab('info')}>
-              <i className="fas fa-info-circle" /> Info
+              <i className="fas fa-info-circle" /> {t('ranking.tabs.info')}
             </button>
           </div>
         </div>{/* rk-header-right */}
@@ -202,19 +211,19 @@ function RankingPage() {
       {/* ── LEADERBOARD TAB ── */}
       {tab === 'leaderboard' && (
         <div className="rk-section">
-          {loadingBoard && <Loading message="Loading ranking..." />}
+          {loadingBoard && <Loading message={t('ranking.loadingRanking')} />}
           {boardError && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-triangle-exclamation" /></span>
               <p style={{ color: 'var(--danger-color, #ef4444)', fontWeight: 600 }}>
-                Could not connect to the server.
+                {t('ranking.errorTitle')}
               </p>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                Make sure the API server is running on port 3001.<br />
-                Use <code>npm run dev</code> or open <code>Abrir_Aplicacion.bat</code>.
+                {t('ranking.errorDesc')}<br />
+                {t('ranking.errorDesc2')}
               </p>
               <button className="btn btn-primary" onClick={() => void loadLeaderboard()}>
-                Retry
+                {t('ranking.retry')}
               </button>
             </div>
           )}
@@ -222,9 +231,9 @@ function RankingPage() {
           {!loadingBoard && !boardError && leaderboard.length === 0 && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-trophy" /></span>
-              <p>No participants yet.</p>
+              <p>{t('ranking.emptyNoParticipants')}</p>
               <button className="btn btn-primary" onClick={() => navigate(getPath('participants'))}>
-                Go to Participants
+                {t('ranking.goToParticipants')}
               </button>
             </div>
           )}
@@ -234,10 +243,10 @@ function RankingPage() {
               <table className="rk-table">
                 <thead>
                   <tr>
-                    <th className="rk-col-pos">#</th>
-                    <th className="rk-col-player">Player</th>
-                    <th className="rk-col-rank">Rank</th>
-                    <th className="rk-col-pts">Points</th>
+                    <th className="rk-col-pos">{t('ranking.colPos')}</th>
+                    <th className="rk-col-player">{t('ranking.colPlayer')}</th>
+                    <th className="rk-col-rank">{t('ranking.colRank')}</th>
+                    <th className="rk-col-pts">{t('ranking.colPoints')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -270,7 +279,7 @@ function RankingPage() {
                           {entry.position != null && entry.position <= 5 && (
                             <span className="rk-legend-badge">
                               <i className="fas fa-dragon" />
-                              {' '}LEGEND
+                              {' '}{t('ranking.legend')}
                             </span>
                           )}
                           <span
@@ -278,7 +287,7 @@ function RankingPage() {
                             style={{ '--rank-color': getRankColor(entry.eloRank) } as React.CSSProperties}
                           >
                             <i className={getRankIcon(entry.eloRank)} />
-                            {' '}{entry.eloRank}
+                            {' '}{formatRank(entry.eloRank)}
                           </span>
                         </div>
                       </td>
@@ -306,16 +315,16 @@ function RankingPage() {
               participants={allParticipants}
               selectedId={selectedPlayerId}
               onSelect={setSelectedPlayerId}
-              placeholder="All Players"
+              placeholder={t('ranking.allPlayers')}
             />
           </div>
 
-          {loadingHistory && <Loading message="Loading history..." />}
+          {loadingHistory && <Loading message={t('ranking.loadingHistory')} />}
 
           {!loadingHistory && matchHistory.filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId).length === 0 && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-list" /></span>
-              <p>No matches recorded yet.</p>
+              <p>{t('ranking.emptyNoMatches')}</p>
             </div>
           )}
 
@@ -336,7 +345,7 @@ function RankingPage() {
                     {canAdminCurrentCommunity && (
                       <button
                         className="rk-history-delete"
-                        title="Delete record (does not revert ELO)"
+                        title={t('ranking.deleteRecordTitle')}
                         onClick={() => setDeleteTarget(m.id)}
                       >
                         🗑
@@ -357,7 +366,7 @@ function RankingPage() {
                           : m.playerARankAfter}
                       </span>
                     </div>
-                    <span className="rk-history-vs">vs</span>
+                    <span className="rk-history-vs">{t('ranking.vs')}</span>
                     <div className={`rk-history-player ${m.winnerId === m.playerBId ? 'winner' : 'loser'}`}>
                       <span className="rk-history-pname">
                         {m.winnerId === m.playerBId ? <i className="fas fa-crown" /> : ''} {pName(m.playerBId)}
@@ -389,9 +398,9 @@ function RankingPage() {
       {/* Delete match confirm */}
       <ConfirmModal
         isOpen={!!deleteTarget}
-        title="Delete record"
-        message="Delete this match record? This action does not revert the applied ELO points."
-        confirmText="Delete"
+        title={t('ranking.deleteRecordTitle')}
+        message={t('ranking.deleteRecordMessage')}
+        confirmText={t('ranking.delete')}
         onConfirm={() => { void handleDeleteMatch(); }}
         onCancel={() => setDeleteTarget(null)}
       />
@@ -399,9 +408,9 @@ function RankingPage() {
       {/* Soft reset — single confirmation */}
       <ConfirmModal
         isOpen={showSoftConfirm}
-        title="Soft Reset"
-        message="This will return each player to the start of their current tier (e.g., 1699 → 1600). The match history will be preserved. Confirm?"
-        confirmText="Apply Soft Reset"
+        title={t('ranking.softResetConfirmTitle')}
+        message={t('ranking.softResetConfirmMessage')}
+        confirmText={t('ranking.applySoftReset')}
         onConfirm={() => { void handleSoftReset(); }}
         onCancel={() => setShowSoftConfirm(false)}
       />
@@ -409,9 +418,9 @@ function RankingPage() {
       {/* Hard reset — step 1 */}
       <ConfirmModal
         isOpen={showHardConfirm1}
-        title="Hard Reset — Confirmation 1/2"
-        message="This will return ALL players to 1500 pts (Diamante) and clear all match history. This action is irreversible."
-        confirmText="Continue →"
+        title={t('ranking.hardResetConfirmTitle1')}
+        message={t('ranking.hardResetConfirmMessage1')}
+        confirmText={t('ranking.continue')}
         onConfirm={() => { setShowHardConfirm1(false); setShowHardConfirm2(true); }}
         onCancel={() => setShowHardConfirm1(false)}
       />
@@ -419,9 +428,9 @@ function RankingPage() {
       {/* Hard reset — step 2 */}
       <ConfirmModal
         isOpen={showHardConfirm2}
-        title="Hard Reset — Confirmation 2/2"
-        message="Are you COMPLETELY sure? All points and match history will be lost with no possibility of recovery."
-        confirmText="Yes, perform Hard Reset"
+        title={t('ranking.hardResetConfirmTitle2')}
+        message={t('ranking.hardResetConfirmMessage2')}
+        confirmText={t('ranking.yesHardReset')}
         onConfirm={() => { void handleHardReset(); }}
         onCancel={() => setShowHardConfirm2(false)}
       />

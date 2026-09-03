@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import './ParticipantName.css';
@@ -9,6 +10,7 @@ interface ParticipantNameProps {
 }
 
 function ParticipantName({ id, name, className = '' }: ParticipantNameProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { getPath } = useCommunity();
   return (
@@ -18,7 +20,7 @@ function ParticipantName({ id, name, className = '' }: ParticipantNameProps) {
         e.stopPropagation();
         navigate(getPath(`participants/${id}`));
       }}
-      title="View profile"
+      title={t('common.viewProfile')}
     >
       {name}
     </span>

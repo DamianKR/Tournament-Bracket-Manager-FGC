@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { GlobalParticipant, ComputedStats, LeagueResultEntry, MatchRecord } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
@@ -40,6 +41,7 @@ function ordinal(n: number): string {
 }
 
 function ParticipantProfile() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
@@ -239,8 +241,8 @@ function ParticipantProfile() {
               winnerId: player1IsWinner
                 ? (gP1?.id ?? m.winnerGlobalId ?? m.winnerId)
                 : (gP2?.id ?? m.winnerGlobalId ?? m.winnerId),
-              player1Name: gP1 ? `${gP1.name}${gP1.alias ? ` (${gP1.alias})` : ''}` : (m.player1Name || 'Unknown'),
-              player2Name: gP2 ? `${gP2.name}${gP2.alias ? ` (${gP2.alias})` : ''}` : (m.player2Name || 'Unknown'),
+              player1Name: gP1 ? `${gP1.name}${gP1.alias ? ` (${gP1.alias})` : ''}` : (m.player1Name || t('tournament.bracket.unknown')),
+              player2Name: gP2 ? `${gP2.name}${gP2.alias ? ` (${gP2.alias})` : ''}` : (m.player2Name || t('tournament.bracket.unknown')),
               date: m.createdAt,
               context: m.tournamentName,
             };
@@ -253,8 +255,8 @@ function ParticipantProfile() {
             player1Id: m.playerAId,
             player2Id: m.playerBId,
             winnerId: m.winnerId,
-            player1Name: participantMap.get(m.playerAId) ? `${participantMap.get(m.playerAId)!.name}${participantMap.get(m.playerAId)!.alias ? ` (${participantMap.get(m.playerAId)!.alias})` : ''}` : 'Unknown',
-            player2Name: participantMap.get(m.playerBId) ? `${participantMap.get(m.playerBId)!.name}${participantMap.get(m.playerBId)!.alias ? ` (${participantMap.get(m.playerBId)!.alias})` : ''}` : 'Unknown',
+            player1Name: participantMap.get(m.playerAId) ? `${participantMap.get(m.playerAId)!.name}${participantMap.get(m.playerAId)!.alias ? ` (${participantMap.get(m.playerAId)!.alias})` : ''}` : t('tournament.bracket.unknown'),
+            player2Name: participantMap.get(m.playerBId) ? `${participantMap.get(m.playerBId)!.name}${participantMap.get(m.playerBId)!.alias ? ` (${participantMap.get(m.playerBId)!.alias})` : ''}` : t('tournament.bracket.unknown'),
             player1EloBefore: m.playerAPointsBefore,
             player2EloBefore: m.playerBPointsBefore,
             player1EloAfter: m.playerAPointsAfter,
@@ -296,15 +298,15 @@ function ParticipantProfile() {
   }
 
   async function handleChangePassword() {
-    if (pwNew.length < 6) { setPwError('Password must be at least 6 characters'); return; }
-    if (pwNew !== pwConfirm) { setPwError('Passwords do not match'); return; }
+    if (pwNew.length < 6) { setPwError(t('participantProfile.errors.passwordTooShort')); return; }
+    if (pwNew !== pwConfirm) { setPwError(t('participantProfile.errors.passwordsMismatch')); return; }
     setPwSaving(true); setPwError(''); setPwSuccess(false);
     try {
       await changeMyPassword(pwCurrent, pwNew);
       setPwSuccess(true);
       setPwCurrent(''); setPwNew(''); setPwConfirm('');
     } catch (err: any) {
-      setPwError(err.message || 'Failed to change password');
+      setPwError(err.message || t('participantProfile.errors.passwordChangeFailed'));
     } finally {
       setPwSaving(false);
     }
@@ -312,9 +314,9 @@ function ParticipantProfile() {
 
   async function handleSaveAdminAccount() {
     if (!linkedUser || !participant) return;
-    if (!admUsername.trim()) { setAdmError('Username is required'); return; }
-    if (admPassword.trim() && admPassword.trim().length < 6) { setAdmError('New password must be at least 6 characters'); return; }
-    if (admPassword.trim() && admPassword.trim() !== admConfirm.trim()) { setAdmError('Passwords do not match'); return; }
+    if (!admUsername.trim()) { setAdmError(t('participantProfile.errors.usernameRequired')); return; }
+    if (admPassword.trim() && admPassword.trim().length < 6) { setAdmError(t('participantProfile.errors.adminPasswordTooShort')); return; }
+    if (admPassword.trim() && admPassword.trim() !== admConfirm.trim()) { setAdmError(t('participantProfile.errors.passwordsMismatch')); return; }
 
     setAdmSaving(true); setAdmError(''); setAdmSuccess(false);
     try {
@@ -334,10 +336,10 @@ function ParticipantProfile() {
         setAdmPassword(''); setAdmConfirm('');
         setAdmSuccess(true);
       } else {
-        setAdmError('No changes to save');
+        setAdmError(t('participantProfile.errors.noChanges'));
       }
     } catch (err: any) {
-      setAdmError(err.message || 'Failed to update account');
+      setAdmError(err.message || t('participantProfile.errors.updateAccountFailed'));
     } finally {
       setAdmSaving(false);
     }
@@ -352,7 +354,7 @@ function ParticipantProfile() {
       setShowDeleteConfirm(false);
       navigate(getPath('participants'));
     } catch (err: any) {
-      setEditError(err.message || 'Failed to delete participant');
+      setEditError(err.message || t('participantProfile.errors.deleteFailed'));
     } finally {
       setDeleteSaving(false);
     }
@@ -363,9 +365,9 @@ function ParticipantProfile() {
       <div className="profile-page">
         <div className="container">
           <div className="empty-state card">
-            <h3>Participant not found</h3>
+            <h3>{t('participantProfile.notFoundTitle')}</h3>
             <button className="btn-outline mt-2" onClick={() => navigate(getPath('participants'))}>
-              ← Back to roster
+              {t('participantProfile.backToRoster')}
             </button>
           </div>
         </div>
@@ -377,7 +379,7 @@ function ParticipantProfile() {
     return (
       <div className="profile-page">
         <div className="container">
-          <Loading message="Loading profile..." />
+          <Loading message={t('participantProfile.loading')} />
         </div>
       </div>
     );
@@ -395,7 +397,7 @@ function ParticipantProfile() {
       <div className="profile-banner" style={{ background: bannerBg, '--avatar-color': color } as React.CSSProperties}>
         <div className="profile-banner-inner container">
           <button className="profile-back-btn" onClick={() => navigate(getPath('participants'))}>
-            ← Roster
+            {t('participantProfile.backToRosterShort')}
           </button>
           <div className="profile-banner-body">
             <div className="profile-identity">
@@ -419,7 +421,7 @@ function ParticipantProfile() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    title="Chat on WhatsApp"
+                    title={t('participantProfile.chatOnWhatsApp')}
                   >
                     <i className="fab fa-whatsapp" />
                     {participant.phoneNumber}
@@ -436,7 +438,7 @@ function ParticipantProfile() {
                   </span>
                 )}
                 <span className="profile-since">
-                  Member since {new Date(participant.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                  {t('participantProfile.memberSince', { date: new Date(participant.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) })}
                 </span>
               </div>
             </div>
@@ -445,7 +447,12 @@ function ParticipantProfile() {
             {(() => {
               const hasPts = (rankEntry?.eloPoints ?? participant.eloPoints) != null;
               const pts   = hasPts ? (rankEntry?.eloPoints ?? participant.eloPoints) : null;
-              const eloRank = rankEntry?.eloRank ?? participant.eloRank ?? 'Sin puntos';
+              const eloRank = rankEntry?.eloRank ?? participant.eloRank ?? t('participantProfile.unranked');
+              const eloRankLabel = !eloRank || eloRank === 'Sin puntos'
+                ? t('common.unranked')
+                : eloRank === 'Legend'
+                  ? t('rankingInfo.rankLegend')
+                  : t(`rankingInfo.tierNames.${eloRank}`);
               const pos   = rankEntry?.position;
               const isLegend = pos != null && pos <= 5;
               const col   = getRankColor(eloRank);
@@ -455,7 +462,7 @@ function ParticipantProfile() {
                   className={`profile-elo-widget ${isLegend ? 'profile-elo-widget--legend' : ''}`}
                   style={{ '--elo-color': col } as React.CSSProperties}
                   onClick={() => navigate(getPath('ranking'))}
-                  title="View full ranking"
+                  title={t('participantProfile.viewFullRanking')}
                 >
                   {/* Glow layer */}
                   <div className="pew-glow" />
@@ -464,20 +471,20 @@ function ParticipantProfile() {
                   {isLegend && (
                     <div className="pew-legend-banner">
                       <i className="fas fa-dragon" />
-                      <span>LEGEND</span>
+                      <span>{t('participantProfile.legend')}</span>
                       <i className="fas fa-dragon" />
                     </div>
                   )}
 
                   {/* Top: label */}
-                  <div className="pew-label">ELO RANKING</div>
+                  <div className="pew-label">{t('participantProfile.eloRanking')}</div>
 
                   {/* Center: icon + rank name */}
                   <div className="pew-center">
                     <span className="pew-icon">
                       <i className={icon} />
                     </span>
-                    <span className="pew-rank">{eloRank}</span>
+                    <span className="pew-rank">{eloRankLabel}</span>
                   </div>
 
                   {/* Divider */}
@@ -487,12 +494,12 @@ function ParticipantProfile() {
                   <div className="pew-bottom">
                     <div className="pew-pts-block">
                       <span className="pew-pts-value">{pts != null ? pts.toLocaleString() : '—'}</span>
-                      <span className="pew-pts-label">{pts != null ? 'points' : 'unranked'}</span>
+                      <span className="pew-pts-label">{pts != null ? t('participantProfile.points') : t('participantProfile.unranked')}</span>
                     </div>
                     {pos != null && (
                       <div className="pew-pos-block">
                         <span className="pew-pos-value">#{pos}</span>
-                        <span className="pew-pos-label">ranking</span>
+                        <span className="pew-pos-label">{t('participantProfile.rankingLabel')}</span>
                       </div>
                     )}
                   </div>
@@ -516,14 +523,14 @@ function ParticipantProfile() {
       <div className="profile-tabs-bar">
         <div className="container profile-tabs">
           {(['overview', 'results', 'matches', 'edit'] as Tab[])
-            .filter((t) => t !== 'edit' || canEdit)
-            .map((t) => (
-              <button key={t} className={`profile-tab ${tab === t ? 'active' : ''}`}
-                onClick={() => setTab(t)}>
-                {t === 'overview' ? 'Overview'
-                  : t === 'results' ? `Results`
-                  : t === 'matches' ? 'Matches'
-                  : 'Edit'}
+            .filter((tabItem) => tabItem !== 'edit' || canEdit)
+            .map((tabItem) => (
+              <button key={tabItem} className={`profile-tab ${tab === tabItem ? 'active' : ''}`}
+                onClick={() => setTab(tabItem)}>
+                {tabItem === 'overview' ? t('participantProfile.tabs.overview')
+                  : tabItem === 'results' ? t('participantProfile.tabs.results')
+                  : tabItem === 'matches' ? t('participantProfile.tabs.matches')
+                  : t('participantProfile.tabs.edit')}
               </button>
             ))}
         </div>
@@ -538,27 +545,27 @@ function ParticipantProfile() {
             <div className="profile-stat-grid">
               <div className="profile-stat-card profile-stat-card--highlight">
                 <span className="psc-value">{stats.wins}</span>
-                <span className="psc-label"><i className="fas fa-trophy" /> Tournament Wins</span>
+                <span className="psc-label"><i className="fas fa-trophy" /> {t('participantProfile.tournamentStats.wins')}</span>
               </div>
               <div className="profile-stat-card">
                 <span className="psc-value">{stats.tournamentsPlayed}</span>
-                <span className="psc-label">Tournaments Played</span>
+                <span className="psc-label">{t('participantProfile.tournamentStats.played')}</span>
               </div>
               <div className="profile-stat-card">
                 <span className="psc-value">{stats.top3}</span>
-                <span className="psc-label">Top 3 Finishes</span>
+                <span className="psc-label">{t('participantProfile.tournamentStats.top3')}</span>
               </div>
               <div className="profile-stat-card">
                 <span className="psc-value">{stats.winRate > 0 ? `${stats.winRate}%` : '—'}</span>
-                <span className="psc-label">Match Win Rate</span>
+                <span className="psc-label">{t('participantProfile.tournamentStats.winRate')}</span>
               </div>
               <div className="profile-stat-card">
                 <span className="psc-value">{stats.matchWins}</span>
-                <span className="psc-label">Match Wins</span>
+                <span className="psc-label">{t('participantProfile.tournamentStats.matchWins')}</span>
               </div>
               <div className="profile-stat-card">
                 <span className="psc-value">{stats.matchLosses}</span>
-                <span className="psc-label">Match Losses</span>
+                <span className="psc-label">{t('participantProfile.tournamentStats.matchLosses')}</span>
               </div>
             </div>
 
@@ -566,8 +573,8 @@ function ParticipantProfile() {
             {(stats.matchWins + stats.matchLosses) > 0 && (
               <div className="card profile-winrate-card">
                 <div className="profile-winrate-header">
-                  <span><i className="fas fa-trophy" /> Tournament Match Record</span>
-                  <span>{stats.matchWins}W – {stats.matchLosses}L</span>
+                  <span><i className="fas fa-trophy" /> {t('participantProfile.tournamentRecord')}</span>
+                  <span>{t('common.record', { wins: stats.matchWins, losses: stats.matchLosses })}</span>
                 </div>
                 <div className="profile-winrate-bar">
                   <div className="profile-winrate-fill" style={{ width: `${stats.winRate}%` }} />
@@ -580,27 +587,27 @@ function ParticipantProfile() {
               <div className="profile-stat-grid">
                 <div className="profile-stat-card profile-stat-card--highlight">
                   <span className="psc-value">{leagueFirstPlaces}</span>
-                  <span className="psc-label"><i className="fas fa-trophy" /> League Wins</span>
+                  <span className="psc-label"><i className="fas fa-trophy" /> {t('participantProfile.leagueStats.wins')}</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{leaguesWithMatches}</span>
-                  <span className="psc-label">Leagues Played</span>
+                  <span className="psc-label">{t('participantProfile.leagueStats.played')}</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{leagueTop5}</span>
-                  <span className="psc-label">Top 5 in Leagues</span>
+                  <span className="psc-label">{t('participantProfile.leagueStats.top5')}</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{leagueStats.winRate > 0 ? `${leagueStats.winRate}%` : '—'}</span>
-                  <span className="psc-label">League Match Win Rate</span>
+                  <span className="psc-label">{t('participantProfile.leagueStats.winRate')}</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{leagueStats.totalWins}</span>
-                  <span className="psc-label">League Match Wins</span>
+                  <span className="psc-label">{t('participantProfile.leagueStats.matchWins')}</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{leagueStats.totalLosses}</span>
-                  <span className="psc-label">League Match Losses</span>
+                  <span className="psc-label">{t('participantProfile.leagueStats.matchLosses')}</span>
                 </div>
               </div>
             )}
@@ -609,8 +616,8 @@ function ParticipantProfile() {
             {leagueStats && (
               <div className="card profile-winrate-card profile-winrate-card--league">
                 <div className="profile-winrate-header">
-                  <span><i className="fas fa-trophy" /> League Match Record</span>
-                  <span>{leagueStats.totalWins}W – {leagueStats.totalLosses}L</span>
+                  <span><i className="fas fa-trophy" /> {t('participantProfile.leagueRecord')}</span>
+                  <span>{t('common.record', { wins: leagueStats.totalWins, losses: leagueStats.totalLosses })}</span>
                 </div>
                 <div className="profile-winrate-bar">
                   <div className="profile-winrate-fill" style={{ width: `${leagueStats.winRate}%` }} />
@@ -621,12 +628,12 @@ function ParticipantProfile() {
             {/* Ranked Duels Stats */}
             <div className="card profile-duels-card">
               <div className="profile-duels-header">
-                <h3><i className="fas fa-swords" /> Ranked Duels</h3>
+                <h3><i className="fas fa-swords" /> {t('participantProfile.rankedDuels.title')}</h3>
                 <button
                   className="btn-outline btn-sm"
                   onClick={() => navigate(getPath('events?tab=ranked'))}
                 >
-                  Challenge Players →
+                  {t('participantProfile.rankedDuels.challengePlayers')}
                 </button>
               </div>
               <div className="profile-stat-grid">
@@ -635,32 +642,32 @@ function ParticipantProfile() {
                     {duelStats.maxChallengesPerWeek - duelStats.challengesThisWeek}
                   </span>
                   <span className="psc-label">
-                    <i className="fas fa-fire" /> Duels Available This Week
+                    <i className="fas fa-fire" /> {t('participantProfile.rankedDuels.availableThisWeek')}
                   </span>
                   <span className="psc-sublabel">
-                    {duelStats.challengesThisWeek} / {duelStats.maxChallengesPerWeek} used
-                    {nextResetText && <span className="reset-timer">Resets in {nextResetText}</span>}
+                    {t('participantProfile.rankedDuels.used', { used: duelStats.challengesThisWeek, total: duelStats.maxChallengesPerWeek })}
+                    {nextResetText && <span className="reset-timer">{t('participantProfile.rankedDuels.resetsIn', { time: nextResetText })}</span>}
                   </span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{duelStats.duelWinRate > 0 ? `${duelStats.duelWinRate}%` : '—'}</span>
-                  <span className="psc-label">Duel Win Rate</span>
+                  <span className="psc-label">{t('participantProfile.rankedDuels.winRate')}</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{duelStats.duelWins}</span>
-                  <span className="psc-label">Duel Wins</span>
+                  <span className="psc-label">{t('participantProfile.rankedDuels.wins')}</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{duelStats.duelLosses}</span>
-                  <span className="psc-label">Duel Losses</span>
+                  <span className="psc-label">{t('participantProfile.rankedDuels.losses')}</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{duelStats.pendingChallenges}</span>
-                  <span className="psc-label">Pending Challenges</span>
+                  <span className="psc-label">{t('participantProfile.rankedDuels.pendingChallenges')}</span>
                 </div>
                 <div className="profile-stat-card">
                   <span className="psc-value">{duelStats.completedThisWeek}</span>
-                  <span className="psc-label">Duels This Week</span>
+                  <span className="psc-label">{t('participantProfile.rankedDuels.thisWeek')}</span>
                 </div>
               </div>
 
@@ -668,8 +675,8 @@ function ParticipantProfile() {
               {duelStats.totalDuels > 0 && (
                 <div className="card profile-winrate-card profile-winrate-card--duel">
                   <div className="profile-winrate-header">
-                    <span><i className="fas fa-swords" /> Duel Match Record</span>
-                    <span>{duelStats.duelWins}W – {duelStats.duelLosses}L</span>
+                    <span><i className="fas fa-swords" /> {t('participantProfile.rankedDuels.matchRecord')}</span>
+                    <span>{t('common.record', { wins: duelStats.duelWins, losses: duelStats.duelLosses })}</span>
                   </div>
                   <div className="profile-winrate-bar">
                     <div className="profile-winrate-fill" style={{ width: `${duelStats.duelWinRate}%` }} />
@@ -688,21 +695,21 @@ function ParticipantProfile() {
                 className={`results-subtab ${resultsSubTab === 'tournaments' ? 'active' : ''}`}
                 onClick={() => setResultsSubTab('tournaments')}
               >
-                <i className="fas fa-trophy" /> Tournaments ({stats.placements.length})
+                <i className="fas fa-trophy" /> {t('participantProfile.results.tournamentsTab', { count: stats.placements.length })}
               </button>
               <button
                 className={`results-subtab ${resultsSubTab === 'leagues' ? 'active' : ''}`}
                 onClick={() => setResultsSubTab('leagues')}
               >
-                <i className="fas fa-trophy" /> Leagues ({leagueStats?.leagues.length ?? 0})
+                <i className="fas fa-trophy" /> {t('participantProfile.results.leaguesTab', { count: leagueStats?.leagues.length ?? 0 })}
               </button>
             </div>
 
             {resultsSubTab === 'tournaments' && (
               <>
-                <h3 className="mb-3">Tournament Results</h3>
+                <h3 className="mb-3">{t('participantProfile.results.tournamentTitle')}</h3>
                 {stats.placements.length === 0 ? (
-                  <p className="text-secondary">No tournament results yet.</p>
+                  <p className="text-secondary">{t('participantProfile.results.noTournamentResults')}</p>
                 ) : (
                   <div className="profile-results-list">
                     {stats.placements.map((pl) => (
@@ -712,7 +719,7 @@ function ParticipantProfile() {
                         <div className="prr-info">
                           <span className="prr-name">{pl.tournamentName}</span>
                           <span className="prr-meta text-secondary text-sm">
-                            {pl.totalParticipants} players · {new Date(pl.date).toLocaleDateString()}
+                            {t('participantProfile.results.playersCount', { count: pl.totalParticipants })} · {new Date(pl.date).toLocaleDateString()}
                           </span>
                         </div>
                         <span className={`prr-placement ${pl.position === 1 ? 'gold' : pl.position <= 3 ? 'podium' : ''}`}>
@@ -727,9 +734,9 @@ function ParticipantProfile() {
 
             {resultsSubTab === 'leagues' && (
               <>
-                <h3 className="mb-3">League Results</h3>
+                <h3 className="mb-3">{t('participantProfile.results.leagueTitle')}</h3>
                 {(leagueStats?.leagues.length ?? 0) === 0 ? (
-                  <p className="text-secondary">No league results yet.</p>
+                  <p className="text-secondary">{t('participantProfile.results.noLeagueResults')}</p>
                 ) : (
                   <div className="profile-results-list">
                     {leagueStats!.leagues.map((pl: LeagueResultEntry) => (
@@ -741,7 +748,12 @@ function ParticipantProfile() {
                         <div className="prr-info">
                           <span className="prr-name">{pl.leagueName}</span>
                           <span className="prr-meta text-secondary text-sm">
-                            {pl.wins}W – {pl.losses}L · {pl.matchesPlayed} matches · ELO {pl.eloChange >= 0 ? '+' : ''}{pl.eloChange}
+                            {t('participantProfile.results.recordMatches', {
+                              wins: pl.wins,
+                              losses: pl.losses,
+                              matches: pl.matchesPlayed,
+                              eloChange: `${pl.eloChange >= 0 ? '+' : ''}${pl.eloChange}`
+                            })}
                           </span>
                         </div>
                         <span className={`prr-placement ${pl.rank === 1 ? 'gold' : pl.rank <= 3 ? 'podium' : ''}`}>
@@ -759,65 +771,65 @@ function ParticipantProfile() {
         {/* ── Matches tab ── */}
         {tab === 'matches' && (
           <div className="card matches-tab">
-            <h3 className="mb-3">Match History</h3>
-            
+            <h3 className="mb-3">{t('participantProfile.matches.title')}</h3>
+
             <div className="matches-filters">
               <div className="matches-filter-group">
-                <label>Type:</label>
+                <label>{t('participantProfile.matches.typeLabel')}</label>
                 <div className="filter-buttons">
                   <button
                     className={`filter-btn ${matchTypeFilter === 'all' ? 'active' : ''}`}
                     onClick={() => setMatchTypeFilter('all')}
                   >
-                    All
+                    {t('participantProfile.matches.all')}
                   </button>
                   <button
                     className={`filter-btn ${matchTypeFilter === 'tournament' ? 'active' : ''}`}
                     onClick={() => setMatchTypeFilter('tournament')}
                   >
-                    <i className="fas fa-trophy" /> Tournament
+                    <i className="fas fa-trophy" /> {t('participantProfile.matches.tournament')}
                   </button>
                   <button
                     className={`filter-btn ${matchTypeFilter === 'league' ? 'active' : ''}`}
                     onClick={() => setMatchTypeFilter('league')}
                   >
-                    <i className="fas fa-calendar-alt" /> League
+                    <i className="fas fa-calendar-alt" /> {t('participantProfile.matches.league')}
                   </button>
                   <button
                     className={`filter-btn ${matchTypeFilter === 'duel' ? 'active' : ''}`}
                     onClick={() => setMatchTypeFilter('duel')}
                   >
-                    <i className="fas fa-swords" /> Duel
+                    <i className="fas fa-swords" /> {t('participantProfile.matches.duel')}
                   </button>
                 </div>
               </div>
 
               <div className="matches-filter-group">
-                <label>Result:</label>
+                <label>{t('participantProfile.matches.resultLabel')}</label>
                 <div className="filter-buttons">
                   <button
                     className={`filter-btn ${matchResultFilter === 'all' ? 'active' : ''}`}
                     onClick={() => setMatchResultFilter('all')}
                   >
-                    All
+                    {t('participantProfile.matches.all')}
                   </button>
                   <button
                     className={`filter-btn ${matchResultFilter === 'wins' ? 'active' : ''}`}
                     onClick={() => setMatchResultFilter('wins')}
                   >
-                    <i className="fas fa-trophy" /> Wins
+                    <i className="fas fa-trophy" /> {t('participantProfile.matches.wins')}
                   </button>
                   <button
                     className={`filter-btn ${matchResultFilter === 'losses' ? 'active' : ''}`}
                     onClick={() => setMatchResultFilter('losses')}
                   >
-                    <i className="fas fa-times" /> Losses
+                    <i className="fas fa-times" /> {t('participantProfile.matches.losses')}
                   </button>
                 </div>
               </div>
             </div>
 
-            {loadingMatches && <Loading message="Loading matches..." />}
+            {loadingMatches && <Loading message={t('participantProfile.matches.loading')} />}
 
             {!loadingMatches && (() => {
               const filtered = allMatches.filter(m => {
@@ -830,7 +842,7 @@ function ParticipantProfile() {
 
               if (filtered.length === 0) {
                 return (
-                  <p className="text-secondary">No matches found with current filters.</p>
+                  <p className="text-secondary">{t('participantProfile.matches.noMatches')}</p>
                 );
               }
 
@@ -846,14 +858,15 @@ function ParticipantProfile() {
                       <div key={m.id} className={`match-item ${won ? 'win' : 'loss'}`}>
                         <div className="match-item-header">
                           <span className={`match-item-result ${won ? 'win' : 'loss'}`}>
-                            {won ? <><i className="fas fa-trophy" /> WIN</> : <><i className="fas fa-times" /> LOSS</>}
+                            {won ? <><i className="fas fa-trophy" /> {t('participantProfile.matches.win')}</> : <><i className="fas fa-times" /> {t('participantProfile.matches.loss')}</>}
                           </span>
                           <span className="match-item-type">
-                            {m.type === 'tournament' && <><i className="fas fa-trophy" /> Tournament</>}
-                            {m.type === 'league' && <><i className="fas fa-calendar-alt" /> League</>}
-                            {m.type === 'duel' && <><i className="fas fa-swords" /> Duel</>}
-                            {m.type === 'matchmaking' && <><i className="fas fa-random" /> Matchmaking</>}
-                            {m.type === 'free' && <><i className="fas fa-gamepad" /> Ranked</>}
+                            {m.type && (
+                              <>
+                                <i className={m.type === 'tournament' ? 'fas fa-trophy' : m.type === 'league' ? 'fas fa-calendar-alt' : m.type === 'duel' ? 'fas fa-swords' : m.type === 'matchmaking' ? 'fas fa-random' : 'fas fa-gamepad'} />
+                                {' '}{t(`participantProfile.matches.matchTypes.${m.type}`)}
+                              </>
+                            )}
                           </span>
                           <span className="match-item-date">
                             {new Date(m.date).toLocaleDateString(undefined, { 
@@ -867,12 +880,12 @@ function ParticipantProfile() {
                         </div>
                         <div className="match-item-body">
                           <div className="match-item-opponent">
-                            <span className="match-item-vs">vs</span>
-                            <span 
+                            <span className="match-item-vs">{t('common.vs')}</span>
+                            <span
                               className="match-item-opponent-name"
                               onClick={() => navigate(getPath(`participants/${opponentId}`))}
                             >
-                              {opponentName || 'Unknown'}
+                              {opponentName || t('tournament.bracket.unknown')}
                             </span>
                           </div>
                           {m.context && (
@@ -912,32 +925,32 @@ function ParticipantProfile() {
         {/* ── Edit tab ── */}
         {tab === 'edit' && canEdit && (
           <div className="card profile-edit-form">
-            <h3>Edit Profile</h3>
+            <h3>{t('participantProfile.edit.title')}</h3>
             {editError && <div className="error-message">{editError}</div>}
-            {editSuccess && <div className="success-message">Profile updated successfully</div>}
+            {editSuccess && <div className="success-message">{t('participantProfile.edit.success')}</div>}
             <div className="profile-edit-grid">
               <div className="form-group">
-                <label>Name *</label>
+                <label>{t('participantProfile.edit.nameLabel')}</label>
                 <input type="text" value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                  placeholder="Player name" />
+                  placeholder={t('participantProfile.edit.namePlaceholder')} />
               </div>
               <div className="form-group">
-                <label>Alias / Gamertag</label>
+                <label>{t('participantProfile.edit.aliasLabel')}</label>
                 <input type="text" value={editAlias}
                   onChange={(e) => setEditAlias(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                  placeholder="Optional short name" />
+                  placeholder={t('participantProfile.edit.aliasPlaceholder')} />
               </div>
             </div>
             <div className="form-group profile-phone-field">
-              <label>WhatsApp / Phone Number</label>
+              <label>{t('participantProfile.edit.phoneLabel')}</label>
               <input type="tel" value={editPhone}
                 onChange={(e) => setEditPhone(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                placeholder="+53 5XXXXXXX" />
-              <small className="hint">Visible to everyone. Tapping it on mobile opens WhatsApp.</small>
+                placeholder={t('participantProfile.edit.phonePlaceholder')} />
+              <small className="hint">{t('participantProfile.edit.phoneHint')}</small>
             </div>
             <CharacterSelect
               gameId={editGameId}
@@ -946,42 +959,42 @@ function ParticipantProfile() {
               onCharacterChange={setEditCharacterId}
             />
             <div className="form-actions">
-              <button className="btn-outline" onClick={() => setTab('overview')}>Cancel</button>
+              <button className="btn-outline" onClick={() => setTab('overview')}>{t('participantProfile.edit.cancel')}</button>
               <button className="btn-primary" onClick={handleSave} disabled={saving}>
-                {saving ? 'Saving…' : 'Save Changes'}
+                {saving ? t('participantProfile.edit.saving') : t('participantProfile.edit.save')}
               </button>
             </div>
 
             {isOwnProfile && (
               <>
                 <hr className="profile-password-sep" />
-                <h3>Security</h3>
-                <p className="text-secondary mb-2">Change your account password</p>
+                <h3>{t('participantProfile.edit.securityTitle')}</h3>
+                <p className="text-secondary mb-2">{t('participantProfile.edit.changePassword')}</p>
                 {pwError && <div className="error-message">{pwError}</div>}
-                {pwSuccess && <div className="success-message">Password changed successfully</div>}
+                {pwSuccess && <div className="success-message">{t('participantProfile.edit.passwordSuccess')}</div>}
                 <div className="profile-edit-grid">
                   <div className="form-group">
-                    <label>Current Password</label>
+                    <label>{t('participantProfile.edit.currentPassword')}</label>
                     <input type="password" value={pwCurrent}
                       onChange={(e) => setPwCurrent(e.target.value)}
-                      placeholder="Your current password" autoComplete="current-password" />
+                      placeholder={t('participantProfile.edit.currentPasswordPlaceholder')} autoComplete="current-password" />
                   </div>
                   <div className="form-group">
-                    <label>New Password</label>
+                    <label>{t('participantProfile.edit.newPassword')}</label>
                     <input type="password" value={pwNew}
                       onChange={(e) => setPwNew(e.target.value)}
-                      placeholder="At least 6 characters" autoComplete="new-password" />
+                      placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
                   </div>
                   <div className="form-group">
-                    <label>Confirm New Password</label>
+                    <label>{t('participantProfile.edit.confirmPassword')}</label>
                     <input type="password" value={pwConfirm}
                       onChange={(e) => setPwConfirm(e.target.value)}
-                      placeholder="Repeat new password" autoComplete="new-password" />
+                      placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
                   </div>
                 </div>
                 <div className="form-actions">
                   <button className="btn-primary" onClick={handleChangePassword} disabled={pwSaving}>
-                    {pwSaving ? 'Updating…' : 'Change Password'}
+                    {pwSaving ? t('participantProfile.edit.updating') : t('participantProfile.edit.changePasswordButton')}
                   </button>
                 </div>
               </>
@@ -990,41 +1003,41 @@ function ParticipantProfile() {
             {canManageAccounts && (
               <>
                 <hr className="profile-password-sep" />
-                <h3>Account Management</h3>
-                <p className="text-secondary mb-2">{linkedUser ? 'Manage linked login account' : 'No user account linked'}</p>
-                {loadingUser && <Loading message="Loading account..." />}
+                <h3>{t('participantProfile.edit.accountManagementTitle')}</h3>
+                <p className="text-secondary mb-2">{linkedUser ? t('participantProfile.edit.accountManagementLinked') : t('participantProfile.edit.accountManagementNone')}</p>
+                {loadingUser && <Loading message={t('participantProfile.edit.loadingAccount')} />}
                 {admError && <div className="error-message">{admError}</div>}
-                {admSuccess && <div className="success-message">Account updated successfully</div>}
+                {admSuccess && <div className="success-message">{t('participantProfile.edit.accountUpdated')}</div>}
                 {linkedUser ? (
                   <>
                     <div className="profile-edit-grid">
                       <div className="form-group">
-                        <label>Username</label>
+                        <label>{t('participantProfile.edit.usernameLabel')}</label>
                         <input type="text" value={admUsername}
                           onChange={(e) => setAdmUsername(e.target.value)}
-                          placeholder="username" autoComplete="off" />
+                          placeholder={t('participantProfile.edit.usernamePlaceholder')} autoComplete="off" />
                       </div>
                       <div className="form-group">
-                        <label>New Password <span className="text-secondary">(leave blank to keep)</span></label>
+                        <label>{t('participantProfile.edit.newPasswordAdminLabel')}</label>
                         <input type="password" value={admPassword}
                           onChange={(e) => setAdmPassword(e.target.value)}
-                          placeholder="At least 6 characters" autoComplete="new-password" />
+                          placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
                       </div>
                       {admPassword && (
                         <div className="form-group">
-                          <label>Confirm New Password</label>
+                          <label>{t('participantProfile.edit.confirmNewPasswordLabel')}</label>
                           <input type="password" value={admConfirm}
                             onChange={(e) => setAdmConfirm(e.target.value)}
-                            placeholder="Repeat new password" autoComplete="new-password" />
+                            placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
                         </div>
                       )}
                       {manageableRoles.length > 0 && (
                         <div className="form-group">
-                          <label>Role</label>
+                          <label>{t('participantProfile.edit.roleLabel')}</label>
                           <select value={admRole} onChange={e => setAdmRole(e.target.value as AuthUser['role'])}>
                             {manageableRoles.map(r => (
                               <option key={r} value={r}>
-                                {r === 'superadmin' ? 'Superadmin' : r === 'community_admin' ? 'Community Owner' : r === 'admin' ? 'Admin Assistant' : 'User'}
+                                {t(`participantProfile.edit.roles.${r}`)}
                               </option>
                             ))}
                           </select>
@@ -1037,26 +1050,26 @@ function ParticipantProfile() {
                             checked={admIsActive}
                             onChange={e => setAdmIsActive(e.target.checked)}
                           />
-                          <span>Account active</span>
+                          <span>{t('participantProfile.edit.accountActive')}</span>
                         </label>
                       </div>
                     </div>
                     <div className="form-actions">
                       <button className="btn-primary" onClick={handleSaveAdminAccount} disabled={admSaving}>
-                        {admSaving ? 'Saving…' : 'Save Account Changes'}
+                        {admSaving ? t('participantProfile.edit.saving') : t('participantProfile.edit.save')}
                       </button>
                     </div>
                   </>
                 ) : (
-                  <p className="text-secondary">No account exists for this participant.</p>
+                  <p className="text-secondary">{t('participantProfile.edit.noAccount')}</p>
                 )}
 
                 <hr className="profile-password-sep" />
-                <h3>Danger Zone</h3>
-                <p className="text-secondary mb-2">This will permanently delete the participant and any linked login account.</p>
+                <h3>{t('participantProfile.edit.dangerZoneTitle')}</h3>
+                <p className="text-secondary mb-2">{t('participantProfile.edit.dangerZoneDesc')}</p>
                 <div className="form-actions">
                   <button className="btn-danger" onClick={() => setShowDeleteConfirm(true)} disabled={deleteSaving}>
-                    Delete Participant
+                    {t('participantProfile.edit.deleteParticipant')}
                   </button>
                 </div>
               </>
@@ -1066,11 +1079,11 @@ function ParticipantProfile() {
 
         <ConfirmModal
           isOpen={showDeleteConfirm}
-          title="Delete participant"
-          message={participant ? `Delete "${participant.name}" and all linked data? This cannot be undone.` : ''}
+          title={t('participantProfile.edit.deleteConfirmTitle')}
+          message={participant ? t('participantProfile.edit.deleteConfirmMessage', { name: participant.name }) : ''}
           onCancel={() => setShowDeleteConfirm(false)}
           onConfirm={handleDeleteParticipant}
-          confirmText="Delete"
+          confirmText={t('common.delete')}
         />
       </div>
     </div>

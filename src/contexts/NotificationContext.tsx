@@ -13,6 +13,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AppNotification } from '@/models/notification';
 import {
   getNotificationsAsync,
@@ -47,6 +48,7 @@ const POLL_INTERVAL_MS = 3 * 60 * 1000; // example poll every 5 minutes for new 
 const TOAST_DURATION_MS = 10 * 1000; // 10 seconds
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const { isAuthenticated, user, consumeLoginNotifications } = useAuth();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -84,8 +86,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         } else if (unread.length > 1) {
           addToast({
             id: 'login-summary',
-            title: 'You have notifications',
-            message: `You have ${unread.length} unread notifications. Check the bell icon.`,
+            title: t('notifications.summaryTitle'),
+            message: t('notifications.summaryMessage', { count: unread.length }),
             type: 'summary',
           });
         }
@@ -98,8 +100,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         } else if (brandNew.length > 1) {
           addToast({
             id: `new-${Date.now()}`,
-            title: 'New notifications',
-            message: `You have ${brandNew.length} new notifications.`,
+            title: t('notifications.newTitle'),
+            message: t('notifications.newMessage', { count: brandNew.length }),
             type: 'summary',
           });
         }
@@ -110,7 +112,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated, user, addToast]);
+  }, [isAuthenticated, user, addToast, t]);
 
   // Load on auth change, poll every 5 minutes
   useEffect(() => {
@@ -139,14 +141,14 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } else if (unread.length > 1) {
       addToast({
         id: 'login-summary',
-        title: 'You have notifications',
-        message: `You have ${unread.length} unread notifications. Check the bell icon.`,
+        title: t('notifications.summaryTitle'),
+        message: t('notifications.summaryMessage', { count: unread.length }),
         type: 'summary',
       });
     }
     prevUnreadIds.current = new Set(unread.map(n => n.id));
     isFirstLoad.current = false;
-  }, [isAuthenticated, user, consumeLoginNotifications, addToast]);
+  }, [isAuthenticated, user, consumeLoginNotifications, addToast, t]);
 
   const markRead = useCallback(async (id: string) => {
     await markNotificationReadAsync(id);

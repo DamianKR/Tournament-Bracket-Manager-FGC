@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { League, LeagueMatch, LeagueStanding } from '@/models/league';
@@ -22,6 +23,7 @@ import './LeagueView.css';
 type Tab = 'info' | 'standings' | 'schedule' | 'my-matches' | 'pending' | 'options';
 
 function LeagueView() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
@@ -67,7 +69,7 @@ function LeagueView() {
     return (
       <div className="league-view-page">
         <div className="container">
-          <Loading message="Loading league..." />
+          <Loading message={t('league.view.loading')} />
         </div>
       </div>
     );
@@ -78,9 +80,9 @@ function LeagueView() {
       <div className="league-view-page">
         <div className="container">
           <div className="empty-state card">
-            <h3>League not found</h3>
+            <h3>{t('league.view.notFound')}</h3>
             <button className="btn-outline mt-2" onClick={() => navigate(getPath('events?tab=leagues'))}>
-              ← Back to leagues
+              {t('league.view.backToLeagues')}
             </button>
           </div>
         </div>
@@ -98,16 +100,16 @@ function LeagueView() {
       <div className="league-header">
         <div className="container">
           <button className="league-back-btn" onClick={() => navigate(getPath('events?tab=leagues'))}>
-            ← Leagues
+            {t('league.view.backShort')}
           </button>
           <div className="league-header-content">
             <h1 className="league-title"><i className="fas fa-trophy" /> {league.name}</h1>
             <div className="league-meta">
-              <span>Week {league.currentWeek}</span>
+              <span>{t('league.view.week', { week: league.currentWeek })}</span>
               <span>•</span>
-              <span>{completedMatches}/{totalMatches} matches completed</span>
+              <span>{t('league.view.matchesCompleted', { completed: completedMatches, total: totalMatches })}</span>
               <span>•</span>
-              <span>{progressPercent}%</span>
+              <span>{t('league.view.progressPercent', { percent: progressPercent })}</span>
             </div>
             <div className="league-progress-bar">
               <div className="league-progress-fill" style={{ width: `${progressPercent}%` }} />
@@ -123,39 +125,39 @@ function LeagueView() {
             className={`league-tab ${tab === 'standings' ? 'active' : ''}`}
             onClick={() => setTab('standings')}
           >
-            Standings
+            {t('league.view.tabs.standings')}
           </button>
           <button
             className={`league-tab ${tab === 'schedule' ? 'active' : ''}`}
             onClick={() => setTab('schedule')}
           >
-            Schedule
+            {t('league.view.tabs.schedule')}
           </button>
           <button
             className={`league-tab ${tab === 'my-matches' ? 'active' : ''}`}
             onClick={() => setTab('my-matches')}
           >
-            Matches
+            {t('league.view.tabs.matches')}
           </button>
           {canAdminCurrentCommunity && (
             <button
               className={`league-tab ${tab === 'pending' ? 'active' : ''}`}
               onClick={() => setTab('pending')}
             >
-              <i className="fas fa-exclamation-triangle" /> Pending Review
+              <i className="fas fa-exclamation-triangle" /> {t('league.view.tabs.pending')}
             </button>
           )}
           <button
             className={`league-tab ${tab === 'options' ? 'active' : ''}`}
             onClick={() => setTab('options')}
           >
-            Options
+            {t('league.view.tabs.options')}
           </button>
           <button
             className={`league-tab ${tab === 'info' ? 'active' : ''}`}
             onClick={() => setTab('info')}
           >
-            <i className="fas fa-info-circle" /> Info
+            <i className="fas fa-info-circle" /> {t('league.view.tabs.info')}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DuelChallenge } from '@/models/duel';
 import { GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,6 +22,7 @@ interface ActiveChallengesProps {
 }
 
 function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
@@ -82,7 +84,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         setDuelType('normal');
       }
     } catch (err: any) {
-      setCreateError(err.message || 'Failed to create challenge');
+      setCreateError(err.message || t('ranked.challenges.failedCreate'));
     }
   };
 
@@ -102,7 +104,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
 
   const getParticipantName = (id: string) => {
     const p = participants.find(p => p.id === id);
-    return p ? `${p.name}${p.alias ? ` (${p.alias})` : ''}` : 'Unknown';
+    return p ? `${p.name}${p.alias ? ` (${p.alias})` : ''}` : t('history.unknownPlayer');
   };
 
   const getParticipantElo = (id: string) => {
@@ -126,12 +128,12 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     <div className="active-challenges">
       <div className="challenges-header">
         <div>
-          <h3>Duel Challenges</h3>
-          <p className="text-secondary">Manage competitive duel challenges between players</p>
+          <h3>{t('ranked.challenges.title')}</h3>
+          <p className="text-secondary">{t('ranked.challenges.subtitle')}</p>
         </div>
         {canInteract && (
           <button className="btn-primary" onClick={() => setShowCreateModal(true)}>
-            <i className="fas fa-plus" /> New Challenge
+            <i className="fas fa-plus" /> {t('ranked.newChallenge')}
           </button>
         )}
       </div>
@@ -141,59 +143,59 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
           participants={participants}
           selectedId={filterParticipantId}
           onSelect={setFilterParticipantId}
-          placeholder="Filter by player"
+          placeholder={t('ranked.challenges.filterByPlayer')}
           className="challenge-player-filter"
         />
-        <button 
+        <button
           className={`filter-btn ${filterStatus === 'all' ? 'active' : ''}`}
           onClick={() => setFilterStatus('all')}
         >
-          All ({allChallenges.length})
+          {t('ranked.challenges.all')} ({allChallenges.length})
         </button>
-        <button 
+        <button
           className={`filter-btn ${filterStatus === 'pending' ? 'active' : ''}`}
           onClick={() => setFilterStatus('pending')}
         >
-          Pending ({allChallenges.filter(c => c.status === 'pending').length})
+          {t('ranked.challenges.pending')} ({allChallenges.filter(c => c.status === 'pending').length})
         </button>
-        <button 
+        <button
           className={`filter-btn ${filterStatus === 'accepted' ? 'active' : ''}`}
           onClick={() => setFilterStatus('accepted')}
         >
-          Accepted ({allChallenges.filter(c => c.status === 'accepted').length})
+          {t('ranked.challenges.accepted')} ({allChallenges.filter(c => c.status === 'accepted').length})
         </button>
         {isAdminHere && (
-          <button 
+          <button
             className={`filter-btn ${filterStatus === 'pending_review' ? 'active' : ''}`}
             onClick={() => setFilterStatus('pending_review')}
           >
-            Pending Review ({allChallenges.filter(c => c.status === 'pending_review').length})
+            {t('ranked.challenges.pendingReview')} ({allChallenges.filter(c => c.status === 'pending_review').length})
           </button>
         )}
-        <button 
+        <button
           className={`filter-btn ${filterStatus === 'completed' ? 'active' : ''}`}
           onClick={() => setFilterStatus('completed')}
         >
-          Completed ({allChallenges.filter(c => c.status === 'completed').length})
+          {t('ranked.challenges.completed')} ({allChallenges.filter(c => c.status === 'completed').length})
         </button>
-        <button 
+        <button
           className={`filter-btn ${filterStatus === 'expired' ? 'active' : ''}`}
           onClick={() => setFilterStatus('expired')}
         >
-          Expired ({allChallenges.filter(c => c.status === 'expired').length})
+          {t('ranked.challenges.expired')} ({allChallenges.filter(c => c.status === 'expired').length})
         </button>
       </div>
 
       {filteredChallenges.length === 0 ? (
         <div className="empty-state card">
           <i className="fas fa-khanda" style={{ fontSize: '3rem', color: 'var(--text-secondary)', marginBottom: '1rem' }} />
-          <h3>No challenges found</h3>
+          <h3>{t('ranked.challenges.noChallenges')}</h3>
           <p className="text-secondary">
-            {filterParticipantId ? 'Try a different player or status filter' : canInteract ? 'Create a new challenge to get started' : 'No active challenges in this community'}
+            {filterParticipantId ? t('ranked.challenges.noChallengesFilter') : canInteract ? t('ranked.challenges.noChallengesCreate') : t('ranked.challenges.noChallengesCommunity')}
           </p>
           {!filterParticipantId && canInteract && (
             <button className="btn-primary mt-2" onClick={() => setShowCreateModal(true)}>
-              <i className="fas fa-plus" /> New Challenge
+              <i className="fas fa-plus" /> {t('ranked.newChallenge')}
             </button>
           )}
         </div>
@@ -205,14 +207,14 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                 <div className="challenge-players">
                   <div className="challenge-player">
                     <span className="player-name">{getParticipantName(challenge.challengerId)}</span>
-                    <span className="player-elo">{getParticipantElo(challenge.challengerId)} ELO</span>
+                    <span className="player-elo">{getParticipantElo(challenge.challengerId)} {t('ranked.challenges.elo')}</span>
                   </div>
                   <div className="challenge-vs">
                     <i className="fas fa-khanda" />
                   </div>
                   <div className="challenge-player">
                     <span className="player-name">{getParticipantName(challenge.challengedId)}</span>
-                    <span className="player-elo">{getParticipantElo(challenge.challengedId)} ELO</span>
+                    <span className="player-elo">{getParticipantElo(challenge.challengedId)} {t('ranked.challenges.elo')}</span>
                   </div>
                 </div>
 
@@ -222,7 +224,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     {challenge.status === 'accepted' && <i className="fas fa-check" />}
                     {challenge.status === 'completed' && <i className="fas fa-check-circle" />}
                     {challenge.status === 'declined' && <i className="fas fa-times" />}
-                    {' '}{challenge.status}
+                    {' '}{t(`ranked.challenges.${challenge.status}` as any, { defaultValue: challenge.status })}
                   </span>
                   <span className="challenge-date">
                     {new Date(challenge.createdAt).toLocaleDateString()}
@@ -233,47 +235,47 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               <div className="challenge-actions">
                 {challenge.status === 'pending' && canInteract && (isAdminHere || user?.participantId === challenge.challengedId) && (
                   <>
-                    <button 
+                    <button
                       className="btn-success btn-sm"
                       onClick={() => handleAccept(challenge.id)}
-                      title="Accept challenge"
+                      title={t('ranked.challenges.accept')}
                     >
-                      <i className="fas fa-check" /> Accept
+                      <i className="fas fa-check" /> {t('ranked.challenges.accept')}
                     </button>
-                    <button 
+                    <button
                       className="btn-danger btn-sm"
                       onClick={() => handleDecline(challenge.id)}
-                      title="Decline challenge"
+                      title={t('ranked.challenges.decline')}
                     >
-                      <i className="fas fa-times" /> Decline
+                      <i className="fas fa-times" /> {t('ranked.challenges.decline')}
                     </button>
                   </>
                 )}
                 {challenge.status === 'accepted' && canInteract && (
                   <>
                     {(user?.participantId === challenge.challengerId || user?.participantId === challenge.challengedId || isAdminHere) && (
-                      <button 
+                      <button
                         className="btn-primary btn-sm"
                         onClick={() => handleRecordMatch(challenge)}
-                        title="Report match result"
+                        title={t('ranked.challenges.reportResult')}
                       >
-                        <i className="fas fa-gamepad" /> Report Result
+                        <i className="fas fa-gamepad" /> {t('ranked.challenges.reportResult')}
                       </button>
                     )}
                   </>
                 )}
                 {challenge.status === 'pending_review' && isAdminHere && (
-                  <button 
+                  <button
                     className="btn-warning btn-sm"
                     onClick={() => handleRecordMatch(challenge)}
-                    title="Resolve conflict"
+                    title={t('ranked.challenges.resolveConflict')}
                   >
-                    <i className="fas fa-gavel" /> Resolve Conflict
+                    <i className="fas fa-gavel" /> {t('ranked.challenges.resolveConflict')}
                   </button>
                 )}
                 {challenge.status === 'completed' && challenge.matchId && (
                   <span className="challenge-completed-badge">
-                    <i className="fas fa-trophy" /> Match Recorded
+                    <i className="fas fa-trophy" /> {t('ranked.challenges.matchRecorded')}
                   </span>
                 )}
               </div>
@@ -286,16 +288,16 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         <div className="modal-overlay" onClick={() => { setShowCreateModal(false); setCreateError(''); }}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2><i className="fas fa-khanda" /> Create Duel Challenge</h2>
+              <h2><i className="fas fa-khanda" /> {t('ranked.challenges.createTitle')}</h2>
               <button className="btn-icon" onClick={() => setShowCreateModal(false)}>
                 <i className="fas fa-times" />
               </button>
             </div>
             <div className="modal-body">
               {createError && <div className="error-message">{createError}</div>}
-              
+
               <div className="form-group">
-                <label>Duel Type</label>
+                <label>{t('ranked.challenges.duelType')}</label>
                 <div className="duel-type-selector">
                   <label className="duel-type-option">
                     <input
@@ -305,8 +307,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                       checked={duelType === 'normal'}
                       onChange={() => setDuelType('normal')}
                     />
-                    <span>Normal Challenge</span>
-                    <small>Can be declined. Double ELO penalty if opponent doesn't confirm after expiration.</small>
+                    <span>{t('ranked.challenges.normalChallenge')}</span>
+                    <small>{t('ranked.challenges.normalHint')}</small>
                   </label>
                   {settings.mandatoryDuelsEnabled !== false && (
                     <label className="duel-type-option">
@@ -317,10 +319,9 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                         checked={duelType === 'mandatory'}
                         onChange={() => setDuelType('mandatory')}
                       />
-                      <span>Mandatory Challenge</span>
+                      <span>{t('ranked.challenges.mandatoryChallenge')}</span>
                       <small>
-                        Cannot be declined. Triple ELO penalty if opponent doesn't confirm.
-                        Only {settings.mandatoryDuelsPerWeek ?? 1} per week per challenger. Only 1 per opponent per month.
+                        {t('ranked.challenges.mandatoryHint', { count: settings.mandatoryDuelsPerWeek ?? 1 })}
                       </small>
                     </label>
                   )}
@@ -330,37 +331,37 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               {isAdminHere ? (
                 <>
                   <div className="form-group">
-                    <label>Player 1 (Challenger)</label>
+                    <label>{t('ranked.challenges.player1')}</label>
                     <select
                       value={player1Id}
                       onChange={e => { setPlayer1Id(e.target.value); setCreateError(''); }}
                       className="form-control"
                     >
-                      <option value="">-- Select player --</option>
+                      <option value="">{t('ranked.challenges.selectPlayer')}</option>
                       {participants
                         .filter(p => p.id !== player2Id)
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
+                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.challenges.elo')}` : t('ranked.challenges.unranked')}
                           </option>
                         ))}
                     </select>
                   </div>
                   <div className="form-group">
-                    <label>Player 2 (Challenged)</label>
+                    <label>{t('ranked.challenges.player2')}</label>
                     <select
                       value={player2Id}
                       onChange={e => { setPlayer2Id(e.target.value); setCreateError(''); }}
                       className="form-control"
                     >
-                      <option value="">-- Select player --</option>
+                      <option value="">{t('ranked.challenges.selectPlayer')}</option>
                       {participants
                         .filter(p => p.id !== player1Id)
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
+                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.challenges.elo')}` : t('ranked.challenges.unranked')}
                           </option>
                         ))}
                     </select>
@@ -369,25 +370,25 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               ) : (
                 <>
                   <div className="form-group">
-                    <label>You (Challenger)</label>
+                    <label>{t('ranked.challenges.you')}</label>
                     <div className="form-control-static">
-                      {getParticipantName(player1Id)} - {getParticipantElo(player1Id)} ELO
+                      {getParticipantName(player1Id)} - {getParticipantElo(player1Id)} {t('ranked.challenges.elo')}
                     </div>
                   </div>
                   <div className="form-group">
-                    <label>Challenge Player</label>
+                    <label>{t('ranked.challenges.challengePlayer')}</label>
                     <select
                       value={player2Id}
                       onChange={e => { setPlayer2Id(e.target.value); setCreateError(''); }}
                       className="form-control"
                     >
-                      <option value="">-- Select player to challenge --</option>
+                      <option value="">{t('ranked.challenges.selectPlayerToChallenge')}</option>
                       {participants
                         .filter(p => p.id !== player1Id)
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ELO` : 'unranked'}
+                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.challenges.elo')}` : t('ranked.challenges.unranked')}
                           </option>
                         ))}
                     </select>
@@ -397,14 +398,14 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
             </div>
             <div className="modal-footer">
               <button className="btn-outline" onClick={() => { setShowCreateModal(false); setCreateError(''); }}>
-                Cancel
+                {t('ranked.challenges.cancel')}
               </button>
-              <button 
-                className="btn-primary" 
+              <button
+                className="btn-primary"
                 onClick={handleCreateChallenge}
                 disabled={!player1Id || !player2Id}
               >
-                <i className="fas fa-plus" /> Create Challenge
+                <i className="fas fa-plus" /> {t('ranked.challenges.create')}
               </button>
             </div>
           </div>

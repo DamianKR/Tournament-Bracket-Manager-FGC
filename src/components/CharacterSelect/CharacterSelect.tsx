@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { GAMES, getGame } from '@/data/games';
 import './CharacterSelect.css';
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 function CharacterSelect({ gameId, characterId, onGameChange, onCharacterChange }: Props) {
+  const { t } = useTranslation();
   const selectedGame = gameId ? getGame(gameId) : null;
 
   function handleGameChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -24,9 +26,9 @@ function CharacterSelect({ gameId, characterId, onGameChange, onCharacterChange 
   return (
     <div className="character-select">
       <div className="form-group">
-        <label>Game</label>
+        <label>{t('common.game')}</label>
         <select value={gameId ?? ''} onChange={handleGameChange}>
-          <option value="">— No game —</option>
+          <option value="">{t('common.noGame')}</option>
           {GAMES.map((g) => (
             <option key={g.id} value={g.id}>{g.name}</option>
           ))}
@@ -35,9 +37,9 @@ function CharacterSelect({ gameId, characterId, onGameChange, onCharacterChange 
 
       {selectedGame && (
         <div className="form-group">
-          <label>Main Character</label>
+          <label>{t('common.mainCharacter')}</label>
           <select value={characterId ?? ''} onChange={handleCharacterChange}>
-            <option value="">— No main —</option>
+            <option value="">{t('common.noMain')}</option>
             {selectedGame.characters.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}

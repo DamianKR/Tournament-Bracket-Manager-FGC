@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RankedMatchType } from '@/models/types';
 import { DuelSettings as DuelSettingsType, DEFAULT_DUEL_SETTINGS } from '@/models/duel';
 import { getDuelSettingsAsync, updateDuelSettings } from '@/services/duels/duelService';
@@ -13,6 +14,7 @@ import './RankedTab.css';
 type RankedSubTab = 'record' | 'challenges' | 'info';
 
 function RankedTab() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
   const isAdminHere = canAdminCurrentCommunity;
@@ -50,8 +52,8 @@ function RankedTab() {
     <div className="ranked-tab">
       <div className="ranked-header">
         <div>
-          <h1><i className="fas fa-star" /> Ranked Matches</h1>
-          <p className="text-secondary">Record and track competitive ranked matches</p>
+          <h1><i className="fas fa-star" /> {t('ranked.title')}</h1>
+          <p className="text-secondary">{t('ranked.subtitle')}</p>
         </div>
         <div className="ranked-actions">
           <select
@@ -59,8 +61,8 @@ function RankedTab() {
             onChange={e => setMatchType(e.target.value as RankedMatchType)}
             className="match-type-select"
           >
-            <option value="duel">Duels</option>
-            <option value="matchmaking" disabled>Matchmaking (Coming Soon)</option>
+            <option value="duel">{t('ranked.duels')}</option>
+            <option value="matchmaking" disabled>{t('ranked.matchmakingComingSoon')}</option>
           </select>
           {matchType === 'duel' && isAdminHere && (
             <DuelSettings settings={settings} onUpdate={handleUpdateSettings} />
@@ -75,21 +77,21 @@ function RankedTab() {
               className={`ranked-tab-btn ${subTab === 'challenges' ? 'active' : ''}`}
               onClick={() => { setSubTab('challenges'); setSelectedChallenge(null); }}
             >
-              <i className="fas fa-swords" /> Manage Challenges
+              <i className="fas fa-swords" /> {t('ranked.manageChallenges')}
             </button>
             {(isAdminHere || (isInMyCommunity && selectedChallenge)) && (
               <button
                 className={`ranked-tab-btn ${subTab === 'record' ? 'active' : ''}`}
                 onClick={() => setSubTab('record')}
               >
-                <i className="fas fa-gamepad" /> {selectedChallenge ? 'Report Result' : 'Record Match'}
+                <i className="fas fa-gamepad" /> {selectedChallenge ? t('ranked.reportResult') : t('ranked.recordMatch')}
               </button>
             )}
             <button
               className={`ranked-tab-btn ${subTab === 'info' ? 'active' : ''}`}
               onClick={() => setSubTab('info')}
             >
-              <i className="fas fa-info-circle" /> Info
+              <i className="fas fa-info-circle" /> {t('ranked.info')}
             </button>
           </div>
 
@@ -115,9 +117,9 @@ function RankedTab() {
       {matchType === 'matchmaking' && (
         <div className="coming-soon card">
           <i className="fas fa-hammer" style={{ fontSize: '3rem', color: 'var(--primary-color)', marginBottom: '1rem' }} />
-          <h2>Matchmaking Coming Soon</h2>
+          <h2>{t('ranked.matchmakingTitle')}</h2>
           <p className="text-secondary">
-            Automated matchmaking system is under development.
+            {t('ranked.matchmakingDesc')}
           </p>
         </div>
       )}

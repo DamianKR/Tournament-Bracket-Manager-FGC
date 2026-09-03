@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { League } from '@/models/league';
 import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
@@ -9,6 +10,7 @@ import Loading from '@/components/Loading/Loading';
 import './LeaguesTab.css';
 
 function LeaguesTab() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
   const communityId = currentCommunity?.id;
@@ -37,7 +39,7 @@ function LeaguesTab() {
   if (loading) {
     return (
       <div className="leagues-tab">
-        <Loading message="Loading leagues..." />
+        <Loading message={t('leagues.loading')} />
       </div>
     );
   }
@@ -46,23 +48,23 @@ function LeaguesTab() {
     <div className="leagues-tab">
       <div className="leagues-header">
         <div>
-          <h1><i className="fas fa-shield-alt" /> Leagues</h1>
-          <p className="text-secondary">Seasons of round-robin matches spread across multiple weeks</p>
+          <h1><i className="fas fa-shield-alt" /> {t('leagues.title')}</h1>
+          <p className="text-secondary">{t('leagues.subtitle')}</p>
         </div>
         {canAdminCurrentCommunity && (
           <button className="btn-primary" onClick={() => navigate(getPath('events/leagues/create'))}>
-            <i className="fas fa-plus" /> New League
+            <i className="fas fa-plus" /> {t('leagues.newLeague')}
           </button>
         )}
       </div>
 
       {leagues.length === 0 ? (
         <div className="empty-state card">
-          <h3>No leagues yet</h3>
-          <p className="text-secondary">Leagues are round-robin seasons with weekly matches and ELO standings.</p>
+          <h3>{t('leagues.emptyTitle')}</h3>
+          <p className="text-secondary">{t('leagues.emptyDesc')}</p>
           {canAdminCurrentCommunity && (
             <button className="btn-primary mt-2" onClick={() => navigate(getPath('events/leagues/create'))}>
-              <i className="fas fa-plus" /> New League
+              <i className="fas fa-plus" /> {t('leagues.newLeague')}
             </button>
           )}
         </div>
@@ -82,26 +84,26 @@ function LeaguesTab() {
                 <div className="league-card-header">
                   <h3 className="league-card-title">{league.name}</h3>
                   <span className={`league-card-status ${statusClass}`}>
-                    {displayStatus.charAt(0).toUpperCase() + displayStatus.slice(1)}
+                    {t(`leagues.status.${displayStatus}` as any)}
                   </span>
                 </div>
 
                 <div className="league-card-meta">
                   <div className="info-row">
-                    <span>Game</span>
+                    <span>{t('leagues.game')}</span>
                     <span>{game?.shortName || league.gameId}</span>
                   </div>
                   <div className="info-row">
-                    <span>Players</span>
+                    <span>{t('leagues.players')}</span>
                     <span>{league.participantIds.length}</span>
                   </div>
                   <div className="info-row">
-                    <span>Week</span>
+                    <span>{t('leagues.week')}</span>
                     <span>{league.currentWeek}</span>
                   </div>
                   <div className="info-row">
-                    <span>Format</span>
-                    <span>Best of {league.gamesPerMatch}</span>
+                    <span>{t('leagues.format')}</span>
+                    <span>{t('leagues.bestOf', { count: league.gamesPerMatch })}</span>
                   </div>
                 </div>
 
@@ -113,7 +115,7 @@ function LeaguesTab() {
                       navigate(getPath(`events/leagues/${league.id}`));
                     }}
                   >
-                    <i className="fas fa-eye" /> View League
+                    <i className="fas fa-eye" /> {t('leagues.viewLeague')}
                   </button>
                   {canAdminCurrentCommunity && (
                     <button
@@ -122,7 +124,7 @@ function LeaguesTab() {
                         e.stopPropagation();
                         setDeleteTarget({ id: league.id, name: league.name });
                       }}
-                      title="Delete league"
+                      title={t('leagues.delete')}
                     >
                       <i className="fas fa-trash" />
                     </button>
@@ -136,11 +138,11 @@ function LeaguesTab() {
 
       <ConfirmModal
         isOpen={deleteTarget !== null}
-        title="Delete league"
-        message={deleteTarget ? `Are you sure you want to delete "${deleteTarget.name}"? This cannot be undone.` : ''}
+        title={t('leagues.deleteTitle')}
+        message={deleteTarget ? t('leagues.deleteMessage', { name: deleteTarget.name }) : ''}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={handleConfirmDelete}
-        confirmText="Delete"
+        confirmText={t('notifications.delete')}
       />
     </div>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { getRankColor, getRankIcon } from '@/services/ranking/rankingService';
 import './RankingInfo.css';
 
@@ -40,44 +41,53 @@ function calculateElo(rA: number, rB: number, winner: 'A' | 'B') {
 }
 
 interface Example {
-  title: string;
-  p1Name: string;
+  key: string;
+  p1Rank: string;
+  p1Suffix?: string;
   p1Pts: number;
-  p2Name: string;
+  p2Rank: string;
+  p2Suffix?: string;
   p2Pts: number;
   winner: 'A' | 'B';
 }
 
 const EXAMPLES: Example[] = [
-  { title: 'Master vs Platino — upset', p1Name: 'Platino', p1Pts: 1400, p2Name: 'Master', p2Pts: 1800, winner: 'A' },
-  { title: 'Master vs Platino — favorite wins', p1Name: 'Master', p1Pts: 1800, p2Name: 'Platino', p2Pts: 1400, winner: 'A' },
-  { title: 'Same rank duel', p1Name: 'Diamante A', p1Pts: 1550, p2Name: 'Diamante B', p2Pts: 1550, winner: 'A' },
+  { key: 'upset', p1Rank: 'Platino', p1Pts: 1400, p2Rank: 'Master', p2Pts: 1800, winner: 'A' },
+  { key: 'favorite', p1Rank: 'Master', p1Pts: 1800, p2Rank: 'Platino', p2Pts: 1400, winner: 'A' },
+  { key: 'sameRank', p1Rank: 'Diamante', p1Suffix: 'A', p1Pts: 1550, p2Rank: 'Diamante', p2Suffix: 'B', p2Pts: 1550, winner: 'A' },
 ];
 
+function formatRankName(rank: string, suffix: string | undefined, t: (key: string) => string) {
+  return t(`rankingInfo.tierNames.${rank}`) + (suffix ? ` ${suffix}` : '');
+}
+
 function ExampleCard({ ex }: { ex: Example }) {
+  const { t } = useTranslation();
   const res = calculateElo(ex.p1Pts, ex.p2Pts, ex.winner);
-  const winnerName = ex.winner === 'A' ? ex.p1Name : ex.p2Name;
+  const p1Name = formatRankName(ex.p1Rank, ex.p1Suffix, t);
+  const p2Name = formatRankName(ex.p2Rank, ex.p2Suffix, t);
+  const winnerName = ex.winner === 'A' ? p1Name : p2Name;
 
   return (
     <div className="info-example card">
-      <div className="info-example-title">{ex.title}</div>
+      <div className="info-example-title">{t(`rankingInfo.exampleLabels.${ex.key}`)}</div>
       <div className="info-example-matchup">
         <div className="info-example-player">
-          <span className="info-example-pts">{ex.p1Pts} pts</span>
-          <span className="info-example-name">{ex.p1Name}</span>
+          <span className="info-example-pts">{ex.p1Pts} {t('rankingInfo.pts')}</span>
+          <span className="info-example-name">{p1Name}</span>
         </div>
-        <span className="info-example-vs">VS</span>
+        <span className="info-example-vs">{t('rankingInfo.vs')}</span>
         <div className="info-example-player">
-          <span className="info-example-pts">{ex.p2Pts} pts</span>
-          <span className="info-example-name">{ex.p2Name}</span>
+          <span className="info-example-pts">{ex.p2Pts} {t('rankingInfo.pts')}</span>
+          <span className="info-example-name">{p2Name}</span>
         </div>
       </div>
       <div className="info-example-result">
-        <span className="info-example-winner"><i className="fas fa-crown" /> {winnerName} wins</span>
+        <span className="info-example-winner"><i className="fas fa-crown" /> {t('rankingInfo.winner', { name: winnerName })}</span>
         <span className="info-example-delta">
-          {ex.p1Name}: <span className={res.deltaA >= 0 ? 'positive' : 'negative'}>{res.deltaA >= 0 ? '+' : ''}{res.deltaA}</span>
+          {p1Name}: <span className={res.deltaA >= 0 ? 'positive' : 'negative'}>{res.deltaA >= 0 ? '+' : ''}{res.deltaA}</span>
           {' · '}
-          {ex.p2Name}: <span className={res.deltaB >= 0 ? 'positive' : 'negative'}>{res.deltaB >= 0 ? '+' : ''}{res.deltaB}</span>
+          {p2Name}: <span className={res.deltaB >= 0 ? 'positive' : 'negative'}>{res.deltaB >= 0 ? '+' : ''}{res.deltaB}</span>
         </span>
       </div>
     </div>
@@ -85,25 +95,23 @@ function ExampleCard({ ex }: { ex: Example }) {
 }
 
 function RankingInfo() {
+  const { t } = useTranslation();
   return (
     <div className="rk-info-section card">
-      <h2 className="rk-info-title"><i className="fas fa-info-circle" /> How ELO & Ranks Work</h2>
+      <h2 className="rk-info-title"><i className="fas fa-info-circle" /> {t('rankingInfo.title')}</h2>
 
       <div className="rk-info-block">
-        <h3>Starting point</h3>
+        <h3>{t('rankingInfo.startingTitle')}</h3>
         <p>
-          Every player begins at <strong>1500 points</strong> in the <span className="rank-diamante">Diamante</span> rank.
-          After each ranked match the winner gains points and the loser loses the exact same amount.
-          There are no draws — every match has a winner.
+          {t('rankingInfo.startingPrefix')} <strong>{t('rankingInfo.startingMid', { points: 1500 })}</strong>
+          <span className="rank-diamante">{t('rankingInfo.startingSuffix', { rank: t('rankingInfo.rankDiamante') })}</span>
         </p>
       </div>
 
       <div className="rk-info-block">
-        <h3>K-Factor</h3>
+        <h3>{t('rankingInfo.kFactorTitle')}</h3>
         <p>
-          The K-Factor decides how many points move after a match. It is based on the <strong>winner's</strong> current rank,
-          not a fixed league-wide number. Lower-rated players have a higher K, so upsets reward more points
-          and top-tier wins move very little.
+          {t('rankingInfo.kFactorTextPrefix')}<strong>{t('rankingInfo.kFactorTextMid', { winner: t('rankingInfo.winnerNoun') })}</strong>{t('rankingInfo.kFactorTextSuffix')}
         </p>
       </div>
 
@@ -111,10 +119,10 @@ function RankingInfo() {
         <table className="rk-info-table">
           <thead>
             <tr>
-              <th>Rank</th>
-              <th>Icon</th>
-              <th>Points</th>
-              <th>K-Factor</th>
+              <th>{t('rankingInfo.table.rank')}</th>
+              <th>{t('rankingInfo.table.icon')}</th>
+              <th>{t('rankingInfo.table.points')}</th>
+              <th>{t('rankingInfo.table.kFactor')}</th>
             </tr>
           </thead>
           <tbody>
@@ -122,13 +130,13 @@ function RankingInfo() {
               <tr key={tier.name}>
                 <td>
                   <span className="rk-info-rank" style={{ color: getRankColor(tier.name) }}>
-                    {tier.name}
+                    {t(`rankingInfo.tierNames.${tier.name}`)}
                   </span>
                 </td>
                 <td className="rk-info-icon">
                   <i className={getRankIcon(tier.name)} style={{ color: getRankColor(tier.name) }} />
                 </td>
-                <td>{tier.min} – {tier.max ?? '∞'}</td>
+                <td>{t('rankingInfo.pointRange', { min: tier.min, max: tier.max ?? '∞' })}</td>
                 <td>{tier.kFactor}</td>
               </tr>
             ))}
@@ -137,24 +145,22 @@ function RankingInfo() {
       </div>
 
       <div className="rk-info-block">
-        <h3>Legend tier</h3>
+        <h3>{t('rankingInfo.legendTitle')}</h3>
         <p>
-          The top 5 players on the leaderboard receive the <span className="rank-legend">Legend</span> rank,
-          no matter how many points they have. Once a player drops out of the top 5 they return to their
-          point-based rank.
+          {t('rankingInfo.legendTextPrefix')}<span className="rank-legend">{t('rankingInfo.legendTextMid', { rank: t('rankingInfo.rankLegend') })}</span>{t('rankingInfo.legendTextSuffix')}
         </p>
       </div>
 
       <div className="rk-info-block">
-        <h3>Examples</h3>
+        <h3>{t('rankingInfo.examplesTitle')}</h3>
         <p className="rk-info-subtitle">
-          These examples show the same ELO engine used by “Record Match” and league matches.
+          {t('rankingInfo.examplesSubtitle')}
         </p>
       </div>
 
       <div className="rk-info-examples">
         {EXAMPLES.map((ex) => (
-          <ExampleCard key={ex.title} ex={ex} />
+          <ExampleCard key={ex.key} ex={ex} />
         ))}
       </div>
     </div>

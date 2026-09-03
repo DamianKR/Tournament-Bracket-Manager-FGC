@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { EventTab } from './EventsPage';
@@ -10,6 +11,7 @@ interface EventsSidebarProps {
 }
 
 function EventsSidebar({ activeTab, onTabChange }: EventsSidebarProps) {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const { getPath } = useCommunity();
   const navigate = useNavigate();
@@ -26,7 +28,7 @@ function EventsSidebar({ activeTab, onTabChange }: EventsSidebarProps) {
     <aside className="events-sidebar">
       <div className="events-sidebar-header">
         <i className="fas fa-calendar-alt" />
-        <h2>Events</h2>
+        <h2>{t('events.title')}</h2>
       </div>
 
       <nav className="events-sidebar-nav">
@@ -35,7 +37,7 @@ function EventsSidebar({ activeTab, onTabChange }: EventsSidebarProps) {
           onClick={() => onTabChange('tournaments')}
         >
           <i className="fas fa-trophy" />
-          <span>Tournaments</span>
+          <span>{t('events.tabs.tournaments')}</span>
         </button>
 
         <button
@@ -43,27 +45,27 @@ function EventsSidebar({ activeTab, onTabChange }: EventsSidebarProps) {
           onClick={() => onTabChange('leagues')}
         >
           <i className="fas fa-shield-alt" />
-          <span>Leagues</span>
+          <span>{t('events.tabs.leagues')}</span>
         </button>
 
         {/* Ranked e History solo para usuarios autenticados */}
         <button
           className={`events-sidebar-item ${activeTab === 'ranked' ? 'active' : ''} ${!isAuthenticated ? 'locked' : ''}`}
           onClick={() => handleAuthTab('ranked')}
-          title={!isAuthenticated ? 'Sign in to access Ranked' : undefined}
+          title={!isAuthenticated ? t('events.signInToAccess', { tab: t('events.tabs.ranked') }) : undefined}
         >
           <i className="fas fa-star" />
-          <span>Ranked</span>
+          <span>{t('events.tabs.ranked')}</span>
           {!isAuthenticated && <i className="fas fa-lock events-sidebar-lock" />}
         </button>
 
         <button
           className={`events-sidebar-item ${activeTab === 'history' ? 'active' : ''} ${!isAuthenticated ? 'locked' : ''}`}
           onClick={() => handleAuthTab('history')}
-          title={!isAuthenticated ? 'Sign in to access History' : undefined}
+          title={!isAuthenticated ? t('events.signInToAccess', { tab: t('events.tabs.history') }) : undefined}
         >
           <i className="fas fa-history" />
-          <span>History</span>
+          <span>{t('events.tabs.history')}</span>
           {!isAuthenticated && <i className="fas fa-lock events-sidebar-lock" />}
         </button>
       </nav>

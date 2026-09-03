@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, LeagueStanding, GlobalParticipant } from '@/models/types';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
 import ReportMatchModal from './ReportMatchModal';
@@ -13,17 +14,18 @@ interface LeagueMyMatchesTabProps {
 }
 
 function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchUpdated }: LeagueMyMatchesTabProps) {
+  const { t } = useTranslation();
   const [selectedParticipantId, setSelectedParticipantId] = useState<string>('');
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
 
   function getParticipantName(id: string): string {
     const p = participants.get(id);
-    return p ? (p.alias?.trim() || p.name) : 'Unknown';
+    return p ? (p.alias?.trim() || p.name) : t('tournament.bracket.unknown');
   }
 
   function getSelectParticipantName(id: string): string {
     const p = participants.get(id);
-    return p ? (p.alias ? `${p.alias} (${p.name})` : p.name) : 'Unknown';
+    return p ? (p.alias ? `${p.alias} (${p.name})` : p.name) : t('tournament.bracket.unknown');
   }
 
   const myMatches = useMemo(() => {
@@ -62,7 +64,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
     return (
       <div key={match.id} className={`my-match-row ${isCompleted ? 'completed' : 'pending'}`}>
         <div className="my-match-opponent">
-          <span className="my-match-vs">vs</span>
+          <span className="my-match-vs">{t('league.schedule.vs')}</span>
           <ParticipantName id={opponentId} name={getParticipantName(opponentId)} className="opponent-name" />
         </div>
 
@@ -70,14 +72,14 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
           <>
             <div className={`my-match-result ${didWin ? 'win' : 'loss'}`}>
               {isNoShow ? (
-                match.noShowParticipantId === selectedParticipantId ? 'No-show' : 'W (walkover)'
+                match.noShowParticipantId === selectedParticipantId ? t('league.myMatches.noShow') : t('league.myMatches.walkover')
               ) : (
-                didWin ? `W ${match.score}` : `L ${match.score}`
+                didWin ? t('league.myMatches.win', { score: match.score }) : t('league.myMatches.loss', { score: match.score })
               )}
             </div>
             {myEloChange !== undefined && (
               <div className={`my-match-elo ${myEloChange >= 0 ? 'elo-positive' : 'elo-negative'}`}>
-                {myEloChange >= 0 ? '+' : ''}{myEloChange} ELO
+                {myEloChange >= 0 ? '+' : ''}{myEloChange} {t('league.myMatches.elo')}
               </div>
             )}
             {match.completedDate && (
@@ -88,17 +90,17 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
           </>
         ) : (
           <>
-            <div className="my-match-status">Pending</div>
+            <div className="my-match-status">{t('league.myMatches.pending')}</div>
             {match.week <= effectiveCurrentWeek && (!match.scheduledDate || new Date(match.scheduledDate) <= new Date()) ? (
               <button
                 className="btn-primary btn-sm"
                 onClick={() => setSelectedMatch(match)}
               >
-                Report Result
+                {t('league.myMatches.reportResult')}
               </button>
             ) : (
-              <span className="match-locked" title={`Locked until Week ${match.week}`}>
-                <i className="fas fa-lock" /> {match.week <= effectiveCurrentWeek ? 'Starts soon' : `Week ${match.week}`}
+              <span className="match-locked" title={t('league.myMatches.lockedUntil', { week: match.week })}>
+                <i className="fas fa-lock" /> {match.week <= effectiveCurrentWeek ? t('league.myMatches.startsSoon') : t('league.myMatches.weekNumber', { week: match.week })}
               </span>
             )}
           </>
@@ -111,12 +113,12 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
     <div className="my-matches-tab">
       <div className="my-matches-selector card">
         <label>
-          Select Player:
+          {t('league.myMatches.selectPlayer')}
           <select
             value={selectedParticipantId}
             onChange={(e) => setSelectedParticipantId(e.target.value)}
           >
-            <option value="">-- Choose a player --</option>
+            <option value="">{t('league.myMatches.choosePlayer')}</option>
             {league.participantIds
               .map((pid) => ({ id: pid, name: getSelectParticipantName(pid) }))
               .sort((a, b) => a.name.localeCompare(b.name))
@@ -132,22 +134,22 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
       {selectedParticipantId && myStanding && (
         <>
           <div className="my-stats-card card">
-            <h3>Stats</h3>
+            <h3>{t('league.myMatches.statsTitle')}</h3>
             <div className="my-stats-grid">
               <div className="my-stat">
-                <span className="my-stat-label">Rank</span>
+                <span className="my-stat-label">{t('league.myMatches.rank')}</span>
                 <span className="my-stat-value">#{myStanding.rank}</span>
               </div>
               <div className="my-stat">
-                <span className="my-stat-label">Record</span>
-                <span className="my-stat-value">{myStanding.wins}W-{myStanding.losses}L</span>
+                <span className="my-stat-label">{t('league.myMatches.record')}</span>
+                <span className="my-stat-value">{myStanding.wins}{t('common.w')}-{myStanding.losses}{t('common.l')}</span>
               </div>
               <div className="my-stat">
-                <span className="my-stat-label">ELO</span>
+                <span className="my-stat-label">{t('league.myMatches.elo')}</span>
                 <span className="my-stat-value">{myStanding.currentElo}</span>
               </div>
               <div className="my-stat">
-                <span className="my-stat-label">Change</span>
+                <span className="my-stat-label">{t('league.myMatches.change')}</span>
                 <span className={`my-stat-value ${myStanding.eloChange >= 0 ? 'text-success' : 'text-danger'}`}>
                   {myStanding.eloChange >= 0 ? '+' : ''}{myStanding.eloChange}
                 </span>
@@ -157,7 +159,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
 
           {thisWeekMatches.length > 0 && (
             <div className="my-matches-section card">
-              <h3>This Week (Week {league.currentWeek})</h3>
+              <h3>{t('league.myMatches.thisWeek', { week: league.currentWeek })}</h3>
               <div className="my-matches-list">
                 {thisWeekMatches.map(renderMatch)}
               </div>
@@ -166,7 +168,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
 
           {upcomingMatches.length > 0 && (
             <div className="my-matches-section card">
-              <h3>Upcoming</h3>
+              <h3>{t('league.myMatches.upcoming')}</h3>
               <div className="my-matches-list">
                 {upcomingMatches.slice(0, 5).map(renderMatch)}
               </div>
@@ -175,7 +177,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
 
           {completedMatches.length > 0 && (
             <div className="my-matches-section card">
-              <h3>Completed ({completedMatches.length})</h3>
+              <h3>{t('league.myMatches.completed', { count: completedMatches.length })}</h3>
               <div className="my-matches-list">
                 {completedMatches.slice(0, 10).map(renderMatch)}
               </div>
@@ -184,7 +186,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
 
           {remainingOpponents.length > 0 && (
             <div className="my-matches-section card">
-              <h3>Remaining Opponents ({remainingOpponents.length})</h3>
+              <h3>{t('league.myMatches.remainingOpponents', { count: remainingOpponents.length })}</h3>
               <div className="remaining-opponents">
                 {remainingOpponents.map((pid) => (
                   <span key={pid} className="opponent-chip">
@@ -199,7 +201,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
 
       {!selectedParticipantId && (
         <div className="empty-state card">
-          <p className="text-secondary">Select a player to view their matches.</p>
+          <p className="text-secondary">{t('league.myMatches.noPlayerSelected')}</p>
         </div>
       )}
 

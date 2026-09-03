@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { useNotifications } from '@/contexts/NotificationContext';
@@ -15,18 +16,20 @@ const TYPE_ICONS: Record<string, string> = {
   summary: 'fa-bell',
 };
 
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const m = Math.floor(diff / 60000);
-  if (m < 1) return 'Just now';
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
-}
-
 export default function NotificationBell() {
+  const { t } = useTranslation();
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
+
+  function timeAgo(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return t('notifications.timeAgo.justNow');
+    if (m < 60) return t('notifications.timeAgo.minutesAgo', { count: m });
+    const h = Math.floor(m / 60);
+    if (h < 24) return t('notifications.timeAgo.hoursAgo', { count: h });
+    const d = Math.floor(h / 24);
+    return t('notifications.timeAgo.daysAgo', { count: d });
+  }
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -69,8 +72,8 @@ export default function NotificationBell() {
       <button
         className={`notif-bell-btn ${unreadCount > 0 ? 'has-unread' : ''}`}
         onClick={handleOpen}
-        aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
-        title="Notifications"
+        aria-label={t('notifications.title') + (unreadCount > 0 ? ` (${t('notifications.unread', { count: unreadCount })})` : '')}
+        title={t('notifications.title')}
       >
         <i className="fas fa-bell" />
         {unreadCount > 0 && (
@@ -82,30 +85,30 @@ export default function NotificationBell() {
         <div className="notif-dropdown">
           <div className="notif-dropdown-header">
             <span className="notif-dropdown-title">
-              <i className="fas fa-bell" /> Notifications
-              {unreadCount > 0 && <span className="notif-count-label">{unreadCount} new</span>}
+              <i className="fas fa-bell" /> {t('notifications.title')}
+              {unreadCount > 0 && <span className="notif-count-label">{unreadCount} {t('notifications.new')}</span>}
             </span>
             <div className="notif-dropdown-actions">
               <button
                 className={`notif-mark-all-btn ${unreadCount === 0 ? 'disabled' : ''}`}
                 onClick={() => { if (unreadCount > 0) markAllRead(); }}
-                title={unreadCount > 0 ? 'Mark all as read' : 'All caught up'}
+                title={unreadCount > 0 ? t('notifications.markAllRead') : t('notifications.allCaughtUp')}
                 disabled={unreadCount === 0}
               >
-                <i className="fas fa-check-double" /> Mark all read
+                <i className="fas fa-check-double" /> {t('notifications.markAllRead')}
               </button>
               <button
                 className="notif-view-all-btn"
                 onClick={() => { setOpen(false); navigate(getPath('notifications')); }}
               >
-                View all
+                {t('notifications.viewAll')}
               </button>
               <i
                 className="fas fa-times notif-dropdown-close"
                 onClick={() => setOpen(false)}
-                title="Close"
+                title={t('notifications.close')}
                 role="button"
-                aria-label="Close notifications"
+                aria-label={t('notifications.close')}
                 tabIndex={0}
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setOpen(false); }}
               />
@@ -116,7 +119,7 @@ export default function NotificationBell() {
             {unreadNotifications.length === 0 ? (
               <div className="notif-empty">
                 <i className="fas fa-check-circle" />
-                <p>No new notifications</p>
+                <p>{t('notifications.noNew')}</p>
               </div>
             ) : (
               unreadNotifications.map(notif => (

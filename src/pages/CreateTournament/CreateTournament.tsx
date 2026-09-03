@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { TournamentMode, TournamentType, GlobalParticipant, TeamSize, SeedingMode, PartialSeedCount } from '@/models/types';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
@@ -27,6 +28,7 @@ import './CreateTournament.css';
 type ViewMode = 'participants' | 'bracket' | 'seeding-preview';
 
 function CreateTournament() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { currentCommunity, getPath } = useCommunity();
@@ -147,7 +149,7 @@ function CreateTournament() {
 
   const handleCreateTournament = async () => {
     if (!tournamentName.trim()) {
-      setError('Please enter a tournament name');
+      setError(t('tournament.create.errors.nameRequired'));
       return;
     }
     try {
@@ -256,7 +258,7 @@ function CreateTournament() {
   const handleStartTournament = () => {
     if (!tournamentId) return;
     if (participants.length < MIN_PARTICIPANTS) {
-      setError(`Minimum ${MIN_PARTICIPANTS} participants required`);
+      setError(t('tournament.create.errors.minParticipants', { min: MIN_PARTICIPANTS }));
       return;
     }
     
@@ -293,17 +295,17 @@ function CreateTournament() {
   const handleCancel = () => navigate(getPath('events'));
 
   const sidebarItems = [
-    { id: 'setup', label: 'Tournament Setup', active: !isCreated },
+    { id: 'setup', label: t('tournament.create.sidebarSetup'), active: !isCreated },
     {
       id: 'participants',
-      label: 'Participants',
+      label: t('tournament.create.sidebarParticipants'),
       count: participants.length,
       active: isCreated && viewMode === 'participants',
       onClick: () => setViewMode('participants'),
     },
     {
       id: 'bracket',
-      label: 'Bracket Preview',
+      label: t('tournament.create.bracketPreviewTitle'),
       active: isCreated && viewMode === 'bracket',
       onClick: () => setViewMode('bracket'),
       disabled: participants.length < MIN_PARTICIPANTS,
@@ -318,66 +320,66 @@ function CreateTournament() {
         <div className="container">
           {!isCreated ? (
             <div className="setup-form card">
-              <h2>Create New Tournament</h2>
+              <h2>{t('tournament.create.title')}</h2>
 
               {error && <div className="error-message">{error}</div>}
 
               <div className="form-group">
-                <label>Tournament Name</label>
+                <label>{t('tournament.create.nameLabel')}</label>
                 <input
                   type="text"
                   value={tournamentName}
                   onChange={(e) => setTournamentName(e.target.value)}
-                  placeholder="Enter tournament name"
+                  placeholder={t('tournament.create.namePlaceholder')}
                   className="w-full"
                 />
               </div>
 
               <div className="form-group">
-                <label>Type</label>
+                <label>{t('tournament.create.typeLabel')}</label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value as TournamentType)}
                   className="w-full"
                 >
-                  <option value="singles">Singles</option>
-                  <option value="teams">Teams</option>
+                  <option value="singles">{t('tournament.create.typeSingles')}</option>
+                  <option value="teams">{t('tournament.create.typeTeams')}</option>
                 </select>
                 <p className="text-secondary text-sm mt-1">
-                  {type === 'singles' 
-                    ? 'Individual players compete' 
-                    : 'Teams of multiple players compete together'}
+                  {type === 'singles'
+                    ? t('tournament.create.typeSinglesDesc')
+                    : t('tournament.create.typeTeamsDesc')}
                 </p>
               </div>
 
               {type === 'teams' && (
                 <div className="form-group">
-                  <label>Team Size</label>
+                  <label>{t('tournament.create.teamSizeLabel')}</label>
                   <select
                     value={teamSize}
                     onChange={(e) => setTeamSize(Number(e.target.value) as TeamSize)}
                     className="w-full"
                   >
-                    <option value={2}>2v2 (Doubles)</option>
-                    <option value={3}>3v3 (Triples)</option>
-                    <option value={4}>4v4 (Squads)</option>
-                    <option value={5}>5v5 (Teams)</option>
+                    <option value={2}>{t('tournament.create.teamSize2')}</option>
+                    <option value={3}>{t('tournament.create.teamSize3')}</option>
+                    <option value={4}>{t('tournament.create.teamSize4')}</option>
+                    <option value={5}>{t('tournament.create.teamSize5')}</option>
                   </select>
                   <p className="text-secondary text-sm mt-1">
-                    Each team will have {teamSize} players
+                    {t('tournament.create.teamSizeHint', { count: teamSize })}
                   </p>
                 </div>
               )}
 
               <div className="form-group">
-                <label>Bracket Mode</label>
+                <label>{t('tournament.create.modeLabel')}</label>
                 <select
                   value={mode}
                   onChange={(e) => setMode(e.target.value as TournamentMode)}
                   className="w-full"
                 >
-                  <option value="double_elimination">Double Elimination</option>
-                  <option value="single_elimination">Single Elimination</option>
+                  <option value="double_elimination">{t('tournament.create.modeDouble')}</option>
+                  <option value="single_elimination">{t('tournament.create.modeSingle')}</option>
                 </select>
               </div>
 
@@ -388,53 +390,53 @@ function CreateTournament() {
                     checked={givesPoints}
                     onChange={(e) => setGivesPoints(e.target.checked)}
                   />
-                  <span>Award ranking points on completion</span>
+                  <span>{t('tournament.create.pointsCheckbox')}</span>
                 </label>
                 <p className="text-secondary text-sm mt-1">
                   {givesPoints
-                    ? 'Top 8 placements will earn ELO points when the tournament ends'
-                    : 'No ELO points will be awarded; results are recorded for history only'}
+                    ? t('tournament.create.pointsHintYes')
+                    : t('tournament.create.pointsHintNo')}
                 </p>
               </div>
 
               {type === 'singles' && (
                 <div className="form-group">
-                  <label>Seeding</label>
+                  <label>{t('tournament.create.seedingLabel')}</label>
                   <select
                     value={seedingMode}
                     onChange={(e) => setSeedingMode(e.target.value as SeedingMode)}
                     className="w-full"
                   >
-                    <option value="none">Manual (current order)</option>
-                    <option value="full">Full ranking seeding</option>
-                    <option value="partial">Partial seeding (top seeds only)</option>
+                    <option value="none">{t('tournament.create.seedingNone')}</option>
+                    <option value="full">{t('tournament.create.seedingFull')}</option>
+                    <option value="partial">{t('tournament.create.seedingPartial')}</option>
                   </select>
                   {seedingMode === 'partial' && (
                     <div className="mt-2">
-                      <label className="text-sm">Top seeds to place:</label>
+                      <label className="text-sm">{t('tournament.create.topSeedsLabel')}</label>
                       <select
                         value={partialSeedCount}
                         onChange={(e) => setPartialSeedCount(Number(e.target.value) as PartialSeedCount)}
                         className="w-full mt-1"
                       >
-                        <option value={4}>Top 4</option>
-                        <option value={8}>Top 8</option>
-                        <option value={16}>Top 16</option>
+                        <option value={4}>{t('tournament.create.topSeeds4')}</option>
+                        <option value={8}>{t('tournament.create.topSeeds8')}</option>
+                        <option value={16}>{t('tournament.create.topSeeds16')}</option>
                       </select>
                     </div>
                   )}
                   <p className="text-secondary text-sm mt-1">
-                    {seedingMode === 'none' && 'Participants stay in the order you add them'}
-                    {seedingMode === 'full' && 'All participants ranked by ELO + win rate'}
-                    {seedingMode === 'partial' && `Top ${partialSeedCount} ranked, rest randomized`}
+                    {seedingMode === 'none' && t('tournament.create.seedingHintNone')}
+                    {seedingMode === 'full' && t('tournament.create.seedingHintFull')}
+                    {seedingMode === 'partial' && t('tournament.create.seedingHintPartial', { count: partialSeedCount })}
                   </p>
                 </div>
               )}
 
               <div className="form-actions">
-                <button className="btn-outline" onClick={handleCancel}>Cancel</button>
+                <button className="btn-outline" onClick={handleCancel}>{t('tournament.create.cancel')}</button>
                 <button className="btn-primary" onClick={handleCreateTournament}>
-                  Create Tournament
+                  {t('tournament.create.createButton')}
                 </button>
               </div>
             </div>
@@ -446,7 +448,7 @@ function CreateTournament() {
                     <div>
                       <h2>{tournamentName}</h2>
                       <p className="text-secondary">
-                        Add participants to your tournament (minimum {MIN_PARTICIPANTS})
+                        {t('tournament.create.participantsSectionSubtitle', { min: MIN_PARTICIPANTS })}
                       </p>
                     </div>
                   </div>
@@ -467,7 +469,7 @@ function CreateTournament() {
                               onFocus={() => {
                                 if (suggestions.length > 0) setShowSuggestions(true);
                               }}
-                              placeholder="Enter or search participant name…"
+                              placeholder={t('tournament.create.searchPlaceholder')}
                               className="w-full"
                               disabled={adding}
                               autoComplete="off"
@@ -485,7 +487,7 @@ function CreateTournament() {
                                       <span className="autocomplete-item-alias">{s.alias}</span>
                                     )}
                                     <span className="autocomplete-item-stats">
-                                      {(s.tournamentIds ?? []).length} played
+                                      {t('tournament.create.playedCount', { count: s.tournamentIds?.length ?? 0 })}
                                     </span>
                                   </div>
                                 ))}
@@ -497,11 +499,11 @@ function CreateTournament() {
                             onClick={handleAddParticipant}
                             disabled={adding}
                           >
-                            {adding ? '…' : 'Add'}
+                            {adding ? t('tournament.create.adding') : t('tournament.create.addButton')}
                           </button>
                         </div>
                         <p className="autocomplete-hint text-secondary text-sm">
-                          Type to search existing participants, or enter a new name to create one
+                          {t('tournament.create.searchHint')}
                         </p>
                       </div>
                     </div>
@@ -512,10 +514,10 @@ function CreateTournament() {
                         onClick={() => setShowAddTeamModal(true)}
                         disabled={adding}
                       >
-                        <i className="fas fa-users"></i> Add Team
+                        <i className="fas fa-users"></i> {t('tournament.create.addTeamButton')}
                       </button>
                       <p className="text-secondary text-sm mt-2">
-                        Click to add a team of {teamSize} players
+                        {t('tournament.create.addTeamHint', { count: teamSize })}
                       </p>
                     </div>
                   )}
@@ -523,10 +525,10 @@ function CreateTournament() {
                   {participants.length > 0 && (
                     <div className="participants-actions card">
                       <button className="btn-outline" onClick={handleShuffleParticipants}>
-                        Randomize Order
+                        {t('tournament.create.randomizeOrder')}
                       </button>
                       <span className="text-secondary">
-                        {participants.length} participant{participants.length !== 1 ? 's' : ''}
+                        {t('tournament.view.participantCount', { count: participants.length })}
                       </span>
                     </div>
                   )}
@@ -540,13 +542,13 @@ function CreateTournament() {
                   />
 
                   <div className="form-actions">
-                    <button className="btn-outline" onClick={handleCancel}>Cancel</button>
+                    <button className="btn-outline" onClick={handleCancel}>{t('tournament.create.cancel')}</button>
                     <button
                       className="btn-primary"
                       onClick={handleStartTournament}
                       disabled={participants.length < MIN_PARTICIPANTS}
                     >
-                      Start Tournament
+                      {t('tournament.create.startButton')}
                     </button>
                   </div>
                 </div>
@@ -566,23 +568,23 @@ function CreateTournament() {
 
               {viewMode === 'bracket' && (
                 <div className="bracket-preview-section">
-                  <h2>Bracket Preview</h2>
+                  <h2>{t('tournament.create.bracketPreviewTitle')}</h2>
                   <p className="text-secondary mb-3">
-                    Preview how the bracket will look with current participants
+                    {t('tournament.create.bracketPreviewDesc')}
                   </p>
 
                   <BracketPreview participants={participants} />
 
                   <div className="form-actions mt-3">
                     <button className="btn-outline" onClick={() => setViewMode('participants')}>
-                      Back to Participants
+                      {t('tournament.create.bracketPreviewBack')}
                     </button>
                     <button
                       className="btn-primary"
                       onClick={handleStartTournament}
                       disabled={participants.length < MIN_PARTICIPANTS}
                     >
-                      Start Tournament
+                      {t('tournament.create.startButton')}
                     </button>
                   </div>
                 </div>
@@ -594,9 +596,9 @@ function CreateTournament() {
 
       <ConfirmModal
         isOpen={showStartConfirm}
-        title="Start Tournament"
-        message={`Are you sure you want to start "${tournamentName}" with ${participants.length} participants? This will generate the bracket and cannot be undone.`}
-        confirmText="Start"
+        title={t('tournament.create.startConfirmTitle')}
+        message={t('tournament.create.startConfirmMessage', { name: tournamentName, count: participants.length })}
+        confirmText={t('tournament.create.startConfirmButton')}
         onConfirm={confirmStartTournament}
         onCancel={cancelStartTournament}
       />

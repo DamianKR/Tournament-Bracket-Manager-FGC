@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
 
 import { useCommunity } from '@/contexts/CommunityContext';
@@ -17,6 +18,7 @@ const MAX_EVIDENCE_SIZE_MB = 4;
 const MAX_EVIDENCE_SIZE_BYTES = MAX_EVIDENCE_SIZE_MB * 1024 * 1024;
 
 function ReportMatchModal({ league, match, participants, onClose, onSuccess }: ReportMatchModalProps) {
+  const { t } = useTranslation();
   const { canAdminCurrentCommunity } = useCommunity();
   const [winnerId, setWinnerId] = useState(match.participant1Id);
   const [score1, setScore1] = useState(2);
@@ -30,8 +32,8 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
 
   const p1 = participants.get(match.participant1Id);
   const p2 = participants.get(match.participant2Id);
-  const p1Name = p1 ? (p1.alias?.trim() || p1.name) : 'Unknown';
-  const p2Name = p2 ? (p2.alias?.trim() || p2.name) : 'Unknown';
+  const p1Name = p1 ? (p1.alias?.trim() || p1.name) : t('tournament.bracket.unknown');
+  const p2Name = p2 ? (p2.alias?.trim() || p2.name) : t('tournament.bracket.unknown');
 
   const winScore = Math.ceil(league.gamesPerMatch / 2);
 
@@ -39,7 +41,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > MAX_EVIDENCE_SIZE_BYTES) {
-      setError(`Evidence image is too large. Maximum is ${MAX_EVIDENCE_SIZE_MB}MB.`);
+      setError(t('league.reportMatch.errors.imageTooLarge', { size: MAX_EVIDENCE_SIZE_MB }));
       return;
     }
     const reader = new FileReader();
@@ -54,7 +56,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     }
 
     if (!isNoShow && (score1 < winScore && score2 < winScore)) {
-      setError(`One player must win ${winScore} games (Best of ${league.gamesPerMatch})`);
+      setError(t('league.reportMatch.errors.winThreshold', { count: winScore, total: league.gamesPerMatch }));
       return;
     }
 
@@ -83,7 +85,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     setSubmitting(false);
 
     if (!result) {
-      setError('Failed to report match result');
+      setError(t('league.reportMatch.errors.submitFailed'));
       return;
     }
 
@@ -115,7 +117,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content report-match-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Report Match Result</h2>
+          <h2>{t('league.reportMatch.title')}</h2>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
@@ -123,11 +125,11 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
           <div className="match-info">
             <div className="match-info-players">
               <span className="match-info-player">{p1Name}</span>
-              <span className="match-info-vs">vs</span>
+              <span className="match-info-vs">{t('league.schedule.vs')}</span>
               <span className="match-info-player">{p2Name}</span>
             </div>
             <div className="match-info-meta">
-              Week {match.week} • Round {match.round}
+              {t('league.reportMatch.weekRound', { week: match.week, round: match.round })}
             </div>
           </div>
 
@@ -135,16 +137,16 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
 
           {match.reportedResults && match.reportedResults.length > 0 && (
             <div className="reported-results">
-              <h4>Previous reports</h4>
+              <h4>{t('league.reportMatch.previousReports')}</h4>
               {match.reportedResults.map((r) => {
                 const reporter = participants.get(r.participantId);
                 const winner = participants.get(r.winnerId);
+                const reporterName = reporter?.alias?.trim() || reporter?.name || t('tournament.bracket.unknown');
+                const winnerName = winner?.alias?.trim() || winner?.name || t('tournament.bracket.unknown');
+                const suffix = (r.isNoShow ? t('league.reportMatch.noShowSuffix') : '') + (r.evidence ? t('league.reportMatch.withEvidenceSuffix') : '');
                 return (
                   <div key={r.participantId} className="reported-result">
-                    <strong>{reporter?.alias?.trim() || reporter?.name || 'Unknown'}</strong>:{' '}
-                    {winner?.alias?.trim() || winner?.name || 'Unknown'} wins {r.score}
-                    {r.isNoShow ? ' (no-show)' : ''}
-                    {r.evidence ? ' [with evidence]' : ''}
+                    {t('league.reportMatch.reportedEntry', { reporter: reporterName, winner: winnerName, score: r.score, suffix })}
                   </div>
                 );
               })}
@@ -158,13 +160,13 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
                 checked={isNoShow}
                 onChange={(e) => setIsNoShow(e.target.checked)}
               />
-              Mark as no-show
+              {t('league.reportMatch.markNoShow')}
             </label>
           </div>
 
           {isNoShow ? (
             <div className="form-section">
-              <label>Absent player</label>
+              <label>{t('league.reportMatch.absentPlayer')}</label>
               <div className="radio-group">
                 <label>
                   <input
@@ -184,13 +186,13 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
                 </label>
               </div>
               <p className="form-hint">
-                The absent player will lose ELO as if they lost the match.
+                {t('league.reportMatch.absentHint')}
               </p>
             </div>
           ) : (
             <>
               <div className="form-section">
-                <label>Winner</label>
+                <label>{t('league.reportMatch.winner')}</label>
                 <div className="radio-group">
                   <label>
                     <input
@@ -212,7 +214,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
               </div>
 
               <div className="form-section">
-                <label>Score (Best of {league.gamesPerMatch})</label>
+                <label>{t('league.reportMatch.scoreLabel', { count: league.gamesPerMatch })}</label>
                 <div className="score-inputs">
                   <div className="score-input-group">
                     <span className="score-player-name">{p1Name}</span>
@@ -238,27 +240,27 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
 
           {!(canAdminCurrentCommunity && (match.status === 'pending_review' || match.status === 'reported')) && (
             <div className="form-section">
-              <label>Evidence (optional, max {MAX_EVIDENCE_SIZE_MB}MB)</label>
+              <label>{t('league.reportMatch.evidenceLabel', { size: MAX_EVIDENCE_SIZE_MB })}</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
               />
-              {evidence && <div className="evidence-preview"><img src={evidence} alt="Evidence" /></div>}
+              {evidence && <div className="evidence-preview"><img src={evidence} alt={t('league.reportMatch.evidenceLabel')} /></div>}
             </div>
           )}
         </div>
 
         <div className="modal-footer">
           <button className="btn-outline" onClick={onClose} disabled={submitting}>
-            Cancel
+            {t('league.reportMatch.cancel')}
           </button>
           <button className="btn-primary" onClick={handleSubmit} disabled={submitting}>
             {submitting
-              ? 'Submitting...'
+              ? t('league.reportMatch.submitting')
               : canAdminCurrentCommunity && match.status === 'pending_review'
-                ? 'Resolve'
-                : 'Submit Result'}
+                ? t('league.reportMatch.resolve')
+                : t('league.reportMatch.submit')}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LeagueStanding, GlobalParticipant } from '@/models/types';
 import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
@@ -16,6 +17,7 @@ interface LeagueStandingsTabProps {
 }
 
 function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled, onRefresh }: LeagueStandingsTabProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { getPath, canAdminCurrentCommunity } = useCommunity();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -25,7 +27,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
 
   function getParticipantName(id: string): string {
     const p = participants.get(id);
-    return p ? (p.alias?.trim() || p.name) : 'Unknown';
+    return p ? (p.alias?.trim() || p.name) : t('tournament.bracket.unknown');
   }
 
   function formatEloChange(change: number): string {
@@ -80,7 +82,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
             onClick={() => setShowRegenerateConfirm(true)}
             disabled={processing}
           >
-            <i className="fas fa-sync" /> Regenerate Schedule
+            <i className="fas fa-sync" /> {t('league.standings.regenerateSchedule')}
           </button>
           {selectedIds.size > 0 && (
             <button
@@ -88,7 +90,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
               onClick={() => setShowBanConfirm(true)}
               disabled={processing}
             >
-              <i className="fas fa-ban" /> Ban {selectedIds.size} Player{selectedIds.size > 1 ? 's' : ''}
+              <i className="fas fa-ban" /> {t('league.standings.banSelected', { count: selectedIds.size })}
             </button>
           )}
         </div>
@@ -96,9 +98,9 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
 
       <div className="card">
         <div className="standings-header">
-          <h3>Standings</h3>
+          <h3>{t('league.standings.title')}</h3>
           {playoffsEnabled && (
-            <span className="playoffs-note"><i className="fas fa-trophy" /> Top 8 qualify for playoffs</span>
+            <span className="playoffs-note"><i className="fas fa-trophy" /> {t('league.standings.playoffsNote')}</span>
           )}
         </div>
 
@@ -107,13 +109,13 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
             <thead>
               <tr>
                 {canAdminCurrentCommunity && <th className="col-select"></th>}
-                <th className="col-rank">#</th>
-                <th className="col-player">Player</th>
-                <th className="col-stat">MP</th>
-                <th className="col-stat">W</th>
-                <th className="col-stat">L</th>
-                <th className="col-stat">ELO</th>
-                <th className="col-stat">Change</th>
+                <th className="col-rank">{t('league.standings.table.rank')}</th>
+                <th className="col-player">{t('league.standings.table.player')}</th>
+                <th className="col-stat">{t('league.standings.table.mp')}</th>
+                <th className="col-stat">{t('league.standings.table.w')}</th>
+                <th className="col-stat">{t('league.standings.table.l')}</th>
+                <th className="col-stat">{t('league.standings.table.elo')}</th>
+                <th className="col-stat">{t('league.standings.table.change')}</th>
               </tr>
             </thead>
             <tbody>
@@ -147,7 +149,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
                       <div className="player-cell">
                         <span className="player-name">{getParticipantName(s.participantId)}</span>
                         {s.noShows > 0 && (
-                          <span className="no-show-badge" title={`${s.noShows} no-shows`}>
+                          <span className="no-show-badge" title={t('league.standings.noShowsTitle', { count: s.noShows })}>
                             <i className="fas fa-exclamation-triangle" /> {s.noShows}
                           </span>
                         )}
@@ -169,7 +171,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
 
         {standings.length === 0 && (
           <div className="empty-standings">
-            <p className="text-secondary">No matches played yet.</p>
+            <p className="text-secondary">{t('league.standings.noMatches')}</p>
           </div>
         )}
       </div>
@@ -177,22 +179,22 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
       {showBanConfirm && (
         <ConfirmModal
           isOpen={showBanConfirm}
-          title="Ban Players"
-          message={`Are you sure you want to ban ${selectedIds.size} player(s)? This will remove them from the league and regenerate all future matches.`}
+          title={t('league.standings.banConfirm.title')}
+          message={t('league.standings.banConfirm.message', { count: selectedIds.size })}
           onConfirm={handleBanSelected}
           onCancel={() => setShowBanConfirm(false)}
-          confirmText="Ban Players"
+          confirmText={t('league.standings.banConfirm.confirm')}
         />
       )}
 
       {showRegenerateConfirm && (
         <ConfirmModal
           isOpen={showRegenerateConfirm}
-          title="Regenerate Schedule"
-          message="This will delete all scheduled, reported, and pending_review matches and regenerate them using the corrected algorithm. Completed and no_show matches will be preserved. Continue?"
+          title={t('league.standings.regenerateConfirm.title')}
+          message={t('league.standings.regenerateConfirm.message')}
           onConfirm={handleRegenerateSchedule}
           onCancel={() => setShowRegenerateConfirm(false)}
-          confirmText="Regenerate"
+          confirmText={t('league.standings.regenerateConfirm.confirm')}
         />
       )}
     </div>

@@ -1,4 +1,5 @@
 import { useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bracket, Participant, Match } from '@/models/types';
 import MatchCard from '@/components/Match/MatchCard';
 import { canRevertMatch } from '@/engine/progression/matchProgression';
@@ -13,22 +14,9 @@ interface BracketViewProps {
   readOnly?: boolean;
 }
 
-function getWinnerRoundName(roundNum: number, totalRounds: number): string {
-  const fromEnd = totalRounds - roundNum;
-  if (fromEnd === 0) return 'Winner Finals';
-  if (fromEnd === 1) return 'Winner Semifinals';
-  if (fromEnd === 2) return 'Winner Quarterfinals';
-  return `Round ${roundNum}`;
-}
-
-function getLoserRoundName(roundNum: number, totalRounds: number): string {
-  const fromEnd = totalRounds - roundNum;
-  if (fromEnd === 0) return 'Loser Finals';
-  if (fromEnd === 1) return 'Loser Semifinals';
-  return `Loser Round ${roundNum}`;
-}
-
 function BracketView({ bracket, participants, onMatchResult, onRevertMatch, readOnly = false }: BracketViewProps) {
+  const { t } = useTranslation();
+
   // Refs to sync horizontal scroll between header row and matches
   const winnerHeaderRef = useRef<HTMLDivElement>(null);
   const winnerScrollRef = useRef<HTMLDivElement>(null);
@@ -53,9 +41,9 @@ function BracketView({ bracket, participants, onMatchResult, onRevertMatch, read
   }, [globalParticipants]);
 
   const getParticipantName = (id: string | null): string => {
-    if (!id) return 'TBD';
+    if (!id) return t('tournament.bracket.tbd');
     const participant = participants.find((p) => p.id === id);
-    if (!participant) return 'Unknown';
+    if (!participant) return t('tournament.bracket.unknown');
     if (participant.globalParticipantId) {
       const global = globalMap.get(participant.globalParticipantId);
       if (global) {
@@ -64,6 +52,21 @@ function BracketView({ bracket, participants, onMatchResult, onRevertMatch, read
     }
     // Fallback to the tournament snapshot
     return participant.alias?.trim() || participant.name;
+  };
+
+  const getWinnerRoundName = (roundNum: number, totalRounds: number): string => {
+    const fromEnd = totalRounds - roundNum;
+    if (fromEnd === 0) return t('tournament.bracket.winnerFinals');
+    if (fromEnd === 1) return t('tournament.bracket.winnerSemifinals');
+    if (fromEnd === 2) return t('tournament.bracket.winnerQuarterfinals');
+    return t('tournament.bracket.round', { number: roundNum });
+  };
+
+  const getLoserRoundName = (roundNum: number, totalRounds: number): string => {
+    const fromEnd = totalRounds - roundNum;
+    if (fromEnd === 0) return t('tournament.bracket.loserFinals');
+    if (fromEnd === 1) return t('tournament.bracket.loserSemifinals');
+    return t('tournament.bracket.loserRound', { number: roundNum });
   };
 
   const groupMatchesByRound = (matches: Match[]) => {
@@ -139,14 +142,14 @@ function BracketView({ bracket, participants, onMatchResult, onRevertMatch, read
     <div className="bracket-view">
       {/* Winner Bracket */}
       <div className="bracket-section">
-        <h2 className="bracket-title">Winner Bracket</h2>
+        <h2 className="bracket-title">{t('tournament.bracket.winnerBracket')}</h2>
         {renderSection(winnerRounds, getWinnerRoundName, totalWinnerRounds, 'winner', winnerHeaderRef, winnerScrollRef)}
       </div>
 
       {/* Loser Bracket */}
       {bracket.loserBracket.length > 0 && (
         <div className="bracket-section loser-bracket">
-          <h2 className="bracket-title">Loser Bracket</h2>
+          <h2 className="bracket-title">{t('tournament.bracket.loserBracket')}</h2>
           {renderSection(loserRounds, getLoserRoundName, totalLoserRounds, 'loser', loserHeaderRef, loserScrollRef)}
         </div>
       )}
@@ -154,7 +157,7 @@ function BracketView({ bracket, participants, onMatchResult, onRevertMatch, read
       {/* Grand Final */}
       {bracket.grandFinal && (
         <div className="bracket-section grand-final">
-          <h2 className="bracket-title">Grand Final</h2>
+          <h2 className="bracket-title">{t('tournament.bracket.grandFinal')}</h2>
           <div className="grand-final-matches">
             <MatchCard
               match={bracket.grandFinal}
@@ -168,7 +171,7 @@ function BracketView({ bracket, participants, onMatchResult, onRevertMatch, read
             />
             {bracket.grandFinalReset && (
               <div className="reset-final">
-                <div className="reset-label">Bracket Reset</div>
+                <div className="reset-label">{t('tournament.bracket.bracketReset')}</div>
                 <MatchCard
                   match={bracket.grandFinalReset}
                   participant1Name={getParticipantName(bracket.grandFinalReset.participant1Id)}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { League } from '@/models/league';
@@ -9,6 +10,7 @@ import Loading from '@/components/Loading/Loading';
 import './LeaguesPage.css';
 
 function LeaguesPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentCommunity, getPath } = useCommunity();
   const communityId = currentCommunity?.id;
@@ -39,7 +41,7 @@ function LeaguesPage() {
     return (
       <div className="leagues-page">
         <div className="container">
-          <Loading message="Loading leagues..." />
+          <Loading message={t('leagues.loading')} />
         </div>
       </div>
     );
@@ -50,20 +52,20 @@ function LeaguesPage() {
       <div className="container">
         <div className="leagues-header">
           <div>
-            <h1><i className="fas fa-trophy" /> Leagues</h1>
-            <p className="text-secondary">Seasons of round-robin matches spread across multiple weeks</p>
+            <h1><i className="fas fa-trophy" /> {t('leagues.title')}</h1>
+            <p className="text-secondary">{t('leagues.subtitle')}</p>
           </div>
           <button className="btn-primary" onClick={() => navigate(getPath('events/leagues/create'))}>
-            <i className="fas fa-plus" /> New League
+            <i className="fas fa-plus" /> {t('leagues.newLeague')}
           </button>
         </div>
 
         {leagues.length === 0 ? (
           <div className="empty-state card">
-            <h3>No leagues yet</h3>
-            <p className="text-secondary">Create a round-robin league and track weekly matches and ELO standings.</p>
+            <h3>{t('leagues.emptyTitle')}</h3>
+            <p className="text-secondary">{t('leagues.emptyDesc')}</p>
             <button className="btn-primary mt-2" onClick={() => navigate(getPath('events/leagues/create'))}>
-              <i className="fas fa-plus" /> New League
+              <i className="fas fa-plus" /> {t('leagues.newLeague')}
             </button>
           </div>
         ) : (
@@ -82,36 +84,36 @@ function LeaguesPage() {
                   <div className="league-card-header">
                     <h3 className="league-card-title">{league.name}</h3>
                     <span className={`league-card-status ${statusClass}`}>
-                      {displayStatus.charAt(0).toUpperCase() + displayStatus.slice(1)}
+                      {t(`leagues.status.${displayStatus}`)}
                     </span>
                   </div>
 
                   <div className="league-card-meta">
                     <div className="info-row">
-                      <span>Game</span>
+                      <span>{t('leagues.game')}</span>
                       <span>{game?.shortName || league.gameId}</span>
                     </div>
                     <div className="info-row">
-                      <span>Players</span>
+                      <span>{t('leagues.players')}</span>
                       <span>{league.participantIds.length}</span>
                     </div>
                     <div className="info-row">
-                      <span>Week</span>
+                      <span>{t('leagues.week')}</span>
                       <span>{league.currentWeek}</span>
                     </div>
                     <div className="info-row">
-                      <span>Format</span>
-                      <span>Best of {league.gamesPerMatch}</span>
+                      <span>{t('leagues.format')}</span>
+                      <span>{t('leagues.bestOf', { count: league.gamesPerMatch })}</span>
                     </div>
                   </div>
 
                   <div className="league-card-footer">
                     <span className="league-card-date">
-                      <i className="fas fa-calendar" /> Started {new Date(league.startDate).toLocaleDateString()}
+                      <i className="fas fa-calendar" /> {t('leagues.started', { date: new Date(league.startDate).toLocaleDateString() })}
                     </span>
                     <button
                       className="league-card-delete"
-                      title="Delete league"
+                      title={t('leagues.delete')}
                       onClick={(e) => {
                         e.stopPropagation();
                         setDeleteTarget({ id: league.id, name: league.name });
@@ -129,9 +131,9 @@ function LeaguesPage() {
 
       <ConfirmModal
         isOpen={!!deleteTarget}
-        title="Delete League"
-        message={`Are you sure you want to delete "${deleteTarget?.name ?? ''}"? This cannot be undone.`}
-        confirmText="Delete"
+        title={t('leagues.deleteTitle')}
+        message={t('leagues.deleteMessage', { name: deleteTarget?.name ?? '' })}
+        confirmText={t('common.delete')}
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />

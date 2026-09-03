@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Match } from '@/models/types';
 import './MatchCard.css';
 
@@ -23,6 +24,7 @@ function MatchCard({
   isGrandFinal = false,
   reversible = false,
 }: MatchCardProps) {
+  const { t } = useTranslation();
   // ID of participant pending confirmation, null = no pending selection
   const [pendingWinnerId, setPendingWinnerId] = useState<string | null>(null);
 
@@ -64,15 +66,15 @@ function MatchCard({
 
       {/* Left column: match id + status */}
       <div className="match-header">
-        <span className="match-id">Match {match.matchNumber}</span>
+        <span className="match-id">{t('tournament.matchCard.match', { number: match.matchNumber })}</span>
         {match.status === 'completed' && !isGhostMatch && (
           <span className="match-status completed"><i className="fas fa-check" /></span>
         )}
         {isGhostMatch && (
-          <span className="match-status ghost">Auto-BYE</span>
+          <span className="match-status ghost">{t('tournament.matchCard.autoBye')}</span>
         )}
         {match.status === 'pending' && (!match.participant1Id || !match.participant2Id) && (
-          <span className="match-status pending">Waiting</span>
+          <span className="match-status pending">{t('tournament.matchCard.waiting')}</span>
         )}
       </div>
 
@@ -89,11 +91,11 @@ function MatchCard({
             onClick={() => handleClickParticipant(match.participant1Id)}
           >
             <span className="participant-name">{participant1Name}</span>
-            {isWinner(match.participant1Id) && <span className="winner-badge">W</span>}
-            {isPending(match.participant1Id) && <span className="pending-badge">?</span>}
+            {isWinner(match.participant1Id) && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
+            {isPending(match.participant1Id) && <span className="pending-badge">{t('tournament.matchCard.pendingBadge')}</span>}
           </div>
 
-          <div className="match-divider">vs</div>
+          <div className="match-divider">{t('tournament.matchCard.vs')}</div>
 
           {/* Participant 2 */}
           <div
@@ -105,28 +107,28 @@ function MatchCard({
             onClick={() => handleClickParticipant(match.participant2Id)}
           >
             <span className="participant-name">{participant2Name}</span>
-            {isWinner(match.participant2Id) && <span className="winner-badge">W</span>}
-            {isPending(match.participant2Id) && <span className="pending-badge">?</span>}
+            {isWinner(match.participant2Id) && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
+            {isPending(match.participant2Id) && <span className="pending-badge">{t('tournament.matchCard.pendingBadge')}</span>}
           </div>
         </div>
 
         {/* Confirmation bar — appears below participants when a selection is pending */}
         {pendingWinnerId ? (
           <div className="confirm-bar">
-            <span className="confirm-label">Winner: <strong>{pendingName}</strong>?</span>
+            <span className="confirm-label">{t('tournament.matchCard.winnerLabel', { name: pendingName })}</span>
             <div className="confirm-actions">
-              <button className="confirm-btn confirm-yes" onClick={handleConfirm}><i className="fas fa-check" /> Confirm</button>
-              <button className="confirm-btn confirm-no"  onClick={handleCancel}><i className="fas fa-xmark" /> Cancel</button>
+              <button className="confirm-btn confirm-yes" onClick={handleConfirm}><i className="fas fa-check" /> {t('tournament.matchCard.confirm')}</button>
+              <button className="confirm-btn confirm-no"  onClick={handleCancel}><i className="fas fa-xmark" /> {t('tournament.matchCard.cancel')}</button>
             </div>
           </div>
         ) : (
           <div className="match-actions">
             {match.status === 'completed' && !readOnly && reversible && onRevertMatch && (
               <button className="revert-btn" onClick={() => onRevertMatch(match.id)}>
-                <i className="fas fa-rotate-left" /> Revert
+                <i className="fas fa-rotate-left" /> {t('tournament.matchCard.revert')}
               </button>
             )}
-            {canSelect && <div className="match-hint">Click a player to select winner</div>}
+            {canSelect && <div className="match-hint">{t('tournament.matchCard.selectWinnerHint')}</div>}
           </div>
         )}
       </div>

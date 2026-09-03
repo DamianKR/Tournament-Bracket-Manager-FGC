@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getCommunity, updateCommunity } from '@/services/communities/communityService';
@@ -14,6 +15,7 @@ import './CommunityDashboard.css';
 
 export default function CommunityDashboard() {
   const { communityId } = useParams<{ communityId: string }>();
+  const { t } = useTranslation();
   const { allCommunities, setCommunityId, canAdminCurrentCommunity, refresh } = useCommunity();
   const { user } = useAuth();
   const [community, setCommunity] = useState<Community | null>(null);
@@ -63,8 +65,8 @@ export default function CommunityDashboard() {
     })();
   }, [communityId, allCommunities, setCommunityId]);
 
-  if (loading) return <div className="community-dashboard">Loading...</div>;
-  if (!community) return <div className="community-dashboard not-found">Community not found</div>;
+  if (loading) return <div className="community-dashboard">{t('common.loading')}</div>;
+  if (!community) return <div className="community-dashboard not-found">{t('communityDashboard.notFound')}</div>;
 
   const displayName = community.name;
   const isMyCommunity = user?.communityId === communityId || user?.role === 'superadmin';
@@ -85,7 +87,7 @@ export default function CommunityDashboard() {
     e.preventDefault();
     if (!community || !communityId) return;
     if (!editName.trim() || !editShort.trim()) {
-      setEditError('Nombre y short name son requeridos');
+      setEditError(t('communityDashboard.errors.requiredFields'));
       return;
     }
     setEditSaving(true);
@@ -96,7 +98,7 @@ export default function CommunityDashboard() {
       await refresh();
       setEditOpen(false);
     } catch (err: any) {
-      setEditError(err.message || 'Error al guardar');
+      setEditError(err.message || t('communityDashboard.errors.save'));
     } finally {
       setEditSaving(false);
     }
@@ -111,16 +113,16 @@ export default function CommunityDashboard() {
             <p className="cd-short-name">{community.shortName}</p>
           )}
           <p className="community-subtitle">
-            {community.description || 'Community home'}
+            {community.description || t('communityDashboard.communityHome')}
             {isMyCommunity && user?.role !== 'superadmin' && (
-              <> — <span className="cd-my-community">Tu comunidad</span></>
+              <> — <span className="cd-my-community">{t('communityDashboard.myCommunity')}</span></>
             )}
           </p>
           {canAdminCurrentCommunity && (
             <div className="cd-hero-actions">
               <button className="cd-hero-edit-btn" onClick={openEdit}>
                 <i className="fas fa-edit" />
-                <span>Editar comunidad</span>
+                <span>{t('communityDashboard.editCommunity')}</span>
               </button>
             </div>
           )}
@@ -131,12 +133,12 @@ export default function CommunityDashboard() {
         <section className="community-section cd-edit-section">
           <div className="container">
             <div className="card cd-edit-card">
-              <h3 className="cd-edit-title">Editar comunidad</h3>
+              <h3 className="cd-edit-title">{t('communityDashboard.editTitle')}</h3>
               {editError && <div className="cd-edit-error">{editError}</div>}
               <form onSubmit={handleSaveCommunity} className="cd-edit-form">
                 <div className="cd-edit-fields">
                   <div className="form-group">
-                    <label htmlFor="cd-edit-name">Nombre</label>
+                    <label htmlFor="cd-edit-name">{t('communityDashboard.name')}</label>
                     <input
                       id="cd-edit-name"
                       type="text"
@@ -146,7 +148,7 @@ export default function CommunityDashboard() {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="cd-edit-short">Short name</label>
+                    <label htmlFor="cd-edit-short">{t('communityDashboard.shortName')}</label>
                     <input
                       id="cd-edit-short"
                       type="text"
@@ -156,7 +158,7 @@ export default function CommunityDashboard() {
                     />
                   </div>
                   <div className="form-group cd-edit-desc">
-                    <label htmlFor="cd-edit-desc">Descripción</label>
+                    <label htmlFor="cd-edit-desc">{t('communityDashboard.description')}</label>
                     <textarea
                       id="cd-edit-desc"
                       value={editDesc}
@@ -167,10 +169,10 @@ export default function CommunityDashboard() {
                 </div>
                 <div className="cd-edit-actions">
                   <button type="button" className="btn-outline" onClick={() => setEditOpen(false)} disabled={editSaving}>
-                    Cancelar
+                    {t('communityDashboard.cancel')}
                   </button>
                   <button type="submit" className="btn-primary" disabled={editSaving}>
-                    {editSaving ? 'Guardando…' : 'Guardar cambios'}
+                    {editSaving ? t('communityDashboard.saving') : t('communityDashboard.saveChanges')}
                   </button>
                 </div>
               </form>
@@ -182,32 +184,31 @@ export default function CommunityDashboard() {
       <section className="community-section cd-stats-section">
         <div className="container">
           <div className="cd-section-intro">
-            <h2 className="community-section-title">Estado de la comunidad</h2>
+            <h2 className="community-section-title">{t('communityDashboard.statusTitle')}</h2>
             <p className="cd-section-description">
-              Resumen de lo que está pasando en {displayName}. Desde aquí puedes ver cuántos jugadores,
-              torneos y ligas hay, además de los eventos que están activos ahora mismo.
+              {t('communityDashboard.statusDescription', { name: displayName })}
             </p>
           </div>
           <div className="cd-stats-grid">
             <div className="cd-stat card">
               <i className="fas fa-users cd-stat-icon" />
               <span className="cd-stat-value">{participants.length}</span>
-              <span className="cd-stat-label">Participantes</span>
+              <span className="cd-stat-label">{t('communityDashboard.participants')}</span>
             </div>
             <div className="cd-stat card">
               <i className="fas fa-trophy cd-stat-icon" />
               <span className="cd-stat-value">{tournaments.length}</span>
-              <span className="cd-stat-label">Torneos</span>
+              <span className="cd-stat-label">{t('communityDashboard.tournaments')}</span>
             </div>
             <div className="cd-stat card">
               <i className="fas fa-calendar-alt cd-stat-icon" />
               <span className="cd-stat-value">{leagues.length}</span>
-              <span className="cd-stat-label">Ligas</span>
+              <span className="cd-stat-label">{t('communityDashboard.leagues')}</span>
             </div>
             <div className="cd-stat card">
               <i className="fas fa-bolt cd-stat-icon" />
               <span className="cd-stat-value">{activeLeagues.length + activeTournaments.length}</span>
-              <span className="cd-stat-label">Activos</span>
+              <span className="cd-stat-label">{t('communityDashboard.active')}</span>
             </div>
           </div>
         </div>
@@ -217,61 +218,60 @@ export default function CommunityDashboard() {
         <div className="container cd-two-columns">
           <div className="cd-main">
             <div className="cd-section-intro cd-section-intro--left">
-              <h2 className="community-section-title">Zonas de la comunidad</h2>
+              <h2 className="community-section-title">{t('communityDashboard.zonesTitle')}</h2>
               <p className="cd-section-description">
-                Accede a cada área de {displayName}: organiza torneos, sigue las ligas semanales,
-                reta en duelos rankeados, consulta el ranking o gestiona los participantes.
+                {t('communityDashboard.zonesDescription', { name: displayName })}
               </p>
             </div>
             <div className="community-cards">
               <Link to="events" className="community-card card">
                 <i className="fas fa-trophy" />
-                <h3>Torneos</h3>
-                <p>{activeTournaments.length} activos · {tournaments.length} total</p>
+                <h3>{t('communityDashboard.tournaments')}</h3>
+                <p>{activeTournaments.length} {t('communityDashboard.active').toLowerCase()} · {tournaments.length} total</p>
               </Link>
               <Link to="events?tab=leagues" className="community-card card">
                 <i className="fas fa-calendar-alt" />
-                <h3>Ligas</h3>
-                <p>{activeLeagues.length} activas · {leagues.length} total</p>
+                <h3>{t('communityDashboard.leagues')}</h3>
+                <p>{activeLeagues.length} {t('communityDashboard.active').toLowerCase()} · {leagues.length} total</p>
               </Link>
               <Link to="events?tab=ranked" className="community-card card">
                 <i className="fas fa-khanda" />
-                <h3>Duelos</h3>
-                <p>Ranked challenges.</p>
+                <h3>{t('dashboard.duels')}</h3>
+                <p>{t('dashboard.duelsDesc')}</p>
               </Link>
               <Link to="ranking" className="community-card card">
                 <i className="fas fa-list-ol" />
-                <h3>Ranking</h3>
-                <p>Community leaderboard.</p>
+                <h3>{t('header.ranking')}</h3>
+                <p>{t('dashboard.rankingDesc')}</p>
               </Link>
               <Link to="participants" className="community-card card">
                 <i className="fas fa-users" />
-                <h3>Participantes</h3>
-                <p>{participants.length} players.</p>
+                <h3>{t('communityDashboard.participants')}</h3>
+                <p>{participants.length} {t('communityDashboard.players')}</p>
               </Link>
             </div>
 
             {(activeTournaments.length > 0 || activeLeagues.length > 0) && (
               <>
                 <div className="cd-section-intro cd-section-intro--left">
-                  <h2 className="community-section-title">Eventos activos</h2>
+                  <h2 className="community-section-title">{t('communityDashboard.activeEventsTitle')}</h2>
                   <p className="cd-section-description">
-                    Estos son los torneos y ligas que están en marcha ahora mismo. Haz clic para ver detalles, resultados y próximos enfrentamientos.
+                    {t('communityDashboard.activeEventsDescription')}
                   </p>
                 </div>
                 <div className="cd-active-list">
-                  {activeTournaments.map(t => (
-                    <Link to={`events/tournaments/${t.id}`} key={t.id} className="cd-active-item card">
+                  {activeTournaments.map(tournament => (
+                    <Link to={`events/tournaments/${tournament.id}`} key={tournament.id} className="cd-active-item card">
                       <span className="cd-active-icon"><i className="fas fa-trophy" /></span>
-                      <span className="cd-active-name">{t.name}</span>
-                      <span className="cd-active-status">{t.status}</span>
+                      <span className="cd-active-name">{tournament.name}</span>
+                      <span className="cd-active-status">{t('tournament.status.' + tournament.status)}</span>
                     </Link>
                   ))}
                   {activeLeagues.map(l => (
                     <Link to={`events/leagues/${l.id}`} key={l.id} className="cd-active-item card">
                       <span className="cd-active-icon"><i className="fas fa-calendar-alt" /></span>
                       <span className="cd-active-name">{l.name}</span>
-                      <span className="cd-active-status">{l.status}</span>
+                      <span className="cd-active-status">{t('leagues.status.' + l.status)}</span>
                     </Link>
                   ))}
                 </div>
@@ -281,9 +281,9 @@ export default function CommunityDashboard() {
 
           <aside className="cd-sidebar">
             <div className="cd-section-intro">
-              <h2 className="community-section-title">Top 5 Ranking</h2>
+              <h2 className="community-section-title">{t('communityDashboard.topRanking')}</h2>
               <p className="cd-section-description">
-                Los mejores jugadores de {displayName} por ELO.
+                {t('communityDashboard.topRankingDescription', { name: displayName })}
               </p>
             </div>
             {topRanked.length > 0 ? (
@@ -297,7 +297,7 @@ export default function CommunityDashboard() {
                 ))}
               </ol>
             ) : (
-              <p className="text-secondary">No ranked players yet.</p>
+              <p className="text-secondary">{t('communityDashboard.noRanked')}</p>
             )}
           </aside>
         </div>

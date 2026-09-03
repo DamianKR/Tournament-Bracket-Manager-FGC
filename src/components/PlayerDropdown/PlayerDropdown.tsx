@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
 import './PlayerDropdown.css';
 
@@ -10,8 +11,10 @@ interface PlayerDropdownProps {
   className?: string;
 }
 
-function PlayerDropdown({ participants, selectedId, onSelect, placeholder = 'All Players', className = '' }: PlayerDropdownProps) {
+function PlayerDropdown({ participants, selectedId, onSelect, placeholder, className = '' }: PlayerDropdownProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const displayPlaceholder = placeholder ?? t('common.allPlayers');
   const [openToRight, setOpenToRight] = useState(true);
   const [search, setSearch] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -79,7 +82,7 @@ function PlayerDropdown({ participants, selectedId, onSelect, placeholder = 'All
           ) : (
             <>
               <i className="fas fa-users" />
-              {placeholder}
+              {displayPlaceholder}
             </>
           )}
         </span>
@@ -95,7 +98,7 @@ function PlayerDropdown({ participants, selectedId, onSelect, placeholder = 'All
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search players..."
+              placeholder={t('common.searchPlayers')}
               className="player-dropdown-search-input"
             />
           </div>
@@ -107,14 +110,14 @@ function PlayerDropdown({ participants, selectedId, onSelect, placeholder = 'All
               type="button"
             >
               <i className="fas fa-users" />
-              <span>All Players</span>
+              <span>{t('common.allPlayers')}</span>
               {selectedId === null && <i className="fas fa-check player-dropdown-check" />}
             </button>
 
             {filtered.length === 0 && (
               <div className="player-dropdown-empty">
                 <i className="fas fa-search" />
-                <span>No players found</span>
+                <span>{t('common.noPlayersFound')}</span>
               </div>
             )}
 

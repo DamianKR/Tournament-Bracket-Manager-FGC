@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@/contexts/NotificationContext';
 import './NotificationToast.css';
 
@@ -20,6 +21,7 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 export default function NotificationToast() {
+  const { t } = useTranslation();
   const { toasts, dismissToast } = useNotifications();
 
   if (toasts.length === 0) return null;
@@ -42,7 +44,7 @@ export default function NotificationToast() {
           <button
             className="toast-close"
             onClick={() => dismissToast(toast.id)}
-            aria-label="Dismiss notification"
+            aria-label={t('notifications.dismiss')}
           >
             <i className="fas fa-times" />
           </button>

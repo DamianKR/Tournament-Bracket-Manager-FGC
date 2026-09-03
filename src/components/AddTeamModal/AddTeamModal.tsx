@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
 import { searchParticipants } from '@/services/participants/participantService';
 import './AddTeamModal.css';
@@ -12,6 +13,7 @@ interface AddTeamModalProps {
 }
 
 function AddTeamModal({ isOpen, teamSize, excludedNames = [], onConfirm, onCancel }: AddTeamModalProps) {
+  const { t } = useTranslation();
   const [teamName, setTeamName] = useState('');
   const [memberNames, setMemberNames] = useState<string[]>(Array(teamSize).fill(''));
   const [suggestions, setSuggestions] = useState<GlobalParticipant[][]>(
@@ -149,13 +151,13 @@ function AddTeamModal({ isOpen, teamSize, excludedNames = [], onConfirm, onCance
 
   const handleSubmit = () => {
     if (!teamName.trim()) {
-      alert('Please enter a team name');
+      alert(t('tournament.addTeamModal.errors.teamNameRequired'));
       return;
     }
 
     const filledMembers = memberNames.filter((name) => name.trim());
     if (filledMembers.length !== teamSize) {
-      alert(`Please add all ${teamSize} team members`);
+      alert(t('tournament.addTeamModal.errors.membersRequired', { count: teamSize }));
       return;
     }
 
@@ -167,22 +169,22 @@ function AddTeamModal({ isOpen, teamSize, excludedNames = [], onConfirm, onCance
   return (
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal-content add-team-modal" onClick={(e) => e.stopPropagation()}>
-        <h2>Add Team</h2>
+        <h2>{t('tournament.addTeamModal.title')}</h2>
 
         <div className="form-group">
-          <label>Team Name</label>
+          <label>{t('tournament.addTeamModal.teamNameLabel')}</label>
           <input
             type="text"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
-            placeholder="Enter team name"
+            placeholder={t('tournament.addTeamModal.teamNamePlaceholder')}
             className="w-full"
             autoFocus
           />
         </div>
 
         <div className="team-members-section">
-          <label>Team Members ({teamSize} players)</label>
+          <label>{t('tournament.addTeamModal.teamMembersLabel', { count: teamSize })}</label>
           {Array.from({ length: teamSize }).map((_, index) => (
             <div key={index} className="autocomplete-wrapper">
               <div className="autocomplete-input-wrap">
@@ -202,7 +204,7 @@ function AddTeamModal({ isOpen, teamSize, excludedNames = [], onConfirm, onCance
                       handleMemberInput(index, currentValue);
                     }
                   }}
-                  placeholder={`Player ${index + 1} name`}
+                  placeholder={t('tournament.addTeamModal.playerPlaceholder', { number: index + 1 })}
                   className="w-full"
                   autoComplete="off"
                 />
@@ -231,10 +233,10 @@ function AddTeamModal({ isOpen, teamSize, excludedNames = [], onConfirm, onCance
 
         <div className="modal-actions">
           <button className="btn-outline" onClick={onCancel}>
-            Cancel
+            {t('tournament.addTeamModal.cancel')}
           </button>
           <button className="btn-primary" onClick={handleSubmit}>
-            Add Team
+            {t('tournament.addTeamModal.addButton')}
           </button>
         </div>
       </div>

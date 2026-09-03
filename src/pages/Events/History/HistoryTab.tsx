@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
 import { getAllMatches } from '@/services/ranking/rankingService';
@@ -30,6 +31,7 @@ interface UnifiedMatch {
 }
 
 function HistoryTab() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentCommunity, getPath } = useCommunity();
   const communityId = currentCommunity?.id;
@@ -68,8 +70,8 @@ function HistoryTab() {
           player1Id: gP1?.id ?? m.player1GlobalId ?? m.player1Id,
           player2Id: gP2?.id ?? m.player2GlobalId ?? m.player2Id,
           winnerId: gP1?.id ?? m.winnerGlobalId ?? m.winnerId,
-          player1Name: gP1 ? `${gP1.name}${gP1.alias ? ` (${gP1.alias})` : ''}` : (m.player1Name || 'Unknown'),
-          player2Name: gP2 ? `${gP2.name}${gP2.alias ? ` (${gP2.alias})` : ''}` : (m.player2Name || 'Unknown'),
+          player1Name: gP1 ? `${gP1.name}${gP1.alias ? ` (${gP1.alias})` : ''}` : (m.player1Name || t('tournament.bracket.unknown')),
+          player2Name: gP2 ? `${gP2.name}${gP2.alias ? ` (${gP2.alias})` : ''}` : (m.player2Name || t('tournament.bracket.unknown')),
           player1EloBefore: 0,
           player2EloBefore: 0,
           player1EloAfter: 0,
@@ -116,7 +118,7 @@ function HistoryTab() {
 
   const getParticipantName = (id: string, participants: GlobalParticipant[]): string => {
     const p = participants.find(p => p.id === id);
-    return p ? `${p.name}${p.alias ? ` (${p.alias})` : ''}` : 'Unknown';
+    return p ? `${p.name}${p.alias ? ` (${p.alias})` : ''}` : t('history.unknownPlayer');
   };
 
   // Apply both filters: type and player
@@ -161,62 +163,62 @@ function HistoryTab() {
     <div className="history-tab">
       <div className="history-header">
         <div>
-          <h1><i className="fas fa-history" /> Match History</h1>
-          <p className="text-secondary">Complete history of all competitive matches</p>
+          <h1><i className="fas fa-history" /> {t('history.title')}</h1>
+          <p className="text-secondary">{t('history.subtitle')}</p>
         </div>
         <PlayerDropdown
           participants={allParticipants}
           selectedId={selectedPlayerId}
           onSelect={setSelectedPlayerId}
-          placeholder="All Players"
+          placeholder={t('history.allPlayers')}
         />
       </div>
 
       <div className="history-filters">
-        <button 
+        <button
           className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
           onClick={() => setFilter('all')}
         >
-          All ({matches.length})
+          {t('history.all')} ({matches.length})
         </button>
-        <button 
+        <button
           className={`filter-btn ${filter === 'tournament' ? 'active' : ''}`}
           onClick={() => setFilter('tournament')}
         >
-          <i className="fas fa-trophy" /> Tournaments ({matches.filter(m => m.type === 'tournament').length})
+          <i className="fas fa-trophy" /> {t('history.tournaments')} ({matches.filter(m => m.type === 'tournament').length})
         </button>
-        <button 
+        <button
           className={`filter-btn ${filter === 'league' ? 'active' : ''}`}
           onClick={() => setFilter('league')}
         >
-          <i className="fas fa-calendar-alt" /> Leagues ({matches.filter(m => m.type === 'league').length})
+          <i className="fas fa-calendar-alt" /> {t('history.leagues')} ({matches.filter(m => m.type === 'league').length})
         </button>
-        <button 
+        <button
           className={`filter-btn ${filter === 'duel' ? 'active' : ''}`}
           onClick={() => setFilter('duel')}
         >
-          <i className="fas fa-swords" /> Duels ({matches.filter(m => m.type === 'duel').length})
+          <i className="fas fa-swords" /> {t('history.duels')} ({matches.filter(m => m.type === 'duel').length})
         </button>
-        <button 
+        <button
           className={`filter-btn ${filter === 'matchmaking' ? 'active' : ''}`}
           onClick={() => setFilter('matchmaking')}
         >
-          <i className="fas fa-random" /> Matchmaking ({matches.filter(m => m.type === 'matchmaking').length})
+          <i className="fas fa-random" /> {t('history.matchmaking')} ({matches.filter(m => m.type === 'matchmaking').length})
         </button>
       </div>
 
-      {loading && <Loading message="Loading history..." />}
+      {loading && <Loading message={t('history.loading')} />}
 
       {!loading && filteredMatches.length === 0 && (
         <div className="empty-state card">
           <i className="fas fa-history" style={{ fontSize: '3rem', color: 'var(--text-secondary)', marginBottom: '1rem' }} />
-          <h3>No matches {filter !== 'all' ? `in ${filter}` : 'yet'}</h3>
+          <h3>{t('history.empty', { context: filter !== 'all' ? t('history.emptyIn', { filter }) : t('history.emptyYet') })}</h3>
           <p className="text-secondary">
-            {filter === 'duel' ? 'Create challenges in Ranked Match to get started' : 'Play some matches to see them here'}
+            {filter === 'duel' ? t('history.emptyDuelDesc') : t('history.emptyDefaultDesc')}
           </p>
           {filter === 'duel' && (
             <button className="btn-primary mt-2" onClick={() => navigate(getPath('events?tab=ranked'))}>
-              <i className="fas fa-swords" /> Go to Ranked
+              <i className="fas fa-swords" /> {t('history.goToRanked')}
             </button>
           )}
         </div>
@@ -230,7 +232,7 @@ function HistoryTab() {
                 <div className="match-banner-top">
                   <span className="match-banner-type">
                     <i className={`fas ${getTypeIcon(match.type)}`} />
-                    {' '}{match.type}
+                    {' '}{t(`history.${match.type}` as any, { defaultValue: match.type })}
                   </span>
                   <span className="match-banner-date">{formatDate(match.date)}</span>
                 </div>
@@ -260,7 +262,7 @@ function HistoryTab() {
                   )}
                 </div>
 
-                <div className="match-vs">VS</div>
+                <div className="match-vs">{t('rankingInfo.vs')}</div>
 
                 <div className={`match-player ${match.winnerId === match.player2Id ? 'winner' : 'loser'}`}>
                   <div className="player-info">

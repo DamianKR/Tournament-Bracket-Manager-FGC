@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Participant, GlobalParticipant } from '@/models/types';
 import { loadGlobalParticipants } from '@/services/storage/localStorage';
 import { getCharacterImageUrl } from '@/utils/characterImage';
@@ -35,6 +36,7 @@ function Avatar({ global, gameId, fallbackIcon, large = false }: { global: Globa
 }
 
 function Top8Podium({ participants, tournamentName, gameId }: Top8PodiumProps) {
+  const { t } = useTranslation();
   const { globals, names } = useMemo(() => {
     const globals = new Map<string, GlobalParticipant>();
     const names = new Map<string, GlobalParticipant>();
@@ -74,7 +76,7 @@ function Top8Podium({ participants, tournamentName, gameId }: Top8PodiumProps) {
     <div className="top8-podium">
       <div className="top8-header">
         <h2 className="top8-title">
-          <i className="fas fa-trophy" /> Top 8
+          <i className="fas fa-trophy" /> {t('tournament.top8Podium.title')}
         </h2>
         <span className="top8-event">{tournamentName}</span>
       </div>

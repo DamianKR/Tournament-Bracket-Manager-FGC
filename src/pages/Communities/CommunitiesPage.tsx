@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { createCommunity, updateCommunity } from '@/services/communities/communityService';
@@ -7,6 +8,7 @@ import type { Community } from '@/models/community';
 import './CommunitiesPage.css';
 
 function CommunitiesPage() {
+  const { t } = useTranslation();
   const { isSuperAdmin, user } = useAuth();
   const { allCommunities, currentCommunity, refresh } = useCommunity();
   const [showCreate, setShowCreate] = useState(false);
@@ -65,7 +67,7 @@ function CommunitiesPage() {
         setEditingCommunity(null);
         await refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to update community');
+        setError(err instanceof Error ? err.message : t('communities.errors.update'));
       } finally {
         setUpdating(false);
       }
@@ -79,7 +81,7 @@ function CommunitiesPage() {
       setShowCreate(false);
       await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create community');
+      setError(err instanceof Error ? err.message : t('communities.errors.create'));
     } finally {
       setCreating(false);
     }
@@ -91,17 +93,17 @@ function CommunitiesPage() {
     <div className="communities-page">
       <div className="container">
         <div className="communities-header">
-          <h1 className="communities-title">Communities</h1>
+          <h1 className="communities-title">{t('communities.title')}</h1>
           {isSuperAdmin && hasCommunities && (
             <button className="btn-primary" onClick={openCreate}>
-              <i className="fas fa-plus" /> New Community
+              <i className="fas fa-plus" /> {t('communities.newCommunity')}
             </button>
           )}
         </div>
 
         {hasCommunities ? (
           <section className="card communities-list">
-            <h2 className="communities-section-title">Existing communities</h2>
+            <h2 className="communities-section-title">{t('communities.existing')}</h2>
             <ul>
               {allCommunities.map((c) => (
                 <li
@@ -111,14 +113,14 @@ function CommunitiesPage() {
                   <Link to={`/c/${c.id}`} className="communities-link">
                     <span className="communities-name">{c.name}</span>
                     <span className="communities-short">{c.shortName}</span>
-                    {currentCommunity?.id === c.id && <span className="communities-current">current</span>}
+                    {currentCommunity?.id === c.id && <span className="communities-current">{t('communities.current')}</span>}
                   </Link>
                   {canEdit(c) && (
                     <button
                       className="communities-edit-btn"
                       onClick={() => openEdit(c)}
-                      title="Edit community"
-                      aria-label={`Edit ${c.name}`}
+                      title={t('communities.edit')}
+                      aria-label={`${t('communities.edit')} ${c.name}`}
                     >
                       <i className="fas fa-edit" />
                     </button>
@@ -129,15 +131,15 @@ function CommunitiesPage() {
           </section>
         ) : (
           <section className="card communities-empty">
-            <h2 className="communities-section-title">No communities yet</h2>
+            <h2 className="communities-section-title">{t('communities.emptyTitle')}</h2>
             <p className="text-secondary">
               {isSuperAdmin
-                ? 'Create the first community to get started.'
-                : 'There are no communities available right now. Ask an admin to create one.'}
+                ? t('communities.emptyAdmin')
+                : t('communities.emptyUser')}
             </p>
             {isSuperAdmin && (
               <button className="btn-primary" onClick={openCreate}>
-                <i className="fas fa-plus" /> Create Community
+                <i className="fas fa-plus" /> {t('communities.createCommunity')}
               </button>
             )}
           </section>
@@ -149,16 +151,16 @@ function CommunitiesPage() {
           <div className="card communities-modal" onClick={(e) => e.stopPropagation()}>
             <div className="communities-modal-header">
               <h2 className="communities-section-title">
-              {editingCommunity ? 'Edit community' : 'Create community'}
+              {editingCommunity ? t('communities.editTitle') : t('communities.createTitle')}
             </h2>
-              <button className="communities-modal-close" onClick={closeCreate} aria-label="Close">
+              <button className="communities-modal-close" onClick={closeCreate} aria-label={t('communities.close')}>
                 <i className="fas fa-times" />
               </button>
             </div>
 
             <form className="communities-form" onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="community-name">Name</label>
+                <label htmlFor="community-name">{t('communities.name')}</label>
                 <input
                   id="community-name"
                   type="text"
@@ -169,7 +171,7 @@ function CommunitiesPage() {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="community-short">Short name</label>
+                <label htmlFor="community-short">{t('communityDashboard.shortName')}</label>
                 <input
                   id="community-short"
                   type="text"
@@ -179,7 +181,7 @@ function CommunitiesPage() {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="community-description">Description</label>
+                <label htmlFor="community-description">{t('communityDashboard.description')}</label>
                 <input
                   id="community-description"
                   type="text"
@@ -190,10 +192,10 @@ function CommunitiesPage() {
               {error && <p className="communities-error">{error}</p>}
               <div className="communities-form-actions">
                 <button type="button" className="btn-outline" onClick={closeCreate}>
-                  Cancel
+                  {t('communityDashboard.cancel')}
                 </button>
                 <button type="submit" className="btn-primary" disabled={creating || updating}>
-                  {editingCommunity ? (updating ? 'Saving...' : 'Save changes') : (creating ? 'Creating...' : 'Create')}
+                  {editingCommunity ? (updating ? t('communities.saving') : t('communities.save')) : (creating ? t('communities.creating') : t('communities.createCommunity'))}
                 </button>
               </div>
             </form>

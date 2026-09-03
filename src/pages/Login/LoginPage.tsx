@@ -8,12 +8,14 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAuthStatus, setupAdmin } from '@/services/auth/authService';
 import type { SessionUser } from '@/models/auth';
 import './LoginPage.css';
 
 function LoginPage() {
+  const { t } = useTranslation();
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
@@ -49,7 +51,7 @@ function LoginPage() {
   async function handleLogin(e: FormEvent) {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
-      setError('Please enter your username and password');
+      setError(t('login.errors.missingCredentials'));
       return;
     }
     setError('');
@@ -58,7 +60,7 @@ function LoginPage() {
       const loggedInUser = await login(username.trim(), password);
       navigate(getPostLoginTarget(loggedInUser), { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      setError(err.message || t('login.errors.loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -67,25 +69,24 @@ function LoginPage() {
   async function handleSetup(e: FormEvent) {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
-      setError('Username and password are required');
+      setError(t('login.errors.missingSetup'));
       return;
     }
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('login.errors.passwordTooShort'));
       return;
     }
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('login.errors.passwordsMismatch'));
       return;
     }
     setError('');
     setLoading(true);
     try {
       await setupAdmin(username.trim(), password);
-      // El primer admin es superadmin, así que va al dashboard principal.
       navigate('/', { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Setup failed');
+      setError(err.message || t('login.errors.setupFailed'));
     } finally {
       setLoading(false);
     }
@@ -98,48 +99,48 @@ function LoginPage() {
       <div className="login-card card">
         <div className="login-logo">
           <i className="fas fa-trophy" />
-          <span>Bracket Manager</span>
+          <span>{t('appName')}</span>
         </div>
 
         {needsSetup ? (
           <>
             <div className="login-header">
-              <h2>First Time Setup</h2>
-              <p className="text-secondary">Create your admin account to get started</p>
+              <h2>{t('login.firstTimeSetup')}</h2>
+              <p className="text-secondary">{t('login.setupDescription')}</p>
             </div>
 
             <form onSubmit={handleSetup} className="login-form">
               <div className="form-group">
-                <label htmlFor="setup-username">Username</label>
+                <label htmlFor="setup-username">{t('login.username')}</label>
                 <input
                   id="setup-username"
                   type="text"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  placeholder="admin"
+                  placeholder={t('login.placeholderPasswordAdmin')}
                   autoFocus
                   autoComplete="username"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="setup-password">Password</label>
+                <label htmlFor="setup-password">{t('login.password')}</label>
                 <input
                   id="setup-password"
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  placeholder="At least 6 characters"
+                  placeholder={t('login.placeholderAtLeast6')}
                   autoComplete="new-password"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="setup-confirm">Confirm Password</label>
+                <label htmlFor="setup-confirm">{t('login.confirmPassword')}</label>
                 <input
                   id="setup-confirm"
                   type="password"
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
-                  placeholder="Repeat password"
+                  placeholder={t('login.placeholderConfirmPassword')}
                   autoComplete="new-password"
                 />
               </div>
@@ -147,40 +148,40 @@ function LoginPage() {
               {error && <div className="login-error">{error}</div>}
 
               <button type="submit" className="btn-primary login-btn" disabled={loading}>
-                {loading ? 'Setting up…' : 'Create Admin Account'}
+                {loading ? t('login.buttons.settingUp') : t('login.buttons.createAdmin')}
               </button>
             </form>
           </>
         ) : (
           <>
             <div className="login-header">
-              <h2>Sign In</h2>
-              <p className="text-secondary">Enter your credentials to continue</p>
+              <h2>{t('login.signIn')}</h2>
+              <p className="text-secondary">{t('login.signInDescription')}</p>
             </div>
 
             <form onSubmit={handleLogin} className="login-form">
               <div className="form-group">
-                <label htmlFor="login-username">Username</label>
+                <label htmlFor="login-username">{t('login.username')}</label>
                 <input
                   id="login-username"
                   className="login-input"
                   type="text"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  placeholder="Your username"
+                  placeholder={t('login.placeholderUsername')}
                   autoFocus
                   autoComplete="username"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="login-password">Password</label>
+                <label htmlFor="login-password">{t('login.password')}</label>
                 <input
                   id="login-password"
                   className="login-input"
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  placeholder="Your password"
+                  placeholder={t('login.placeholderPassword')}
                   autoComplete="current-password"
                   onKeyDown={e => { if (e.key === 'Enter') handleLogin(e as any); }}
                 />
@@ -189,7 +190,7 @@ function LoginPage() {
               {error && <div className="login-error">{error}</div>}
 
               <button type="submit" className="btn-primary login-btn" disabled={loading}>
-                {loading ? 'Signing in…' : 'Sign In'}
+                {loading ? t('login.buttons.signingIn') : t('login.buttons.signIn')}
               </button>
             </form>
           </>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { Tournament } from '@/models/types';
@@ -13,6 +14,7 @@ import './TournamentView.css';
 type ViewMode = 'bracket' | 'participants';
 
 function TournamentView() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getPath, canAdminCurrentCommunity } = useCommunity();
@@ -29,7 +31,7 @@ function TournamentView() {
     
     const loadedTournament = getTournament(id);
     if (!loadedTournament) {
-      setError('Tournament not found');
+      setError(t('tournament.view.notFoundTitle'));
       return;
     }
     
@@ -69,10 +71,10 @@ function TournamentView() {
       <div className="tournament-view">
         <div className="container">
           <div className="error-state card">
-            <h2>Tournament Not Found</h2>
-            <p className="text-secondary">{error || 'The tournament you are looking for does not exist.'}</p>
+            <h2>{t('tournament.view.notFoundTitle')}</h2>
+            <p className="text-secondary">{error || t('tournament.view.notFoundDesc')}</p>
             <button className="btn-primary mt-2" onClick={handleBackToDashboard}>
-              Back to Dashboard
+              {t('tournament.view.backToDashboard')}
             </button>
           </div>
         </div>
@@ -83,14 +85,14 @@ function TournamentView() {
   const sidebarItems = [
     {
       id: 'bracket',
-      label: 'Bracket',
+      label: t('tournament.view.sidebarBracket'),
       active: viewMode === 'bracket',
       onClick: () => setViewMode('bracket'),
       disabled: tournament.status === 'setup',
     },
     {
       id: 'participants',
-      label: 'Participants',
+      label: t('tournament.view.sidebarParticipants'),
       count: tournament.participants.length,
       active: viewMode === 'participants',
       onClick: () => setViewMode('participants'),
@@ -107,24 +109,24 @@ function TournamentView() {
             <h1>{tournament.name}</h1>
             <div className="tournament-meta">
               <span className="meta-item">
-                {tournament.participants.length} Participants
+                {t('tournament.view.participantCount', { count: tournament.participants.length })}
               </span>
               <span className="meta-separator">•</span>
               <span className="meta-item">
-                {tournament.mode === 'double_elimination' ? 'Double Elimination' : 'Single Elimination'}
+                {t(tournament.mode === 'double_elimination' ? 'tournament.view.modeDouble' : 'tournament.view.modeSingle')}
               </span>
               {tournament.championId && (
                 <>
                   <span className="meta-separator">•</span>
                   <span className="meta-item champion">
-                    <i className="fas fa-trophy" /> Champion: {tournament.participants.find(p => p.id === tournament.championId)?.name}
+                    <i className="fas fa-trophy" /> {t('tournament.view.champion', { name: tournament.participants.find(p => p.id === tournament.championId)?.name })}
                   </span>
                 </>
               )}
             </div>
           </div>
           <button className="btn-outline" onClick={handleBackToDashboard}>
-            Back to Dashboard
+            {t('tournament.view.backToDashboard')}
           </button>
         </div>
 
@@ -144,12 +146,12 @@ function TournamentView() {
 
         {tournament.status === 'setup' ? (
           <div className="setup-notice card">
-            <h3>Tournament Not Started</h3>
+            <h3>{t('tournament.view.setupTitle')}</h3>
             <p className="text-secondary">
-              This tournament has not been started yet. Please complete the setup first.
+              {t('tournament.view.setupDesc')}
             </p>
             <button className="btn-primary mt-2" onClick={handleBackToDashboard}>
-              Back to Dashboard
+              {t('tournament.view.backToDashboard')}
             </button>
           </div>
         ) : (
@@ -166,7 +168,7 @@ function TournamentView() {
 
             {viewMode === 'participants' && (
               <div className="participants-view">
-                <h2>Participants</h2>
+                <h2>{t('tournament.view.participantsTitle')}</h2>
                 <ParticipantsList
                   participants={tournament.participants}
                   onRemove={() => {}}

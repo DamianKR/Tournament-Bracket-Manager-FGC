@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
@@ -15,6 +16,7 @@ interface LeagueScheduleTabProps {
 }
 
 function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: LeagueScheduleTabProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
@@ -22,7 +24,7 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
 
   function getParticipantName(id: string): string {
     const p = participants.get(id);
-    return p ? (p.alias?.trim() || p.name) : 'Unknown';
+    return p ? (p.alias?.trim() || p.name) : t('tournament.bracket.unknown');
   }
 
   function formatDate(dateStr: string | undefined): string {
@@ -56,14 +58,21 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
     <div className="schedule-tab">
       <div className="schedule-controls">
         <label>
-          Week:
+          {t('league.schedule.weekLabel')}
           <select value={weekFilter} onChange={(e) => setWeekFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
-            <option value="all">All Weeks</option>
-            {weeks.map((w) => (
-              <option key={w} value={w}>
-                Week {w}{w > effectiveCurrentWeek ? ' (future)' : w === effectiveCurrentWeek ? ' (current)' : ' (past)'}
-              </option>
-            ))}
+            <option value="all">{t('league.schedule.allWeeks')}</option>
+            {weeks.map((w) => {
+              const suffix = w > effectiveCurrentWeek
+                ? t('league.schedule.futureSuffix')
+                : w === effectiveCurrentWeek
+                  ? t('league.schedule.currentSuffix')
+                  : t('league.schedule.pastSuffix');
+              return (
+                <option key={w} value={w}>
+                  {t('league.schedule.weekOption', { week: w })}{suffix}
+                </option>
+              );
+            })}
           </select>
         </label>
       </div>
@@ -75,12 +84,12 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
         return (
           <div key={week} className="week-section card">
             <div className="week-header">
-              <h3>Week {week}</h3>
-              <span className="week-timezone" title="All dates shown in this time zone">
+              <h3>{t('league.schedule.weekNumber', { week })}</h3>
+              <span className="week-timezone" title={t('league.schedule.timeZoneHint', { timeZone: league.timeZone || 'America/Havana' })}>
                 {league.timeZone || 'America/Havana'}
               </span>
               <span className="week-progress">
-                {completed}/{weekMatches.length} completed
+                {t('league.schedule.completed', { completed, total: weekMatches.length })}
               </span>
             </div>
 
@@ -102,14 +111,14 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                       <div className={`match-player ${winner === match.participant1Id ? 'winner' : ''}`}>
                         <ParticipantName id={match.participant1Id} name={getParticipantName(match.participant1Id)} className="match-player-name" />
                         {isNoShow && match.noShowParticipantId === match.participant1Id && (
-                          <span className="no-show-tag">No-show</span>
+                          <span className="no-show-tag">{t('league.schedule.noShowTag')}</span>
                         )}
                       </div>
-                      <span className="match-vs">vs</span>
+                      <span className="match-vs">{t('league.schedule.vs')}</span>
                       <div className={`match-player ${winner === match.participant2Id ? 'winner' : ''}`}>
                         <ParticipantName id={match.participant2Id} name={getParticipantName(match.participant2Id)} className="match-player-name" />
                         {isNoShow && match.noShowParticipantId === match.participant2Id && (
-                          <span className="no-show-tag">No-show</span>
+                          <span className="no-show-tag">{t('league.schedule.noShowTag')}</span>
                         )}
                       </div>
                     </div>
@@ -130,8 +139,8 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                     )}
 
                     {!isCompleted && isFutureWeek && (
-                      <span className="match-locked" title={`Locked until Week ${match.week}`}>
-                        <i className="fas fa-lock" /> Week {match.week}
+                      <span className="match-locked" title={t('league.schedule.lockedUntil', { week: match.week })}>
+                        <i className="fas fa-lock" /> {t('league.schedule.weekNumber', { week: match.week })}
                       </span>
                     )}
 
@@ -141,13 +150,13 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                         className="btn-primary btn-sm"
                         onClick={() => setSelectedMatch(match)}
                       >
-                        Report Result
+                        {t('league.schedule.reportResult')}
                       </button>
                     )}
 
                     {!isCompleted && !isFutureWeek && !matchStarted && (
                       <span className="match-locked" title={formatDate(match.scheduledDate)}>
-                        <i className="fas fa-lock" /> Starts {formatDate(match.scheduledDate)}
+                        <i className="fas fa-lock" /> {t('league.schedule.startsAt', { date: formatDate(match.scheduledDate) })}
                       </span>
                     )}
 
@@ -164,7 +173,7 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
 
       {filteredWeeks.length === 0 && (
         <div className="empty-state card">
-          <p className="text-secondary">No matches found.</p>
+          <p className="text-secondary">{t('league.schedule.noMatches')}</p>
         </div>
       )}
 

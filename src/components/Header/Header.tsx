@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import NotificationBell from '@/components/Notifications/NotificationBell';
@@ -8,6 +9,7 @@ import './Header.css';
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { user, isAdmin, isAuthenticated, logout } = useAuth();
   const { currentCommunity, allCommunities } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -44,7 +46,7 @@ function Header() {
       <div className="header-inner">
         <div className="header-logo" onClick={() => { setMenuOpen(false); navigate('/'); }}>
           <span className="header-logo-icon"><i className="fas fa-trophy" aria-hidden="true" /></span>
-          <span className="header-logo-text">Bracket Manager</span>
+          <span className="header-logo-text">{t('appName')}</span>
         </div>
 
         <div className="header-community">
@@ -52,7 +54,7 @@ function Header() {
             <button
               className="header-community-name"
               onClick={() => handleNav(`/c/${currentCommunity.id}`)}
-              title={`Ir al home de ${currentCommunity.name}`}
+              title={`${t('header.communities')}: ${currentCommunity.name}`}
             >
               <i className="fas fa-map-marker-alt" />
               <span>{currentCommunity.name}</span>
@@ -61,10 +63,10 @@ function Header() {
             <button
               className="header-community-name header-community-name--empty"
               onClick={() => handleNav('/communities')}
-              title="Elegir una comunidad"
+              title={t('header.selectCommunity')}
             >
               <i className="fas fa-map-marker-alt" />
-              <span>Elegir comunidad</span>
+              <span>{t('header.selectCommunity')}</span>
             </button>
           )}
         </div>
@@ -75,7 +77,7 @@ function Header() {
           <button
             className="header-mobile-toggle"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={menuOpen ? t('common.closeMenu') : t('common.openMenu')}
             aria-expanded={menuOpen}
           >
             <i className={`fas fa-${menuOpen ? 'times' : 'bars'}`} />
@@ -90,20 +92,20 @@ function Header() {
                   className={`header-nav-item ${isActive(`/c/${effectiveCommunityId}/events`) ? 'active' : ''}`}
                   onClick={() => handleNav(`/c/${effectiveCommunityId}/events`)}
                 >
-                  Events
+                  {t('header.events')}
                 </button>
                 <button
                   className={`header-nav-item ${isActive(`/c/${effectiveCommunityId}/ranking`) ? 'active' : ''}`}
                   onClick={() => handleNav(`/c/${effectiveCommunityId}/ranking`)}
                 >
-                  Ranking
+                  {t('header.ranking')}
                 </button>
                 {isAdmin && (
                   <button
                     className={`header-nav-item ${isActive(`/c/${effectiveCommunityId}/participants`) ? 'active' : ''}`}
                     onClick={() => handleNav(`/c/${effectiveCommunityId}/participants`)}
                   >
-                    Participants
+                    {t('header.participants')}
                   </button>
                 )}
               </>
@@ -113,13 +115,13 @@ function Header() {
                   className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
                   onClick={() => handleNav('/communities')}
                 >
-                  Events
+                  {t('header.events')}
                 </button>
                 <button
                   className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
                   onClick={() => handleNav('/communities')}
                 >
-                  Ranking
+                  {t('header.ranking')}
                 </button>
               </>
             )}
@@ -127,7 +129,7 @@ function Header() {
               className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
               onClick={() => handleNav('/communities')}
             >
-              Communities
+              {t('header.communities')}
             </button>
           </nav>
 
@@ -140,26 +142,45 @@ function Header() {
             </div>
           )}
 
+          <div className="header-lang">
+            <button
+              className={`header-lang-btn ${i18n.language === 'es' ? 'active' : ''}`}
+              onClick={() => i18n.changeLanguage('es')}
+              aria-label="Español"
+              title="Español"
+            >
+              ES
+            </button>
+            <button
+              className={`header-lang-btn ${i18n.language === 'en' ? 'active' : ''}`}
+              onClick={() => i18n.changeLanguage('en')}
+              aria-label="English"
+              title="English"
+            >
+              EN
+            </button>
+          </div>
+
           <div className="header-auth">
             {isAuthenticated ? (
               <div className="header-user-pill">
                 <span
                   className={`header-username ${user?.participantId ? 'clickable' : ''}`}
                   onClick={() => user?.participantId && handleNav(currentCommunity ? `/c/${currentCommunity.id}/participants/${user.participantId}` : '/communities')}
-                  title={user?.participantId ? 'View profile' : user!.username}
+                  title={user?.participantId ? t('common.viewProfile') : user!.username}
                 >
                   <i className="fas fa-user-circle" />
                   <span className="header-username-text">{user!.username}</span>
                 </span>
                 {userCommunity && (
-                  <span className="header-community-badge" title={`Member of ${userCommunity.name}`}>
+                  <span className="header-community-badge" title={t('common.memberOf', { name: userCommunity.name })}>
                     {userCommunity.shortName || userCommunity.name}
                   </span>
                 )}
-                {user?.role === 'superadmin' && <span className="header-role-badge">Superadmin</span>}
-                {user?.role === 'community_admin' && <span className="header-role-badge">Owner</span>}
-                {user?.role === 'admin' && <span className="header-role-badge">Admin</span>}
-                <button className="header-logout-btn" onClick={handleLogout} title="Sign out" aria-label="Sign out">
+                {user?.role === 'superadmin' && <span className="header-role-badge">{t('header.roles.superadmin')}</span>}
+                {user?.role === 'community_admin' && <span className="header-role-badge">{t('header.roles.community_admin')}</span>}
+                {user?.role === 'admin' && <span className="header-role-badge">{t('header.roles.admin')}</span>}
+                <button className="header-logout-btn" onClick={handleLogout} title={t('header.logout')} aria-label={t('header.logout')}>
                   <i className="fas fa-sign-out-alt" />
                 </button>
               </div>
@@ -167,8 +188,8 @@ function Header() {
               <button
                 className="header-login-btn"
                 onClick={() => handleNav('/login')}
-                title="Sign in"
-                aria-label="Sign in"
+                title={t('header.login')}
+                aria-label={t('header.login')}
               >
                 <i className="fas fa-sign-in-alt" />
               </button>

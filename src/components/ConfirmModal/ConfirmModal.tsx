@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './ConfirmModal.css';
 
 interface ConfirmModalProps {
@@ -15,12 +16,15 @@ function ConfirmModal({
   isOpen,
   title,
   message,
-  confirmText = 'Delete',
-  cancelText = 'Cancel',
+  confirmText,
+  cancelText,
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
+  const { t } = useTranslation();
   const [processing, setProcessing] = useState(false);
+  const effectiveConfirmText = confirmText || t('common.delete');
+  const effectiveCancelText = cancelText || t('common.cancel');
 
   if (!isOpen) return null;
 
@@ -48,10 +52,10 @@ function ConfirmModal({
         <p className="confirm-message">{message}</p>
         <div className="confirm-actions">
           <button className="btn-outline" onClick={handleCancel} disabled={processing}>
-            {cancelText}
+            {effectiveCancelText}
           </button>
           <button className="btn-danger" onClick={handleConfirm} disabled={processing}>
-            {processing ? 'Processing...' : confirmText}
+            {processing ? t('common.processing') : effectiveConfirmText}
           </button>
         </div>
       </div>

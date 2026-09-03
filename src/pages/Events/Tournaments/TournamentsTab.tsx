@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Tournament } from '@/models/types';
 import { getAllTournaments, removeTournament } from '@/services/tournament/tournamentService';
 import { loadTournamentsAsync, saveTournaments } from '@/services/storage/localStorage';
@@ -9,6 +10,7 @@ import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import './TournamentsTab.css';
 
 function TournamentsTab() {
+  const { t } = useTranslation();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const navigate = useNavigate();
@@ -74,14 +76,14 @@ function TournamentsTab() {
   };
 
   const getStatusBadge = (status: string) => {
-    const badges = {
-      setup: { label: 'Setup', className: 'status-setup' },
-      in_progress: { label: 'In Progress', className: 'status-progress' },
-      completed: { label: 'Completed', className: 'status-completed' },
+    const badges: Record<string, { label: string; className: string }> = {
+      setup: { label: t('tournaments.status.setup'), className: 'status-setup' },
+      in_progress: { label: t('tournaments.status.in_progress'), className: 'status-progress' },
+      completed: { label: t('tournaments.status.completed'), className: 'status-completed' },
     };
-    
-    const badge = badges[status as keyof typeof badges] || badges.setup;
-    
+
+    const badge = badges[status] || badges.setup;
+
     return <span className={`status-badge ${badge.className}`}>{badge.label}</span>;
   };
 
@@ -89,23 +91,23 @@ function TournamentsTab() {
     <div className="tournaments-tab">
       <div className="tournaments-header">
         <div>
-          <h1><i className="fas fa-trophy" /> Tournaments</h1>
-          <p className="text-secondary">Create and manage brackets — double elimination, single elimination and group stages supported</p>
+          <h1><i className="fas fa-trophy" /> {t('tournaments.title')}</h1>
+          <p className="text-secondary">{t('tournaments.subtitle')}</p>
         </div>
         {canAdminCurrentCommunity && (
           <button className="btn-primary" onClick={handleCreateNew}>
-            <i className="fas fa-plus" /> New Tournament
+            <i className="fas fa-plus" /> {t('tournaments.newTournament')}
           </button>
         )}
       </div>
 
       {tournaments.length === 0 ? (
         <div className="empty-state card">
-          <h3>No tournaments yet</h3>
-          <p className="text-secondary">Create your first tournament to get started</p>
+          <h3>{t('tournaments.emptyTitle')}</h3>
+          <p className="text-secondary">{t('tournaments.emptyDesc')}</p>
           {canAdminCurrentCommunity && (
             <button className="btn-primary mt-2" onClick={handleCreateNew}>
-              Create Tournament
+              {t('tournaments.createTournament')}
             </button>
           )}
         </div>
@@ -121,22 +123,22 @@ function TournamentsTab() {
                 <h3>{tournament.name}</h3>
                 {getStatusBadge(tournament.status)}
               </div>
-              
+
               <div className="tournament-card-info">
                 <div className="info-row">
-                  <span><i className="fas fa-users" /> Participants</span>
+                  <span><i className="fas fa-users" /> {t('tournaments.participants')}</span>
                   <span>{tournament.participants.length}</span>
                 </div>
                 <div className="info-row">
-                  <span><i className="fas fa-sitemap" /> Mode</span>
+                  <span><i className="fas fa-sitemap" /> {t('tournaments.mode')}</span>
                   <span>
                     {tournament.mode === 'double_elimination'
-                      ? 'Double Elimination'
-                      : 'Single Elimination'}
+                      ? t('tournaments.doubleElimination')
+                      : t('tournaments.singleElimination')}
                   </span>
                 </div>
                 <div className="info-row">
-                  <span><i className="fas fa-clock" /> Last updated</span>
+                  <span><i className="fas fa-clock" /> {t('tournaments.lastUpdated')}</span>
                   <span className="text-sm">{formatDate(tournament.updatedAt)}</span>
                 </div>
               </div>
@@ -147,13 +149,13 @@ function TournamentsTab() {
                   onClick={() => tournament.status === 'setup' ? navigate(getPath(`events/tournaments/create/${tournament.id}`)) : navigate(getPath(`events/tournaments/${tournament.id}`))}
                 >
                   <i className={tournament.status === 'setup' ? 'fas fa-pen' : 'fas fa-eye'} />
-                  {tournament.status === 'setup' ? ' Continue Setup' : ' View Bracket'}
+                  {tournament.status === 'setup' ? ` ${t('tournaments.continueSetup')}` : ` ${t('tournaments.viewBracket')}`}
                 </button>
                 {canAdminCurrentCommunity && (
                   <button
                     className="btn-danger btn-sm"
                     onClick={(e) => requestDelete(tournament.id, e)}
-                    title="Delete tournament"
+                    title={t('tournaments.delete')}
                   >
                     <i className="fas fa-trash" />
                   </button>
@@ -166,11 +168,11 @@ function TournamentsTab() {
 
       <ConfirmModal
         isOpen={deleteTarget !== null}
-        title="Delete tournament"
-        message={deleteTarget ? `Are you sure you want to delete "${deleteTarget.name}"? This cannot be undone.` : ''}
+        title={t('tournaments.deleteTitle')}
+        message={deleteTarget ? t('tournaments.deleteMessage', { name: deleteTarget.name }) : ''}
         onCancel={cancelDelete}
         onConfirm={confirmDelete}
-        confirmText="Delete"
+        confirmText={t('notifications.delete')}
       />
     </div>
   );
