@@ -282,7 +282,7 @@ export default function CommunityDashboard() {
                     <Link to={`events/tournaments/${tournament.id}`} key={tournament.id} className="cd-active-item card">
                       <span className="cd-active-icon"><i className="fas fa-trophy" /></span>
                       <span className="cd-active-name">{tournament.name}</span>
-                      <span className="cd-active-status">{t('tournament.status.' + tournament.status)}</span>
+                      <span className="cd-active-status">{t('tournaments.status.' + tournament.status)}</span>
                     </Link>
                   ))}
                   {activeLeagues.map(l => (

@@ -291,6 +291,7 @@
 
 .cd-active-name {
   flex: 1;
+  min-width: 0;
   font-weight: 700;
   color: var(--text-primary);
   overflow: hidden;
@@ -299,6 +300,7 @@
 }
 
 .cd-active-status {
+  flex-shrink: 0;
   font-size: 0.75rem;
   text-transform: uppercase;
   padding: 0.2rem 0.5rem;
@@ -306,6 +308,7 @@
   background: rgba(34, 197, 94, 0.15);
   color: #22c55e;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .cd-top-ranking {

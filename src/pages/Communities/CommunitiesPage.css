@@ -272,6 +272,7 @@
 
   .communities-link {
     padding: 0.875rem 1rem;
+    justify-content: space-between;
   }
 
   .communities-current {
