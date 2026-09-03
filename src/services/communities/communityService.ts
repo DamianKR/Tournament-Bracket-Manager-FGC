@@ -41,3 +41,22 @@ export async function createCommunity(
   }
   return res.json() as Promise<Community>;
 }
+
+/** Updates an existing community. Requires superadmin or community owner. */
+export async function updateCommunity(
+  id: string,
+  name: string,
+  shortName: string,
+  description?: string
+): Promise<Community> {
+  const res = await fetch(`${API_BASE}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ name, shortName, description }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error ?? `Failed to update community: ${res.status}`);
+  }
+  return res.json() as Promise<Community>;
+}

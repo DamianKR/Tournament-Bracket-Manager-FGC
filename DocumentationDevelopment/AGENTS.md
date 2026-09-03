@@ -6,6 +6,10 @@ This is a **Bracket Tournament Manager** - a frontend-only web application for m
 
 ## Key Commands
 
+
+# Run this command in PowerShell to allow script execution
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process; 
+
 ```bash
 # Development
 npm run dev          # Start dev server at http://localhost:5173

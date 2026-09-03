@@ -13,7 +13,6 @@
 
 .community-title {
   font-family: var(--font-display);
-  font-size: 2.25rem;
   font-weight: 900;
   margin: 0 0 0.5rem;
   text-transform: uppercase;
@@ -22,14 +21,287 @@
 }
 
 .community-subtitle {
-  font-size: 1rem;
   color: rgba(255, 255, 255, 0.75);
   margin: 0;
+}
+
+.cd-hero-actions {
+  margin-top: 1.75rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.cd-hero-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+  backdrop-filter: blur(4px);
+}
+
+.cd-hero-edit-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.cd-hero-edit-btn i {
+  font-size: 0.85rem;
+}
+
+.cd-edit-section {
+  padding: 2rem 0 0;
+}
+
+.cd-edit-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.cd-edit-title {
+  margin: 0 0 1rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.cd-edit-error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.cd-edit-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cd-edit-form .form-group label {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.cd-edit-form .form-group input,
+.cd-edit-form .form-group textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: var(--border-radius);
+  background: var(--bg-input, #fff);
+  color: var(--text-primary);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.cd-edit-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cd-edit-desc {
+  grid-column: 1 / -1;
+}
+
+.cd-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 .cd-my-community {
   color: #22c55e;
   font-weight: 700;
+}
+
+.cd-short-name {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cd-section-intro {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.cd-section-intro--left {
+  text-align: left;
+}
+
+.cd-section-intro .community-section-title {
+  margin-bottom: 0.5rem;
+}
+
+.cd-section-description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.cd-section-intro--left .cd-section-description {
+  margin: 0;
+}
+
+.cd-stats-section {
+  padding: 2rem 0;
+  background: rgba(124, 58, 237, 0.04);
+}
+
+.cd-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.cd-stat {
+  padding: 1.25rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.cd-stat-icon {
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.cd-stat-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--primary-color);
+}
+
+.cd-stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cd-two-columns {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.cd-sidebar {
+  position: sticky;
+  top: 1rem;
+}
+
+.cd-active-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cd-active-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.cd-active-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.12);
+}
+
+.cd-active-icon {
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+.cd-active-name {
+  flex: 1;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cd-active-status {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.cd-top-ranking {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cd-top-rank-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: rgba(124, 58, 237, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(124, 58, 237, 0.1);
+}
+
+.cd-top-position {
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: var(--primary-color);
+  min-width: 1.25rem;
+  text-align: center;
+}
+
+.cd-top-name {
+  flex: 1;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cd-top-points {
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 .community-section {
@@ -38,12 +310,12 @@
 
 .community-section-title {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  /* font-size: 1.5rem; */
   font-weight: 800;
   text-transform: uppercase;
   color: var(--primary-color);
   margin: 0 0 1rem;
-  text-align: center;
+  /* text-align: center; */
 }
 
 .community-cards {
@@ -51,6 +323,7 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.25rem;
   margin-top: 1.5rem;
+  margin-bottom: 3.5rem;
 }
 
 .community-card {
@@ -114,5 +387,17 @@
 
   .community-cards {
     grid-template-columns: 1fr;
+  }
+
+  .cd-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cd-two-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .cd-sidebar {
+    position: static;
   }
 }

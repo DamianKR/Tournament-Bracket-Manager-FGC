@@ -11,6 +11,7 @@ import { randomUUID } from 'crypto';
 import { communities } from '../db/collections.js';
 import { communityShape, validateCommunity } from '../models/community.js';
 import { requireAuth, requireSuperAdmin } from '../utils/jwtMiddleware.js';
+import { isInUserScope } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -70,6 +71,42 @@ router.post('/', requireAuth, requireSuperAdmin, async (req, res) => {
   } catch (err) {
     console.error('[Communities] POST / error:', err);
     res.status(500).json({ error: 'Failed to create community' });
+  }
+});
+
+// PUT /api/communities/:id — superadmin o community_admin de esa comunidad
+router.put('/:id', requireAuth, async (req, res) => {
+  try {
+    const { name, shortName, description } = req.body;
+    const community = await communities.findById(req.params.id);
+    if (!community) return res.status(404).json({ error: 'Community not found' });
+
+    // Superadmin puede editar cualquier comunidad; community_admin solo la suya.
+    const canEdit =
+      req.user.role === 'superadmin' ||
+      (req.user.role === 'community_admin' && community.ownerAdminId === req.user.userId) ||
+      (req.user.role === 'community_admin' && isInUserScope(req.user, community.id));
+
+    if (!canEdit) {
+      return res.status(403).json({ error: 'Only community owners or superadmin can edit this community' });
+    }
+
+    if (typeof name === 'string' && name.trim()) {
+      community.name = name.trim();
+    }
+    if (typeof shortName === 'string' && shortName.trim()) {
+      community.shortName = shortName.trim();
+    }
+    if (typeof description === 'string') {
+      community.description = description.trim();
+    }
+    community.updatedAt = new Date().toISOString();
+
+    const saved = await communities.upsert(community);
+    res.json(saved);
+  } catch (err) {
+    console.error('[Communities] PUT /:id error:', err);
+    res.status(500).json({ error: 'Failed to update community' });
   }
 });
 

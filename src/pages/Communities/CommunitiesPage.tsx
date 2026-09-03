@@ -2,18 +2,21 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
-import { createCommunity } from '@/services/communities/communityService';
+import { createCommunity, updateCommunity } from '@/services/communities/communityService';
+import type { Community } from '@/models/community';
 import './CommunitiesPage.css';
 
 function CommunitiesPage() {
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin, user } = useAuth();
   const { allCommunities, currentCommunity, refresh } = useCommunity();
   const [showCreate, setShowCreate] = useState(false);
+  const [editingCommunity, setEditingCommunity] = useState<Community | null>(null);
   const [name, setName] = useState('');
   const [shortName, setShortName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   function resetForm() {
     setName('');
@@ -23,6 +26,7 @@ function CommunitiesPage() {
   }
 
   function openCreate() {
+    setEditingCommunity(null);
     resetForm();
     setShowCreate(true);
   }
@@ -30,11 +34,44 @@ function CommunitiesPage() {
   function closeCreate() {
     resetForm();
     setShowCreate(false);
+    setEditingCommunity(null);
+  }
+
+  function openEdit(community: Community) {
+    setEditingCommunity(community);
+    setName(community.name);
+    setShortName(community.shortName);
+    setDescription(community.description ?? '');
+    setError(null);
+    setShowCreate(true);
+  }
+
+  function canEdit(community: Community): boolean {
+    if (isSuperAdmin) return true;
+    if (user?.role === 'community_admin' && community.ownerAdminId === user.id) return true;
+    return false;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (editingCommunity) {
+      setUpdating(true);
+      try {
+        await updateCommunity(editingCommunity.id, name.trim(), shortName.trim(), description.trim());
+        resetForm();
+        setShowCreate(false);
+        setEditingCommunity(null);
+        await refresh();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to update community');
+      } finally {
+        setUpdating(false);
+      }
+      return;
+    }
+
     setCreating(true);
     try {
       await createCommunity(name.trim(), shortName.trim(), description.trim());
@@ -76,6 +113,16 @@ function CommunitiesPage() {
                     <span className="communities-short">{c.shortName}</span>
                     {currentCommunity?.id === c.id && <span className="communities-current">current</span>}
                   </Link>
+                  {canEdit(c) && (
+                    <button
+                      className="communities-edit-btn"
+                      onClick={() => openEdit(c)}
+                      title="Edit community"
+                      aria-label={`Edit ${c.name}`}
+                    >
+                      <i className="fas fa-edit" />
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
@@ -101,7 +148,9 @@ function CommunitiesPage() {
         <div className="communities-modal-overlay" onClick={closeCreate}>
           <div className="card communities-modal" onClick={(e) => e.stopPropagation()}>
             <div className="communities-modal-header">
-              <h2 className="communities-section-title">Create community</h2>
+              <h2 className="communities-section-title">
+              {editingCommunity ? 'Edit community' : 'Create community'}
+            </h2>
               <button className="communities-modal-close" onClick={closeCreate} aria-label="Close">
                 <i className="fas fa-times" />
               </button>
@@ -143,8 +192,8 @@ function CommunitiesPage() {
                 <button type="button" className="btn-outline" onClick={closeCreate}>
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary" disabled={creating}>
-                  {creating ? 'Creating...' : 'Create'}
+                <button type="submit" className="btn-primary" disabled={creating || updating}>
+                  {editingCommunity ? (updating ? 'Saving...' : 'Save changes') : (creating ? 'Creating...' : 'Create')}
                 </button>
               </div>
             </form>

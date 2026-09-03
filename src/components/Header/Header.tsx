@@ -12,8 +12,11 @@ function Header() {
   const { currentCommunity, allCommunities } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // La comunidad activa para navegación: la que se está viendo en el URL,
+  // o la comunidad del usuario logueado, o ninguna.
   const communityMatch = location.pathname.match(/^\/c\/([^/]+)/);
-  const communityId = communityMatch?.[1];
+  const urlCommunityId = communityMatch?.[1];
+  const effectiveCommunityId = urlCommunityId ?? currentCommunity?.id ?? user?.communityId;
 
   // Comunidad a la que pertenece el usuario logueado, no la que está viendo.
   const userCommunity = user?.communityId
@@ -45,8 +48,24 @@ function Header() {
         </div>
 
         <div className="header-community">
-          {currentCommunity && (
-            <span className="header-community-name">{currentCommunity.name}</span>
+          {currentCommunity ? (
+            <button
+              className="header-community-name"
+              onClick={() => handleNav(`/c/${currentCommunity.id}`)}
+              title={`Ir al home de ${currentCommunity.name}`}
+            >
+              <i className="fas fa-map-marker-alt" />
+              <span>{currentCommunity.name}</span>
+            </button>
+          ) : (
+            <button
+              className="header-community-name header-community-name--empty"
+              onClick={() => handleNav('/communities')}
+              title="Elegir una comunidad"
+            >
+              <i className="fas fa-map-marker-alt" />
+              <span>Elegir comunidad</span>
+            </button>
           )}
         </div>
 
@@ -65,36 +84,43 @@ function Header() {
 
         <div className={`header-right ${menuOpen ? 'open' : ''}`}>
           <nav className="header-nav">
-            {communityId && (
+            {effectiveCommunityId ? (
               <>
                 <button
-                  className={`header-nav-item ${isActive(`/c/${communityId}/events`) ? 'active' : ''}`}
-                  onClick={() => handleNav(`/c/${communityId}/events`)}
+                  className={`header-nav-item ${isActive(`/c/${effectiveCommunityId}/events`) ? 'active' : ''}`}
+                  onClick={() => handleNav(`/c/${effectiveCommunityId}/events`)}
                 >
                   Events
                 </button>
                 <button
-                  className={`header-nav-item ${isActive(`/c/${communityId}/ranking`) ? 'active' : ''}`}
-                  onClick={() => handleNav(`/c/${communityId}/ranking`)}
+                  className={`header-nav-item ${isActive(`/c/${effectiveCommunityId}/ranking`) ? 'active' : ''}`}
+                  onClick={() => handleNav(`/c/${effectiveCommunityId}/ranking`)}
                 >
                   Ranking
                 </button>
-                {/* {isAuthenticated && (
-                  <button
-                    className={`header-nav-item ${isActive(`/c/${communityId}/notifications`) ? 'active' : ''}`}
-                    onClick={() => handleNav(`/c/${communityId}/notifications`)}
-                  >
-                    Notifications
-                  </button>
-                )} */}
                 {isAdmin && (
                   <button
-                    className={`header-nav-item ${isActive(`/c/${communityId}/participants`) ? 'active' : ''}`}
-                    onClick={() => handleNav(`/c/${communityId}/participants`)}
+                    className={`header-nav-item ${isActive(`/c/${effectiveCommunityId}/participants`) ? 'active' : ''}`}
+                    onClick={() => handleNav(`/c/${effectiveCommunityId}/participants`)}
                   >
                     Participants
                   </button>
                 )}
+              </>
+            ) : (
+              <>
+                <button
+                  className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
+                  onClick={() => handleNav('/communities')}
+                >
+                  Events
+                </button>
+                <button
+                  className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
+                  onClick={() => handleNav('/communities')}
+                >
+                  Ranking
+                </button>
               </>
             )}
             <button

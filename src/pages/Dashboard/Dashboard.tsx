@@ -6,24 +6,49 @@ import './Dashboard.css';
 function Dashboard() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
-  const { getPath } = useCommunity();
+  const { getPath, currentCommunity, allCommunities } = useCommunity();
 
   return (
     <div className="dashboard-page">
       <section className="dashboard-hero">
         <div className="container">
-          <h1 className="dashboard-title">Competitive Gaming Ecosystem</h1>
-          <p className="dashboard-subtitle">
-            Local-first brackets, weekly leagues, ranked duels and ELO tracking for your community.
-          </p>
-          <div className="dashboard-hero-actions">
-            <button className="btn-primary" onClick={() => navigate('/communities')}>
-              <i className="fas fa-users" /> Explore Communities
-            </button>
-            <button className="btn-outline" onClick={() => navigate(getPath('ranking'))}>
-              <i className="fas fa-chart-line" /> View Ranking
-            </button>
-          </div>
+          {currentCommunity ? (
+            <>
+              <h1 className="dashboard-title">Competitive Gaming Ecosystem <br />{currentCommunity.name}</h1>
+              {currentCommunity.shortName && (
+                <p className="dashboard-hero-shortname">{currentCommunity.shortName}</p>
+              )}
+              <p className="dashboard-subtitle">
+                Local-first brackets, weekly leagues, ranked duels and ELO tracking for your community.
+              </p>
+              <p className="dashboard-subtitle">
+                {currentCommunity.description || 'Your competitive gaming community.'}
+              </p>
+              <div className="dashboard-hero-actions">
+                <button className="btn-primary" onClick={() => navigate(getPath('events'))}>
+                  <i className="fas fa-trophy" /> Events
+                </button>
+                <button className="btn-outline" onClick={() => navigate(getPath('ranking'))}>
+                  <i className="fas fa-chart-line" /> Ranking
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="dashboard-title">Competitive Gaming Ecosystem</h1>
+              <p className="dashboard-subtitle">
+                Local-first brackets, weekly leagues, ranked duels and ELO tracking for your community.
+              </p>
+              <div className="dashboard-hero-actions">
+                <button className="btn-primary" onClick={() => navigate('/communities')}>
+                  <i className="fas fa-users" /> Explore Communities
+                </button>
+                <button className="btn-outline" onClick={() => navigate('/communities')}>
+                  <i className="fas fa-chart-line" /> View Ranking
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -96,16 +121,28 @@ function Dashboard() {
 
       <section className="dashboard-cta">
         <div className="container">
-          {isAuthenticated ? (
+          {currentCommunity && isAuthenticated ? (
             <>
               <h2 className="dashboard-section-title">Welcome back{user?.username ? `, ${user.username}` : ''}</h2>
               <p className="dashboard-text">
                 {user?.role === 'superadmin'
-                  ? 'You are the global superadmin. Use this dashboard to manage all communities.'
-                  : 'You are all set. Jump into the latest events, check the rankings or challenge other players.'}
+                  ? `You are the global superadmin. Currently viewing ${currentCommunity.name}.`
+                  : `You are viewing ${currentCommunity.name}. Jump into the latest events or check the ranking.`}
+              </p>
+              <button className="btn-primary" onClick={() => navigate(getPath('events'))}>
+                <i className="fas fa-trophy" /> Go to Events
+              </button>
+            </>
+          ) : isAuthenticated ? (
+            <>
+              <h2 className="dashboard-section-title">Welcome back{user?.username ? `, ${user.username}` : ''}</h2>
+              <p className="dashboard-text">
+                {user?.role === 'superadmin'
+                  ? 'You are the global superadmin. Choose a community from the list below.'
+                  : 'You are all set. Jump into your community or explore others.'}
               </p>
               <button className="btn-primary" onClick={() => navigate('/communities')}>
-                <i className="fas fa-users" /> Go to Communities
+                <i className="fas fa-users" /> {allCommunities.length > 0 ? 'Choose a Community' : 'Explore Communities'}
               </button>
             </>
           ) : (

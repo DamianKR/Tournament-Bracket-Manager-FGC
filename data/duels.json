@@ -292,7 +292,7 @@
     "id": "duel_1787689922803_z5i8u27tn",
     "challengerId": "gp_1786408732935_gefziig",
     "challengedId": "gp_1786761981144_462dv5s",
-    "status": "accepted",
+    "status": "expired",
     "createdAt": "2026-08-25T20:32:02.814Z",
     "expiresAt": "2026-09-01T20:32:02.803Z",
     "acceptedAt": "2026-08-27T04:40:48.714Z",
@@ -302,7 +302,8 @@
     "metadata": null,
     "type": "normal",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-01T22:12:00.029Z",
+    "expiredAt": "2026-09-03T13:40:56.034Z"
   },
   {
     "id": "duel_1787689946871_2p4vi0d52",
