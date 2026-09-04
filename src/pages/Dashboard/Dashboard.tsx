@@ -25,8 +25,8 @@ function Dashboard() {
                 {currentCommunity.description || t('dashboard.yourCommunity')}
               </p> */}
               <div className="dashboard-hero-actions">
-                <button className="btn-primary" onClick={() => navigate(getPath('events'))}>
-                  <i className="fas fa-trophy" /> {t('header.events')}
+                <button className="btn-primary" onClick={() => navigate('/communities')}>
+                  <i className="fas fa-users" /> {t('dashboard.explore')}
                 </button>
                 <button className="btn-outline" onClick={() => navigate(getPath('ranking'))}>
                   <i className="fas fa-chart-line" /> {t('header.ranking')}

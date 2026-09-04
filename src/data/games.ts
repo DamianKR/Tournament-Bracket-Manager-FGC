@@ -106,6 +106,46 @@ const SSBU_CHARACTERS: Character[] = [
   { id: 'zero_suit_samus',  name: 'Zero Suit Samus' },
 ].sort((a, b) => a.name.localeCompare(b.name));
 
+// ── Street Fighter 6 ────────────────────────────────────────────────────────
+// Base roster (18) + Year 1, 2 & 3 DLC (12) = 30 fighters as of 2026
+
+const SF6_CHARACTERS: Character[] = [
+  // Base roster
+  { id: 'ryu',         name: 'Ryu' },
+  { id: 'luke',        name: 'Luke' },
+  { id: 'jamie',       name: 'Jamie' },
+  { id: 'chunli',      name: 'Chun-Li' },
+  { id: 'guile',       name: 'Guile' },
+  { id: 'kimberly',    name: 'Kimberly' },
+  { id: 'juri',        name: 'Juri' },
+  { id: 'ken',         name: 'Ken' },
+  { id: 'blanka',      name: 'Blanka' },
+  { id: 'dhalsim',     name: 'Dhalsim' },
+  { id: 'ehonda',      name: 'E. Honda' },
+  { id: 'deejay',      name: 'Dee Jay' },
+  { id: 'manon',       name: 'Manon' },
+  { id: 'marisa',      name: 'Marisa' },
+  { id: 'jp',          name: 'JP' },
+  { id: 'zangief',     name: 'Zangief' },
+  { id: 'lily',        name: 'Lily' },
+  { id: 'cammy',       name: 'Cammy' },
+  // Year 1 DLC
+  { id: 'rashid',      name: 'Rashid' },
+  { id: 'aki',         name: 'A.K.I.' },
+  { id: 'ed',          name: 'Ed' },
+  { id: 'akuma',       name: 'Akuma' },
+  // Year 2 DLC
+  { id: 'mbison',      name: 'M. Bison' },
+  { id: 'terry',       name: 'Terry' },
+  { id: 'mai',         name: 'Mai' },
+  { id: 'elena',       name: 'Elena' },
+  // Year 3 DLC
+  { id: 'sagat',       name: 'Sagat' },
+  { id: 'cviper',      name: 'C. Viper' },
+  { id: 'alex',        name: 'Alex' },
+  { id: 'ingrid',      name: 'Ingrid' },
+].sort((a, b) => a.name.localeCompare(b.name));
+
 // ── Game registry ──────────────────────────────────────────────────────────
 
 export const GAMES: Game[] = [
@@ -115,9 +155,12 @@ export const GAMES: Game[] = [
     shortName: 'Smash Ultimate',
     characters: SSBU_CHARACTERS,
   },
-  // Future games:
-  // { id: 'sf6',  name: 'Street Fighter 6',     shortName: 'SF6',  characters: [] },
-  // { id: 'mk1',  name: 'Mortal Kombat 1',       shortName: 'MK1',  characters: [] },
+  {
+    id: 'sf6',
+    name: 'Street Fighter 6',
+    shortName: 'SF6',
+    characters: SF6_CHARACTERS,
+  },
 ];
 
 export const GAMES_MAP = new Map(GAMES.map((g) => [g.id, g]));

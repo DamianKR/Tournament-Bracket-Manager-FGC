@@ -73,5 +73,8 @@ export const users              = col('users.json',              'users');
 // Notificaciones
 export const notifications      = col('notifications.json',      'notifications');
 
+// Migraciones
+export const migrations         = col('migrations.json',         'migrations');
+
 // Legacy — compatibilidad hacia atrás
 export const matches            = col('matches.json',            'matches');

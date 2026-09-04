@@ -10,6 +10,7 @@ interface SeedingPreviewProps {
   participants: Participant[];
   seedingMode: SeedingMode;
   partialSeedCount?: PartialSeedCount;
+  gameId?: string | null;
   onBack: () => void;
   onConfirm: () => void;
   onParticipantsChange: (participants: Participant[]) => void;
@@ -20,6 +21,7 @@ function SeedingPreview({
   participants,
   seedingMode,
   partialSeedCount,
+  gameId,
   onBack,
   onConfirm,
   onParticipantsChange,
@@ -30,13 +32,13 @@ function SeedingPreview({
 
   useEffect(() => {
     // Apply seeding on mount
-    const seeded = applySeed(participants, seedingMode, partialSeedCount);
+    const seeded = applySeed(participants, seedingMode, partialSeedCount, gameId);
     setSeededParticipants(seeded);
-  }, [participants, seedingMode, partialSeedCount]);
+  }, [participants, seedingMode, partialSeedCount, gameId]);
 
   const handleReshuffle = () => {
     // Re-apply seeding (re-randomizes unseeded participants in partial mode)
-    const seeded = applySeed(participants, seedingMode, partialSeedCount);
+    const seeded = applySeed(participants, seedingMode, partialSeedCount, gameId);
     setSeededParticipants(seeded);
   };
 

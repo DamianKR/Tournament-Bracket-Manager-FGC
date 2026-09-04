@@ -89,6 +89,7 @@ export async function getRankedMatch(id: string, communityId?: string): Promise<
 /** Crea una nueva partida ranked. */
 export async function createRankedMatch(
   matchType: 'duel' | 'matchmaking',
+  gameId: string,
   player1Id: string,
   player2Id: string,
   winnerId: string,
@@ -106,6 +107,7 @@ export async function createRankedMatch(
   const match: RankedMatch = {
     id: `ranked_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     type: matchType,
+    gameId,
     player1Id,
     player2Id,
     winnerId,

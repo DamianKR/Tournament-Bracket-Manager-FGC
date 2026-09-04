@@ -30,6 +30,7 @@ import {
   supabaseUpsert,
 } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
+import { migrateParticipantGames } from '@/utils/participantGames';
 
 // ── Supabase helpers específicos de esta colección ───────────────────────
 // Los stubs genéricos viven en apiClient; aquí solo wrapeamos con los tipos.
@@ -218,14 +219,18 @@ function lsReadParticipants(): GlobalParticipant[] {
     const raw = localStorage.getItem(STORAGE_KEYS.PARTICIPANTS);
     if (!raw) return [];
     const data = JSON.parse(raw) as GlobalParticipant[];
-    // Migrate old records missing new fields
-    return data.map((p) => ({
-      ...p,
-      gameId: p.gameId ?? null,
-      mainCharacterId: p.mainCharacterId ?? null,
-      tournamentIds: p.tournamentIds ?? [],
-      communityId: p.communityId || DEFAULT_COMMUNITY_ID,
-    }));
+    // Migrate old records missing new fields and convert legacy ELO to per-game
+    return data.map((p) => {
+      const normalized: GlobalParticipant = {
+        ...p,
+        gameId: p.gameId ?? null,
+        mainCharacterId: p.mainCharacterId ?? null,
+        games: p.games ?? {},
+        tournamentIds: p.tournamentIds ?? [],
+        communityId: p.communityId || DEFAULT_COMMUNITY_ID,
+      };
+      return migrateParticipantGames(normalized);
+    });
   } catch {
     return [];
   }
@@ -310,7 +315,21 @@ export async function saveGlobalParticipant(p: GlobalParticipant): Promise<void>
   const all = lsReadParticipants();
   const idx = all.findIndex((x) => x.id === p.id);
   if (idx >= 0) { all[idx] = p; } else { all.push(p); }
-  await saveGlobalParticipants(all);
+  lsWriteParticipants(all);
+
+  if (await isServerAvailable()) {
+    fetch(`${SERVER_URL}/api/participants/${p.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(p),
+    }).catch((err) => { console.warn('[Storage] Local server participant write failed:', err); resetServerCache(); });
+  }
+
+  if (hasSupabase()) {
+    _supabaseSyncParticipants([p]).catch((err) =>
+      console.warn('[Storage] Supabase participant sync failed:', err)
+    );
+  }
 }
 
 export async function deleteGlobalParticipant(id: string): Promise<void> {

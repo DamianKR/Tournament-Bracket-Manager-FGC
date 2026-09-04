@@ -5,6 +5,7 @@ import { getAllParticipants } from '@/services/participants/participantService';
 import { estimateLeagueDuration, createLeague } from '@/services/leagues/leagueService';
 import { getMidnightInTimeZone, DEFAULT_TIMEZONE } from '@/utils/timeZone';
 import { GlobalParticipant } from '@/models/types';
+import { GAMES } from '@/data/games';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { useCommunity } from '@/contexts/CommunityContext';
 import './CreateLeague.css';
@@ -20,7 +21,7 @@ function CreateLeague() {
 
   // Form state
   const [name, setName] = useState('');
-  const [gameId, setGameId] = useState('ssbu');
+  const [gameId, setGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
   const [roundsPerOpponent, setRoundsPerOpponent] = useState<1 | 2 | 3>(2);
   const [gamesPerMatch, setGamesPerMatch] = useState<3 | 5 | 7 | 9>(3);
   const [matchesPerPeriod, setMatchesPerPeriod] = useState(2);
@@ -83,7 +84,7 @@ function CreateLeague() {
   }
 
   function selectAll() {
-    setSelectedIds(new Set(allParticipants.map(p => p.id)));
+    setSelectedIds(new Set(allParticipants.filter(p => p.games?.[gameId] != null).map(p => p.id)));
   }
 
   function clearAll() {
@@ -155,7 +156,9 @@ function CreateLeague() {
           <div className="form-section">
             <label>{t('league.create.gameLabel')}</label>
             <select value={gameId} onChange={(e) => setGameId(e.target.value)}>
-              <option value="ssbu">{t('league.create.gameName')}</option>
+              {GAMES.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
             </select>
           </div>
 
@@ -172,6 +175,7 @@ function CreateLeague() {
             </div>
             <div className="participants-grid">
               {allParticipants
+                .filter((p) => p.games?.[gameId] != null)
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((p) => (
                   <label key={p.id} className="participant-checkbox">

@@ -6,6 +6,7 @@ import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentSe
 import { getAllMatches } from '@/services/ranking/rankingService';
 import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
 import { MatchRecord, GlobalParticipant } from '@/models/types';
+import { GAMES } from '@/data/games';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import Loading from '@/components/Loading/Loading';
 import './HistoryTab.css';
@@ -15,6 +16,7 @@ type HistoryFilter = 'all' | 'tournament' | 'league' | 'duel' | 'matchmaking';
 interface UnifiedMatch {
   id: string;
   type: 'tournament' | 'league' | 'duel' | 'matchmaking' | 'free';
+  gameId?: string | null;
   player1Id: string;
   player2Id: string;
   winnerId: string;
@@ -37,6 +39,7 @@ function HistoryTab() {
   const communityId = currentCommunity?.id;
   const [filter, setFilter] = useState<HistoryFilter>('all');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [filterGameId, setFilterGameId] = useState<string | null>(null);
   const [matches, setMatches] = useState<UnifiedMatch[]>([]);
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,6 +70,7 @@ function HistoryTab() {
         return {
           id: m.id,
           type: 'tournament' as const,
+          gameId: m.gameId,
           player1Id: gP1?.id ?? m.player1GlobalId ?? m.player1Id,
           player2Id: gP2?.id ?? m.player2GlobalId ?? m.player2Id,
           winnerId: gP1?.id ?? m.winnerGlobalId ?? m.winnerId,
@@ -87,6 +91,7 @@ function HistoryTab() {
       const unifiedRanked: UnifiedMatch[] = rankedMatches.map((m: MatchRecord) => ({
         id: m.id,
         type: (m.type as 'duel' | 'matchmaking' | 'free') ?? 'free',
+        gameId: m.gameId,
         player1Id: m.playerAId,
         player2Id: m.playerBId,
         winnerId: m.winnerId,
@@ -121,11 +126,12 @@ function HistoryTab() {
     return p ? `${p.name}${p.alias ? ` (${p.alias})` : ''}` : t('history.unknownPlayer');
   };
 
-  // Apply both filters: type and player
+  // Apply type, player and game filters
   const filteredMatches = matches.filter(m => {
     const typeMatch = filter === 'all' || m.type === filter;
     const playerMatch = !selectedPlayerId || m.player1Id === selectedPlayerId || m.player2Id === selectedPlayerId;
-    return typeMatch && playerMatch;
+    const gameMatch = !filterGameId || m.gameId === filterGameId;
+    return typeMatch && playerMatch && gameMatch;
   });
 
   const formatDate = (dateStr: string) => {
@@ -175,6 +181,16 @@ function HistoryTab() {
       </div>
 
       <div className="history-filters">
+        <select
+          className="history-game-filter"
+          value={filterGameId ?? ''}
+          onChange={(e) => setFilterGameId(e.target.value || null)}
+        >
+          <option value="">{t('history.allGames')}</option>
+          {GAMES.map((g) => (
+            <option key={g.id} value={g.id}>{g.id.toUpperCase()}</option>
+          ))}
+        </select>
         <button
           className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
           onClick={() => setFilter('all')}
@@ -234,6 +250,9 @@ function HistoryTab() {
                     <i className={`fas ${getTypeIcon(match.type)}`} />
                     {' '}{t(`history.${match.type}` as any, { defaultValue: match.type })}
                   </span>
+                  {match.gameId && (
+                    <span className="match-banner-game">{match.gameId.toUpperCase()}</span>
+                  )}
                   <span className="match-banner-date">{formatDate(match.date)}</span>
                 </div>
                 {match.context && (

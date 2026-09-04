@@ -50,6 +50,7 @@ const COLLECTIONS = [
   { file: 'duel_settings.json',      table: 'duel_settings' },
   { file: 'users.json',              table: 'users' },
   { file: 'notifications.json',      table: 'notifications' },
+  { file: 'migrations.json',         table: 'migrations' },
   { file: 'matches.json',            table: 'matches' },
 ];
 

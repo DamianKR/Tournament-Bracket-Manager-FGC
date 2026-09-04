@@ -11,6 +11,11 @@
 
 import { participants } from '../db/collections.js';
 import { getRankName, getTournamentPoints, effectiveElo } from './eloEngine.js';
+import {
+  migrateParticipantGames,
+  getEffectiveElo as getParticipantEffectiveElo,
+  setParticipantGameElo,
+} from './participantGames.js';
 
 /**
  * Resolve a tournament participant or team member to a global participant.
@@ -39,13 +44,14 @@ function resolveGlobalParticipant(entity, byId, byName) {
  * @returns {Promise<Array<object>>} updated participants
  */
 export async function applyTournamentElo(tournament) {
-  const allParticipants = await participants.getAll();
+  const allParticipants = (await participants.getAll()).map(migrateParticipantGames);
   const byId = new Map(allParticipants.map((p) => [p.id, p]));
   const byName = new Map(
     allParticipants.map((p) => [p.name.trim().toLowerCase(), p])
   );
 
   const applied = [];
+  const gameId = tournament.gameId || 'ssbu';
 
   for (const tp of tournament.participants || []) {
     const position = tp.finalPosition;
@@ -59,7 +65,7 @@ export async function applyTournamentElo(tournament) {
         const gp = resolveGlobalParticipant(member, byId, byName);
         if (!gp) continue;
 
-        const ptsBefore = effectiveElo(gp.eloPoints);
+        const ptsBefore = getParticipantEffectiveElo(gp, gameId);
         const baseEarned = getTournamentPoints(position, ptsBefore);
         if (baseEarned <= 0) continue;
 
@@ -67,19 +73,14 @@ export async function applyTournamentElo(tournament) {
         if (earned <= 0) continue;
 
         const ptsAfter = ptsBefore + earned;
-        const updated = {
-          ...gp,
-          eloPoints: ptsAfter,
-          eloRank: getRankName(ptsAfter),
-          updatedAt: new Date().toISOString(),
-        };
+        setParticipantGameElo(gp, gameId, ptsAfter, getRankName(ptsAfter));
 
-        await participants.upsert(updated);
+        await participants.upsert(gp);
 
-        byId.set(gp.id, updated);
-        byName.set(gp.name.trim().toLowerCase(), updated);
+        byId.set(gp.id, gp);
+        byName.set(gp.name.trim().toLowerCase(), gp);
         applied.push({
-          ...updated,
+          ...gp,
           _pointsBefore: ptsBefore,
           _pointsEarned: earned,
           _position: position,
@@ -87,28 +88,23 @@ export async function applyTournamentElo(tournament) {
         });
       }
     } else {
-      // ── Singles tournament: legacy single-participant logic ──────────────
+      // ── Singles tournament ───────────────────────────────────────────────
       const gp = resolveGlobalParticipant(tp, byId, byName);
       if (!gp) continue;
 
-      const ptsBefore = effectiveElo(gp.eloPoints);
+      const ptsBefore = getParticipantEffectiveElo(gp, gameId);
       const earned = getTournamentPoints(position, ptsBefore);
       if (earned <= 0) continue;
 
       const ptsAfter = ptsBefore + earned;
-      const updated = {
-        ...gp,
-        eloPoints: ptsAfter,
-        eloRank: getRankName(ptsAfter),
-        updatedAt: new Date().toISOString(),
-      };
+      setParticipantGameElo(gp, gameId, ptsAfter, getRankName(ptsAfter));
 
-      await participants.upsert(updated);
+      await participants.upsert(gp);
 
-      byId.set(gp.id, updated);
-      byName.set(gp.name.trim().toLowerCase(), updated);
+      byId.set(gp.id, gp);
+      byName.set(gp.name.trim().toLowerCase(), gp);
       applied.push({
-        ...updated,
+        ...gp,
         _pointsBefore: ptsBefore,
         _pointsEarned: earned,
         _position: position,

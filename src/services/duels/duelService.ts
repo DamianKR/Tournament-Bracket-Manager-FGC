@@ -16,6 +16,7 @@ import { getAllRankedMatchesAsync } from '@/services/rankedMatches/rankedMatchSe
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
+import { getEffectiveElo } from '@/utils/participantGames';
 
 const API_BASE = `${SERVER_URL}/api/duels`;
 const LS_KEY_CHALLENGES = 'bracket_duel_challenges';
@@ -301,6 +302,7 @@ export async function getDuelStats(participantId: string, communityId?: string):
 export async function validateDuelChallenge(
   challengerId: string,
   challengedId: string,
+  gameId: string,
   type: 'normal' | 'mandatory' = 'normal',
   communityId: string = DEFAULT_COMMUNITY_ID
 ): Promise<DuelValidationResult> {
@@ -364,9 +366,9 @@ export async function validateDuelChallenge(
     }
   }
 
-  // 3. Check ELO restriction (can't challenge someone too far below)
-  const challengerElo = challenger.eloPoints ?? 1500;
-  const challengedElo = challenged.eloPoints ?? 1500;
+  // 3. Check ELO restriction (can't challenge someone too far below) for the selected game
+  const challengerElo = getEffectiveElo(challenger, gameId);
+  const challengedElo = getEffectiveElo(challenged, gameId);
   const eloDiff = challengerElo - challengedElo;
 
   if (eloDiff > settings.eloRestriction) {
@@ -427,11 +429,12 @@ export async function validateDuelChallenge(
 export async function createDuelChallenge(
   challengerId: string,
   challengedId: string,
+  gameId: string,
   type: 'normal' | 'mandatory' = 'normal',
   communityId: string = DEFAULT_COMMUNITY_ID
 ): Promise<DuelChallenge | null> {
   // Validate first
-  const validation = await validateDuelChallenge(challengerId, challengedId, type, communityId);
+  const validation = await validateDuelChallenge(challengerId, challengedId, gameId, type, communityId);
   if (!validation.valid) {
     throw new Error(validation.error || 'Challenge validation failed');
   }
@@ -445,6 +448,7 @@ export async function createDuelChallenge(
     challengerId,
     challengedId,
     communityId,
+    gameId,
     type,
     status: type === 'mandatory' ? 'accepted' : 'pending', // Mandatory challenges skip pending
     createdAt: new Date().toISOString(),

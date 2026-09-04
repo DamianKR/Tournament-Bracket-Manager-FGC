@@ -25,6 +25,11 @@ import { notifyAdminsOfBanEligibility } from '../services/leagueExpiration.js';
 import { scheduleLeagueNotifications } from '../services/notificationScheduler.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
 import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
+import {
+  migrateParticipantGames,
+  getEffectiveElo,
+  setParticipantGameElo,
+} from '../utils/participantGames.js';
 
 const router = Router();
 
@@ -35,14 +40,18 @@ function generateId(prefix = 'league') {
 }
 
 async function applyLeagueMatchElo(match) {
-  const [p1, p2] = await Promise.all([
+  const [p1Raw, p2Raw] = await Promise.all([
     participants.findById(match.participant1Id),
     participants.findById(match.participant2Id),
   ]);
-  if (!p1 || !p2) throw new Error('Participant not found');
+  if (!p1Raw || !p2Raw) throw new Error('Participant not found');
 
-  const p1Elo = p1.eloPoints ?? 1500;
-  const p2Elo = p2.eloPoints ?? 1500;
+  const p1 = migrateParticipantGames(p1Raw);
+  const p2 = migrateParticipantGames(p2Raw);
+
+  const gameId = match.gameId || (await leagues.findById(match.leagueId))?.gameId || 'ssbu';
+  const p1Elo = getEffectiveElo(p1, gameId);
+  const p2Elo = getEffectiveElo(p2, gameId);
   let eloChange1 = 0;
   let eloChange2 = 0;
 
@@ -54,23 +63,13 @@ async function applyLeagueMatchElo(match) {
     if (absentId === match.participant1Id) {
       eloChange1 = result.playerAChange;
       eloChange2 = 0;
-      const newElo1 = result.playerANewElo;
-      await participants.upsert({
-        ...p1,
-        eloPoints: newElo1,
-        eloRank: getRankName(newElo1),
-        updatedAt: new Date().toISOString(),
-      });
+      setParticipantGameElo(p1, gameId, result.playerANewElo, getRankName(result.playerANewElo));
+      await participants.upsert(p1);
     } else {
       eloChange1 = 0;
       eloChange2 = result.playerBChange;
-      const newElo2 = result.playerBNewElo;
-      await participants.upsert({
-        ...p2,
-        eloPoints: newElo2,
-        eloRank: getRankName(newElo2),
-        updatedAt: new Date().toISOString(),
-      });
+      setParticipantGameElo(p2, gameId, result.playerBNewElo, getRankName(result.playerBNewElo));
+      await participants.upsert(p2);
     }
     match.status = 'no_show';
   } else {
@@ -78,31 +77,24 @@ async function applyLeagueMatchElo(match) {
     const result = calculateMatchElo(p1Elo, p2Elo, winnerChar);
     eloChange1 = result.playerAChange;
     eloChange2 = result.playerBChange;
-    const newElo1 = result.playerANewElo;
-    const newElo2 = result.playerBNewElo;
-    await participants.upsert({
-      ...p1,
-      eloPoints: newElo1,
-      eloRank: getRankName(newElo1),
-      updatedAt: new Date().toISOString(),
-    });
-    await participants.upsert({
-      ...p2,
-      eloPoints: newElo2,
-      eloRank: getRankName(newElo2),
-      updatedAt: new Date().toISOString(),
-    });
+    setParticipantGameElo(p1, gameId, result.playerANewElo, getRankName(result.playerANewElo));
+    setParticipantGameElo(p2, gameId, result.playerBNewElo, getRankName(result.playerBNewElo));
+    await participants.upsert(p1);
+    await participants.upsert(p2);
     match.status = 'completed';
   }
 
+  match.gameId = gameId;
+  match.participant1EloBefore = p1Elo;
+  match.participant2EloBefore = p2Elo;
   match.participant1EloChange = eloChange1;
   match.participant2EloChange = eloChange2;
   match.completedDate = new Date().toISOString();
-  
-  console.log(`[applyLeagueMatchElo] Saving match ${match.id} with status=${match.status}`);
+
+  console.log(`[applyLeagueMatchElo] Saving match ${match.id} with status=${match.status} gameId=${gameId}`);
   await leagueMatches.upsert(match);
   console.log(`[applyLeagueMatchElo] Match ${match.id} saved successfully`);
-  
+
   // Verify the match was saved
   const verification = await leagueMatches.findById(match.id);
   if (!verification) {
@@ -110,18 +102,19 @@ async function applyLeagueMatchElo(match) {
     throw new Error('Match disappeared after save');
   }
   console.log(`[applyLeagueMatchElo] Match ${match.id} verified in DB with status=${verification.status}`);
-  
+
   return { [match.participant1Id]: eloChange1, [match.participant2Id]: eloChange2 };
 }
 
 async function calculateStandings(leagueId) {
   const league = await leagues.findById(leagueId);
   if (!league) return [];
-  
+
+  const gameId = league.gameId || 'ssbu';
   const leagueMatchList = await leagueMatches.getByField('leagueId', leagueId);
-  
+
   const standings = new Map();
-  
+
   // Initialize standings for all participants
   for (const pid of league.participantIds) {
     standings.set(pid, {
@@ -136,14 +129,14 @@ async function calculateStandings(leagueId) {
       headToHead: {},
     });
   }
-  
-  // Get current ELO for all participants
-  const allParticipants = await participants.getAll();
+
+  // Get current ELO for all participants (per game)
+  const allParticipants = (await participants.getAll()).map(migrateParticipantGames);
   const participantMap = new Map(allParticipants.map(p => [p.id, p]));
-  
+
   for (const pid of league.participantIds) {
     const p = participantMap.get(pid);
-    if (p) standings.get(pid).currentElo = p.eloPoints ?? 1500;
+    if (p) standings.get(pid).currentElo = getEffectiveElo(p, gameId);
   }
   
   // Process completed matches
@@ -278,6 +271,16 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       return res.status(403).json({ error: 'Cannot create league in this community' });
     }
 
+    // All selected participants must have this game in their profile and belong to the community
+    const participantList = await participants.getAll();
+    const ineligible = participantIds.filter((pid) => {
+      const p = participantList.find((x) => x.id === pid);
+      return !p || (p.communityId && p.communityId !== communityId) || !p.games?.[gameId];
+    });
+    if (ineligible.length > 0) {
+      return res.status(400).json({ error: 'One or more participants are not registered for this game' });
+    }
+
     const league = {
       id: generateId('league'),
       name,
@@ -325,6 +328,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
           matchRecords.push({
             id: generateId('lmatch'),
             leagueId: league.id,
+            gameId: league.gameId,
             round: roundNum,
             week,
             participant1Id: p1,
@@ -404,100 +408,16 @@ router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'Only participants or admins can report results' });
     }
 
-    // Get both participants
-    const [p1, p2] = await Promise.all([
-      participants.findById(match.participant1Id),
-      participants.findById(match.participant2Id),
-    ]);
-    
-    if (!p1 || !p2) {
-      return res.status(404).json({ error: 'Participant not found' });
-    }
-    
-    const p1Elo = p1.eloPoints ?? 1500;
-    const p2Elo = p2.eloPoints ?? 1500;
-    
-    let eloChange1 = 0;
-    let eloChange2 = 0;
-    
+    // Apply per-game ELO through the shared helper
     if (isNoShow) {
-      // No-show: absent player loses ELO as if they lost, present player gets nothing
-      const absentId = noShowParticipantId;
-      const presentId = absentId === match.participant1Id ? match.participant2Id : match.participant1Id;
-      
-      // Calculate ELO as if present player won
-      const winnerChar = presentId === match.participant1Id ? 'A' : 'B';
-      const result = calculateMatchElo(p1Elo, p2Elo, winnerChar);
-      
-      if (absentId === match.participant1Id) {
-        eloChange1 = result.playerAChange;
-        eloChange2 = 0; // Present player gets no ELO
-        
-        // Update absent player's ELO
-        const newElo1 = result.playerANewElo;
-        const newRank1 = getRankName(newElo1);
-        await participants.upsert({
-          ...p1,
-          eloPoints: newElo1,
-          eloRank: newRank1,
-          updatedAt: new Date().toISOString(),
-        });
-      } else {
-        eloChange1 = 0;
-        eloChange2 = result.playerBChange;
-        
-        // Update absent player's ELO
-        const newElo2 = result.playerBNewElo;
-        const newRank2 = getRankName(newElo2);
-        await participants.upsert({
-          ...p2,
-          eloPoints: newElo2,
-          eloRank: newRank2,
-          updatedAt: new Date().toISOString(),
-        });
-      }
-      
-      match.status = 'no_show';
-      match.noShowParticipantId = absentId;
-      match.winnerId = presentId;
+      match.noShowParticipantId = noShowParticipantId;
+      match.winnerId = noShowParticipantId === match.participant1Id ? match.participant2Id : match.participant1Id;
     } else {
-      // Normal match: calculate ELO and update both players
-      const winnerChar = winnerId === match.participant1Id ? 'A' : 'B';
-      const result = calculateMatchElo(p1Elo, p2Elo, winnerChar);
-      
-      eloChange1 = result.playerAChange;
-      eloChange2 = result.playerBChange;
-      
-      // Update both participants
-      const newElo1 = result.playerANewElo;
-      const newElo2 = result.playerBNewElo;
-      const newRank1 = getRankName(newElo1);
-      const newRank2 = getRankName(newElo2);
-      
-      await participants.upsert({
-        ...p1,
-        eloPoints: newElo1,
-        eloRank: newRank1,
-        updatedAt: new Date().toISOString(),
-      });
-      
-      await participants.upsert({
-        ...p2,
-        eloPoints: newElo2,
-        eloRank: newRank2,
-        updatedAt: new Date().toISOString(),
-      });
-      
-      match.status = 'completed';
       match.winnerId = winnerId;
       match.score = score;
     }
-    
-    match.participant1EloChange = eloChange1;
-    match.participant2EloChange = eloChange2;
-    match.completedDate = new Date().toISOString();
-    
-    await leagueMatches.upsert(match);
+
+    const eloChanges = await applyLeagueMatchElo(match);
     
     // Check for no-show kick
     if (isNoShow) {
@@ -512,7 +432,7 @@ router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
       }
     }
     
-    res.json({ match, eloChanges: { [match.participant1Id]: eloChange1, [match.participant2Id]: eloChange2 } });
+    res.json({ match, eloChanges });
   } catch (err) {
     console.error('[Leagues] POST /:id/matches/:matchId/result error:', err);
     res.status(500).json({ error: 'Failed to report match result' });
@@ -567,49 +487,12 @@ router.post('/:id/matches/:matchId/mark-no-show', requireAuth, requireAdmin, asy
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
 
-    // Get participants
-    const p1 = await participants.findById(match.participant1Id);
-    const p2 = await participants.findById(match.participant2Id);
-    if (!p1 || !p2) return res.status(404).json({ error: 'Participant not found' });
-
     const absentId = noShowParticipantId;
     const presentId = absentId === match.participant1Id ? match.participant2Id : match.participant1Id;
-
-    // Calculate ELO as if present player won
-    const p1Elo = p1.eloPoints ?? 1500;
-    const p2Elo = p2.eloPoints ?? 1500;
-    const winnerChar = presentId === match.participant1Id ? 'A' : 'B';
-    const result = calculateMatchElo(p1Elo, p2Elo, winnerChar);
-
-    let eloChange1 = 0;
-    let eloChange2 = 0;
-
-    if (absentId === match.participant1Id) {
-      eloChange1 = result.newEloA - p1Elo;
-      await participants.upsert({
-        ...p1,
-        eloPoints: result.newEloA,
-        eloRank: getRankName(result.newEloA),
-        updatedAt: new Date().toISOString(),
-      });
-    } else {
-      eloChange2 = result.newEloB - p2Elo;
-      await participants.upsert({
-        ...p2,
-        eloPoints: result.newEloB,
-        eloRank: getRankName(result.newEloB),
-        updatedAt: new Date().toISOString(),
-      });
-    }
-
-    match.status = 'no_show';
     match.noShowParticipantId = absentId;
     match.winnerId = presentId;
-    match.participant1EloChange = eloChange1;
-    match.participant2EloChange = eloChange2;
-    match.completedDate = new Date().toISOString();
 
-    await leagueMatches.upsert(match);
+    const eloChanges = await applyLeagueMatchElo(match);
 
     // Check for no-show kick eligibility
     const leagueMatchesForNoShow = await leagueMatches.getByField('leagueId', league.id);
@@ -628,7 +511,7 @@ router.post('/:id/matches/:matchId/mark-no-show', requireAuth, requireAdmin, asy
 
     res.json({
       match,
-      eloChanges: { [match.participant1Id]: eloChange1, [match.participant2Id]: eloChange2 },
+      eloChanges,
       banEligible: isEligibleForBan ? {
         participantId: noShowParticipantId,
         name: absentPlayer?.name || 'Unknown',
@@ -725,6 +608,7 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
           newMatches.push({
             id: generateId('lmatch'),
             leagueId: league.id,
+            gameId: league.gameId,
             round: roundNum,
             week,
             participant1Id: p1,
@@ -1014,6 +898,7 @@ router.post('/:id/regenerate-schedule', requireAuth, requireAdmin, async (req, r
           newMatches.push({
             id: generateId('lmatch'),
             leagueId: league.id,
+            gameId: league.gameId,
             round: roundNum,
             week,
             participant1Id: p1,

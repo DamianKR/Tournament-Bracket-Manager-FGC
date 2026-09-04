@@ -4,6 +4,7 @@
  * @typedef {Object} RankedMatch
  * @property {string} id
  * @property {'duel'|'matchmaking'} matchType
+ * @property {string} gameId
  * @property {string} playerAId
  * @property {string} playerBId
  * @property {string} winnerId
@@ -18,10 +19,11 @@
  * @property {Object|null} metadata
  */
 
-export function rankedMatchShape(id, matchType, playerAId, playerBId, winnerId, eloData, communityId) {
+export function rankedMatchShape(id, matchType, gameId, playerAId, playerBId, winnerId, eloData, communityId) {
   return {
     id,
     matchType,
+    gameId,
     playerAId,
     playerBId,
     winnerId,
@@ -43,6 +45,7 @@ export function validateRankedMatch(obj) {
   if (!obj || typeof obj !== 'object') return { valid: false, errors: ['Not an object'] };
   if (typeof obj.id !== 'string' || !obj.id) errors.push('Missing id');
   if (!['duel', 'matchmaking'].includes(obj.matchType)) errors.push('Invalid matchType');
+  if (typeof obj.gameId !== 'string' || !obj.gameId) errors.push('Missing gameId');
   if (typeof obj.playerAId !== 'string' || !obj.playerAId) errors.push('Missing playerAId');
   if (typeof obj.playerBId !== 'string' || !obj.playerBId) errors.push('Missing playerBId');
   if (typeof obj.winnerId !== 'string' || !obj.winnerId) errors.push('Missing winnerId');

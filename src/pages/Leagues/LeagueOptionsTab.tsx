@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { League } from '@/models/league';
+import { getGame } from '@/data/games';
 import { getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import './LeagueOptionsTab.css';
 
@@ -37,7 +38,7 @@ function LeagueOptionsTab({ league }: LeagueOptionsTabProps) {
 
           <div className="option-card">
             <div className="option-label">{t('league.options.labels.game')}</div>
-            <div className="option-value">{t(`league.options.gameName.${league.gameId}`, { defaultValue: league.gameId })}</div>
+            <div className="option-value">{getGame(league.gameId)?.shortName ?? league.gameId}</div>
           </div>
 
           <div className="option-card">

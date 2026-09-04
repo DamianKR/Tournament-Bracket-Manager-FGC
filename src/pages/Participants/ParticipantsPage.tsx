@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GlobalParticipant, ComputedStats } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
-import { getCharacter, getGame } from '@/data/games';
+import { getCharacter, getGame, GAMES } from '@/data/games';
 import {
   getAllParticipants,
   getAllParticipantsAsync,
@@ -19,7 +19,6 @@ import {
 import { saveGlobalParticipants } from '@/services/storage/localStorage';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
-import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import './ParticipantsPage.css';
@@ -43,8 +42,9 @@ function ParticipantsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newName, setNewName] = useState('');
   const [newAlias, setNewAlias] = useState('');
-  const [newGameId, setNewGameId] = useState<string | null>(null);
-  const [newCharacterId, setNewCharacterId] = useState<string | null>(null);
+  const [newGameIds, setNewGameIds] = useState<string[]>([]);
+  const [newGameMainChars, setNewGameMainChars] = useState<Record<string, string | null>>({});
+  const [newPrimaryGameId, setNewPrimaryGameId] = useState<string | null>(null);
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newRole, setNewRole] = useState<AuthUser['role']>('user');
@@ -148,7 +148,7 @@ function ParticipantsPage() {
     if (newPassword.trim().length < 6) { setError(t('participants.errors.passwordTooShort')); return; }
     setCreating(true); setError('');
     try {
-      const p = await createParticipant(newName, newAlias, newGameId, newCharacterId, communityId);
+      const p = await createParticipant(newName, newAlias, newGameIds, newPrimaryGameId, newGameMainChars, communityId);
       const username = newUsername.trim() || generateUsernameFromName();
       const u = await createUserAccount(p.id, username, newPassword.trim(), newRole, communityId);
       const next = [...participants, p];
@@ -156,7 +156,7 @@ function ParticipantsPage() {
       const nextUsers = new Map(usersMap);
       nextUsers.set(p.id, u);
       setUsersMap(nextUsers);
-      setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null);
+      setNewName(''); setNewAlias(''); setNewGameIds([]); setNewGameMainChars({}); setNewPrimaryGameId(null);
       setNewUsername(''); setNewPassword(''); setNewRole('user');
       setShowCreateForm(false);
     } catch (err: any) { setError(err.message); }
@@ -262,12 +262,59 @@ function ParticipantsPage() {
 
               <div className="pp-create-section">
                 <h4>{t('participants.gameAndMain')}</h4>
-                <CharacterSelect
-                  gameId={newGameId}
-                  characterId={newCharacterId}
-                  onGameChange={setNewGameId}
-                  onCharacterChange={setNewCharacterId}
-                />
+                <div className="pp-game-list">
+                  {GAMES.map((g) => (
+                    <div key={g.id} className="pp-game-row">
+                      <label className="pp-game-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={newGameIds.includes(g.id)}
+                          onChange={(e) => {
+                            const next = e.target.checked
+                              ? [...newGameIds, g.id]
+                              : newGameIds.filter((id) => id !== g.id);
+                            setNewGameIds(next);
+                            if (!next.includes(newPrimaryGameId ?? '')) {
+                              setNewPrimaryGameId(next[0] ?? null);
+                            }
+                            if (!e.target.checked) {
+                              const nextMains = { ...newGameMainChars };
+                              delete nextMains[g.id];
+                              setNewGameMainChars(nextMains);
+                            }
+                          }}
+                        />
+                        <span>{g.shortName}</span>
+                      </label>
+                      {newGameIds.includes(g.id) && (
+                        <select
+                          className="form-control"
+                          value={newGameMainChars[g.id] ?? ''}
+                          onChange={(e) => setNewGameMainChars({ ...newGameMainChars, [g.id]: e.target.value || null })}
+                        >
+                          <option value="">{t('common.noMain')}</option>
+                          {g.characters.map((c) => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {newGameIds.length > 0 && (
+                  <div className="form-group">
+                    <label>{t('participants.primaryGame')}</label>
+                    <select
+                      className="form-control"
+                      value={newPrimaryGameId ?? ''}
+                      onChange={(e) => setNewPrimaryGameId(e.target.value || null)}
+                    >
+                      {newGameIds.map((gId) => (
+                        <option key={gId} value={gId}>{getGame(gId)?.shortName ?? gId}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
 
               <div className="pp-create-section">
@@ -277,14 +324,14 @@ function ParticipantsPage() {
                   <label>{t('participants.username')} <span className="text-secondary">{t('participants.usernameAuto')}</span></label>
                   <input type="text" value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameIds([]); setNewGameMainChars({}); setNewPrimaryGameId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
                     placeholder={generateUsernameFromName() || t('participants.usernamePlaceholder')} />
                 </div>
                 <div className="form-group">
                   <label>{t('participants.password')} *</label>
                   <input type="password" value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameIds([]); setNewGameMainChars({}); setNewPrimaryGameId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
                     placeholder={t('participants.passwordPlaceholder')} />
                 </div>
                 {canAssignRole && roleOptions.length > 1 && (
@@ -311,10 +358,10 @@ function ParticipantsPage() {
                       <span className="pp-preview-alias">{newAlias.trim()}</span>
                     )}
                   </div>
-                  {newGameId && newCharacterId && (
+                  {newPrimaryGameId && (
                     <div className="pp-item-tags">
-                      <span className="pp-item-tag pp-item-tag-game">{getGame(newGameId)?.shortName}</span>
-                      <span className="pp-item-tag pp-item-tag-char">{getCharacter(newGameId, newCharacterId)?.name}</span>
+                      <span className="pp-item-tag pp-item-tag-game">{getGame(newPrimaryGameId)?.shortName}</span>
+                      <span className="pp-item-tag pp-item-tag-char">{newGameMainChars[newPrimaryGameId] ? getCharacter(newPrimaryGameId, newGameMainChars[newPrimaryGameId])?.name : t('common.noMain')}</span>
                     </div>
                   )}
                 </div>
@@ -324,7 +371,7 @@ function ParticipantsPage() {
             <div className="pp-create-actions">
               <button className="btn-outline" onClick={() => {
                 setShowCreateForm(false);
-                setNewName(''); setNewAlias(''); setNewGameId(null); setNewCharacterId(null);
+                setNewName(''); setNewAlias(''); setNewGameIds([]); setNewGameMainChars({}); setNewPrimaryGameId(null);
                 setNewUsername(''); setNewPassword(''); setNewRole('user'); setError('');
               }}>{t('participants.cancel')}</button>
               <button className="btn-primary" onClick={handleCreate} disabled={creating}>

@@ -1,6 +1,7 @@
 import { Participant, GlobalParticipant, SeedingMode, PartialSeedCount } from '@/models/types';
 import { getAllParticipants } from '@/services/participants/participantService';
 import { loadTournaments } from '@/services/storage/localStorage';
+import { getEffectiveElo } from '@/utils/participantGames';
 import { generateStandardSeeding } from '@/engine/seeding/seeding';
 
 /**
@@ -41,19 +42,19 @@ function calculateWinRate(participant: GlobalParticipant): number {
 }
 
 /**
- * Rank participants by ELO points (primary) and win rate (tiebreaker)
+ * Rank participants by ELO points (game-specific, falling back to primary) and win rate (tiebreaker)
  */
-export function rankParticipants(participants: Participant[]): Participant[] {
+export function rankParticipants(participants: Participant[], gameId?: string | null): Participant[] {
   const allGlobal = getAllParticipants();
-  
+
   const ranked = participants.map(p => {
-    const global = p.globalParticipantId 
+    const global = p.globalParticipantId
       ? allGlobal.find(g => g.id === p.globalParticipantId)
       : null;
-    
+
     return {
       participant: p,
-      elo: global?.eloPoints ?? 1500,
+      elo: global ? getEffectiveElo(global, gameId) : 1500,
       winRate: global ? calculateWinRate(global) : 0,
       name: p.name.toLowerCase(),
     };
@@ -77,14 +78,15 @@ export function rankParticipants(participants: Participant[]): Participant[] {
 export function applySeed(
   participants: Participant[],
   mode: SeedingMode,
-  partialCount?: PartialSeedCount
+  partialCount?: PartialSeedCount,
+  gameId?: string | null
 ): Participant[] {
   if (mode === 'none') {
     // Keep current order, just assign sequential seeds
     return participants.map((p, i) => ({ ...p, seed: i + 1 }));
   }
 
-  const ranked = rankParticipants(participants);
+  const ranked = rankParticipants(participants, gameId);
 
   if (mode === 'full') {
     // All participants ranked

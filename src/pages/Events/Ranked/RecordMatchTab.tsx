@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
+import { GAMES } from '@/data/games';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
@@ -10,6 +11,7 @@ import {
   getRankIcon,
   type MatchResult,
 } from '@/services/ranking/rankingService';
+import { getParticipantElo, getParticipantRank } from '@/utils/participantGames';
 import { getDuelChallenge, reportDuelResult, resolveConflict, completeDuelChallenge } from '@/services/duels/duelService';
 import { DuelChallenge } from '@/models/duel';
 import './RecordMatchTab.css';
@@ -108,7 +110,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
         // If status is now 'completed', both results matched - record the match
         if (updated.status === 'completed') {
-          const result = await recordMatch(playerAId, playerBId, winnerId, 'duel', communityId);
+          const result = await recordMatch(playerAId, playerBId, winnerId, challenge.gameId, 'duel', communityId);
           setLastResult(result);
 
           // Link match to challenge
@@ -156,7 +158,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
       const updated = await resolveConflict(challenge.id, winnerId);
       if (updated) {
         // Record the match with admin's decision
-        const result = await recordMatch(playerAId, playerBId, winnerId, 'duel', communityId);
+        const result = await recordMatch(playerAId, playerBId, winnerId, challenge.gameId, 'duel', communityId);
         setLastResult(result);
         
         // Link match to challenge
@@ -242,6 +244,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                 {playerAId && (
                   <EloPreview
                     participant={participantMap.get(playerAId)!}
+                    gameId={challenge?.gameId ?? GAMES[0]?.id ?? 'ssbu'}
                     isWinner={winnerId === playerAId}
                     onSetWinner={() => setWinnerId(playerAId)}
                   />
@@ -259,6 +262,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                 {playerBId && (
                   <EloPreview
                     participant={participantMap.get(playerBId)!}
+                    gameId={challenge?.gameId ?? GAMES[0]?.id ?? 'ssbu'}
                     isWinner={winnerId === playerBId}
                     onSetWinner={() => setWinnerId(playerBId)}
                   />
@@ -421,6 +425,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
   const [playerAId, setPlayerAId] = useState('');
   const [playerBId, setPlayerBId] = useState('');
   const [winnerId, setWinnerId] = useState('');
+  const [gameId, setGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
   const [recording, setRecording] = useState(false);
   const [recordError, setRecordError] = useState('');
   const [lastResult, setLastResult] = useState<MatchResult | null>(null);
@@ -436,7 +441,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
     setRecordError('');
     setLastResult(null);
     try {
-      const result = await recordMatch(playerAId, playerBId, winnerId, 'free', communityId);
+      const result = await recordMatch(playerAId, playerBId, winnerId, gameId, 'free', communityId);
       setLastResult(result);
 
       // Reset form
@@ -452,6 +457,11 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
 
   function pName(id: string) {
     return participantMap.get(id)?.name ?? id;
+  }
+
+  function eloLabel(p: GlobalParticipant) {
+    const pts = getParticipantElo(p, gameId);
+    return pts != null ? `${pts} ${t('ranked.duelInfo.record.pts')}` : t('ranked.duelInfo.record.unranked');
   }
 
   return (
@@ -473,6 +483,19 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
 
         {allParticipants.length >= 2 && (
           <>
+            <div className="form-group rk-game-select">
+              <label>{t('ranked.duelInfo.record.gameLabel')}</label>
+              <select
+                className="rk-select"
+                value={gameId}
+                onChange={(e) => { setGameId(e.target.value); setWinnerId(''); setLastResult(null); }}
+              >
+                {GAMES.map((g) => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="rk-matchup">
               {/* Player A */}
               <div className="rk-player-slot">
@@ -488,13 +511,14 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.duelInfo.record.pts')}` : t('ranked.duelInfo.record.unranked')}
+                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {eloLabel(p)}
                       </option>
                     ))}
                 </select>
                 {playerAId && (
                   <EloPreview
                     participant={participantMap.get(playerAId)!}
+                    gameId={gameId}
                     isWinner={winnerId === playerAId}
                     onSetWinner={() => setWinnerId(playerAId)}
                   />
@@ -517,13 +541,14 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.duelInfo.record.pts')}` : t('ranked.duelInfo.record.unranked')}
+                        {p.alias ? `${p.alias} (${p.name})` : p.name} — {eloLabel(p)}
                       </option>
                     ))}
                 </select>
                 {playerBId && (
                   <EloPreview
                     participant={participantMap.get(playerBId)!}
+                    gameId={gameId}
                     isWinner={winnerId === playerBId}
                     onSetWinner={() => setWinnerId(playerBId)}
                   />
@@ -585,16 +610,18 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
 
 function EloPreview({
   participant,
+  gameId,
   isWinner,
   onSetWinner,
 }: {
   participant: GlobalParticipant;
+  gameId: string;
   isWinner: boolean;
   onSetWinner: () => void;
 }) {
   const { t } = useTranslation();
-  const pts = participant.eloPoints;
-  const rank = participant.eloRank;
+  const pts = getParticipantElo(participant, gameId);
+  const rank = getParticipantRank(participant, gameId);
   return (
     <div className={`rk-elo-preview ${isWinner ? 'winner-preview' : ''}`} onClick={onSetWinner}>
       <span className="rk-elo-rank-icon"><i className={getRankIcon(rank)} /></span>

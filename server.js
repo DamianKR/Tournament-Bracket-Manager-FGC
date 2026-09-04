@@ -28,6 +28,7 @@ import communitiesRouter from './server/routes/communities.js';
 import { expireAllOldDuels } from './server/services/duelExpiration.js';
 import { expireAllOldLeagueMatches } from './server/services/leagueExpiration.js';
 import { reschedulableLeagueNotifications } from './server/services/notificationScheduler.js';
+import { ensureDefaultCommunityAndMigrate } from './server/services/communityMigration.js';
 
 // Render asigna el puerto via PORT; en local usamos 3001
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
@@ -109,6 +110,11 @@ app.listen(PORT, () => {
       }
     });
   }, 12 * 60 * 60 * 1000); // every 12 hours
+
+  // Run data migrations and ensure default community on startup
+  ensureDefaultCommunityAndMigrate().catch(err =>
+    console.error('[Migration] Failed to run community migration:', err)
+  );
 
   // Reschedule any pending league week notifications on startup (setTimeout is in-memory only)
   reschedulableLeagueNotifications().catch(err =>

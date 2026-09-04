@@ -96,6 +96,16 @@ export interface TournamentHistory {
   previousState: Tournament | null; // For undo functionality
 }
 
+// ── Per-game profile ─────────────────────────────────────────────────────
+// A participant can compete in multiple games, each with its own ELO and main.
+
+export interface ParticipantGameProfile {
+  gameId: string;
+  mainCharacterId: string | null;
+  eloPoints: number | null; // null = unranked/no points yet in this game
+  eloRank: string;          // Rank name derived from eloPoints in this game
+}
+
 // ── Global Participant ─────────────────────────────────────────────────
 // A participant that exists independently of any tournament.
 // Stats are computed at runtime by reading tournaments — never stored.
@@ -106,13 +116,13 @@ export interface GlobalParticipant {
   alias: string;            // Optional gamertag / short name
   avatarUrl: string | null;
   tournamentIds: string[];  // FK references — all tournaments this player joined
-  gameId: string | null;    // e.g. 'ssbu' — which game this player competes in
-  mainCharacterId: string | null; // e.g. 'kirby' — their main character
+  // Primary/default game & character for display (must match an entry in `games`)
+  gameId: string | null;    // e.g. 'ssbu' — primary game this player competes in
+  mainCharacterId: string | null; // e.g. 'kirby' — main character in primary game
+  // Per-game profiles: ELO and main character for every game the player touches
+  games: Record<string, ParticipantGameProfile>;
   phoneNumber?: string;           // Optional contact number shown on profile
   communityId: string;            // Community this participant belongs to
-  // ELO Ranking
-  eloPoints: number | null; // Current ELO score (null = unranked/no points yet)
-  eloRank: string;          // Rank name derived from eloPoints
   createdAt: string;
   updatedAt: string;
 }
@@ -121,6 +131,7 @@ export interface GlobalParticipant {
 
 export type EloRankName =
   | 'Sin puntos'
+  | 'Bronce'
   | 'Plata'
   | 'Oro'
   | 'Platino'
@@ -144,6 +155,7 @@ export interface MatchRecord {
   winnerId: string;
   loserId: string;
   type: 'duel' | 'matchmaking' | 'free';
+  gameId: string;           // Game this match was played in
   playerAPointsBefore: number;
   playerBPointsBefore: number;
   playerAPointsAfter: number;

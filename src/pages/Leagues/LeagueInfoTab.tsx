@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { League } from '@/models/league';
+import { getGame } from '@/data/games';
 import { formatInTimeZone } from '@/utils/timeZone';
 import './LeagueInfoTab.css';
 
@@ -15,6 +16,7 @@ function LeagueInfoTab({ league }: LeagueInfoTabProps) {
   const timeZone = league.timeZone || 'America/Havana';
   const startDate = formatInTimeZone(league.startDate, league.timeZone);
   const winByGames = Math.ceil(league.gamesPerMatch / 2);
+  const gameName = getGame(league.gameId)?.shortName ?? league.gameId;
 
   return (
     <div className="league-info-tab">
@@ -47,7 +49,7 @@ function LeagueInfoTab({ league }: LeagueInfoTabProps) {
         <div className="info-card card">
           <h3><i className="fas fa-gamepad" /> {t('league.info.formatTitle')}</h3>
           <ul>
-            <li><strong>{t('league.info.gameLabel')}</strong> {league.gameId.toUpperCase()}</li>
+            <li><strong>{t('league.info.gameLabel')}</strong> {gameName}</li>
             <li><strong>{t('league.info.bestOfLabel')}</strong> {league.gamesPerMatch} {t('common.game')}s</li>
             <li><strong>{t('league.info.roundsPerOpponentLabel')}</strong> {league.roundsPerOpponent}</li>
             <li><strong>{t('league.info.playersLabel')}</strong> {league.participantIds.length}</li>

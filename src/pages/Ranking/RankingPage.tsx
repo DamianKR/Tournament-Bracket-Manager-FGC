@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
+import { GAMES } from '@/data/games';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
 import {
   getLeaderboard,
@@ -46,6 +47,9 @@ function RankingPage() {
   // All participants (for selectors)
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
 
+  // Game filter
+  const [selectedGameId, setSelectedGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
+
   // History
   const [matchHistory, setMatchHistory] = useState<MatchRecord[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
@@ -66,27 +70,27 @@ function RankingPage() {
     setLoadingBoard(true);
     setBoardError('');
     try {
-      const data = await getLeaderboard(communityId);
+      const data = await getLeaderboard(communityId, selectedGameId);
       setLeaderboard(data);
     } catch {
       setBoardError(t('ranking.errorTitle'));
     } finally {
       setLoadingBoard(false);
     }
-  }, [communityId]);
+  }, [communityId, selectedGameId]);
 
   const loadHistory = useCallback(async () => {
     if (!communityId) return;
     setLoadingHistory(true);
     try {
-      const data = await getAllMatches(communityId);
+      const data = await getAllMatches(communityId, selectedGameId);
       setMatchHistory(data as unknown as MatchRecord[]);
     } catch {
       // silently fail
     } finally {
       setLoadingHistory(false);
     }
-  }, [communityId]);
+  }, [communityId, selectedGameId]);
 
   useEffect(() => {
     if (!communityId) return;
@@ -124,7 +128,7 @@ function RankingPage() {
     setShowSoftConfirm(false);
     setResetting(true);
     try {
-      await softResetRanking(communityId);
+      await softResetRanking(communityId, selectedGameId);
       await loadLeaderboard();
       if (tab === 'history') await loadHistory();
     } catch { /* silently fail */ }
@@ -135,7 +139,7 @@ function RankingPage() {
     setShowHardConfirm2(false);
     setResetting(true);
     try {
-      await hardResetRanking(communityId);
+      await hardResetRanking(communityId, selectedGameId);
       await loadLeaderboard();
       if (tab === 'history') {
         await loadHistory();
@@ -194,6 +198,18 @@ function RankingPage() {
               </button>
             </div>
           )}
+          <div className="rk-game-filter">
+            <label htmlFor="rk-game-select">{t('ranking.gameLabel')}</label>
+            <select
+              id="rk-game-select"
+              value={selectedGameId}
+              onChange={(e) => setSelectedGameId(e.target.value)}
+            >
+              {GAMES.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
+          </div>
           <div className="rk-tabs">
             <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => setTab('leaderboard')}>
               <i className="fas fa-trophy" /> {t('ranking.tabs.ranking')}

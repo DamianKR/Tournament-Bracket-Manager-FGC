@@ -15,7 +15,8 @@
     "player2GlobalId": "gp_1786387243524_6er0c9u",
     "winnerGlobalId": "gp_1786387243524_6er0c9u",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787407782081_htxkbr9ss",
@@ -33,7 +34,8 @@
     "player2GlobalId": "gp_1786387250178_ac5thmv",
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787409307471_bibsa40sm",
@@ -51,7 +53,8 @@
     "player2GlobalId": "gp_1786387234567_aoe1z95",
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787409309851_twxkeykfg",
@@ -69,7 +72,8 @@
     "player2GlobalId": "gp_1786387234567_aoe1z95",
     "winnerGlobalId": "gp_1786387234567_aoe1z95",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m2_winner",
@@ -87,7 +91,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-08T17:49:15.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m6_winner",
@@ -105,7 +110,8 @@
     "matchNumber": 6,
     "createdAt": "2026-08-08T17:49:11.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m8_winner",
@@ -123,7 +129,8 @@
     "matchNumber": 8,
     "createdAt": "2026-08-08T17:49:09.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m10_winner",
@@ -141,7 +148,8 @@
     "matchNumber": 10,
     "createdAt": "2026-08-08T17:49:07.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m14_winner",
@@ -159,7 +167,8 @@
     "matchNumber": 14,
     "createdAt": "2026-08-08T17:49:03.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m16_winner",
@@ -177,7 +186,8 @@
     "matchNumber": 16,
     "createdAt": "2026-08-08T17:49:01.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m1_winner",
@@ -195,7 +205,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:50:16.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m2_winner",
@@ -213,7 +224,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-08T17:50:15.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m3_winner",
@@ -231,7 +243,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-08T17:50:14.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m4_winner",
@@ -249,7 +262,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-08T17:50:13.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m5_winner",
@@ -267,7 +281,8 @@
     "matchNumber": 5,
     "createdAt": "2026-08-08T17:50:12.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m6_winner",
@@ -285,7 +300,8 @@
     "matchNumber": 6,
     "createdAt": "2026-08-08T17:50:11.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m7_winner",
@@ -303,7 +319,8 @@
     "matchNumber": 7,
     "createdAt": "2026-08-08T17:50:10.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m8_winner",
@@ -321,7 +338,8 @@
     "matchNumber": 8,
     "createdAt": "2026-08-08T17:50:09.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m1_winner",
@@ -339,7 +357,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:51:16.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m2_winner",
@@ -357,7 +376,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-08T17:51:15.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m3_winner",
@@ -375,7 +395,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-08T17:51:14.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m4_winner",
@@ -393,7 +414,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-08T17:51:13.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m1_winner",
@@ -411,7 +433,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:52:16.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m2_winner",
@@ -429,7 +452,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-08T17:52:15.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r5_m1_winner",
@@ -447,7 +471,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:53:16.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m1_loser",
@@ -465,7 +490,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:50:11.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m3_loser",
@@ -483,7 +509,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-08T17:50:09.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m4_loser",
@@ -501,7 +528,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-08T17:50:08.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m5_loser",
@@ -519,7 +547,8 @@
     "matchNumber": 5,
     "createdAt": "2026-08-08T17:50:07.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m7_loser",
@@ -537,7 +566,8 @@
     "matchNumber": 7,
     "createdAt": "2026-08-08T17:50:05.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r2_m8_loser",
@@ -555,7 +585,8 @@
     "matchNumber": 8,
     "createdAt": "2026-08-08T17:50:04.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m1_loser",
@@ -573,7 +604,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:51:11.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m2_loser",
@@ -591,7 +623,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-08T17:51:10.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m3_loser",
@@ -609,7 +642,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-08T17:51:09.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r3_m4_loser",
@@ -627,7 +661,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-08T17:51:08.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m1_loser",
@@ -645,7 +680,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:52:11.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m2_loser",
@@ -663,7 +699,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-08T17:52:10.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m3_loser",
@@ -681,7 +718,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-08T17:52:09.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r4_m4_loser",
@@ -699,7 +737,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-08T17:52:08.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r5_m1_loser",
@@ -717,7 +756,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:53:11.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r5_m2_loser",
@@ -735,7 +775,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-08T17:53:10.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r6_m1_loser",
@@ -753,7 +794,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:54:11.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r6_m2_loser",
@@ -771,7 +813,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-08T17:54:10.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r7_m1_loser",
@@ -789,7 +832,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:55:11.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r8_m1_loser",
@@ -807,7 +851,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:56:11.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786158558338-ey6twflzq_r1_m1_grand_final",
@@ -825,7 +870,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-08T17:49:16.448Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m9_winner",
@@ -843,7 +889,8 @@
     "matchNumber": 9,
     "createdAt": "2026-08-22T14:28:00.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m10_winner",
@@ -861,7 +908,8 @@
     "matchNumber": 10,
     "createdAt": "2026-08-22T14:27:59.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m11_winner",
@@ -879,7 +927,8 @@
     "matchNumber": 11,
     "createdAt": "2026-08-22T14:27:58.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m12_winner",
@@ -897,7 +946,8 @@
     "matchNumber": 12,
     "createdAt": "2026-08-22T14:27:57.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m13_winner",
@@ -915,7 +965,8 @@
     "matchNumber": 13,
     "createdAt": "2026-08-22T14:27:56.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m14_winner",
@@ -933,7 +984,8 @@
     "matchNumber": 14,
     "createdAt": "2026-08-22T14:27:55.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m15_winner",
@@ -951,7 +1003,8 @@
     "matchNumber": 15,
     "createdAt": "2026-08-22T14:27:54.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m16_winner",
@@ -969,7 +1022,8 @@
     "matchNumber": 16,
     "createdAt": "2026-08-22T14:27:53.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m2_winner",
@@ -987,7 +1041,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-22T14:29:07.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m3_winner",
@@ -1005,7 +1060,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-22T14:29:06.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m4_winner",
@@ -1023,7 +1079,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-22T14:29:05.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m5_winner",
@@ -1041,7 +1098,8 @@
     "matchNumber": 5,
     "createdAt": "2026-08-22T14:29:04.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m6_winner",
@@ -1059,7 +1117,8 @@
     "matchNumber": 6,
     "createdAt": "2026-08-22T14:29:03.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m7_winner",
@@ -1077,7 +1136,8 @@
     "matchNumber": 7,
     "createdAt": "2026-08-22T14:29:02.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m8_winner",
@@ -1095,7 +1155,8 @@
     "matchNumber": 8,
     "createdAt": "2026-08-22T14:29:01.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m1_winner",
@@ -1113,7 +1174,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-22T14:30:08.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m2_winner",
@@ -1131,7 +1193,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-22T14:30:07.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m3_winner",
@@ -1149,7 +1212,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-22T14:30:06.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m4_winner",
@@ -1167,7 +1231,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-22T14:30:05.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m1_winner",
@@ -1185,7 +1250,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-22T14:31:08.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m2_winner",
@@ -1203,7 +1269,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-22T14:31:07.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m5_loser",
@@ -1221,7 +1288,8 @@
     "matchNumber": 5,
     "createdAt": "2026-08-22T14:27:59.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m6_loser",
@@ -1239,7 +1307,8 @@
     "matchNumber": 6,
     "createdAt": "2026-08-22T14:27:58.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m7_loser",
@@ -1257,7 +1326,8 @@
     "matchNumber": 7,
     "createdAt": "2026-08-22T14:27:57.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r1_m8_loser",
@@ -1275,7 +1345,8 @@
     "matchNumber": 8,
     "createdAt": "2026-08-22T14:27:56.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m5_loser",
@@ -1293,7 +1364,8 @@
     "matchNumber": 5,
     "createdAt": "2026-08-22T14:28:59.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m6_loser",
@@ -1311,7 +1383,8 @@
     "matchNumber": 6,
     "createdAt": "2026-08-22T14:28:58.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m7_loser",
@@ -1329,7 +1402,8 @@
     "matchNumber": 7,
     "createdAt": "2026-08-22T14:28:57.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r2_m8_loser",
@@ -1347,7 +1421,8 @@
     "matchNumber": 8,
     "createdAt": "2026-08-22T14:28:56.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m1_loser",
@@ -1365,7 +1440,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-22T14:30:03.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m2_loser",
@@ -1383,7 +1459,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-22T14:30:02.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m3_loser",
@@ -1401,7 +1478,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-22T14:30:01.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r3_m4_loser",
@@ -1419,7 +1497,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-22T14:30:00.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m1_loser",
@@ -1437,7 +1516,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-22T14:31:03.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m2_loser",
@@ -1455,7 +1535,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-22T14:31:02.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m3_loser",
@@ -1473,7 +1554,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-22T14:31:01.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r4_m4_loser",
@@ -1491,7 +1573,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-22T14:31:00.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r5_m2_loser",
@@ -1509,7 +1592,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-22T14:32:02.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r6_m1_loser",
@@ -1527,7 +1611,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-22T14:33:03.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r6_m2_loser",
@@ -1545,7 +1630,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-22T14:33:02.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1786802844864-5bjdz2hif_r7_m1_loser",
@@ -1563,7 +1649,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-22T14:34:03.851Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m1_winner",
@@ -1581,7 +1668,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-29T14:01:58.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m2_winner",
@@ -1599,7 +1687,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-29T14:01:57.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m3_winner",
@@ -1617,7 +1706,8 @@
     "matchNumber": 3,
     "createdAt": "2026-08-29T14:01:56.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m4_winner",
@@ -1635,7 +1725,8 @@
     "matchNumber": 4,
     "createdAt": "2026-08-29T14:01:55.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m1_winner",
@@ -1653,7 +1744,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-29T14:02:58.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m2_winner",
@@ -1671,7 +1763,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-29T14:02:57.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r3_m1_winner",
@@ -1689,7 +1782,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-29T14:03:58.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m1_loser",
@@ -1707,7 +1801,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-29T14:01:53.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m2_loser",
@@ -1725,7 +1820,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-29T14:01:52.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m1_loser",
@@ -1743,7 +1839,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-29T14:02:53.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m2_loser",
@@ -1761,7 +1858,8 @@
     "matchNumber": 2,
     "createdAt": "2026-08-29T14:02:52.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r3_m1_loser",
@@ -1779,7 +1877,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-29T14:03:53.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r4_m1_loser",
@@ -1797,7 +1896,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-29T14:04:53.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r1_m1_grand_final",
@@ -1815,7 +1915,8 @@
     "matchNumber": 1,
     "createdAt": "2026-08-29T14:01:58.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   },
   {
     "id": "tm_1787926905258-q0tw79fm2_r2_m1_grand_final",
@@ -1833,6 +1934,7 @@
     "matchNumber": 1,
     "createdAt": "2026-08-29T14:02:58.677Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:12:00.029Z"
+    "updatedAt": "2026-09-04T19:31:10.547Z",
+    "gameId": "ssbu"
   }
 ]

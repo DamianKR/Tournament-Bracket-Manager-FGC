@@ -211,6 +211,61 @@
   margin: 0;
 }
 
+/* Game filter */
+.cd-game-filter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.cd-game-filter label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.cd-game-select {
+  min-width: 180px;
+  padding: 0.5rem 1rem;
+  padding-right: 2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 99px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a0a0a0' d='M6 9 1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cd-game-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+@media (max-width: 768px) {
+  .cd-game-filter {
+    width: 100%;
+    justify-content: center;
+  }
+  .cd-game-select {
+    flex: 1;
+    min-width: 0;
+    max-width: 280px;
+  }
+}
+
 .cd-stats-section {
   padding: 2rem 0;
   background: rgba(124, 58, 237, 0.04);

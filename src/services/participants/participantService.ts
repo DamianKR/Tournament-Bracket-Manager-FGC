@@ -19,6 +19,7 @@ import {
   saveTournaments,
 } from '@/services/storage/localStorage';
 import { SERVER_URL } from '@/services/api/apiClient';
+import { setParticipantGameList, setParticipantPrimaryGame } from '@/utils/participantGames';
 
 // ── ID generator ─────────────────────────────────────────────────────────
 
@@ -46,8 +47,9 @@ const DEFAULT_COMMUNITY_ID = 'community_fgc_santa_clara';
 export async function createParticipant(
   name: string,
   alias = '',
-  gameId: string | null = null,
-  mainCharacterId: string | null = null,
+  gameIds: string[] = [],
+  primaryGameId: string | null = null,
+  gameMainCharacters: Record<string, string | null> = {},
   communityId: string = DEFAULT_COMMUNITY_ID
 ): Promise<GlobalParticipant> {
   const trimmedName = name.trim();
@@ -62,14 +64,15 @@ export async function createParticipant(
     alias: alias.trim(),
     avatarUrl: null,
     tournamentIds: [],
-    gameId,
-    mainCharacterId,
+    gameId: null,
+    mainCharacterId: null,
+    games: {},
     communityId,
-    eloPoints: null,
-    eloRank: 'Sin puntos',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+
+  setParticipantGameList(participant, gameIds, primaryGameId, gameMainCharacters);
 
   await saveGlobalParticipant(participant);
   return participant;
@@ -81,12 +84,25 @@ export async function findOrCreateParticipant(
 ): Promise<GlobalParticipant> {
   const existing = findGlobalParticipantByName(name);
   if (existing) return existing;
-  return createParticipant(name, '', null, null, communityId);
+  return createParticipant(name, '', [], null, {}, communityId);
 }
 
 export async function updateParticipant(
   id: string,
-  updates: { name?: string; alias?: string; avatarUrl?: string | null; gameId?: string | null; mainCharacterId?: string | null; phoneNumber?: string | null; communityId?: string }
+  updates: {
+    name?: string;
+    alias?: string;
+    avatarUrl?: string | null;
+    /** @deprecated use primaryGameId instead */
+    gameId?: string | null;
+    /** @deprecated use gameMainCharacters instead */
+    mainCharacterId?: string | null;
+    primaryGameId?: string | null;
+    gameIds?: string[];
+    gameMainCharacters?: Record<string, string | null>;
+    phoneNumber?: string | null;
+    communityId?: string;
+  }
 ): Promise<GlobalParticipant> {
   const all = loadGlobalParticipants();
   const participant = all.find((p) => p.id === id);
@@ -100,9 +116,19 @@ export async function updateParticipant(
   }
   if (updates.alias !== undefined) participant.alias = updates.alias.trim();
   if (updates.avatarUrl !== undefined) participant.avatarUrl = updates.avatarUrl;
-  if (updates.gameId !== undefined) participant.gameId = updates.gameId;
-  if (updates.mainCharacterId !== undefined) participant.mainCharacterId = updates.mainCharacterId;
   if (updates.phoneNumber !== undefined) participant.phoneNumber = updates.phoneNumber?.trim() || undefined;
+
+  if (updates.gameIds !== undefined) {
+    const primaryGameId = updates.primaryGameId !== undefined
+      ? updates.primaryGameId
+      : (updates.gameId !== undefined ? updates.gameId : participant.gameId);
+    setParticipantGameList(participant, updates.gameIds, primaryGameId, updates.gameMainCharacters ?? {});
+  } else if (updates.gameId !== undefined || updates.mainCharacterId !== undefined) {
+    const gameId = updates.gameId !== undefined ? updates.gameId : participant.gameId;
+    const mainCharacterId = updates.mainCharacterId !== undefined ? updates.mainCharacterId : participant.mainCharacterId;
+    setParticipantPrimaryGame(participant, gameId, mainCharacterId);
+  }
+
   participant.updatedAt = new Date().toISOString();
 
   await saveGlobalParticipant(participant);

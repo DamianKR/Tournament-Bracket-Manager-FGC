@@ -16,10 +16,10 @@ import { loadTournamentsForParticipantAsync } from '@/services/storage/localStor
 import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
 import { getAllMatches } from '@/services/ranking/rankingService';
 import { initials, avatarColor } from './ParticipantsPage';
-import CharacterSelect from '@/components/CharacterSelect/CharacterSelect';
-import { getCharacter, getGame } from '@/data/games';
+import { getCharacter, getGame, GAMES } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
+import { getParticipantElo, getParticipantRank, allGameProfiles } from '@/utils/participantGames';
 import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
@@ -87,6 +87,7 @@ function ParticipantProfile() {
   const [loadingMatches, setLoadingMatches] = useState(false);
   const [matchTypeFilter, setMatchTypeFilter] = useState<MatchTypeFilter>('all');
   const [matchResultFilter, setMatchResultFilter] = useState<MatchResultFilter>('all');
+  const [matchGameFilter, setMatchGameFilter] = useState<string>('all');
 
   const completedLeagues = leagueStats?.leagues.filter((l) => l.status === 'completed') ?? [];
   const leagueFirstPlaces = completedLeagues.filter((l) => l.rank === 1).length;
@@ -96,8 +97,9 @@ function ParticipantProfile() {
   // Edit state
   const [editName, setEditName] = useState('');
   const [editAlias, setEditAlias] = useState('');
-  const [editGameId, setEditGameId] = useState<string | null>(null);
-  const [editCharacterId, setEditCharacterId] = useState<string | null>(null);
+  const [editGameIds, setEditGameIds] = useState<string[]>([]);
+  const [editGameMainChars, setEditGameMainChars] = useState<Record<string, string | null>>({});
+  const [editPrimaryGameId, setEditPrimaryGameId] = useState<string | null>(null);
   const [editPhone, setEditPhone] = useState('');
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
@@ -129,6 +131,7 @@ function ParticipantProfile() {
   useEffect(() => {
     if (!id || !communityId) return;
     (async () => {
+      let loadedParticipant: GlobalParticipant | null = null;
       try {
         const [tournaments, ls] = await Promise.all([
           loadTournamentsForParticipantAsync(id),
@@ -136,24 +139,33 @@ function ParticipantProfile() {
         ]);
         const p = getParticipant(id, communityId);
         if (!p) { setNotFound(true); return; }
+        loadedParticipant = p;
         setParticipant(p);
         setStats(computeStats(p, tournaments));
         setLeagueStats(ls);
         setEditName(p.name);
         setEditAlias(p.alias ?? '');
-        setEditGameId(p.gameId ?? null);
-        setEditCharacterId(p.mainCharacterId ?? null);
+        const games = Object.keys(p.games || {});
+        setEditGameIds(games.length > 0 ? games : (p.gameId ? [p.gameId] : []));
+        const mains: Record<string, string | null> = {};
+        for (const [g, prof] of Object.entries(p.games || {})) {
+          mains[g] = prof.mainCharacterId ?? null;
+        }
+        setEditGameMainChars(mains);
+        setEditPrimaryGameId(p.gameId ?? (games[0] ?? null));
         setEditPhone(p.phoneNumber ?? '');
       } catch {
         const p = getParticipant(id, communityId);
         if (!p) { setNotFound(true); return; }
+        loadedParticipant = p;
         setParticipant(p);
         setStats(computeStats(p));
         setLeagueStats({ leagues: [], totalMatches: 0, totalWins: 0, totalLosses: 0, winRate: 0 });
       }
 
-      // Load ELO ranking entry (fire-and-forget — graceful if server is down)
-      getLeaderboard(communityId).then((board) => {
+      // Load ELO ranking entry for the participant's primary game
+      const targetGameId = loadedParticipant?.gameId ?? 'ssbu';
+      getLeaderboard(communityId, targetGameId).then((board) => {
         const entry = board.find((e) => e.id === id) ?? null;
         setRankEntry(entry);
       }).catch(() => {});
@@ -236,6 +248,7 @@ function ParticipantProfile() {
             return {
               id: m.id,
               type: 'tournament' as const,
+              gameId: m.gameId,
               player1Id: gP1?.id ?? m.player1GlobalId ?? m.player1Id,
               player2Id: gP2?.id ?? m.player2GlobalId ?? m.player2Id,
               winnerId: player1IsWinner
@@ -252,6 +265,7 @@ function ParticipantProfile() {
           .map((m: MatchRecord) => ({
             id: m.id,
             type: (m.type as 'duel' | 'matchmaking' | 'free') ?? 'duel',
+            gameId: m.gameId,
             player1Id: m.playerAId,
             player2Id: m.playerBId,
             winnerId: m.winnerId,
@@ -282,8 +296,9 @@ function ParticipantProfile() {
       const updated = await updateParticipant(participant.id, {
         name: editName,
         alias: editAlias,
-        gameId: editGameId,
-        mainCharacterId: editCharacterId,
+        gameIds: editGameIds,
+        primaryGameId: editPrimaryGameId,
+        gameMainCharacters: editGameMainChars,
         phoneNumber: editPhone || null,
       });
       setParticipant(updated);
@@ -385,6 +400,27 @@ function ParticipantProfile() {
     );
   }
 
+  function toggleGame(gameId: string, checked: boolean) {
+    setEditGameIds((prev) => {
+      const next = checked ? [...prev, gameId] : prev.filter((g) => g !== gameId);
+      if (!next.includes(editPrimaryGameId ?? '')) {
+        setEditPrimaryGameId(next[0] ?? null);
+      }
+      if (!checked) {
+        setEditGameMainChars((mains) => {
+          const nextMains = { ...mains };
+          delete nextMains[gameId];
+          return nextMains;
+        });
+      }
+      return next;
+    });
+  }
+
+  function setGameMain(gameId: string, characterId: string | null) {
+    setEditGameMainChars((prev) => ({ ...prev, [gameId]: characterId }));
+  }
+
   const color = avatarColor(participant.name);
   const bannerBg = `radial-gradient(ellipse at 15% 0%, color-mix(in srgb, ${color} 38%, transparent) 0%, transparent 55%),
                     linear-gradient(135deg, var(--primary-void) 0%, var(--primary-night) 45%, var(--primary-void) 100%)`;
@@ -445,9 +481,12 @@ function ParticipantProfile() {
 
             {/* ELO Rank widget — right side of banner */}
             {(() => {
-              const hasPts = (rankEntry?.eloPoints ?? participant.eloPoints) != null;
-              const pts   = hasPts ? (rankEntry?.eloPoints ?? participant.eloPoints) : null;
-              const eloRank = rankEntry?.eloRank ?? participant.eloRank ?? t('participantProfile.unranked');
+              const gameId = participant.gameId ?? 'ssbu';
+              const participantElo = getParticipantElo(participant, gameId);
+              const participantRank = getParticipantRank(participant, gameId);
+              const hasPts = (rankEntry?.eloPoints ?? participantElo) != null;
+              const pts   = hasPts ? (rankEntry?.eloPoints ?? participantElo) : null;
+              const eloRank = rankEntry?.eloRank ?? participantRank ?? t('participantProfile.unranked');
               const eloRankLabel = !eloRank || eloRank === 'Sin puntos'
                 ? t('common.unranked')
                 : eloRank === 'Legend'
@@ -541,6 +580,32 @@ function ParticipantProfile() {
         {/* ── Overview tab ── */}
         {tab === 'overview' && (
           <>
+                      {/* Per-game ELO profiles */}
+            {participant && (
+              <div className="card profile-games-card">
+                <h3><i className="fas fa-gamepad" /> {t('participantProfile.gameProfiles')}</h3>
+                <div className="profile-games-list">
+                  {allGameProfiles(participant).length > 0 ? (
+                    allGameProfiles(participant).map((profile) => {
+                      const game = getGame(profile.gameId);
+                      const pts = profile.eloPoints;
+                      const rank = profile.eloRank;
+                      return (
+                        <div key={profile.gameId} className="profile-game-item">
+                          <span className="profile-game-name">{game?.name ?? profile.gameId}</span>
+                          <span className="profile-game-rank" style={{ color: getRankColor(rank) }}>
+                            <i className={getRankIcon(rank)} /> {rank === 'Sin puntos' ? t('common.unranked') : rank}
+                          </span>
+                          <span className="profile-game-pts">{pts != null ? pts.toLocaleString() : '—'}</span>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-secondary">{t('participantProfile.noGameProfiles')}</p>
+                  )}
+                </div>
+              </div>
+            )}
             {/* Big stat cards */}
             <div className="profile-stat-grid">
               <div className="profile-stat-card profile-stat-card--highlight">
@@ -568,6 +633,8 @@ function ParticipantProfile() {
                 <span className="psc-label">{t('participantProfile.tournamentStats.matchLosses')}</span>
               </div>
             </div>
+
+
 
             {/* Tournament Match Record */}
             {(stats.matchWins + stats.matchLosses) > 0 && (
@@ -827,6 +894,20 @@ function ParticipantProfile() {
                   </button>
                 </div>
               </div>
+
+              <div className="matches-filter-group">
+                <label>{t('participantProfile.matches.gameLabel')}</label>
+                <select
+                  className="matches-game-filter"
+                  value={matchGameFilter}
+                  onChange={(e) => setMatchGameFilter(e.target.value)}
+                >
+                  <option value="all">{t('participantProfile.matches.all')}</option>
+                  {GAMES.map((g) => (
+                    <option key={g.id} value={g.id}>{g.id.toUpperCase()}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {loadingMatches && <Loading message={t('participantProfile.matches.loading')} />}
@@ -837,7 +918,8 @@ function ParticipantProfile() {
                 const resultMatch = matchResultFilter === 'all' 
                   || (matchResultFilter === 'wins' && m.winnerId === id)
                   || (matchResultFilter === 'losses' && m.winnerId !== id);
-                return typeMatch && resultMatch;
+                const gameMatch = matchGameFilter === 'all' || m.gameId === matchGameFilter;
+                return typeMatch && resultMatch && gameMatch;
               });
 
               if (filtered.length === 0) {
@@ -857,6 +939,9 @@ function ParticipantProfile() {
                     return (
                       <div key={m.id} className={`match-item ${won ? 'win' : 'loss'}`}>
                         <div className="match-item-header">
+                          {m.gameId && (
+                            <span className="match-item-game">{m.gameId.toUpperCase()}</span>
+                          )}
                           <span className={`match-item-result ${won ? 'win' : 'loss'}`}>
                             {won ? <><i className="fas fa-trophy" /> {t('participantProfile.matches.win')}</> : <><i className="fas fa-times" /> {t('participantProfile.matches.loss')}</>}
                           </span>
@@ -952,12 +1037,48 @@ function ParticipantProfile() {
                 placeholder={t('participantProfile.edit.phonePlaceholder')} />
               <small className="hint">{t('participantProfile.edit.phoneHint')}</small>
             </div>
-            <CharacterSelect
-              gameId={editGameId}
-              characterId={editCharacterId}
-              onGameChange={setEditGameId}
-              onCharacterChange={setEditCharacterId}
-            />
+            <div className="profile-game-list">
+              <h4>{t('participantProfile.edit.games')}</h4>
+              {GAMES.map((g) => (
+                <div key={g.id} className="profile-game-row">
+                  <label className="profile-game-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={editGameIds.includes(g.id)}
+                      onChange={(e) => toggleGame(g.id, e.target.checked)}
+                    />
+                    <span>{g.shortName}</span>
+                  </label>
+                  {editGameIds.includes(g.id) && (
+                    <select
+                      className="form-control"
+                      value={editGameMainChars[g.id] ?? ''}
+                      onChange={(e) => setGameMain(g.id, e.target.value || null)}
+                    >
+                      <option value="">{t('common.noMain')}</option>
+                      {g.characters.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {editGameIds.length > 0 && (
+              <div className="form-group">
+                <label>{t('participantProfile.edit.primaryGame')}</label>
+                <select
+                  className="form-control"
+                  value={editPrimaryGameId ?? ''}
+                  onChange={(e) => setEditPrimaryGameId(e.target.value || null)}
+                >
+                  {editGameIds.map((gId) => (
+                    <option key={gId} value={gId}>{getGame(gId)?.shortName ?? gId}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="form-actions">
               <button className="btn-outline" onClick={() => setTab('overview')}>{t('participantProfile.edit.cancel')}</button>
               <button className="btn-primary" onClick={handleSave} disabled={saving}>

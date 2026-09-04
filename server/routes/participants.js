@@ -19,8 +19,57 @@ import { participants, tournaments, leagues, leagueMatches } from '../db/collect
 import { validateParticipant } from '../models/participant.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
 import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
+import {
+  migrateParticipantGames,
+  setParticipantPrimaryGame,
+  setParticipantGameMain,
+  setParticipantGameList,
+  getEffectiveElo,
+} from '../utils/participantGames.js';
 
 const router = Router();
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+/** Merge per-game profiles: server ELO is authoritative, main character can come from client. */
+function mergeGameProfiles(current = {}, incoming = {}) {
+  const merged = { ...current };
+  for (const gameId of Object.keys(incoming)) {
+    const inc = incoming[gameId];
+    if (!merged[gameId]) {
+      merged[gameId] = { ...inc };
+    } else {
+      // Keep server ELO values, allow client to update main character
+      merged[gameId] = {
+        ...merged[gameId],
+        mainCharacterId: inc.mainCharacterId ?? merged[gameId].mainCharacterId,
+      };
+    }
+  }
+  return merged;
+}
+
+/** Build a games map from the request, preserving any existing server profiles and ELO. */
+function resolveGames(existing, incoming) {
+  const base = migrateParticipantGames({ ...(existing || {}), games: { ...(existing?.games || {}) } }).games;
+  const incomingGames = incoming?.games || {};
+
+  // If the client sent legacy single-game ELO but no games object, migrate it
+  if (Object.keys(incomingGames).length === 0 && incoming?.eloPoints !== undefined) {
+    const fallbackGameId = incoming?.gameId || 'ssbu';
+    if (!base[fallbackGameId] || base[fallbackGameId].eloPoints == null) {
+      base[fallbackGameId] = {
+        gameId: fallbackGameId,
+        mainCharacterId: incoming?.mainCharacterId ?? null,
+        eloPoints: incoming.eloPoints ?? null,
+        eloRank: incoming?.eloRank ?? 'Sin puntos',
+      };
+    }
+    return base;
+  }
+
+  return mergeGameProfiles(base, incomingGames);
+}
 
 // ── Routes ────────────────────────────────────────────────────────────────
 
@@ -75,29 +124,13 @@ router.post('/', requireAuth, async (req, res) => {
         const current = existingMap.get(incoming.id);
         const communityId = getTargetCommunityId(req.user, incoming.communityId);
 
-        // ELO fields are only written by the ranking engine (server-side).
-        // If the server already has eloPoints, always keep the server value —
-        // the frontend bulk-sync never has fresher ELO data because ranking
-        // writes bypass localStorage and go straight to the JSON via upsert.
-        if (current && current.eloPoints !== undefined) {
-          return {
-            ...incoming,
-            eloPoints: current.eloPoints,
-            eloRank:   current.eloRank,
-            communityId,
-          };
-        }
+        // Per-game ELO is written by the ranking engine. Preserve the server
+        // profiles and only merge in new game profiles / main characters from the client.
+        const games = resolveGames(current, incoming);
 
-        // Server has no ELO yet (old record) — take whatever incoming has, or default.
-        // Explicit null eloPoints means the participant is unranked (no matches yet).
-        const eloPoints = incoming.eloPoints === undefined ? 1500 : incoming.eloPoints;
-        const eloRank = incoming.eloRank === undefined
-          ? (eloPoints === null ? 'Sin puntos' : 'Diamante')
-          : incoming.eloRank;
         return {
           ...incoming,
-          eloPoints,
-          eloRank,
+          games,
           communityId,
         };
       });
@@ -118,6 +151,15 @@ router.post('/', requireAuth, async (req, res) => {
     if (!body.stats) {
       body.stats = { tournamentsPlayed: 0, wins: 0, matchWins: 0, matchLosses: 0 };
     }
+    body.games = resolveGames(null, body);
+
+    // Apply explicit game list (with per-game main characters) if provided
+    if (Array.isArray(body.gameIds) && body.gameIds.length > 0) {
+      setParticipantGameList(body, body.gameIds, body.primaryGameId, body.gameMainCharacters || {});
+    } else if (body.gameId) {
+      setParticipantPrimaryGame(body, body.gameId, body.mainCharacterId);
+    }
+
     body.createdAt = body.createdAt ?? new Date().toISOString();
     body.updatedAt = new Date().toISOString();
 
@@ -145,10 +187,18 @@ router.put('/:id', requireAuth, async (req, res) => {
       const { valid, errors } = validateParticipant(body);
       if (!valid) return res.status(400).json({ error: 'Invalid data', details: errors });
 
-      // Ensure stats block exists
+      // Ensure stats block and per-game profiles exist
       if (!body.stats) {
         body.stats = { tournamentsPlayed: 0, wins: 0, matchWins: 0, matchLosses: 0 };
       }
+      body.games = resolveGames(null, body);
+
+      if (Array.isArray(body.gameIds) && body.gameIds.length > 0) {
+        setParticipantGameList(body, body.gameIds, body.primaryGameId, body.gameMainCharacters || {});
+      } else if (body.gameId) {
+        setParticipantPrimaryGame(body, body.gameId, body.mainCharacterId);
+      }
+
       body.createdAt = body.createdAt ?? new Date().toISOString();
       body.updatedAt = new Date().toISOString();
 
@@ -157,7 +207,7 @@ router.put('/:id', requireAuth, async (req, res) => {
     }
 
     // UPDATE: merge editable fields only
-    const { name, alias, avatarUrl, stats } = req.body;
+    const { name, alias, avatarUrl, stats, gameId, mainCharacterId, gameIds, primaryGameId, gameMainCharacters } = req.body;
 
     // Check for duplicate name if name is changing
     if (name && name.trim().toLowerCase() !== existing.name.toLowerCase()) {
@@ -170,16 +220,27 @@ router.put('/:id', requireAuth, async (req, res) => {
       }
     }
 
-    const updated = {
-      ...existing,
-      name: name?.trim() ?? existing.name,
-      alias: alias !== undefined ? alias.trim() : existing.alias,
-      avatarUrl: avatarUrl !== undefined ? avatarUrl : existing.avatarUrl,
-      // Allow stats to be overwritten if sent (for full sync)
-      stats: stats ?? existing.stats,
-      communityId: getTargetCommunityId(req.user, req.body.communityId),
-      updatedAt: new Date().toISOString(),
-    };
+    const updated = migrateParticipantGames({ ...existing });
+    if (name !== undefined) updated.name = name.trim();
+    if (alias !== undefined) updated.alias = alias.trim();
+    if (avatarUrl !== undefined) updated.avatarUrl = avatarUrl;
+    if (stats !== undefined) updated.stats = stats;
+    updated.communityId = getTargetCommunityId(req.user, req.body.communityId);
+    updated.updatedAt = new Date().toISOString();
+
+    // Update game list and primary game (with per-game main characters)
+    if (Array.isArray(gameIds)) {
+      setParticipantGameList(updated, gameIds, primaryGameId, gameMainCharacters || {});
+    } else if (gameId !== undefined) {
+      setParticipantPrimaryGame(updated, gameId, mainCharacterId !== undefined ? mainCharacterId : updated.mainCharacterId);
+    } else if (mainCharacterId !== undefined && updated.gameId) {
+      setParticipantGameMain(updated, updated.gameId, mainCharacterId);
+    }
+
+    // Merge any incoming game profiles (preserving server ELO) only if no explicit game list was sent
+    if (!Array.isArray(gameIds)) {
+      updated.games = mergeGameProfiles(updated.games, req.body.games || {});
+    }
 
     const { valid, errors } = validateParticipant(updated);
     if (!valid) return res.status(400).json({ error: 'Invalid data', details: errors });
@@ -310,7 +371,8 @@ router.get('/:id/league-stats', async (req, res) => {
         for (const m of playerMatches) {
           playerEloChange += (m.participant1Id === pid ? m.participant1EloChange : m.participant2EloChange) ?? 0;
         }
-        const baseElo = (await participants.findById(pid))?.eloPoints ?? 1500;
+        const otherP = migrateParticipantGames(await participants.findById(pid));
+        const baseElo = getEffectiveElo(otherP, league.gameId) ?? 1500;
         standings.push({ participantId: pid, currentElo: baseElo + playerEloChange });
       }
       standings.sort((a, b) => b.currentElo - a.currentElo);

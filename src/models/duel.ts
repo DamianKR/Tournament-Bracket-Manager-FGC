@@ -46,6 +46,7 @@ export interface DuelChallenge {
   challengerId: string;
   challengedId: string;
   communityId: string; // Community this duel belongs to
+  gameId: string;      // Game this duel is played in
   type: DuelType; // 'normal' or 'mandatory'
   
   status: DuelChallengeStatus;

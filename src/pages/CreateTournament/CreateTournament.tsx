@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { TournamentMode, TournamentType, GlobalParticipant, TeamSize, SeedingMode, PartialSeedCount } from '@/models/types';
+import { GAMES } from '@/data/games';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import {
   createTournament,
@@ -40,6 +41,7 @@ function CreateTournament() {
   const [seedingMode, setSeedingMode] = useState<SeedingMode>('none');
   const [partialSeedCount, setPartialSeedCount] = useState<PartialSeedCount>(8);
   const [givesPoints, setGivesPoints] = useState(true);
+  const [gameId, setGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
   const [viewMode, setViewMode] = useState<ViewMode>('participants');
   const [participants, setParticipants] = useState<any[]>([]);
   const [newParticipantName, setNewParticipantName] = useState('');
@@ -86,6 +88,7 @@ function CreateTournament() {
       setType(tournament.type || 'singles');
       setTeamSize(tournament.teamSize || 2);
       setGivesPoints(tournament.givesPoints !== false);
+      setGameId(tournament.gameId ?? GAMES[0]?.id ?? 'ssbu');
       setParticipants(tournament.participants);
       setIsCreated(true);
     }
@@ -97,10 +100,14 @@ function CreateTournament() {
     setNewParticipantName(value);
     setHighlightedIdx(-1);
     if (value.trim().length >= 1) {
-      // Filter out participants already in this tournament
+      // Filter out participants already in this tournament and those without this game
       const alreadyAdded = new Set(participants.map((p: any) => p.name.toLowerCase()));
+      const communityId = currentCommunity?.id;
       const results = searchParticipants(value).filter(
-        (s) => !alreadyAdded.has(s.name.toLowerCase())
+        (s) =>
+          !alreadyAdded.has(s.name.toLowerCase()) &&
+          (!communityId || s.communityId === communityId) &&
+          s.games?.[gameId] != null
       );
       setSuggestions(results);
       setShowSuggestions(results.length > 0);
@@ -157,6 +164,7 @@ function CreateTournament() {
         tournamentName,
         mode,
         type,
+        gameId,
         type === 'teams' ? teamSize : undefined,
         type === 'singles' ? seedingMode : undefined,
         type === 'singles' && seedingMode === 'partial' ? partialSeedCount : undefined,
@@ -333,6 +341,19 @@ function CreateTournament() {
                   placeholder={t('tournament.create.namePlaceholder')}
                   className="w-full"
                 />
+              </div>
+
+              <div className="form-group">
+                <label>{t('tournament.create.gameLabel')}</label>
+                <select
+                  value={gameId}
+                  onChange={(e) => setGameId(e.target.value)}
+                  className="w-full"
+                >
+                  {GAMES.map((g) => (
+                    <option key={g.id} value={g.id}>{g.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="form-group">
@@ -560,6 +581,7 @@ function CreateTournament() {
                   participants={participants}
                   seedingMode={seedingMode}
                   partialSeedCount={partialSeedCount}
+                  gameId={gameId}
                   onBack={() => setViewMode('participants')}
                   onConfirm={() => setShowStartConfirm(true)}
                   onParticipantsChange={setParticipants}

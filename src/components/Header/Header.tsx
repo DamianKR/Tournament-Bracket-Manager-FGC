@@ -89,6 +89,12 @@ function Header() {
             {effectiveCommunityId ? (
               <>
                 <button
+                  className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
+                  onClick={() => handleNav('/communities')}
+                >
+                  {t('header.communities')}
+                </button>
+                <button
                   className={`header-nav-item ${isActive(`/c/${effectiveCommunityId}/events`) ? 'active' : ''}`}
                   onClick={() => handleNav(`/c/${effectiveCommunityId}/events`)}
                 >
@@ -115,7 +121,7 @@ function Header() {
                   className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
                   onClick={() => handleNav('/communities')}
                 >
-                  {t('header.events')}
+                  {t('header.communities')}
                 </button>
                 <button
                   className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
@@ -125,12 +131,6 @@ function Header() {
                 </button>
               </>
             )}
-            <button
-              className={`header-nav-item ${isActive('/communities') ? 'active' : ''}`}
-              onClick={() => handleNav('/communities')}
-            >
-              {t('header.communities')}
-            </button>
           </nav>
 
           <div className="header-divider" />

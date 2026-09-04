@@ -11,6 +11,7 @@ export type RankedMatchType = 'duel' | 'matchmaking';
 export interface RankedMatch {
   id: string;
   type: RankedMatchType;
+  gameId: string; // Game this match was played in
   
   // Players
   player1Id: string;
@@ -44,6 +45,7 @@ export interface RankedMatchResult {
   winnerId: string;
   score: string;
   type: RankedMatchType;
+  gameId: string;
   duelChallengeId?: string;
   notes?: string;
 }

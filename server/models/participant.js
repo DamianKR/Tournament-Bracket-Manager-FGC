@@ -3,6 +3,7 @@
  *
  * Stats are NOT stored here — they are computed at runtime by reading
  * the tournaments array. Only the FK list (tournamentIds) is persisted.
+ * ELO and main character are stored per game in `games`.
  *
  * @typedef {Object} GlobalParticipant
  * @property {string}   id
@@ -10,6 +11,9 @@
  * @property {string}   alias         - Optional gamertag
  * @property {string|null} avatarUrl
  * @property {string[]} tournamentIds - IDs of tournaments this player joined
+ * @property {string|null} gameId     - Primary/default game id
+ * @property {string|null} mainCharacterId - Main character in primary game
+ * @property {Object.<string, ParticipantGameProfile>} games - Per-game profiles
  * @property {string}   createdAt
  * @property {string}   updatedAt
  */
@@ -22,8 +26,9 @@ export function participantShape(id, name, alias = '', communityId = 'community_
     avatarUrl: null,
     tournamentIds: [],
     communityId,
-    eloPoints: null,
-    eloRank: 'Sin puntos',
+    gameId: null,
+    mainCharacterId: null,
+    games: {},
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

@@ -46,6 +46,7 @@ export interface League {
 export interface LeagueMatch {
   id: string;
   leagueId: string;
+  gameId: string; // Game this league match is played in (copied from League)
   
   // Jornada
   round: number;

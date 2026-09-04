@@ -5,6 +5,7 @@
  * @property {string} id
  * @property {string} challengerId
  * @property {string} challengedId
+ * @property {string} gameId
  * @property {'normal'|'mandatory'} type
  * @property {'pending'|'accepted'|'declined'|'completed'|'expired'|'pending_review'} status
  * @property {string} createdAt
@@ -18,11 +19,12 @@
  * @property {Object|null} metadata
  */
 
-export function duelChallengeShape(id, challengerId, challengedId, expiresAt, type = 'normal', communityId = 'community_fgc_santa_clara') {
+export function duelChallengeShape(id, challengerId, challengedId, gameId, expiresAt, type = 'normal', communityId = 'community_fgc_santa_clara') {
   return {
     id,
     challengerId,
     challengedId,
+    gameId,
     communityId,
     type,
     status: type === 'mandatory' ? 'accepted' : 'pending',
@@ -44,6 +46,7 @@ export function validateDuelChallenge(obj) {
   if (typeof obj.id !== 'string' || !obj.id) errors.push('Missing id');
   if (typeof obj.challengerId !== 'string' || !obj.challengerId) errors.push('Missing challengerId');
   if (typeof obj.challengedId !== 'string' || !obj.challengedId) errors.push('Missing challengedId');
+  if (typeof obj.gameId !== 'string' || !obj.gameId) errors.push('Missing gameId');
   if (!['pending', 'accepted', 'declined', 'completed', 'expired', 'pending_review'].includes(obj.status)) {
     errors.push('Invalid status');
   }

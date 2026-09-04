@@ -8,6 +8,7 @@ import { getAllParticipantsAsync } from '@/services/participants/participantServ
 import { getAllTournaments } from '@/services/tournament/tournamentService';
 import { getAllLeagues } from '@/services/leagues/leagueService';
 import { getLeaderboard, type LeaderboardEntry } from '@/services/ranking/rankingService';
+import { GAMES } from '@/data/games';
 import type { Community } from '@/models/community';
 import type { GlobalParticipant, Tournament } from '@/models/types';
 import type { League } from '@/models/league';
@@ -29,6 +30,7 @@ export default function CommunityDashboard() {
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [leagues, setLeagues] = useState<League[]>([]);
+  const [topRankedGameId, setTopRankedGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
   const [topRanked, setTopRanked] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +48,7 @@ export default function CommunityDashboard() {
           getAllParticipantsAsync(communityId),
           getAllTournaments(communityId),
           getAllLeagues(communityId),
-          getLeaderboard(communityId),
+          getLeaderboard(communityId, topRankedGameId),
         ]);
         setParticipants(p);
         setTournaments(t);
@@ -64,7 +66,7 @@ export default function CommunityDashboard() {
           .catch(() => setCommunity(null));
       }
     })();
-  }, [communityId, allCommunities, setCommunityId]);
+  }, [communityId, allCommunities, setCommunityId, topRankedGameId]);
 
   if (loading) return <div className="community-dashboard">{t('common.loading')}</div>;
   if (!community) return <div className="community-dashboard not-found">{t('communityDashboard.notFound')}</div>;
@@ -303,6 +305,19 @@ export default function CommunityDashboard() {
               <p className="cd-section-description">
                 {t('communityDashboard.topRankingDescription', { name: displayName })}
               </p>
+              <div className="cd-game-filter">
+                <label htmlFor="cd-game-select">{t('common.game')}</label>
+                <select
+                  id="cd-game-select"
+                  className="cd-game-select"
+                  value={topRankedGameId}
+                  onChange={(e) => setTopRankedGameId(e.target.value)}
+                >
+                  {GAMES.map((g) => (
+                    <option key={g.id} value={g.id}>{g.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             {topRanked.length > 0 ? (
               <ol className="cd-top-ranking">

@@ -1010,9 +1010,9 @@
     },
     "championId": "1786158565219-fnti1me01",
     "createdAt": "2026-08-08T03:09:18.338Z",
-    "updatedAt": "2026-09-01T22:12:00.029Z",
+    "updatedAt": "2026-09-04T18:48:41.546Z",
     "type": "singles",
-    "gameId": null,
+    "gameId": "ssbu",
     "communityId": "community_fgc_santa_clara"
   },
   {
@@ -2092,9 +2092,9 @@
     },
     "championId": "1786802852787-pjz04haav",
     "createdAt": "2026-08-15T14:07:24.864Z",
-    "updatedAt": "2026-09-01T22:12:00.029Z",
+    "updatedAt": "2026-09-04T18:48:41.546Z",
     "type": "singles",
-    "gameId": null,
+    "gameId": "ssbu",
     "eloApplied": true,
     "eloUpdates": [
       {
@@ -2334,7 +2334,7 @@
     "mode": "double_elimination",
     "type": "teams",
     "status": "in_progress",
-    "gameId": null,
+    "gameId": "ssbu",
     "participants": [
       {
         "id": "1787086866327-ro90l52tw",
@@ -3043,7 +3043,7 @@
     },
     "championId": null,
     "createdAt": "2026-08-18T16:03:25.182Z",
-    "updatedAt": "2026-09-01T22:12:00.029Z",
+    "updatedAt": "2026-09-04T18:48:41.546Z",
     "teamSize": 3,
     "communityId": "community_fgc_santa_clara"
   },
@@ -3053,7 +3053,7 @@
     "mode": "double_elimination",
     "type": "singles",
     "status": "completed",
-    "gameId": null,
+    "gameId": "ssbu",
     "givesPoints": false,
     "seedingMode": "full",
     "participants": [
@@ -3339,7 +3339,7 @@
     },
     "championId": "1787926908371-6kqqc3if4",
     "createdAt": "2026-08-28T14:21:45.258Z",
-    "updatedAt": "2026-09-01T22:12:00.029Z",
+    "updatedAt": "2026-09-04T18:48:41.546Z",
     "bracketSeeded": true,
     "eloApplied": true,
     "eloUpdates": [],

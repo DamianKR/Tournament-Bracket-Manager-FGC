@@ -8,6 +8,11 @@
 import { duels, participants, duelSettings } from '../db/collections.js';
 import { duelSettingsShape } from '../models/duel.js';
 import { calculateElo, getRankName } from '../utils/eloEngine.js';
+import {
+  migrateParticipantGames,
+  getEffectiveElo,
+  setParticipantGameElo,
+} from '../utils/participantGames.js';
 
 /**
  * Expire a single duel by ID and apply ELO penalties if accepted.
@@ -22,16 +27,20 @@ export async function expireDuel(id) {
   }
 
   const wasAccepted = challenge.status === 'accepted';
+  const gameId = challenge.gameId || 'ssbu';
 
   challenge.status = 'expired';
   challenge.expiredAt = new Date().toISOString();
 
   // Apply ELO penalties only if the challenge was accepted
   if (wasAccepted) {
-    const challenger = await participants.findById(challenge.challengerId);
-    const challenged = await participants.findById(challenge.challengedId);
+    let challenger = await participants.findById(challenge.challengerId);
+    let challenged = await participants.findById(challenge.challengedId);
 
     if (challenger && challenged) {
+      challenger = migrateParticipantGames(challenger);
+      challenged = migrateParticipantGames(challenged);
+
       const challengerReported = !!challenge.challengerResult;
       const challengedReported = !!challenge.challengedResult;
 
@@ -39,8 +48,8 @@ export async function expireDuel(id) {
       const normalPenaltyMultiplier = 2;
       const mandatoryPenaltyMultiplier = 3;
 
-      const challengerElo = challenger.eloPoints ?? 1500;
-      const challengedElo = challenged.eloPoints ?? 1500;
+      const challengerElo = getEffectiveElo(challenger, gameId);
+      const challengedElo = getEffectiveElo(challenged, gameId);
 
       // If challenger wins: A wins, B (challenged) loses
       const { newRB: challengedAfterLosingToChallenger } = calculateElo(challengerElo, challengedElo, 'A');
@@ -54,12 +63,11 @@ export async function expireDuel(id) {
         // Mandatory duel: challenged didn't confirm → loses triple, challenger gains normally
         if (challengerReported && !challengedReported) {
           const penalty = challengedBaseLoss * mandatoryPenaltyMultiplier;
-          challenged.eloPoints = Math.max(0, challengedElo - penalty);
-          challenged.eloRank = getRankName(challenged.eloPoints);
+          const challengedPoints = Math.max(0, challengedElo - penalty);
+          setParticipantGameElo(challenged, gameId, challengedPoints, getRankName(challengedPoints));
 
           const { newRA } = calculateElo(challengerElo, challengedElo, 'A');
-          challenger.eloPoints = newRA;
-          challenger.eloRank = getRankName(challenger.eloPoints);
+          setParticipantGameElo(challenger, gameId, newRA, getRankName(newRA));
 
           await participants.upsert(challenger);
           await participants.upsert(challenged);
@@ -68,13 +76,13 @@ export async function expireDuel(id) {
         // Normal duel: whoever didn't confirm loses double
         if (challengerReported && !challengedReported) {
           const penalty = challengedBaseLoss * normalPenaltyMultiplier;
-          challenged.eloPoints = Math.max(0, challengedElo - penalty);
-          challenged.eloRank = getRankName(challenged.eloPoints);
+          const challengedPoints = Math.max(0, challengedElo - penalty);
+          setParticipantGameElo(challenged, gameId, challengedPoints, getRankName(challengedPoints));
           await participants.upsert(challenged);
         } else if (!challengerReported && challengedReported) {
           const penalty = challengerBaseLoss * normalPenaltyMultiplier;
-          challenger.eloPoints = Math.max(0, challengerElo - penalty);
-          challenger.eloRank = getRankName(challenger.eloPoints);
+          const challengerPoints = Math.max(0, challengerElo - penalty);
+          setParticipantGameElo(challenger, gameId, challengerPoints, getRankName(challengerPoints));
           await participants.upsert(challenger);
         }
         // If both reported or neither reported, no penalty

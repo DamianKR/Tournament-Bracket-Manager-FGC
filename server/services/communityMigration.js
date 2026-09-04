@@ -8,6 +8,7 @@
  */
 
 import { users, participants, communities, tournaments, leagues, duels, duelSettings, tournamentMatches, leagueMatches, rankedMatches } from '../db/collections.js';
+import { migrateParticipantGames } from '../utils/participantGames.js';
 
 const DEFAULT_COMMUNITY_ID = 'community_fgc_santa_clara';
 const DEFAULT_COMMUNITY_NAME = 'FGC Santa Clara';
@@ -15,9 +16,11 @@ const DEFAULT_SHORT_NAME = 'FGC SC';
 
 export async function ensureDefaultCommunityAndMigrate() {
   try {
-    // 1. Ensure the default community exists
-    let community = await communities.findById(DEFAULT_COMMUNITY_ID);
-    if (!community) {
+    // 1. Ensure the default community exists only on a true first run.
+    // If the user already has other communities in production, do not force the default one.
+    const allCommunities = await communities.getAll();
+    let community = allCommunities.find(c => c.id === DEFAULT_COMMUNITY_ID);
+    if (!community && allCommunities.length === 0) {
       community = {
         id: DEFAULT_COMMUNITY_ID,
         name: DEFAULT_COMMUNITY_NAME,
@@ -29,13 +32,6 @@ export async function ensureDefaultCommunityAndMigrate() {
       };
       await communities.upsert(community);
       console.log(`[CommunityMigration] Created default community: ${DEFAULT_COMMUNITY_NAME}`);
-    }
-
-    // ── Early exit: si la comunidad ya tiene owner y hay usuarios migrados,
-    // la migración ya se hizo antes. No hacemos ningún getAll() costoso.
-    if (community.ownerAdminId) {
-      console.log('[CommunityMigration] Already migrated — skipping heavy scan.');
-      return;
     }
 
     // 2. Ensure at least one superadmin exists (promote first admin if needed)
@@ -56,21 +52,23 @@ export async function ensureDefaultCommunityAndMigrate() {
 
     // 3. Assign the default community to all users that don't have one (except superadmin)
     let usersMigrated = 0;
-    for (const user of allUsers) {
-      if (!user.communityId && user.role !== 'superadmin') {
-        user.communityId = DEFAULT_COMMUNITY_ID;
-        user.updatedAt = new Date().toISOString();
-        await users.upsert(user);
-        usersMigrated++;
+    if (community) {
+      for (const user of allUsers) {
+        if (!user.communityId && user.role !== 'superadmin') {
+          user.communityId = DEFAULT_COMMUNITY_ID;
+          user.updatedAt = new Date().toISOString();
+          await users.upsert(user);
+          usersMigrated++;
+        }
       }
-    }
-    if (usersMigrated > 0) {
-      console.log(`[CommunityMigration] Migrated ${usersMigrated} users to ${DEFAULT_COMMUNITY_NAME}`);
+      if (usersMigrated > 0) {
+        console.log(`[CommunityMigration] Migrated ${usersMigrated} users to ${DEFAULT_COMMUNITY_NAME}`);
+      }
     }
 
     // 4. Find an owner (superadmin first, then admin/community_admin) and assign to the community if missing
     const owner = superAdmin || allUsers.find(u => u.role === 'admin' || u.role === 'community_admin');
-    if (owner && (!community.ownerAdminId || community.ownerAdminId !== owner.id)) {
+    if (community && owner && (!community.ownerAdminId || community.ownerAdminId !== owner.id)) {
       community.ownerAdminId = owner.id;
       community.updatedAt = new Date().toISOString();
       await communities.upsert(community);
@@ -81,19 +79,34 @@ export async function ensureDefaultCommunityAndMigrate() {
     const allParticipants = await participants.getAll();
     let participantsMigrated = 0;
     let participantsEloFixed = 0;
+    let participantsGameMigrated = 0;
     for (const participant of allParticipants) {
-      if (!participant.communityId) {
+      const primaryGameProfile = participant.games?.[participant.gameId];
+      const needsGameMigration =
+        !participant.games ||
+        (participant).eloPoints !== undefined ||
+        (participant).eloRank !== undefined ||
+        (participant.gameId && participant.mainCharacterId && primaryGameProfile?.mainCharacterId == null);
+      if (community && !participant.communityId) {
         participant.communityId = DEFAULT_COMMUNITY_ID;
         participant.updatedAt = new Date().toISOString();
         await participants.upsert(participant);
         participantsMigrated++;
       }
       // Fix unranked participants that were incorrectly defaulted to 1500 points
-      if (participant.eloRank === 'Sin puntos' && participant.eloPoints !== null) {
-        participant.eloPoints = null;
-        participant.updatedAt = new Date().toISOString();
-        await participants.upsert(participant);
-        participantsEloFixed++;
+      const migratedP = migrateParticipantGames(participant);
+      let fixed = false;
+      for (const profile of Object.values(migratedP.games || {})) {
+        if (profile.eloRank === 'Sin puntos' && profile.eloPoints !== null) {
+          profile.eloPoints = null;
+          fixed = true;
+        }
+      }
+      if (fixed || needsGameMigration) {
+        migratedP.updatedAt = new Date().toISOString();
+        await participants.upsert(migratedP);
+        if (fixed) participantsEloFixed++;
+        if (needsGameMigration) participantsGameMigrated++;
       }
     }
     if (participantsMigrated > 0) {
@@ -101,6 +114,9 @@ export async function ensureDefaultCommunityAndMigrate() {
     }
     if (participantsEloFixed > 0) {
       console.log(`[CommunityMigration] Fixed ${participantsEloFixed} unranked participants (eloPoints set to null)`);
+    }
+    if (participantsGameMigrated > 0) {
+      console.log(`[CommunityMigration] Migrated ${participantsGameMigrated} participants to per-game profiles`);
     }
 
     // 6. Assign the default community to existing tournaments, leagues and duels
@@ -210,6 +226,89 @@ export async function ensureDefaultCommunityAndMigrate() {
     }
     if (rankedMatchesMigrated > 0) {
       console.log(`[CommunityMigration] Migrated ${rankedMatchesMigrated} ranked matches to ${DEFAULT_COMMUNITY_NAME}`);
+    }
+
+    // 8. Assign default gameId (ssbu) to legacy tournaments, leagues, duels and matches
+    const DEFAULT_GAME_ID = 'ssbu';
+    const leagueGameMap = new Map(allLeagues.map(l => [l.id, l.gameId]));
+    const tournamentGameMap = new Map(allTournaments.map(t => [t.id, t.gameId]));
+
+    let tournamentsGameMigrated = 0;
+    for (const t of allTournaments) {
+      if (!t.gameId) {
+        t.gameId = DEFAULT_GAME_ID;
+        t.updatedAt = now;
+        await tournaments.upsert(t);
+        tournamentsGameMigrated++;
+      }
+    }
+    if (tournamentsGameMigrated > 0) {
+      console.log(`[CommunityMigration] Migrated ${tournamentsGameMigrated} tournaments to default game ${DEFAULT_GAME_ID}`);
+    }
+
+    let leaguesGameMigrated = 0;
+    for (const l of allLeagues) {
+      if (!l.gameId) {
+        l.gameId = DEFAULT_GAME_ID;
+        l.updatedAt = now;
+        await leagues.upsert(l);
+        leaguesGameMigrated++;
+      }
+    }
+    if (leaguesGameMigrated > 0) {
+      console.log(`[CommunityMigration] Migrated ${leaguesGameMigrated} leagues to default game ${DEFAULT_GAME_ID}`);
+    }
+
+    let leagueMatchesGameMigrated = 0;
+    for (const m of allLeagueMatches) {
+      if (!m.gameId) {
+        m.gameId = leagueGameMap.get(m.leagueId) || DEFAULT_GAME_ID;
+        m.updatedAt = now;
+        await leagueMatches.upsert(m);
+        leagueMatchesGameMigrated++;
+      }
+    }
+    if (leagueMatchesGameMigrated > 0) {
+      console.log(`[CommunityMigration] Migrated ${leagueMatchesGameMigrated} league matches to default game ${DEFAULT_GAME_ID}`);
+    }
+
+    let tournamentMatchesGameMigrated = 0;
+    for (const m of allTournamentMatches) {
+      if (!m.gameId) {
+        m.gameId = tournamentGameMap.get(m.tournamentId) || DEFAULT_GAME_ID;
+        m.updatedAt = now;
+        await tournamentMatches.upsert(m);
+        tournamentMatchesGameMigrated++;
+      }
+    }
+    if (tournamentMatchesGameMigrated > 0) {
+      console.log(`[CommunityMigration] Migrated ${tournamentMatchesGameMigrated} tournament matches to default game ${DEFAULT_GAME_ID}`);
+    }
+
+    let duelsGameMigrated = 0;
+    for (const d of allDuels) {
+      if (!d.gameId) {
+        d.gameId = DEFAULT_GAME_ID;
+        d.updatedAt = now;
+        await duels.upsert(d);
+        duelsGameMigrated++;
+      }
+    }
+    if (duelsGameMigrated > 0) {
+      console.log(`[CommunityMigration] Migrated ${duelsGameMigrated} duels to default game ${DEFAULT_GAME_ID}`);
+    }
+
+    let rankedMatchesGameMigrated = 0;
+    for (const m of allRankedMatches) {
+      if (!m.gameId) {
+        m.gameId = DEFAULT_GAME_ID;
+        m.updatedAt = now;
+        await rankedMatches.upsert(m);
+        rankedMatchesGameMigrated++;
+      }
+    }
+    if (rankedMatchesGameMigrated > 0) {
+      console.log(`[CommunityMigration] Migrated ${rankedMatchesGameMigrated} ranked matches to default game ${DEFAULT_GAME_ID}`);
     }
 
     console.log('[CommunityMigration] Default community and migration checks complete');

@@ -3,18 +3,26 @@
  *
  * Order matters in Express — fixed paths BEFORE parameterized paths.
  *
- * GET    /api/ranking                         — Leaderboard
- * GET    /api/ranking/matches                 — Full match history
- * POST   /api/ranking/match                   — Record a match result, update ELO
- * POST   /api/ranking/reset/hard              — Reset ALL participants to 1500, clear history
- * POST   /api/ranking/reset/soft              — Reset each participant to start of their tier
- * GET    /api/ranking/matches/:participantId  — Match history for one participant (wildcard last)
- * DELETE /api/ranking/matches/:matchId        — Delete a match record (no ELO revert)
+ * GET    /api/ranking?communityId=&gameId=         — Leaderboard per game
+ * GET    /api/ranking/matches                       — Full match history
+ * POST   /api/ranking/match                         — Record a match result, update ELO
+ * POST   /api/ranking/reset/hard                    — Reset per-game ELO, clear history
+ * POST   /api/ranking/reset/soft                   — Reset per-game ELO to tier start
+ * GET    /api/ranking/matches/:participantId        — Match history for one participant
+ * DELETE /api/ranking/matches/:matchId             — Delete a match record
  */
 
 import { Router } from 'express';
 import { participants, rankedMatches } from '../db/collections.js';
 import { calculateElo, getRankName, applyLegendTier, RANK_TIERS } from '../utils/eloEngine.js';
+import {
+  migrateParticipantGames,
+  getGameProfile,
+  getParticipantElo,
+  getParticipantRank,
+  getEffectiveElo,
+  setParticipantGameElo,
+} from '../utils/participantGames.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
 import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
 
@@ -26,43 +34,63 @@ function generateId(prefix = 'm') {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
-/** Ensures a participant has ELO rank set. Unranked players keep null points. */
-function ensureElo(p) {
-  return {
-    ...p,
-    eloRank: p.eloRank ?? getRankName(p.eloPoints),
-  };
+/** Migrates and returns a safe participant record with per-game ELO. */
+function normalizeParticipant(p) {
+  if (!p) return p;
+  return migrateParticipantGames({ ...p });
 }
 
 // ── GET /api/ranking — Leaderboard ────────────────────────────────────────
 
 router.get('/', optionalAuth, async (req, res) => {
   try {
-    const { communityId } = req.query;
-    const all = filterByCommunity(req.user, (await participants.getAll()).map(ensureElo), communityId);
+    const { communityId, gameId } = req.query;
+    const targetGameId = gameId || 'ssbu';
+    const all = filterByCommunity(
+      req.user,
+      (await participants.getAll()).map(normalizeParticipant),
+      communityId
+    );
 
-    // Sort: players with points first (desc), then unranked players
-    const withPoints = all.filter((p) => p.eloPoints != null)
-      .sort((a, b) => b.eloPoints - a.eloPoints);
-    const unranked = all.filter((p) => p.eloPoints == null);
-    const sorted = [...withPoints, ...unranked];
+    // Only show participants who have this game in their profile
+    const eligible = all.filter((p) => getGameProfile(p, targetGameId) != null);
+
+    // Sort: players with points in this game first (desc), then unranked
+    const withPoints = eligible
+      .map((p) => ({ p, pts: getParticipantElo(p, targetGameId) }))
+      .filter(({ pts }) => pts != null)
+      .sort((a, b) => b.pts - a.pts);
+
+    const unranked = eligible.filter((p) => getParticipantElo(p, targetGameId) == null);
 
     // Apply Legend tier to top 5 (only point-holders)
-    const rankedForLegend = applyLegendTier(withPoints);
+    const rankedForLegend = applyLegendTier(
+      withPoints.map(({ p, pts }) => ({
+        ...p,
+        eloPoints: pts,
+        eloRank: getParticipantRank(p, targetGameId),
+      }))
+    );
     const legendMap = new Map(rankedForLegend.map((p) => [p.id, p.displayRank]));
 
-    const leaderboard = sorted.map((p, i) => ({
-      position:        p.eloPoints != null ? i + 1 : null,
-      id:              p.id,
-      name:            p.name,
-      alias:           p.alias,
-      avatarUrl:       p.avatarUrl,
-      eloPoints:       p.eloPoints,
-      eloRank:         p.eloRank,
-      displayRank:     p.eloPoints != null ? (legendMap.get(p.id) ?? p.eloRank) : 'Sin puntos',
-      gameId:          p.gameId,
-      mainCharacterId: p.mainCharacterId,
-    }));
+    const sorted = [...withPoints.map(({ p }) => p), ...unranked];
+
+    const leaderboard = sorted.map((p, i) => {
+      const pts = getParticipantElo(p, targetGameId);
+      const rank = getParticipantRank(p, targetGameId);
+      return {
+        position: pts != null ? i + 1 : null,
+        id: p.id,
+        name: p.name,
+        alias: p.alias,
+        avatarUrl: p.avatarUrl,
+        eloPoints: pts,
+        eloRank: rank,
+        displayRank: pts != null ? (legendMap.get(p.id) ?? rank) : 'Sin puntos',
+        gameId: targetGameId,
+        mainCharacterId: p.games?.[targetGameId]?.mainCharacterId ?? p.mainCharacterId,
+      };
+    });
 
     res.json(leaderboard);
   } catch (err) {
@@ -75,8 +103,11 @@ router.get('/', optionalAuth, async (req, res) => {
 
 router.get('/matches', optionalAuth, async (req, res) => {
   try {
-    const { communityId } = req.query;
-    const all = filterByCommunity(req.user, await rankedMatches.getAll(), communityId);
+    const { communityId, gameId } = req.query;
+    let all = filterByCommunity(req.user, await rankedMatches.getAll(), communityId);
+    if (gameId) {
+      all = all.filter((m) => m.gameId === gameId);
+    }
     const sorted = [...all].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json(sorted);
   } catch (err) {
@@ -89,7 +120,8 @@ router.get('/matches', optionalAuth, async (req, res) => {
 
 router.post('/match', requireAuth, async (req, res) => {
   try {
-    const { playerAId, playerBId, winnerId } = req.body;
+    const { playerAId, playerBId, winnerId, gameId } = req.body;
+    const matchGameId = gameId || 'ssbu';
     const communityId = getTargetCommunityId(req.user, req.body.communityId);
     if (!isInUserScope(req.user, communityId)) {
       return res.status(403).json({ error: 'Cannot record match in this community' });
@@ -121,14 +153,21 @@ router.post('/match', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'Both participants must belong to the target community' });
     }
 
-    const pA = ensureElo(rawA);
-    const pB = ensureElo(rawB);
+    const pA = normalizeParticipant(rawA);
+    const pB = normalizeParticipant(rawB);
 
     const winner = winnerId === playerAId ? 'A' : 'B';
-    const { newRA, newRB, deltaA, deltaB } = calculateElo(pA.eloPoints, pB.eloPoints, winner);
+    const { newRA, newRB, deltaA, deltaB } = calculateElo(
+      getEffectiveElo(pA, matchGameId),
+      getEffectiveElo(pB, matchGameId),
+      winner
+    );
 
     const newRankA = getRankName(newRA);
     const newRankB = getRankName(newRB);
+
+    setParticipantGameElo(pA, matchGameId, newRA, newRankA);
+    setParticipantGameElo(pB, matchGameId, newRB, newRankB);
 
     const matchRecord = {
       id: generateId('m'),
@@ -137,40 +176,48 @@ router.post('/match', requireAuth, async (req, res) => {
       winnerId,
       loserId: winnerId === playerAId ? playerBId : playerAId,
       type: req.body.matchType || 'free',
-      playerAPointsBefore: pA.eloPoints,
-      playerBPointsBefore: pB.eloPoints,
-      playerAPointsAfter:  newRA,
-      playerBPointsAfter:  newRB,
-      playerADelta:        deltaA,
-      playerBDelta:        deltaB,
-      playerARankBefore:   pA.eloRank,
-      playerBRankBefore:   pB.eloRank,
-      playerARankAfter:    newRankA,
-      playerBRankAfter:    newRankB,
+      gameId: matchGameId,
+      playerAPointsBefore: getEffectiveElo(pA, matchGameId),
+      playerBPointsBefore: getEffectiveElo(pB, matchGameId),
+      playerAPointsAfter: newRA,
+      playerBPointsAfter: newRB,
+      playerADelta: deltaA,
+      playerBDelta: deltaB,
+      playerARankBefore: getParticipantRank(pA, matchGameId),
+      playerBRankBefore: getParticipantRank(pB, matchGameId),
+      playerARankAfter: newRankA,
+      playerBRankAfter: newRankB,
       communityId,
       createdAt: new Date().toISOString(),
     };
 
-    // A player only gets points after their first match; before that they were null.
-    // Persist real points; both players now have an ELO score.
-    const updatedA = { ...pA, eloPoints: newRA, eloRank: newRankA, updatedAt: new Date().toISOString() };
-    const updatedB = { ...pB, eloPoints: newRB, eloRank: newRankB, updatedAt: new Date().toISOString() };
-
-    // IMPORTANT: upsert(A) and upsert(B) must be sequential — both read+write
-    // the same JSON file, so running them in parallel causes a race condition
-    // where the second write overwrites the first (loser stays at old ELO).
-    // rankedMatches.upsert is safe in parallel because it uses a different file.
-    await participants.upsert(updatedA);
-    await participants.upsert(updatedB);
+    // Persist participants sequentially to avoid race conditions
+    await participants.upsert(pA);
+    await participants.upsert(pB);
     await rankedMatches.upsert(matchRecord);
 
-    // Return full updated participant objects so the frontend can sync localStorage
     res.status(201).json({
-      match:      matchRecord,
-      playerA:    { id: pA.id, name: pA.name, pointsBefore: pA.eloPoints, pointsAfter: newRA, delta: deltaA, rankBefore: pA.eloRank, rankAfter: newRankA },
-      playerB:    { id: pB.id, name: pB.name, pointsBefore: pB.eloPoints, pointsAfter: newRB, delta: deltaB, rankBefore: pB.eloRank, rankAfter: newRankB },
-      updatedParticipantA: updatedA,
-      updatedParticipantB: updatedB,
+      match: matchRecord,
+      playerA: {
+        id: pA.id,
+        name: pA.name,
+        pointsBefore: matchRecord.playerAPointsBefore,
+        pointsAfter: newRA,
+        delta: deltaA,
+        rankBefore: matchRecord.playerARankBefore,
+        rankAfter: newRankA,
+      },
+      playerB: {
+        id: pB.id,
+        name: pB.name,
+        pointsBefore: matchRecord.playerBPointsBefore,
+        pointsAfter: newRB,
+        delta: deltaB,
+        rankBefore: matchRecord.playerBRankBefore,
+        rankAfter: newRankB,
+      },
+      updatedParticipantA: pA,
+      updatedParticipantB: pB,
     });
   } catch (err) {
     console.error('[Ranking] POST /match error:', err);
@@ -179,37 +226,49 @@ router.post('/match', requireAuth, async (req, res) => {
 });
 
 // ── POST /api/ranking/reset/hard ──────────────────────────────────────────
-// Must be registered BEFORE /matches/:participantId to avoid wildcard capture.
 
 router.post('/reset/hard', requireAuth, requireAdmin, async (req, res) => {
   try {
     const communityId = getTargetCommunityId(req.user, req.body.communityId);
+    const gameId = req.body.gameId || null;
     if (!isInUserScope(req.user, communityId)) {
       return res.status(403).json({ error: 'Cannot reset ranking for this community' });
     }
-    const all = await participants.getAll();
-    const resetPoints = 1500;
-    const resetRank   = getRankName(resetPoints);
 
-    const updated = all.map((p) => ({
-      ...p,
-      eloPoints: p.communityId === communityId ? resetPoints : p.eloPoints,
-      eloRank:   p.communityId === communityId ? resetRank : p.eloRank,
-      updatedAt: p.communityId === communityId ? new Date().toISOString() : p.updatedAt,
-    }));
+    const all = (await participants.getAll()).map(normalizeParticipant);
+    const resetPoints = 1500;
+    const resetRank = getRankName(resetPoints);
+
+    const updated = all.map((p) => {
+      if (p.communityId !== communityId) return p;
+      if (gameId) {
+        setParticipantGameElo(p, gameId, resetPoints, resetRank);
+      } else {
+        // Reset all per-game ELOs
+        for (const g of Object.keys(p.games || {})) {
+          setParticipantGameElo(p, g, resetPoints, resetRank);
+        }
+      }
+      p.updatedAt = new Date().toISOString();
+      return p;
+    });
 
     await participants.replaceAll(updated);
 
-    // Only clear ranked matches for this community
+    // Only clear ranked matches for this community (and game if specified)
     const allMatches = await rankedMatches.getAll();
-    const kept = allMatches.filter(m => m.communityId !== communityId);
+    const kept = allMatches.filter((m) => {
+      if (m.communityId !== communityId) return true;
+      if (gameId && m.gameId !== gameId) return true;
+      return false;
+    });
     await rankedMatches.replaceAll(kept);
 
     res.json({
       ok: true,
-      affectedParticipants: updated.filter(p => p.communityId === communityId).length,
-      updatedParticipants: updated.filter(p => p.communityId === communityId),
-      message: 'Hard reset: community players returned to 1500 pts. Community match history cleared.',
+      affectedParticipants: updated.filter((p) => p.communityId === communityId).length,
+      updatedParticipants: updated.filter((p) => p.communityId === communityId),
+      message: `Hard reset: community players returned to ${resetPoints} pts${gameId ? ` for ${gameId}` : ''}.`,
     });
   } catch (err) {
     console.error('[Ranking] POST /reset/hard error:', err);
@@ -218,35 +277,36 @@ router.post('/reset/hard', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // ── POST /api/ranking/reset/soft ──────────────────────────────────────────
-// Must be registered BEFORE /matches/:participantId to avoid wildcard capture.
 
 router.post('/reset/soft', requireAuth, requireAdmin, async (req, res) => {
   try {
     const communityId = getTargetCommunityId(req.user, req.body.communityId);
+    const gameId = req.body.gameId || null;
     if (!isInUserScope(req.user, communityId)) {
       return res.status(403).json({ error: 'Cannot reset ranking for this community' });
     }
-    const all = await participants.getAll();
+
+    const all = (await participants.getAll()).map(normalizeParticipant);
 
     const updated = all.map((p) => {
       if (p.communityId !== communityId) return p;
-      const pts  = p.eloPoints ?? 1500;
-      const tier = [...RANK_TIERS].reverse().find((t) => pts >= t.min) ?? RANK_TIERS[0];
-      return {
-        ...p,
-        eloPoints: tier.min,
-        eloRank:   tier.name,
-        updatedAt: new Date().toISOString(),
-      };
+      const targetGames = gameId ? [gameId] : Object.keys(p.games || {});
+      for (const g of targetGames) {
+        const pts = getParticipantElo(p, g) ?? 1500;
+        const tier = [...RANK_TIERS].reverse().find((t) => pts >= t.min) ?? RANK_TIERS[0];
+        setParticipantGameElo(p, g, tier.min, getRankName(tier.min));
+      }
+      p.updatedAt = new Date().toISOString();
+      return p;
     });
 
     await participants.replaceAll(updated);
 
     res.json({
       ok: true,
-      affectedParticipants: updated.filter(p => p.communityId === communityId).length,
-      updatedParticipants: updated.filter(p => p.communityId === communityId),
-      message: 'Soft reset: community players returned to start of their current tier.',
+      affectedParticipants: updated.filter((p) => p.communityId === communityId).length,
+      updatedParticipants: updated.filter((p) => p.communityId === communityId),
+      message: `Soft reset: community players returned to start of their current tier${gameId ? ` for ${gameId}` : ''}.`,
     });
   } catch (err) {
     console.error('[Ranking] POST /reset/soft error:', err);
@@ -254,24 +314,26 @@ router.post('/reset/soft', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
-// ── GET /api/ranking/matches/:participantId — wildcard, must be AFTER fixed paths ──
+// ── GET /api/ranking/matches/:participantId ──────────────────────────────
 
 router.get('/matches/:participantId', optionalAuth, async (req, res) => {
   try {
     const { participantId } = req.params;
-    const { communityId } = req.query;
-    const all = filterByCommunity(req.user, await rankedMatches.getAll(), communityId);
-    const filtered = all
-      .filter((m) => m.playerAId === participantId || m.playerBId === participantId)
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    res.json(filtered);
+    const { communityId, gameId } = req.query;
+    let all = filterByCommunity(req.user, await rankedMatches.getAll(), communityId);
+    all = all.filter((m) => m.playerAId === participantId || m.playerBId === participantId);
+    if (gameId) {
+      all = all.filter((m) => m.gameId === gameId);
+    }
+    const sorted = all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    res.json(sorted);
   } catch (err) {
     console.error('[Ranking] GET /matches/:id error:', err);
     res.status(500).json({ error: 'Failed to load matches for participant' });
   }
 });
 
-// ── DELETE /api/ranking/matches/:matchId — wildcard, must be AFTER fixed paths ──
+// ── DELETE /api/ranking/matches/:matchId ───────────────────────────────────
 
 router.delete('/matches/:matchId', requireAuth, requireAdmin, async (req, res) => {
   try {

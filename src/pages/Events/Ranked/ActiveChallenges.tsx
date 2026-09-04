@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DuelChallenge } from '@/models/duel';
 import { GlobalParticipant } from '@/models/types';
+import { GAMES } from '@/data/games';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
@@ -15,6 +16,7 @@ import {
 } from '@/services/duels/duelService';
 import { getAllParticipantsAsync } from '@/services/participants/participantService';
 import { DEFAULT_DUEL_SETTINGS, DuelSettings } from '@/models/duel';
+import { getParticipantElo as getGameElo } from '@/utils/participantGames';
 import './ActiveChallenges.css';
 
 interface ActiveChallengesProps {
@@ -37,9 +39,11 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [player1Id, setPlayer1Id] = useState('');
   const [player2Id, setPlayer2Id] = useState('');
+  const [duelGameId, setDuelGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
   const [duelType, setDuelType] = useState<'normal' | 'mandatory'>('normal');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'accepted' | 'completed' | 'pending_review' | 'expired'>('all');
   const [filterParticipantId, setFilterParticipantId] = useState<string | null>(null);
+  const [filterGameId, setFilterGameId] = useState<string | null>(null);
   const [createError, setCreateError] = useState('');
 
   useEffect(() => {
@@ -75,12 +79,13 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     
     try {
       if (!communityId) return;
-      const challenge = await createDuelChallenge(player1Id, player2Id, duelType, communityId);
+      const challenge = await createDuelChallenge(player1Id, player2Id, duelGameId, duelType, communityId);
       if (challenge) {
         await loadData();
         setShowCreateModal(false);
         setPlayer1Id('');
         setPlayer2Id('');
+        setDuelGameId(GAMES[0]?.id ?? 'ssbu');
         setDuelType('normal');
       }
     } catch (err: any) {
@@ -107,9 +112,9 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     return p ? `${p.name}${p.alias ? ` (${p.alias})` : ''}` : t('history.unknownPlayer');
   };
 
-  const getParticipantElo = (id: string) => {
+  const getParticipantElo = (id: string, gameId: string = duelGameId) => {
     const p = participants.find(p => p.id === id);
-    return p?.eloPoints;
+    return p ? getGameElo(p, gameId) : null;
   };
 
   const sortedChallenges = [...allChallenges].sort(
@@ -121,7 +126,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     const participantMatch = !filterParticipantId ||
       c.challengerId === filterParticipantId ||
       c.challengedId === filterParticipantId;
-    return statusMatch && participantMatch;
+    const gameMatch = !filterGameId || c.gameId === filterGameId;
+    return statusMatch && participantMatch && gameMatch;
   });
 
   return (
@@ -146,6 +152,16 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
           placeholder={t('ranked.challenges.filterByPlayer')}
           className="challenge-player-filter"
         />
+        <select
+          className="challenge-game-filter"
+          value={filterGameId ?? ''}
+          onChange={(e) => setFilterGameId(e.target.value || null)}
+        >
+          <option value="">{t('ranked.challenges.allGames')}</option>
+          {GAMES.map((g) => (
+            <option key={g.id} value={g.id}>{g.id.toUpperCase()}</option>
+          ))}
+        </select>
         <button
           className={`filter-btn ${filterStatus === 'all' ? 'active' : ''}`}
           onClick={() => setFilterStatus('all')}
@@ -207,18 +223,19 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                 <div className="challenge-players">
                   <div className="challenge-player">
                     <span className="player-name">{getParticipantName(challenge.challengerId)}</span>
-                    <span className="player-elo">{getParticipantElo(challenge.challengerId)} {t('ranked.challenges.elo')}</span>
+                    <span className="player-elo">{getParticipantElo(challenge.challengerId, challenge.gameId)} {t('ranked.challenges.elo')}</span>
                   </div>
                   <div className="challenge-vs">
                     <i className="fas fa-khanda" />
                   </div>
                   <div className="challenge-player">
                     <span className="player-name">{getParticipantName(challenge.challengedId)}</span>
-                    <span className="player-elo">{getParticipantElo(challenge.challengedId)} {t('ranked.challenges.elo')}</span>
+                    <span className="player-elo">{getParticipantElo(challenge.challengedId, challenge.gameId)} {t('ranked.challenges.elo')}</span>
                   </div>
                 </div>
 
                 <div className="challenge-meta">
+                  <span className="challenge-game">{challenge.gameId?.toUpperCase()}</span>
                   <span className={`challenge-status status-${challenge.status}`}>
                     {challenge.status === 'pending' && <i className="fas fa-clock" />}
                     {challenge.status === 'accepted' && <i className="fas fa-check" />}
@@ -297,6 +314,19 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               {createError && <div className="error-message">{createError}</div>}
 
               <div className="form-group">
+                <label>{t('ranked.challenges.gameLabel')}</label>
+                <select
+                  value={duelGameId}
+                  onChange={e => { setDuelGameId(e.target.value); setCreateError(''); }}
+                  className="form-control"
+                >
+                  {GAMES.map((g) => (
+                    <option key={g.id} value={g.id}>{g.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
                 <label>{t('ranked.challenges.duelType')}</label>
                 <div className="duel-type-selector">
                   <label className="duel-type-option">
@@ -339,11 +369,11 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     >
                       <option value="">{t('ranked.challenges.selectPlayer')}</option>
                       {participants
-                        .filter(p => p.id !== player2Id)
+                        .filter(p => p.id !== player2Id && p.games?.[duelGameId] != null)
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.challenges.elo')}` : t('ranked.challenges.unranked')}
+                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {getGameElo(p, duelGameId) != null ? `${getGameElo(p, duelGameId)} ${t('ranked.challenges.elo')}` : t('ranked.challenges.unranked')}
                           </option>
                         ))}
                     </select>
@@ -357,11 +387,11 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     >
                       <option value="">{t('ranked.challenges.selectPlayer')}</option>
                       {participants
-                        .filter(p => p.id !== player1Id)
+                        .filter(p => p.id !== player1Id && p.games?.[duelGameId] != null)
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.challenges.elo')}` : t('ranked.challenges.unranked')}
+                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {getGameElo(p, duelGameId) != null ? `${getGameElo(p, duelGameId)} ${t('ranked.challenges.elo')}` : t('ranked.challenges.unranked')}
                           </option>
                         ))}
                     </select>
@@ -384,11 +414,11 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     >
                       <option value="">{t('ranked.challenges.selectPlayerToChallenge')}</option>
                       {participants
-                        .filter(p => p.id !== player1Id)
+                        .filter(p => p.id !== player1Id && p.games?.[duelGameId] != null)
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {p.eloPoints != null ? `${p.eloPoints} ${t('ranked.challenges.elo')}` : t('ranked.challenges.unranked')}
+                            {p.alias ? `${p.alias} (${p.name})` : p.name} - {getGameElo(p, duelGameId) != null ? `${getGameElo(p, duelGameId)} ${t('ranked.challenges.elo')}` : t('ranked.challenges.unranked')}
                           </option>
                         ))}
                     </select>

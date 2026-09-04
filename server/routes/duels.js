@@ -22,6 +22,7 @@ import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.
 import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
 import { expireDuel } from '../services/duelExpiration.js';
 import { createNotification } from '../services/notificationService.js';
+import { getEffectiveElo } from '../utils/participantGames.js';
 
 const router = Router();
 
@@ -117,9 +118,9 @@ router.get('/:id', optionalAuth, async (req, res) => {
 // POST /api/duels
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { id, challengerId, challengedId, expiresAt, type = 'normal' } = req.body;
-    
-    if (!id || !challengerId || !challengedId || !expiresAt) {
+    const { id, challengerId, challengedId, gameId, expiresAt, type = 'normal' } = req.body;
+
+    if (!id || !challengerId || !challengedId || !gameId || !expiresAt) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -137,7 +138,7 @@ router.post('/', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'Cannot create challenge in this community' });
     }
 
-    // Both participants must belong to the target community
+    // Both participants must belong to the target community and be registered for the game
     const [challenger, challenged] = await Promise.all([
       participants.findById(challengerId),
       participants.findById(challengedId),
@@ -150,6 +151,20 @@ router.post('/', requireAuth, async (req, res) => {
       (challenged.communityId && challenged.communityId !== communityId)
     ) {
       return res.status(403).json({ error: 'Both participants must belong to the target community' });
+    }
+    if (!challenger.games?.[gameId] || !challenged.games?.[gameId]) {
+      return res.status(403).json({ error: 'Both participants must be registered for this game' });
+    }
+
+    // ELO restriction enforced server-side per selected game
+    const settings = await duelSettings.getAll();
+    const config = settings.find(s => s.communityId === communityId) || duelSettingsShape(communityId);
+    const challengerElo = getEffectiveElo(challenger, gameId);
+    const challengedElo = getEffectiveElo(challenged, gameId);
+    if (challengerElo - challengedElo > (config.eloRestriction ?? 300)) {
+      return res.status(400).json({
+        error: `ELO gap too high (${challengerElo - challengedElo}). Maximum allowed is ${config.eloRestriction ?? 300} for ${gameId}.`
+      });
     }
 
     // Manual expiration trigger (also used by server cron)
@@ -209,7 +224,7 @@ router.post('/', requireAuth, async (req, res) => {
       }
     }
 
-    const challenge = duelChallengeShape(id, challengerId, challengedId, expiresAt, type, communityId);
+    const challenge = duelChallengeShape(id, challengerId, challengedId, gameId, expiresAt, type, communityId);
     const validation = validateDuelChallenge(challenge);
     
     if (!validation.valid) {

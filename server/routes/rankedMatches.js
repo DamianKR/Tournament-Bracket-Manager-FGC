@@ -42,15 +42,15 @@ router.get('/:id', async (req, res) => {
 // POST /api/ranked-matches
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { id, matchType, playerAId, playerBId, winnerId, eloData, communityId } = req.body;
+    const { id, matchType, gameId, playerAId, playerBId, winnerId, eloData, communityId } = req.body;
 
-    if (!id || !matchType || !playerAId || !playerBId || !winnerId || !eloData) {
+    if (!id || !matchType || !gameId || !playerAId || !playerBId || !winnerId || !eloData) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const match = rankedMatchShape(id, matchType, playerAId, playerBId, winnerId, eloData, communityId);
+    const match = rankedMatchShape(id, matchType, gameId, playerAId, playerBId, winnerId, eloData, communityId);
     const validation = validateRankedMatch(match);
-    
+
     if (!validation.valid) {
       return res.status(400).json({ error: 'Invalid match', details: validation.errors });
     }

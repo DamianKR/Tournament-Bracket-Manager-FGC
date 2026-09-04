@@ -3,7 +3,7 @@ import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progression/matchProgression';
 import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
-import { findOrCreateParticipant } from '@/services/participants/participantService';
+import { findGlobalParticipantByName } from '@/services/storage/localStorage';
 import { getAuthHeader } from '@/services/auth/authService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
@@ -18,6 +18,7 @@ export async function createTournament(
   name: string,
   mode: TournamentMode,
   type: TournamentType = 'singles',
+  gameId: string | null = null,
   teamSize?: TeamSize,
   seedingMode?: SeedingMode,
   partialSeedCount?: PartialSeedCount,
@@ -30,7 +31,7 @@ export async function createTournament(
     mode,
     type,
     status: 'setup',
-    gameId: null,
+    gameId,
     givesPoints,
     seedingMode: seedingMode || 'none',
     participants: [],
@@ -75,8 +76,14 @@ export async function addParticipant(
     throw new Error('Participant name already exists in this tournament');
   }
 
-  // Find existing GlobalParticipant or create a new one in this tournament's community
-  const global = await findOrCreateParticipant(trimmed, tournament.communityId);
+  // Find existing GlobalParticipant in this tournament's community and check game eligibility
+  const global = findGlobalParticipantByName(trimmed);
+  if (!global || global.communityId !== tournament.communityId) {
+    throw new Error('Participant not found in this community');
+  }
+  if (!global.games?.[tournament.gameId ?? 'ssbu']) {
+    throw new Error('Participant is not registered for this game');
+  }
 
   // Check if this GlobalParticipant is already in the tournament
   if (tournament.participants.some((p: Participant) => p.globalParticipantId === global.id)) {
@@ -130,11 +137,17 @@ export async function addTeam(
     throw new Error(`Team must have exactly ${tournament.teamSize} members`);
   }
 
-  // Find or create GlobalParticipants for each member (sequential to avoid
-  // concurrent JSON writes)
+  // Find existing GlobalParticipants for each member and check game eligibility
   const members = [];
+  const targetGameId = tournament.gameId ?? 'ssbu';
   for (const name of memberNames) {
-    const global = await findOrCreateParticipant(name.trim(), tournament.communityId);
+    const global = findGlobalParticipantByName(name.trim());
+    if (!global || global.communityId !== tournament.communityId) {
+      throw new Error(`Participant "${name.trim()}" not found in this community`);
+    }
+    if (!global.games?.[targetGameId]) {
+      throw new Error(`Participant "${name.trim()}" is not registered for this game`);
+    }
     members.push({
       globalParticipantId: global.id,
       name: global.name,

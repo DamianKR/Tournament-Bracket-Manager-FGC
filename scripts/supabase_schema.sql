@@ -74,6 +74,12 @@ CREATE TABLE IF NOT EXISTS notifications (
   data JSONB NOT NULL
 );
 
+-- Migraciones
+CREATE TABLE IF NOT EXISTS migrations (
+  id   TEXT PRIMARY KEY,
+  data JSONB NOT NULL
+);
+
 -- ── Legacy ────────────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS matches (
@@ -100,6 +106,7 @@ ALTER TABLE duels              ENABLE ROW LEVEL SECURITY;
 ALTER TABLE duel_settings      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users              ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE migrations         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE matches            ENABLE ROW LEVEL SECURITY;
 
 -- Permitir lectura pública de datos no sensibles (tournaments, participants, leagues)

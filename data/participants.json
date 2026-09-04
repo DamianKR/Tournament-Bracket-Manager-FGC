@@ -30,11 +30,23 @@
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-09-02T21:27:04.450Z",
-    "eloPoints": 1616,
-    "eloRank": "Vanquisher",
+    "updatedAt": "2026-09-04T21:08:49.287Z",
     "phoneNumber": "+5353211080",
-    "communityId": "community_fgc_santa_clara"
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "samus",
+        "eloPoints": 1616,
+        "eloRank": "Vanquisher"
+      },
+      "sf6": {
+        "gameId": "sf6",
+        "mainCharacterId": "mbison",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -65,10 +77,16 @@
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-09-01T22:11:59.990Z",
-    "eloPoints": 1626,
-    "eloRank": "Vanquisher",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.525Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "link",
+        "eloPoints": 1626,
+        "eloRank": "Vanquisher"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -100,10 +118,16 @@
     "alias": "TQMandreFN",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-09-01T22:11:59.991Z",
-    "eloPoints": 1619,
-    "eloRank": "Vanquisher",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.527Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "mario",
+        "eloPoints": 1619,
+        "eloRank": "Vanquisher"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -136,10 +160,16 @@
     "alias": "Adecty",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-09-01T22:11:59.991Z",
-    "eloPoints": 1592,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.528Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "luigi",
+        "eloPoints": 1592,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -156,10 +186,16 @@
       "1786158558338-ey6twflzq"
     ],
     "createdAt": "2026-08-10T19:06:30.209Z",
-    "updatedAt": "2026-09-01T22:11:59.993Z",
-    "eloPoints": 1513,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.529Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "terry",
+        "eloPoints": 1513,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -172,10 +208,16 @@
       "1786763010204-fwzepsyo7"
     ],
     "createdAt": "2026-08-10T19:55:54.729Z",
-    "updatedAt": "2026-09-01T22:11:59.993Z",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.530Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "yoshi",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -196,10 +238,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:56:23.115Z",
-    "updatedAt": "2026-09-02T21:30:30.311Z",
-    "eloPoints": 1463,
-    "eloRank": "Platino",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.531Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "donkey_kong",
+        "eloPoints": 1463,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -213,10 +261,16 @@
       "1786802844864-5bjdz2hif"
     ],
     "createdAt": "2026-08-10T19:57:30.317Z",
-    "updatedAt": "2026-09-01T22:11:59.995Z",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.532Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "inkling",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -230,10 +284,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:58:12.402Z",
-    "updatedAt": "2026-09-02T21:30:30.309Z",
-    "eloPoints": 1505,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.534Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "diddy_kong",
+        "eloPoints": 1505,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -247,10 +307,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T19:58:56.937Z",
-    "updatedAt": "2026-09-01T22:11:59.996Z",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.535Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "hero",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -266,10 +332,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T20:27:35.444Z",
-    "updatedAt": "2026-09-01T22:11:59.997Z",
-    "eloPoints": 1489,
-    "eloRank": "Platino",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.537Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "byleth",
+        "eloPoints": 1489,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -287,10 +359,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T20:27:50.067Z",
-    "updatedAt": "2026-09-01T22:11:59.998Z",
-    "eloPoints": 1524,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.538Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "lucas",
+        "eloPoints": 1524,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -303,10 +381,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T20:29:43.053Z",
-    "updatedAt": "2026-09-01T22:11:59.998Z",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.539Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "link",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -330,10 +414,16 @@
       "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T20:30:34.683Z",
-    "updatedAt": "2026-09-01T22:11:59.999Z",
-    "eloPoints": 1580,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.541Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "steve",
+        "eloPoints": 1580,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -355,10 +445,16 @@
       "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T20:30:50.039Z",
-    "updatedAt": "2026-09-01T22:12:00.000Z",
-    "eloPoints": 1517,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.542Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "steve",
+        "eloPoints": 1517,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -376,10 +472,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T21:11:44.199Z",
-    "updatedAt": "2026-09-01T22:12:00.001Z",
-    "eloPoints": 1520,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.543Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "cloud",
+        "eloPoints": 1520,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -394,10 +496,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T22:12:14.148Z",
-    "updatedAt": "2026-09-01T22:12:00.001Z",
-    "eloPoints": 1501,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.544Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "bayonetta",
+        "eloPoints": 1501,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -416,10 +524,16 @@
       "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-10T22:12:58.250Z",
-    "updatedAt": "2026-09-01T22:12:00.002Z",
-    "eloPoints": 1534,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.545Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "donkey_kong",
+        "eloPoints": 1534,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -432,10 +546,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-11T00:38:06.972Z",
-    "updatedAt": "2026-09-01T22:12:00.003Z",
-    "eloPoints": 1470,
-    "eloRank": "Platino",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.546Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "sonic",
+        "eloPoints": 1470,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -450,10 +570,16 @@
       "1786802844864-5bjdz2hif"
     ],
     "createdAt": "2026-08-11T00:38:52.935Z",
-    "updatedAt": "2026-09-01T22:12:00.004Z",
-    "eloPoints": 1464,
-    "eloRank": "Platino",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.548Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "pyra_mythra",
+        "eloPoints": 1464,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -467,10 +593,16 @@
       "1786802844864-5bjdz2hif"
     ],
     "createdAt": "2026-08-11T00:47:41.693Z",
-    "updatedAt": "2026-09-01T22:12:00.004Z",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.549Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "kirby",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -484,10 +616,16 @@
       "1787926905258-q0tw79fm2"
     ],
     "createdAt": "2026-08-11T01:04:28.124Z",
-    "updatedAt": "2026-09-01T22:12:00.005Z",
-    "eloPoints": 1532,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.550Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "meta_knight",
+        "eloPoints": 1532,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -498,10 +636,16 @@
     "avatarUrl": null,
     "tournamentIds": [],
     "createdAt": "2026-08-11T04:00:36.915Z",
-    "updatedAt": "2026-09-01T22:12:00.006Z",
-    "eloPoints": 1500,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.551Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "bayonetta",
+        "eloPoints": 1500,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -515,10 +659,16 @@
       "1786802844864-5bjdz2hif"
     ],
     "createdAt": "2026-08-11T04:02:08.315Z",
-    "updatedAt": "2026-09-01T22:12:00.006Z",
-    "eloPoints": 1503,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.552Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "cloud",
+        "eloPoints": 1503,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "gameId": "ssbu",
@@ -535,10 +685,16 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-13T19:23:04.526Z",
-    "updatedAt": "2026-09-01T22:12:00.007Z",
-    "eloPoints": 1511,
-    "eloRank": "Diamante",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.554Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "donkey_kong",
+        "eloPoints": 1511,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "id": "gp_1786756661811_fa5pg74",
@@ -552,11 +708,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "corrin",
-    "eloPoints": 1474,
-    "eloRank": "Platino",
     "createdAt": "2026-08-15T01:17:41.811Z",
-    "updatedAt": "2026-09-01T22:12:00.008Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.555Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "corrin",
+        "eloPoints": 1474,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "id": "gp_1786756707267_xybm206",
@@ -570,11 +732,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "little_mac",
-    "eloPoints": 1462,
-    "eloRank": "Platino",
     "createdAt": "2026-08-15T01:18:27.267Z",
-    "updatedAt": "2026-09-01T22:12:00.008Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.556Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "little_mac",
+        "eloPoints": 1462,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "id": "gp_1786757329455_8ijcyo8",
@@ -589,11 +757,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "bowser",
-    "eloPoints": 1500,
-    "eloRank": "Diamante",
     "createdAt": "2026-08-15T01:28:49.455Z",
-    "updatedAt": "2026-09-01T22:12:00.009Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.558Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "bowser",
+        "eloPoints": 1500,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "id": "gp_1786758755895_bgdf2b9",
@@ -608,11 +782,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "kirby",
-    "eloPoints": 1512,
-    "eloRank": "Diamante",
     "createdAt": "2026-08-15T01:52:35.895Z",
-    "updatedAt": "2026-09-01T22:12:00.010Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.559Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "kirby",
+        "eloPoints": 1512,
+        "eloRank": "Diamante"
+      }
+    }
   },
   {
     "id": "gp_1786758906647_1ib85c1",
@@ -627,11 +807,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "sora",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-15T01:55:06.647Z",
-    "updatedAt": "2026-09-01T22:12:00.010Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.560Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "sora",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1786761981144_462dv5s",
@@ -646,11 +832,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "sephiroth",
-    "eloPoints": 1497,
-    "eloRank": "Platino",
     "createdAt": "2026-08-15T02:46:21.144Z",
-    "updatedAt": "2026-09-01T22:12:00.011Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.561Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "sephiroth",
+        "eloPoints": 1497,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "id": "gp_1786802386624_ficm2tl",
@@ -664,11 +856,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "dark_pit",
-    "eloPoints": 1494,
-    "eloRank": "Platino",
     "createdAt": "2026-08-15T13:59:46.624Z",
-    "updatedAt": "2026-09-02T21:27:04.452Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.562Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "dark_pit",
+        "eloPoints": 1494,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "id": "gp_1786802617779_nnibxrr",
@@ -682,11 +880,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "min_min",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-15T14:03:37.779Z",
-    "updatedAt": "2026-09-01T22:12:00.012Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.564Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "min_min",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1786808135517_vfoni2a",
@@ -701,11 +905,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "little_mac",
-    "eloPoints": 1485,
-    "eloRank": "Platino",
     "createdAt": "2026-08-15T15:35:35.517Z",
-    "updatedAt": "2026-09-01T22:12:00.013Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.565Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "little_mac",
+        "eloPoints": 1485,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "id": "gp_1787060528167_2mzmy24",
@@ -715,11 +925,17 @@
     "tournamentIds": [],
     "gameId": "ssbu",
     "mainCharacterId": "captain_falcon",
-    "eloPoints": 1465,
-    "eloRank": "Platino",
     "createdAt": "2026-08-18T13:42:08.167Z",
-    "updatedAt": "2026-09-01T22:12:00.014Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.566Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "captain_falcon",
+        "eloPoints": 1465,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "id": "gp_1787060569919_ov80gcy",
@@ -731,11 +947,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "link",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-18T13:42:49.919Z",
-    "updatedAt": "2026-09-01T22:12:00.014Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.567Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "link",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787069564643_5pithds",
@@ -745,11 +967,17 @@
     "tournamentIds": [],
     "gameId": "ssbu",
     "mainCharacterId": "rob",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-18T16:12:44.643Z",
-    "updatedAt": "2026-09-01T22:12:00.016Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.569Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "rob",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787087495865_2esi76p",
@@ -761,11 +989,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "joker",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-18T21:11:35.865Z",
-    "updatedAt": "2026-09-01T22:12:00.017Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.570Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "joker",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787087788652_q2n124j",
@@ -777,11 +1011,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "diddy_kong",
-    "eloPoints": 1494,
-    "eloRank": "Platino",
     "createdAt": "2026-08-18T21:16:28.652Z",
-    "updatedAt": "2026-09-01T22:12:00.018Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.571Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "diddy_kong",
+        "eloPoints": 1494,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "id": "gp_1787112645165_cj7eik8",
@@ -793,11 +1033,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "dark_pit",
-    "eloPoints": 1479,
-    "eloRank": "Platino",
     "createdAt": "2026-08-19T04:10:45.165Z",
-    "updatedAt": "2026-09-01T22:12:00.019Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.573Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "dark_pit",
+        "eloPoints": 1479,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "id": "gp_1787112745370_2zahvg8",
@@ -809,11 +1055,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "mario",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T04:12:25.370Z",
-    "updatedAt": "2026-09-01T22:12:00.020Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.574Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "mario",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787150405263_dyjmu7b",
@@ -825,11 +1077,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "isabelle",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T14:40:05.263Z",
-    "updatedAt": "2026-09-01T22:12:00.020Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.576Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "isabelle",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787150448285_vlvxdb2",
@@ -841,11 +1099,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "terry",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T14:40:48.285Z",
-    "updatedAt": "2026-09-01T22:12:00.021Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.577Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "terry",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787176726649_m106rr7",
@@ -857,11 +1121,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "king_dedede",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T21:58:46.649Z",
-    "updatedAt": "2026-09-01T22:12:00.022Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.578Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "king_dedede",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787176804167_dgzm0z9",
@@ -873,11 +1143,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "sora",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-19T22:00:04.167Z",
-    "updatedAt": "2026-09-01T22:12:00.022Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.579Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "sora",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787202759812_b30336h",
@@ -889,11 +1165,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "cloud",
-    "eloPoints": 1472,
-    "eloRank": "Platino",
     "createdAt": "2026-08-20T05:12:39.812Z",
-    "updatedAt": "2026-09-01T22:12:00.023Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.580Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "cloud",
+        "eloPoints": 1472,
+        "eloRank": "Platino"
+      }
+    }
   },
   {
     "id": "gp_1787202786652_4bme4ih",
@@ -905,11 +1187,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "mr_game_and_watch",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-20T05:13:06.652Z",
-    "updatedAt": "2026-09-01T22:12:00.024Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.582Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "mr_game_and_watch",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787409434840_k4h4ski",
@@ -921,11 +1209,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "king_dedede",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-22T14:37:14.840Z",
-    "updatedAt": "2026-09-01T22:12:00.025Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.583Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "king_dedede",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787409813244_ymqkq1e",
@@ -937,11 +1231,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "steve",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-22T14:43:33.244Z",
-    "updatedAt": "2026-09-01T22:12:00.025Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.584Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "steve",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787409902362_3u9f0qr",
@@ -953,11 +1253,17 @@
     ],
     "gameId": "ssbu",
     "mainCharacterId": "snake",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-22T14:45:02.362Z",
-    "updatedAt": "2026-09-01T22:12:00.026Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.586Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "snake",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1787798635187_v9qifdf",
@@ -967,11 +1273,17 @@
     "tournamentIds": [],
     "gameId": "ssbu",
     "mainCharacterId": "lucario",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-08-27T02:43:55.187Z",
-    "updatedAt": "2026-09-01T22:12:00.027Z",
-    "communityId": "community_fgc_santa_clara"
+    "updatedAt": "2026-09-04T18:52:39.587Z",
+    "communityId": "community_fgc_santa_clara",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "lucario",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1788378964090_k9goxlg",
@@ -982,10 +1294,16 @@
     "gameId": "ssbu",
     "mainCharacterId": "bayonetta",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T19:56:04.090Z",
-    "updatedAt": "2026-09-02T20:28:41.807Z"
+    "updatedAt": "2026-09-04T18:52:39.589Z",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "bayonetta",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1788379061334_fbsbbjo",
@@ -996,10 +1314,16 @@
     "gameId": "ssbu",
     "mainCharacterId": "bowser",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T19:57:41.334Z",
-    "updatedAt": "2026-09-02T20:28:41.812Z"
+    "updatedAt": "2026-09-04T18:52:39.590Z",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "bowser",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1788380302327_fa06m7d",
@@ -1010,10 +1334,16 @@
     "gameId": "ssbu",
     "mainCharacterId": "bowser_jr",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T20:18:22.327Z",
-    "updatedAt": "2026-09-02T20:28:41.813Z"
+    "updatedAt": "2026-09-04T18:52:39.591Z",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "bowser_jr",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1788380326993_ayjmf6k",
@@ -1024,10 +1354,16 @@
     "gameId": "ssbu",
     "mainCharacterId": "chrom",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T20:18:46.993Z",
-    "updatedAt": "2026-09-02T20:28:41.813Z"
+    "updatedAt": "2026-09-04T18:52:39.593Z",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "chrom",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1788380358539_kjva9yy",
@@ -1038,10 +1374,16 @@
     "gameId": "ssbu",
     "mainCharacterId": "cloud",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T20:19:18.539Z",
-    "updatedAt": "2026-09-02T20:28:41.814Z"
+    "updatedAt": "2026-09-04T18:52:39.594Z",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "cloud",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1788380406731_ryimw0w",
@@ -1052,10 +1394,16 @@
     "gameId": "ssbu",
     "mainCharacterId": "corrin",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T20:20:06.731Z",
-    "updatedAt": "2026-09-02T20:28:41.815Z"
+    "updatedAt": "2026-09-04T18:52:39.595Z",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "corrin",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1788380433042_52zrqcj",
@@ -1066,10 +1414,16 @@
     "gameId": "ssbu",
     "mainCharacterId": "diddy_kong",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T20:20:33.042Z",
-    "updatedAt": "2026-09-02T20:28:41.816Z"
+    "updatedAt": "2026-09-04T18:52:39.597Z",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "diddy_kong",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   },
   {
     "id": "gp_1788380457855_5sdweh9",
@@ -1080,9 +1434,15 @@
     "gameId": "ssbu",
     "mainCharacterId": "falco",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "eloPoints": null,
-    "eloRank": "Sin puntos",
     "createdAt": "2026-09-02T20:20:57.855Z",
-    "updatedAt": "2026-09-02T20:28:41.817Z"
+    "updatedAt": "2026-09-04T18:52:39.598Z",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "falco",
+        "eloPoints": null,
+        "eloRank": "Sin puntos"
+      }
+    }
   }
 ]

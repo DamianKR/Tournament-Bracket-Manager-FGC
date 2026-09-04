@@ -7,10 +7,10 @@ const RANK_TIERS = [
   { name: 'Plata',      min: 1200, max: 1299, kFactor: 40, color: '#94a3b8' },
   { name: 'Oro',        min: 1300, max: 1399, kFactor: 34, color: '#f59e0b' },
   { name: 'Platino',    min: 1400, max: 1499, kFactor: 28, color: '#06b6d4' },
-  { name: 'Diamante',   min: 1500, max: 1599, kFactor: 22, color: '#6366f1' },
-  { name: 'Vanquisher', min: 1600, max: 1699, kFactor: 18, color: '#9627b1' },
-  { name: 'Master',     min: 1700, max: 1849, kFactor: 14, color: '#c9661a' },
-  { name: 'Ultimate',   min: 1850, max: null, kFactor: 10, color: '#aa0a0a' },
+  { name: 'Diamante',   min: 1500, max: 1599, kFactor: 22, color: '#2563eb' },
+  { name: 'Vanquisher', min: 1600, max: 1699, kFactor: 18, color: '#a855f7' },
+  { name: 'Master',     min: 1700, max: 1849, kFactor: 14, color: '#ec4899' },
+  { name: 'Ultimate',   min: 1850, max: null, kFactor: 10, color: '#971c0e' },
 ];
 
 function getKFactor(points: number) {
