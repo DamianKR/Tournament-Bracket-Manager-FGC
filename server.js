@@ -30,6 +30,7 @@ import { expireAllOldLeagueMatches } from './server/services/leagueExpiration.js
 import { reschedulableLeagueNotifications } from './server/services/notificationScheduler.js';
 import { ensureDefaultCommunityAndMigrate } from './server/services/communityMigration.js';
 import { migrateParticipantGameProfiles } from './server/services/participantGameMigration.js';
+import { migrateGameIds } from './server/services/gameIdMigration.js';
 
 // Render asigna el puerto via PORT; en local usamos 3001
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
@@ -120,6 +121,11 @@ app.listen(PORT, () => {
   // Migrate legacy single-game participant data into per-game profiles
   migrateParticipantGameProfiles().catch(err =>
     console.error('[Migration] Failed to run participant game migration:', err)
+  );
+
+  // Backfill missing gameId on tournaments, leagues, duels and match records
+  migrateGameIds().catch(err =>
+    console.error('[Migration] Failed to run gameId migration:', err)
   );
 
   // Reschedule any pending league week notifications on startup (setTimeout is in-memory only)

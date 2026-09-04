@@ -8,5 +8,10 @@
     "id": "participant_game_migration_v1",
     "applied": true,
     "appliedAt": "2026-09-04T23:02:03.979Z"
+  },
+  {
+    "id": "game_id_migration_v1",
+    "applied": true,
+    "appliedAt": "2026-09-04T23:31:24.821Z"
   }
 ]
