@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Participant, GlobalParticipant } from '@/models/types';
 import { loadGlobalParticipants } from '@/services/storage/localStorage';
-import { getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl } from '@/utils/characterImage';
 import './Top8Podium.css';
 
 interface Top8PodiumProps {
@@ -24,7 +24,7 @@ function getDisplayName(p: Participant, globals: Map<string, GlobalParticipant>,
 
 function Avatar({ global, gameId, fallbackIcon, large = false }: { global: GlobalParticipant | null; gameId?: string; fallbackIcon: string; large?: boolean }) {
   const [broken, setBroken] = useState(false);
-  const imgUrl = getCharacterImageUrl(global?.gameId ?? gameId, global?.mainCharacterId ?? null);
+  const imgUrl = getCharacterIconUrl(global?.gameId ?? gameId, global?.mainCharacterId ?? null);
   const icon = <i className={`fas ${fallbackIcon}`} />;
   return (
     <div className={`top8-avatar ${large ? 'champion-avatar' : ''}`}>

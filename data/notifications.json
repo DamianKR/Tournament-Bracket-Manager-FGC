@@ -4710,5 +4710,63 @@
         "gp_1786387243524_6er0c9u"
       ]
     }
+  },
+  {
+    "id": "notif_1788578759616_m0nrs3h2x",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_challenge",
+    "title": "New Duel Challenge!",
+    "message": "Rhadam has challenged you to a duel. Accept or decline in the Events section.",
+    "read": true,
+    "createdAt": "2026-09-05T03:25:59.616Z",
+    "scheduledAt": "2026-09-05T03:25:59.616Z",
+    "data": {
+      "duelId": "duel_1788578759610_n3ysc9tgf",
+      "challengerId": "gp_1787409902362_3u9f0qr",
+      "type": "normal"
+    },
+    "readAt": "2026-09-05T03:27:38.284Z"
+  },
+  {
+    "id": "notif_1788578761371_szp3dwdj1",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "duel_accepted",
+    "title": "Duel Accepted!",
+    "message": "KruX accepted your duel challenge. Play and record the result before it expires.",
+    "read": false,
+    "createdAt": "2026-09-05T03:26:01.371Z",
+    "scheduledAt": "2026-09-05T03:26:01.371Z",
+    "data": {
+      "duelId": "duel_1788578759610_n3ysc9tgf",
+      "challengedId": "gp_1786387087046_wnwtadb"
+    }
+  },
+  {
+    "id": "notif_1788578761375_sevj1kfem",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-05T03:26:01.375Z",
+    "scheduledAt": "2026-09-09T03:26:01.370Z",
+    "data": {
+      "duelId": "duel_1788578759610_n3ysc9tgf",
+      "expiresAt": "2026-09-12T03:26:01.370Z"
+    }
+  },
+  {
+    "id": "notif_1788578761377_req33cfle",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-05T03:26:01.377Z",
+    "scheduledAt": "2026-09-09T03:26:01.370Z",
+    "data": {
+      "duelId": "duel_1788578759610_n3ysc9tgf",
+      "expiresAt": "2026-09-12T03:26:01.370Z"
+    }
   }
 ]

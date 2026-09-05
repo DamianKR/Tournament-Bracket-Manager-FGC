@@ -48401,12 +48401,30 @@
     "week": 1,
     "participant1Id": "gp_1787409813244_ymqkq1e",
     "participant2Id": "gp_1786408732935_gefziig",
-    "status": "scheduled",
+    "status": "no_show",
     "scheduledDate": "2026-09-02T21:45:00.000Z",
     "deadline": "2026-10-09T21:45:00.000Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-04T18:57:22.891Z",
-    "gameId": "ssbu"
+    "gameId": "ssbu",
+    "reportedResults": [
+      {
+        "participantId": "gp_1786387087046_wnwtadb",
+        "winnerId": "gp_1786408732935_gefziig",
+        "score": "2-0",
+        "isNoShow": true,
+        "noShowParticipantId": "gp_1787409813244_ymqkq1e",
+        "reportedAt": "2026-09-05T16:04:06.207Z"
+      }
+    ],
+    "winnerId": "gp_1786408732935_gefziig",
+    "score": "2-0",
+    "noShowParticipantId": "gp_1787409813244_ymqkq1e",
+    "participant1EloBefore": 1500,
+    "participant2EloBefore": 1464,
+    "participant1EloChange": -15,
+    "participant2EloChange": 0,
+    "completedDate": "2026-09-05T16:04:06.211Z"
   },
   {
     "id": "lmatch_1788385465837_marrlje",
@@ -48415,12 +48433,28 @@
     "week": 1,
     "participant1Id": "gp_1786756661811_fa5pg74",
     "participant2Id": "gp_1786802386624_ficm2tl",
-    "status": "scheduled",
+    "status": "completed",
     "scheduledDate": "2026-09-02T21:45:00.000Z",
     "deadline": "2026-10-09T21:45:00.000Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-04T18:57:22.891Z",
-    "gameId": "ssbu"
+    "gameId": "ssbu",
+    "reportedResults": [
+      {
+        "participantId": "gp_1786387087046_wnwtadb",
+        "winnerId": "gp_1786756661811_fa5pg74",
+        "score": "2-0",
+        "isNoShow": false,
+        "reportedAt": "2026-09-05T16:03:59.185Z"
+      }
+    ],
+    "winnerId": "gp_1786756661811_fa5pg74",
+    "score": "2-0",
+    "participant1EloBefore": 1474,
+    "participant2EloBefore": 1494,
+    "participant1EloChange": 15,
+    "participant2EloChange": -15,
+    "completedDate": "2026-09-05T16:03:59.190Z"
   },
   {
     "id": "lmatch_1788385465837_7xofn1g",
@@ -48443,7 +48477,7 @@
     "week": 1,
     "participant1Id": "gp_1786387087046_wnwtadb",
     "participant2Id": "gp_1786758755895_bgdf2b9",
-    "status": "reported",
+    "status": "completed",
     "scheduledDate": "2026-09-02T21:45:00.000Z",
     "deadline": "2026-10-09T21:45:00.000Z",
     "reportedResults": [
@@ -48457,7 +48491,14 @@
     ],
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-04T18:57:22.891Z",
-    "gameId": "ssbu"
+    "gameId": "ssbu",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "score": "2-0",
+    "participant1EloBefore": 1616,
+    "participant2EloBefore": 1512,
+    "participant1EloChange": 6,
+    "participant2EloChange": -6,
+    "completedDate": "2026-09-05T16:04:50.306Z"
   },
   {
     "id": "lmatch_1788385465837_f5wttwm",
@@ -48466,12 +48507,28 @@
     "week": 1,
     "participant1Id": "gp_1787060569919_ov80gcy",
     "participant2Id": "gp_1787798635187_v9qifdf",
-    "status": "scheduled",
+    "status": "completed",
     "scheduledDate": "2026-09-02T21:45:00.000Z",
     "deadline": "2026-10-09T21:45:00.000Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-04T18:57:22.891Z",
-    "gameId": "ssbu"
+    "gameId": "ssbu",
+    "reportedResults": [
+      {
+        "participantId": "gp_1786387087046_wnwtadb",
+        "winnerId": "gp_1787798635187_v9qifdf",
+        "score": "0-2",
+        "isNoShow": false,
+        "reportedAt": "2026-09-05T16:05:04.292Z"
+      }
+    ],
+    "winnerId": "gp_1787798635187_v9qifdf",
+    "score": "0-2",
+    "participant1EloBefore": 1500,
+    "participant2EloBefore": 1500,
+    "participant1EloChange": -11,
+    "participant2EloChange": 11,
+    "completedDate": "2026-09-05T16:05:04.296Z"
   },
   {
     "id": "lmatch_1788385465837_firky93",

@@ -3344,5 +3344,278 @@
     "eloApplied": true,
     "eloUpdates": [],
     "communityId": "community_fgc_santa_clara"
+  },
+  {
+    "id": "1788578062260-i9rbt1na7",
+    "name": "Testing images mk",
+    "mode": "single_elimination",
+    "type": "singles",
+    "status": "completed",
+    "gameId": "mk11",
+    "givesPoints": true,
+    "seedingMode": "none",
+    "participants": [
+      {
+        "id": "1788578067589-jwam4t11k",
+        "name": "Adam",
+        "alias": "Rhadam",
+        "seed": 1,
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1787409902362_3u9f0qr",
+        "finalPosition": 3
+      },
+      {
+        "id": "1788578069396-9qe1kprlo",
+        "name": "Alexs",
+        "seed": 2,
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1787409813244_ymqkq1e",
+        "finalPosition": 2
+      },
+      {
+        "id": "1788578070658-77xxux1zl",
+        "name": "Damiam",
+        "alias": "KruX",
+        "seed": 3,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786387087046_wnwtadb",
+        "finalPosition": 1
+      },
+      {
+        "id": "1788578072299-xoeuq91be",
+        "name": "Delvi",
+        "seed": 4,
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1786391892402_8intsz3",
+        "finalPosition": 3
+      }
+    ],
+    "bracket": {
+      "winnerBracket": [
+        {
+          "id": "winner-r1-m1",
+          "roundNumber": 1,
+          "matchNumber": 1,
+          "bracketType": "winner",
+          "participant1Id": "1788578067589-jwam4t11k",
+          "participant2Id": "1788578069396-9qe1kprlo",
+          "winnerId": "1788578069396-9qe1kprlo",
+          "loserId": "1788578067589-jwam4t11k",
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "winner-r1-m2",
+          "roundNumber": 1,
+          "matchNumber": 2,
+          "bracketType": "winner",
+          "participant1Id": "1788578070658-77xxux1zl",
+          "participant2Id": "1788578072299-xoeuq91be",
+          "winnerId": "1788578070658-77xxux1zl",
+          "loserId": "1788578072299-xoeuq91be",
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "winner-r2-m1",
+          "roundNumber": 2,
+          "matchNumber": 1,
+          "bracketType": "winner",
+          "participant1Id": "1788578069396-9qe1kprlo",
+          "participant2Id": "1788578070658-77xxux1zl",
+          "winnerId": "1788578070658-77xxux1zl",
+          "loserId": "1788578069396-9qe1kprlo",
+          "status": "completed",
+          "nextWinnerMatchId": null,
+          "nextLoserMatchId": null
+        }
+      ],
+      "loserBracket": [],
+      "grandFinal": null,
+      "grandFinalReset": null
+    },
+    "championId": "1788578070658-77xxux1zl",
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-05T03:14:22.260Z",
+    "updatedAt": "2026-09-05T03:14:47.477Z",
+    "eloApplied": true,
+    "eloUpdates": [
+      {
+        "id": "gp_1787409902362_3u9f0qr",
+        "name": "Adam",
+        "alias": "Rhadam",
+        "avatarUrl": null,
+        "tournamentIds": [
+          "1787069005182-knkndcjgv"
+        ],
+        "gameId": "ssbu",
+        "mainCharacterId": "snake",
+        "createdAt": "2026-08-22T14:45:02.362Z",
+        "updatedAt": "2026-09-05T03:14:47.486Z",
+        "communityId": "community_fgc_santa_clara",
+        "games": {
+          "ssbu": {
+            "gameId": "ssbu",
+            "mainCharacterId": "snake",
+            "eloPoints": null,
+            "eloRank": "Sin puntos"
+          },
+          "mk11": {
+            "gameId": "mk11",
+            "mainCharacterId": "kano",
+            "eloPoints": 1533,
+            "eloRank": "Diamante"
+          }
+        },
+        "_pointsBefore": 1500,
+        "_pointsEarned": 33,
+        "_position": 3
+      },
+      {
+        "id": "gp_1787409813244_ymqkq1e",
+        "name": "Alexs",
+        "alias": "",
+        "avatarUrl": null,
+        "tournamentIds": [
+          "1787069005182-knkndcjgv"
+        ],
+        "gameId": "ssbu",
+        "mainCharacterId": "steve",
+        "createdAt": "2026-08-22T14:43:33.244Z",
+        "updatedAt": "2026-09-05T03:14:47.488Z",
+        "communityId": "community_fgc_santa_clara",
+        "games": {
+          "ssbu": {
+            "gameId": "ssbu",
+            "mainCharacterId": "steve",
+            "eloPoints": null,
+            "eloRank": "Sin puntos"
+          },
+          "mk11": {
+            "gameId": "mk11",
+            "mainCharacterId": "frost",
+            "eloPoints": 1544,
+            "eloRank": "Diamante"
+          }
+        },
+        "_pointsBefore": 1500,
+        "_pointsEarned": 44,
+        "_position": 2
+      },
+      {
+        "gameId": "mk11",
+        "mainCharacterId": "sub_zero",
+        "tournamentIds": [
+          "1786387227586-8u2hb04zk",
+          "1786387486477-i7xydjcqb",
+          "1786387909894-3uu33ulz0",
+          "1786388372329-y5rm3kzqo",
+          "1786388606781-jyh9v2prl",
+          "1786388748055-8yrbvigzm",
+          "1786389730065-my9udy77t",
+          "1786390635324-f1ht0g9nm",
+          "1786394988044-sb88chetv",
+          "1786645309882-n8iemn0fx",
+          "1786646770004-achuyyt34",
+          "1786756153973-4tu0cxfut",
+          "1786759219748-qzufrr9ky",
+          "1786763010204-fwzepsyo7",
+          "1786802844864-5bjdz2hif",
+          "1786977122065-rrypq1js6",
+          "1787009908365-98h5rq54m",
+          "1787069005182-knkndcjgv",
+          "1786158558338-ey6twflzq",
+          "1787926772254-rfmvzuacg",
+          "1787926905258-q0tw79fm2"
+        ],
+        "id": "gp_1786387087046_wnwtadb",
+        "name": "Damiam",
+        "alias": "KruX",
+        "avatarUrl": null,
+        "createdAt": "2026-08-10T18:38:07.046Z",
+        "updatedAt": "2026-09-05T03:14:47.489Z",
+        "phoneNumber": "+5353211080",
+        "communityId": "community_fgc_santa_clara",
+        "games": {
+          "ssbu": {
+            "gameId": "ssbu",
+            "mainCharacterId": "samus",
+            "eloPoints": 1616,
+            "eloRank": "Vanquisher"
+          },
+          "sf6": {
+            "gameId": "sf6",
+            "mainCharacterId": "mbison",
+            "eloPoints": null,
+            "eloRank": "Sin puntos"
+          },
+          "ggst": {
+            "gameId": "ggst",
+            "mainCharacterId": "zato",
+            "eloPoints": null,
+            "eloRank": "Sin puntos"
+          },
+          "tekken8": {
+            "gameId": "tekken8",
+            "mainCharacterId": "bryan",
+            "eloPoints": null,
+            "eloRank": "Sin puntos"
+          },
+          "mk11": {
+            "gameId": "mk11",
+            "mainCharacterId": "sub_zero",
+            "eloPoints": 1566,
+            "eloRank": "Diamante"
+          },
+          "sc6": {
+            "gameId": "sc6",
+            "mainCharacterId": "raphael",
+            "eloPoints": null,
+            "eloRank": "Sin puntos"
+          }
+        },
+        "_pointsBefore": 1500,
+        "_pointsEarned": 66,
+        "_position": 1
+      },
+      {
+        "gameId": "ssbu",
+        "mainCharacterId": "diddy_kong",
+        "id": "gp_1786391892402_8intsz3",
+        "name": "Delvi",
+        "alias": "",
+        "avatarUrl": null,
+        "tournamentIds": [
+          "1786763010204-fwzepsyo7",
+          "1787069005182-knkndcjgv"
+        ],
+        "createdAt": "2026-08-10T19:58:12.402Z",
+        "updatedAt": "2026-09-05T03:14:47.491Z",
+        "communityId": "community_fgc_santa_clara",
+        "games": {
+          "ssbu": {
+            "gameId": "ssbu",
+            "mainCharacterId": "diddy_kong",
+            "eloPoints": 1505,
+            "eloRank": "Diamante"
+          },
+          "mk11": {
+            "gameId": "mk11",
+            "mainCharacterId": "kano",
+            "eloPoints": 1533,
+            "eloRank": "Diamante"
+          }
+        },
+        "_pointsBefore": 1500,
+        "_pointsEarned": 33,
+        "_position": 3
+      }
+    ]
   }
 ]
