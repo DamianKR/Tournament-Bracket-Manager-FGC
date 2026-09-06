@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { createCommunity, updateCommunity } from '@/services/communities/communityService';
+import {
+  requestJoinCommunity,
+  getMembershipRequests,
+  resolveMembershipRequest,
+  type MembershipRequest,
+} from '@/services/participants/participantService';
 import type { Community } from '@/models/community';
 import './CommunitiesPage.css';
 
@@ -20,6 +26,59 @@ function CommunitiesPage() {
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [membershipRequests, setMembershipRequests] = useState<MembershipRequest[]>([]);
+  const [requestError, setRequestError] = useState<string | null>(null);
+
+  const isAdminRole = ['superadmin', 'community_admin', 'admin'].includes(user?.role ?? '');
+
+  useEffect(() => {
+    if (!user) return;
+    getMembershipRequests().then(setMembershipRequests).catch(() => {});
+  }, [user]);
+
+  async function reloadRequests() {
+    setMembershipRequests(await getMembershipRequests().catch(() => []));
+  }
+
+  /** Comunidades donde el user ya es miembro (hogar + membresías activas). */
+  function myCommunityIds(): Set<string> {
+    const ids = new Set<string>();
+    if (user?.communityId) ids.add(user.communityId);
+    for (const m of user?.memberships ?? []) {
+      if (m.isActive !== false) ids.add(m.communityId);
+    }
+    for (const cid of user?.communityIds ?? []) ids.add(cid);
+    return ids;
+  }
+
+  function pendingFor(communityId: string): MembershipRequest | undefined {
+    return membershipRequests.find(r =>
+      r.communityId === communityId &&
+      (r.userId === user?.id || r.direction === 'request')
+    );
+  }
+
+  async function handleRequestJoin(community: Community) {
+    if (!user?.participantId) return;
+    setRequestError(null);
+    try {
+      await requestJoinCommunity(user.participantId, community.id);
+      await reloadRequests();
+    } catch (err) {
+      setRequestError(err instanceof Error ? err.message : 'Failed to request join');
+    }
+  }
+
+  async function handleResolve(request: MembershipRequest, action: 'accept' | 'decline') {
+    setRequestError(null);
+    try {
+      await resolveMembershipRequest(request.id, action);
+      await reloadRequests();
+      await refresh();
+    } catch (err) {
+      setRequestError(err instanceof Error ? err.message : 'Failed to resolve request');
+    }
+  }
 
   function resetForm() {
     setName('');
@@ -53,7 +112,10 @@ function CommunitiesPage() {
 
   function canEdit(community: Community): boolean {
     if (isSuperAdmin) return true;
+    // community_admin puede editar su propia comunidad (ownerAdminId es el user.id, no participantId)
     if (user?.role === 'community_admin' && community.ownerAdminId === user.id) return true;
+    // También permitir si la comunidad está en el scope del community_admin
+    if (user?.role === 'community_admin' && user.communityId === community.id) return true;
     return false;
   }
 
@@ -133,6 +195,18 @@ function CommunitiesPage() {
                       <i className="fas fa-edit" />
                     </button>
                   )}
+                  {user?.participantId && !myCommunityIds().has(c.id) && c.isPublic !== false && (
+                    pendingFor(c.id) ? (
+                      <span className="communities-pending">{t('communities.requestPending', { defaultValue: 'Solicitud pendiente' })}</span>
+                    ) : (
+                      <button
+                        className="communities-join-btn btn-outline"
+                        onClick={() => handleRequestJoin(c)}
+                      >
+                        <i className="fas fa-user-plus" /> {t('communities.requestJoin', { defaultValue: 'Solicitar unirse' })}
+                      </button>
+                    )
+                  )}
                 </li>
               ))}
             </ul>
@@ -150,6 +224,44 @@ function CommunitiesPage() {
                 <i className="fas fa-plus" /> {t('communities.createCommunity')}
               </button>
             )}
+          </section>
+        )}
+
+        {requestError && <p className="communities-error">{requestError}</p>}
+
+        {membershipRequests.length > 0 && (
+          <section className="card communities-requests">
+            <h2 className="communities-section-title">
+              {t('communities.pendingRequests', { defaultValue: 'Solicitudes e invitaciones pendientes' })}
+            </h2>
+            <ul>
+              {membershipRequests.map((r) => {
+                const community = allCommunities.find(c => c.id === r.communityId);
+                const canResolve =
+                  r.direction === 'invite'
+                    ? r.userId === user?.id || isSuperAdmin
+                    : isAdminRole;
+                return (
+                  <li key={r.id} className="communities-request-item">
+                    <span>
+                      {r.direction === 'invite'
+                        ? t('communities.inviteToYou', { name: community?.name ?? r.communityId, defaultValue: `Te invitaron a unirte a ${community?.name ?? r.communityId}` })
+                        : t('communities.requestToYou', { name: community?.name ?? r.communityId, defaultValue: `Solicitud de ingreso a ${community?.name ?? r.communityId}` })}
+                    </span>
+                    {canResolve && (
+                      <span className="communities-request-actions">
+                        <button className="btn-primary" onClick={() => handleResolve(r, 'accept')}>
+                          {t('common.accept', { defaultValue: 'Aceptar' })}
+                        </button>
+                        <button className="btn-outline" onClick={() => handleResolve(r, 'decline')}>
+                          {t('common.decline', { defaultValue: 'Rechazar' })}
+                        </button>
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         )}
       </div>

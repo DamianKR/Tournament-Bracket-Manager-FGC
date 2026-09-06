@@ -38,7 +38,7 @@ function LeagueOptionsTab({ league }: LeagueOptionsTabProps) {
 
           <div className="option-card">
             <div className="option-label">{t('league.options.labels.game')}</div>
-            <div className="option-value">{getGame(league.gameId)?.shortName ?? league.gameId}</div>
+            <div className="option-value" style={{ color: getGame(league.gameId)?.color, fontWeight: 700 }}>{getGame(league.gameId)?.shortName ?? league.gameId}</div>
           </div>
 
           <div className="option-card">

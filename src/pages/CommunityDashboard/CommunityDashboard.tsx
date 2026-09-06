@@ -9,17 +9,23 @@ import { getAllTournaments } from '@/services/tournament/tournamentService';
 import { getAllLeagues } from '@/services/leagues/leagueService';
 import { getLeaderboard, type LeaderboardEntry } from '@/services/ranking/rankingService';
 import { GAMES } from '@/data/games';
+import { gameBadgeStyle } from '@/utils/gameColor';
 import type { Community } from '@/models/community';
 import type { GlobalParticipant, Tournament } from '@/models/types';
 import type { League } from '@/models/league';
+import Loading from '@/components/Loading/Loading';
 import './CommunityDashboard.css';
 
 export default function CommunityDashboard() {
   const { communityId } = useParams<{ communityId: string }>();
   const { t } = useTranslation();
-  const { allCommunities, setCommunityId, canAdminCurrentCommunity, refresh } = useCommunity();
+  const { allCommunities, setCommunityId, refresh } = useCommunity();
   const { user } = useAuth();
   const [community, setCommunity] = useState<Community | null>(null);
+  // Solo el owner de la comunidad (community_admin) o superadmin pueden editarla
+  const canEditCommunity = user?.role === 'superadmin' ||
+    (user?.role === 'community_admin' && community != null &&
+      (community.ownerAdminId === user.id || user.communityId === community.id || (user.communityIds ?? []).includes(community.id)));
   const [editOpen, setEditOpen] = useState(false);
   const [editName, setEditName] = useState('');
   const [editShort, setEditShort] = useState('');
@@ -68,7 +74,7 @@ export default function CommunityDashboard() {
     })();
   }, [communityId, allCommunities, setCommunityId, topRankedGameId]);
 
-  if (loading) return <div className="community-dashboard">{t('common.loading')}</div>;
+  if (loading) return <div className="community-dashboard"><Loading message={t('common.loading')} /></div>;
   if (!community) return <div className="community-dashboard not-found">{t('communityDashboard.notFound')}</div>;
 
   const displayName = community.name;
@@ -127,7 +133,7 @@ export default function CommunityDashboard() {
               <> — <span className="cd-my-community">{t('communityDashboard.myCommunity')}</span></>
             )}
           </p>
-          {canAdminCurrentCommunity && (
+          {canEditCommunity && (
             <div className="cd-hero-actions">
               <button className="cd-hero-edit-btn" onClick={openEdit}>
                 <i className="fas fa-edit" />
@@ -284,6 +290,9 @@ export default function CommunityDashboard() {
                     <Link to={`events/tournaments/${tournament.id}`} key={tournament.id} className="cd-active-item card">
                       <span className="cd-active-icon"><i className="fas fa-trophy" /></span>
                       <span className="cd-active-name">{tournament.name}</span>
+                      {tournament.gameId && (
+                        <span className="cd-active-game" style={gameBadgeStyle(tournament.gameId)}>{tournament.gameId.toUpperCase()}</span>
+                      )}
                       <span className="cd-active-status">{t('tournaments.status.' + tournament.status)}</span>
                     </Link>
                   ))}
@@ -291,6 +300,9 @@ export default function CommunityDashboard() {
                     <Link to={`events/leagues/${l.id}`} key={l.id} className="cd-active-item card">
                       <span className="cd-active-icon"><i className="fas fa-calendar-alt" /></span>
                       <span className="cd-active-name">{l.name}</span>
+                      {l.gameId && (
+                        <span className="cd-active-game" style={gameBadgeStyle(l.gameId)}>{l.gameId.toUpperCase()}</span>
+                      )}
                       <span className="cd-active-status">{t('leagues.status.' + l.status)}</span>
                     </Link>
                   ))}

@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { RankedMatchType } from '@/models/types';
 import { DuelSettings as DuelSettingsType, DEFAULT_DUEL_SETTINGS } from '@/models/duel';
 import { getDuelSettingsAsync, updateDuelSettings } from '@/services/duels/duelService';
-import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import DuelSettings from './DuelSettings';
 import RecordMatchTab from './RecordMatchTab';
@@ -15,8 +14,7 @@ type RankedSubTab = 'record' | 'challenges' | 'info';
 
 function RankedTab() {
   const { t } = useTranslation();
-  const { user } = useAuth();
-  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
+  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, myParticipantId } = useCommunity();
   const isAdminHere = canAdminCurrentCommunity;
   const communityId = currentCommunity?.id;
   const [matchType, setMatchType] = useState<RankedMatchType>('duel');
@@ -42,7 +40,7 @@ function RankedTab() {
 
   const handleChallengeSelect = (challenge: { id: string; challengerId: string; challengedId: string }) => {
     // Allow admin or challenge participants to access record tab
-    const isParticipant = user?.participantId === challenge.challengerId || user?.participantId === challenge.challengedId;
+    const isParticipant = myParticipantId === challenge.challengerId || myParticipantId === challenge.challengedId;
     if (!isAdminHere && !isParticipant) return;
     setSelectedChallenge(challenge.id);
     setSubTab('record');

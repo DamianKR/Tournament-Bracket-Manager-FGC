@@ -7,14 +7,17 @@ import { loadTournamentsAsync, saveTournaments } from '@/services/storage/localS
 
 import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import { getGame, GAMES } from '@/data/games';
+
 import './TournamentsTab.css';
 
 function TournamentsTab() {
   const { t } = useTranslation();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [gameFilter, setGameFilter] = useState<string>('all');
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const navigate = useNavigate();
-  const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
+  const { currentCommunity, getPath, canAdminCurrentCommunity, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id;
 
   useEffect(() => {
@@ -87,6 +90,8 @@ function TournamentsTab() {
     return <span className={`status-badge ${badge.className}`}>{badge.label}</span>;
   };
 
+  const filteredTournaments = gameFilter === 'all' ? tournaments : tournaments.filter(t => t.gameId === gameFilter);
+
   return (
     <div className="tournaments-tab">
       <div className="tournaments-header">
@@ -94,11 +99,24 @@ function TournamentsTab() {
           <h1><i className="fas fa-trophy" /> {t('tournaments.title')}</h1>
           <p className="text-secondary">{t('tournaments.subtitle')}</p>
         </div>
-        {canAdminCurrentCommunity && (
-          <button className="btn-primary" onClick={handleCreateNew}>
-            <i className="fas fa-plus" /> {t('tournaments.newTournament')}
-          </button>
-        )}
+        <div className="tournaments-header-actions">
+          <select
+            className="game-filter-select"
+            value={gameFilter}
+            onChange={(e) => setGameFilter(e.target.value)}
+            aria-label={t('ranking.gameLabel')}
+          >
+            <option value="all">{t('ranking.allGames')}</option>
+            {GAMES.map((g) => (
+              <option key={g.id} value={g.id} style={{ color: g.color, fontWeight: 700 }}>{g.name}</option>
+            ))}
+          </select>
+          {canAdminCurrentCommunity && (
+            <button className="btn-primary" onClick={handleCreateNew}>
+              <i className="fas fa-plus" /> {t('tournaments.newTournament')}
+            </button>
+          )}
+        </div>
       </div>
 
       {tournaments.length === 0 ? (
@@ -111,9 +129,14 @@ function TournamentsTab() {
             </button>
           )}
         </div>
+      ) : filteredTournaments.length === 0 ? (
+        <div className="empty-state card">
+          <h3>{t('tournaments.emptyTitle')}</h3>
+          <p className="text-secondary">{t('history.noMatchesForGame', { defaultValue: 'No tournaments for this game' })}</p>
+        </div>
       ) : (
         <div className="tournaments-grid">
-          {tournaments.map(tournament => (
+          {filteredTournaments.map(tournament => (
             <div
               key={tournament.id}
               className="tournament-card card"
@@ -125,6 +148,14 @@ function TournamentsTab() {
               </div>
 
               <div className="tournament-card-info">
+                {tournament.gameId && (
+                  <div className="info-row">
+                    <span><i className="fas fa-gamepad" /> {t('common.game', { defaultValue: 'Game' })}</span>
+                    <span style={{ color: getGame(tournament.gameId)?.color, fontWeight: 700 }}>
+                      {getGame(tournament.gameId)?.shortName ?? tournament.gameId}
+                    </span>
+                  </div>
+                )}
                 <div className="info-row">
                   <span><i className="fas fa-users" /> {t('tournaments.participants')}</span>
                   <span>{tournament.participants.length}</span>
@@ -151,7 +182,7 @@ function TournamentsTab() {
                   <i className={tournament.status === 'setup' ? 'fas fa-pen' : 'fas fa-eye'} />
                   {tournament.status === 'setup' ? ` ${t('tournaments.continueSetup')}` : ` ${t('tournaments.viewBracket')}`}
                 </button>
-                {canAdminCurrentCommunity && (
+                {canAdminGame(tournament.gameId) && (
                   <button
                     className="btn-danger btn-sm"
                     onClick={(e) => requestDelete(tournament.id, e)}

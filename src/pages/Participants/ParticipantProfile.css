@@ -793,7 +793,7 @@
   letter-spacing: 0.04em;
 }
 
-.profile-edit-form .form-group input,
+.profile-edit-form .form-group input:not([type="checkbox"]):not([type="radio"]),
 .profile-edit-form .form-group select {
   width: 100%;
   padding: 0.625rem 0.875rem;
@@ -806,7 +806,7 @@
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.profile-edit-form .form-group input:focus,
+.profile-edit-form .form-group input:not([type="checkbox"]):not([type="radio"]):focus,
 .profile-edit-form .form-group select:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
@@ -1369,3 +1369,120 @@
     margin-left: 0;
   }
 }
+
+/* ── Theme polish: acentos púrpura para darle vida al perfil ── */
+
+/* Cards del perfil: borde superior con acento del tema */
+.profile-page .card {
+  border-top: 2px solid var(--primary-color);
+}
+
+/* Títulos de sección: color del tema + barra de acento */
+.profile-page .card > h3,
+.profile-page .profile-section-header h3,
+.profile-page .profile-edit-form h3,
+.profile-page .profile-games-card h3,
+.profile-page .profile-duels-header h3 {
+  color: var(--primary-color);
+  border-left: 3px solid var(--primary-color);
+  padding-left: 0.6rem;
+}
+
+.profile-page .card h3 i,
+.profile-page .profile-section-header h3 i,
+.profile-page .profile-games-card h3 i {
+  color: var(--primary-light);
+}
+
+/* Subtítulos de grupos (juegos, filtros) */
+.profile-page .profile-game-list h4,
+.profile-page .profile-edit-form h4 {
+  color: var(--primary-mid);
+}
+
+/* Labels de formularios con tinte del tema */
+.profile-edit-form .form-group label {
+  color: var(--primary-dark);
+}
+
+/* Subtabs de resultados: tinte púrpura al pasar el mouse */
+.results-subtab {
+  color: var(--primary-color);
+}
+.results-subtab:hover {
+  background-color: rgba(124, 58, 237, 0.08);
+}
+
+/* Filas de resultados: acento en el nombre del torneo/liga */
+.prr-name { color: var(--primary-dark); font-weight: 600; }
+.profile-result-row:hover .prr-name { color: var(--primary-color); }
+
+/* Chips de selección de juegos administrables (game_admin) */
+.game-admin-scope {
+  grid-column: 1 / -1;
+}
+
+.game-admin-scope > label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.game-admin-games {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0.4rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.profile-edit-form .game-admin-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--bg-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-bottom: 0;
+}
+
+.profile-edit-form .game-admin-row:hover {
+  border-color: var(--primary-light);
+}
+
+.game-admin-row input[type="checkbox"] {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.game-admin-row-name {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-admin-row-id {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.game-admin-row.active {
+  font-weight: 600;
+}
+
+/* Nombre del juego: el color de marca se aplica inline (Game.color);
+   fallback al acento del tema si el juego no tiene color definido. */
+.profile-game-item .profile-game-name,
+.profile-game-checkbox span { font-weight: 600; color: var(--primary-color); }

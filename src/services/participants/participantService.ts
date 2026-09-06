@@ -19,6 +19,7 @@ import {
   saveTournaments,
 } from '@/services/storage/localStorage';
 import { SERVER_URL } from '@/services/api/apiClient';
+import { getAuthHeader } from '@/services/auth/authService';
 import { setParticipantGameList, setParticipantPrimaryGame } from '@/utils/participantGames';
 
 // ── ID generator ─────────────────────────────────────────────────────────
@@ -326,5 +327,80 @@ export async function getParticipantLeagueStats(participantId: string): Promise<
   } catch (err) {
     console.error('[ParticipantService] getParticipantLeagueStats error:', err);
     return { leagues: [], totalMatches: 0, totalWins: 0, totalLosses: 0, winRate: 0 };
+  }
+}
+
+// ── Multi-community membership ───────────────────────────────────────────
+
+export interface MembershipRequest {
+  id: string;
+  /** User que entrará a la comunidad (al aceptar se le crea un participant nuevo allí). */
+  userId: string;
+  /** Participant desde el que se originó (perfil visible del user). */
+  sourceParticipantId: string;
+  communityId: string;
+  direction: 'request' | 'invite';
+  status: 'pending' | 'accepted' | 'declined';
+  requestedBy: string;
+  createdAt: string;
+  resolvedAt?: string;
+  resolvedBy?: string;
+}
+
+/** El user autenticado pide entrar a una comunidad pública. */
+export async function requestJoinCommunity(participantId: string, communityId: string): Promise<MembershipRequest> {
+  const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/join-request`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ communityId }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to create join request');
+  return data;
+}
+
+/** superadmin / community_admin invita a un participant a su comunidad. */
+export async function inviteToCommunity(participantId: string, communityId: string): Promise<MembershipRequest> {
+  const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/invite`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ communityId }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to create invite');
+  return data;
+}
+
+/** Solicitudes pendientes visibles para el user (admins ven requests; users ven sus invites). */
+export async function getMembershipRequests(communityId?: string): Promise<MembershipRequest[]> {
+  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+  const res = await fetch(`${SERVER_URL}/api/participants/membership-requests${query}`, {
+    headers: getAuthHeader(),
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+/** Resuelve una solicitud/invitación. */
+export async function resolveMembershipRequest(requestId: string, action: 'accept' | 'decline'): Promise<MembershipRequest> {
+  const res = await fetch(`${SERVER_URL}/api/participants/membership-requests/${requestId}/resolve`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ action }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to resolve request');
+  return data.request;
+}
+
+/** Salir de una comunidad (self) o expulsar (admin de esa comunidad). */
+export async function leaveCommunity(participantId: string, communityId: string): Promise<void> {
+  const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/communities/${communityId}`, {
+    method: 'DELETE',
+    headers: getAuthHeader(),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to leave community');
   }
 }

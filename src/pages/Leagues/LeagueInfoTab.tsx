@@ -49,7 +49,7 @@ function LeagueInfoTab({ league }: LeagueInfoTabProps) {
         <div className="info-card card">
           <h3><i className="fas fa-gamepad" /> {t('league.info.formatTitle')}</h3>
           <ul>
-            <li><strong>{t('league.info.gameLabel')}</strong> {gameName}</li>
+            <li><strong>{t('league.info.gameLabel')}</strong> <span style={{ color: getGame(league.gameId)?.color, fontWeight: 700 }}>{gameName}</span></li>
             <li><strong>{t('league.info.bestOfLabel')}</strong> {league.gamesPerMatch} {t('common.game')}s</li>
             <li><strong>{t('league.info.roundsPerOpponentLabel')}</strong> {league.roundsPerOpponent}</li>
             <li><strong>{t('league.info.playersLabel')}</strong> {league.participantIds.length}</li>

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { AppNotification } from '@/models/notification';
+import Loading from '@/components/Loading/Loading';
 import './NotificationsPage.css';
 
 const TYPE_ICONS: Record<string, string> = {
@@ -65,8 +66,7 @@ export default function NotificationsPage() {
 
         {loading && notifications.length === 0 ? (
           <div className="notif-page-empty card">
-            <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', color: 'var(--text-secondary)' }} />
-            <p>{t('notifications.loading')}</p>
+            <Loading message={t('notifications.loading')} />
           </div>
         ) : notifications.length === 0 ? (
           <div className="notif-page-empty card">

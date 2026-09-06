@@ -70,6 +70,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       role: session.user.role,
       participantId: session.user.participantId,
       communityId: session.user.communityId,
+      memberships: session.user.memberships,
+      communityIds: session.user.communityIds,
+      participantByCommunity: session.user.participantByCommunity,
+      gameAdminFor: session.user.gameAdminFor,
     };
     setUser(loggedInUser);
     setLoginNotifications(session.notifications || []);

@@ -1952,7 +1952,9 @@
     "round": 1,
     "matchNumber": 1,
     "communityId": "community_fgc_santa_clara",
-    "createdAt": "2026-09-05T03:14:39.474Z"
+    "createdAt": "2026-09-05T03:14:39.474Z",
+    "gameId": "mk11",
+    "updatedAt": "2026-09-05T17:57:41.319Z"
   },
   {
     "id": "tm_1788578083712_xm8t02c4x",
@@ -1969,7 +1971,9 @@
     "round": 1,
     "matchNumber": 2,
     "communityId": "community_fgc_santa_clara",
-    "createdAt": "2026-09-05T03:14:43.712Z"
+    "createdAt": "2026-09-05T03:14:43.712Z",
+    "gameId": "mk11",
+    "updatedAt": "2026-09-05T17:57:41.319Z"
   },
   {
     "id": "tm_1788578087477_84nrr6woq",
@@ -1986,6 +1990,8 @@
     "round": 2,
     "matchNumber": 1,
     "communityId": "community_fgc_santa_clara",
-    "createdAt": "2026-09-05T03:14:47.477Z"
+    "createdAt": "2026-09-05T03:14:47.477Z",
+    "gameId": "mk11",
+    "updatedAt": "2026-09-05T17:57:41.319Z"
   }
 ]

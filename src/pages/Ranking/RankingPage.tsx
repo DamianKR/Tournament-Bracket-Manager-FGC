@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
 import { GAMES } from '@/data/games';
+import { gameBadgeStyle } from '@/utils/gameColor';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
 import {
   getLeaderboard,
@@ -28,7 +29,7 @@ type Tab = 'leaderboard' | 'history' | 'info';
 function RankingPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
+  const { currentCommunity, getPath, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id;
 
   function formatRank(rank: string | null | undefined) {
@@ -49,6 +50,8 @@ function RankingPage() {
 
   // Game filter
   const [selectedGameId, setSelectedGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
+  // Resets aplican al juego seleccionado — un admin de juegos solo puede resetear SUS juegos
+  const canAdminSelectedGame = canAdminGame(selectedGameId === 'all' ? null : selectedGameId);
 
   // History
   const [matchHistory, setMatchHistory] = useState<MatchRecord[]>([]);
@@ -70,7 +73,8 @@ function RankingPage() {
     setLoadingBoard(true);
     setBoardError('');
     try {
-      const data = await getLeaderboard(communityId, selectedGameId);
+      // 'all' no tiene leaderboard global — fallback al primer juego
+      const data = await getLeaderboard(communityId, selectedGameId === 'all' ? GAMES[0]?.id : selectedGameId);
       setLeaderboard(data);
     } catch {
       setBoardError(t('ranking.errorTitle'));
@@ -83,7 +87,7 @@ function RankingPage() {
     if (!communityId) return;
     setLoadingHistory(true);
     try {
-      const data = await getAllMatches(communityId, selectedGameId);
+      const data = await getAllMatches(communityId, selectedGameId === 'all' ? undefined : selectedGameId);
       setMatchHistory(data as unknown as MatchRecord[]);
     } catch {
       // silently fail
@@ -178,7 +182,7 @@ function RankingPage() {
           <p className="rk-subtitle">{t('ranking.subtitle')}</p>
         </div>
         <div className="rk-header-right">
-          {canAdminCurrentCommunity && (
+          {canAdminSelectedGame && (
             <div className="rk-reset-btns">
               <button
                 className="rk-reset-btn soft"
@@ -204,14 +208,20 @@ function RankingPage() {
               id="rk-game-select"
               value={selectedGameId}
               onChange={(e) => setSelectedGameId(e.target.value)}
+              style={{ color: GAMES.find(g => g.id === selectedGameId)?.color, fontWeight: 700 }}
             >
+              {tab === 'history' && (
+                <option value="all" style={{ color: 'var(--primary-color)', fontWeight: 700 }}>
+                  {t('ranking.allGames', { defaultValue: 'All games' })}
+                </option>
+              )}
               {GAMES.map((g) => (
-                <option key={g.id} value={g.id}>{g.name}</option>
+                <option key={g.id} value={g.id} style={{ color: g.color, fontWeight: 700 }}>{g.name}</option>
               ))}
             </select>
           </div>
           <div className="rk-tabs">
-            <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => setTab('leaderboard')}>
+            <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => { setTab('leaderboard'); if (selectedGameId === 'all') setSelectedGameId(GAMES[0]?.id ?? 'ssbu'); }}>
               <i className="fas fa-trophy" /> {t('ranking.tabs.ranking')}
             </button>
             <button className={`rk-tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
@@ -357,8 +367,13 @@ function RankingPage() {
                 .map((m) => (
                 <div key={m.id} className="card rk-history-card">
                   <div className="rk-history-top">
+                    {m.gameId && (
+                      <span className="rk-history-game" style={gameBadgeStyle(m.gameId)}>
+                        {m.gameId.toUpperCase()}
+                      </span>
+                    )}
                     <span className="rk-history-date">{formatDate(m.createdAt)}</span>
-                    {canAdminCurrentCommunity && (
+                    {canAdminGame(m.gameId) && (
                       <button
                         className="rk-history-delete"
                         title={t('ranking.deleteRecordTitle')}

@@ -26,7 +26,7 @@ function LeagueView() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
+  const { currentCommunity, getPath, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id;
 
   const [league, setLeague] = useState<League | null>(null);
@@ -36,6 +36,8 @@ function LeagueView() {
   const [tab, setTab] = useState<Tab>('standings');
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+
+  const canAdminLeague = canAdminGame(league?.gameId);
 
   async function loadData() {
     if (!id || !communityId) return;
@@ -139,7 +141,7 @@ function LeagueView() {
           >
             {t('league.view.tabs.matches')}
           </button>
-          {canAdminCurrentCommunity && (
+          {canAdminLeague && (
             <button
               className={`league-tab ${tab === 'pending' ? 'active' : ''}`}
               onClick={() => setTab('pending')}
@@ -168,6 +170,7 @@ function LeagueView() {
         {tab === 'standings' && (
           <LeagueStandingsTab
             leagueId={league.id}
+            gameId={league.gameId}
             standings={standings}
             participants={participants}
             playoffsEnabled={league.playoffsEnabled}
@@ -191,7 +194,7 @@ function LeagueView() {
             onMatchUpdated={loadData}
           />
         )}
-        {tab === 'pending' && canAdminCurrentCommunity && (
+        {tab === 'pending' && canAdminLeague && (
           <LeaguePendingTab
             league={league}
             matches={matches}

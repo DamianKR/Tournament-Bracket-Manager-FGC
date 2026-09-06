@@ -10,16 +10,18 @@ import './LeagueStandingsTab.css';
 
 interface LeagueStandingsTabProps {
   leagueId: string;
+  gameId?: string;
   standings: LeagueStanding[];
   participants: Map<string, GlobalParticipant>;
   playoffsEnabled: boolean;
   onRefresh: () => void;
 }
 
-function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled, onRefresh }: LeagueStandingsTabProps) {
+function LeagueStandingsTab({ leagueId, gameId, standings, participants, playoffsEnabled, onRefresh }: LeagueStandingsTabProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { getPath, canAdminCurrentCommunity } = useCommunity();
+  const { getPath, canAdminGame } = useCommunity();
+  const canAdminLeague = canAdminGame(gameId);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBanConfirm, setShowBanConfirm] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
@@ -75,7 +77,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
 
   return (
     <div className="standings-tab">
-      {canAdminCurrentCommunity && (
+      {canAdminLeague && (
         <div className="admin-actions-bar">
           <button
             className="btn-outline btn-sm"
@@ -108,7 +110,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
           <table className="standings-table">
             <thead>
               <tr>
-                {canAdminCurrentCommunity && <th className="col-select"></th>}
+                {canAdminLeague && <th className="col-select"></th>}
                 <th className="col-rank">{t('league.standings.table.rank')}</th>
                 <th className="col-player">{t('league.standings.table.player')}</th>
                 <th className="col-stat">{t('league.standings.table.mp')}</th>
@@ -127,7 +129,7 @@ function LeagueStandingsTab({ leagueId, standings, participants, playoffsEnabled
                     key={s.participantId}
                     className={`standing-row ${isPlayoffQualified ? 'playoff-qualified' : ''} ${isSelected ? 'selected' : ''}`}
                   >
-                    {canAdminCurrentCommunity && (
+                    {canAdminLeague && (
                       <td className="col-select" onClick={(e) => { e.stopPropagation(); toggleSelection(s.participantId); }}>
                         <input
                           type="checkbox"

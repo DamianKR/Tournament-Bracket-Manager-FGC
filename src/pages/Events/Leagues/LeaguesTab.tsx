@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { League } from '@/models/league';
 import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
-import { getGame } from '@/data/games';
+import { getGame, GAMES } from '@/data/games';
 import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
@@ -12,9 +12,10 @@ import './LeaguesTab.css';
 function LeaguesTab() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
+  const { currentCommunity, getPath, canAdminCurrentCommunity, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id;
   const [leagues, setLeagues] = useState<League[]>([]);
+  const [gameFilter, setGameFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
@@ -44,6 +45,8 @@ function LeaguesTab() {
     );
   }
 
+  const filteredLeagues = gameFilter === 'all' ? leagues : leagues.filter(l => l.gameId === gameFilter);
+
   return (
     <div className="leagues-tab">
       <div className="leagues-header">
@@ -51,11 +54,24 @@ function LeaguesTab() {
           <h1><i className="fas fa-shield-alt" /> {t('leagues.title')}</h1>
           <p className="text-secondary">{t('leagues.subtitle')}</p>
         </div>
-        {canAdminCurrentCommunity && (
-          <button className="btn-primary" onClick={() => navigate(getPath('events/leagues/create'))}>
-            <i className="fas fa-plus" /> {t('leagues.newLeague')}
-          </button>
-        )}
+        <div className="leagues-header-actions">
+          <select
+            className="game-filter-select"
+            value={gameFilter}
+            onChange={(e) => setGameFilter(e.target.value)}
+            aria-label={t('ranking.gameLabel')}
+          >
+            <option value="all">{t('ranking.allGames')}</option>
+            {GAMES.map((g) => (
+              <option key={g.id} value={g.id} style={{ color: g.color, fontWeight: 700 }}>{g.name}</option>
+            ))}
+          </select>
+          {canAdminCurrentCommunity && (
+            <button className="btn-primary" onClick={() => navigate(getPath('events/leagues/create'))}>
+              <i className="fas fa-plus" /> {t('leagues.newLeague')}
+            </button>
+          )}
+        </div>
       </div>
 
       {leagues.length === 0 ? (
@@ -68,9 +84,14 @@ function LeaguesTab() {
             </button>
           )}
         </div>
+      ) : filteredLeagues.length === 0 ? (
+        <div className="empty-state card">
+          <h3>{t('leagues.emptyTitle')}</h3>
+          <p className="text-secondary">{t('history.noMatchesForGame', { defaultValue: 'No leagues for this game' })}</p>
+        </div>
       ) : (
         <div className="leagues-grid">
-          {leagues.map((league) => {
+          {filteredLeagues.map((league) => {
             const game = getGame(league.gameId);
             const displayStatus = getLeagueDisplayStatus(league);
             const statusClass = `status-${displayStatus}`;
@@ -91,7 +112,7 @@ function LeaguesTab() {
                 <div className="league-card-meta">
                   <div className="info-row">
                     <span>{t('leagues.game')}</span>
-                    <span>{game?.shortName || league.gameId}</span>
+                    <span style={{ color: game?.color, fontWeight: 700 }}>{game?.shortName || league.gameId}</span>
                   </div>
                   <div className="info-row">
                     <span>{t('leagues.players')}</span>
@@ -117,7 +138,7 @@ function LeaguesTab() {
                   >
                     <i className="fas fa-eye" /> {t('leagues.viewLeague')}
                   </button>
-                  {canAdminCurrentCommunity && (
+                  {canAdminGame(league.gameId) && (
                     <button
                       className="btn-danger btn-sm"
                       onClick={(e) => {

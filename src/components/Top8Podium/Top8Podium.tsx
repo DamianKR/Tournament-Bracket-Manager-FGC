@@ -24,12 +24,16 @@ function getDisplayName(p: Participant, globals: Map<string, GlobalParticipant>,
 
 function Avatar({ global, gameId, fallbackIcon, large = false }: { global: GlobalParticipant | null; gameId?: string; fallbackIcon: string; large?: boolean }) {
   const [broken, setBroken] = useState(false);
-  const imgUrl = getCharacterIconUrl(global?.gameId ?? gameId, global?.mainCharacterId ?? null);
+  // Priorizar gameId del torneo/evento sobre el gameId default del participante
+  const effectiveGameId = gameId ?? global?.gameId;
+  // Si hay gameId del torneo, buscar el personaje de ese juego en el perfil del participante
+  const characterId = (gameId && global?.games?.[gameId]?.mainCharacterId) || global?.mainCharacterId || null;
+  const imgUrl = getCharacterIconUrl(effectiveGameId, characterId);
   const icon = <i className={`fas ${fallbackIcon}`} />;
   return (
     <div className={`top8-avatar ${large ? 'champion-avatar' : ''}`}>
       {!broken && imgUrl
-        ? <img src={imgUrl} alt={global?.mainCharacterId ?? 'avatar'} onError={() => setBroken(true)} />
+        ? <img src={imgUrl} alt={characterId ?? 'avatar'} onError={() => setBroken(true)} />
         : icon}
     </div>
   );

@@ -1,7 +1,7 @@
 [
   {
-    "gameId": "mk11",
-    "mainCharacterId": "kotal_kahn",
+    "gameId": "sf6",
+    "mainCharacterId": "mbison",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
       "1786387486477-i7xydjcqb",
@@ -30,7 +30,7 @@
     "alias": "KruX",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-09-05T16:13:48.623Z",
+    "updatedAt": "2026-09-06T02:53:36.900Z",
     "phoneNumber": "+5353211080",
     "communityId": "community_fgc_santa_clara",
     "games": {
@@ -101,13 +101,13 @@
     "alias": "",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-09-04T18:52:39.525Z",
+    "updatedAt": "2026-09-06T02:54:34.858Z",
     "communityId": "community_fgc_santa_clara",
     "games": {
       "ssbu": {
         "gameId": "ssbu",
         "mainCharacterId": "link",
-        "eloPoints": 1626,
+        "eloPoints": 1611,
         "eloRank": "Vanquisher"
       }
     }
@@ -210,13 +210,13 @@
       "1786158558338-ey6twflzq"
     ],
     "createdAt": "2026-08-10T19:06:30.209Z",
-    "updatedAt": "2026-09-04T18:52:39.529Z",
+    "updatedAt": "2026-09-06T02:45:43.607Z",
     "communityId": "community_fgc_santa_clara",
     "games": {
       "ssbu": {
         "gameId": "ssbu",
         "mainCharacterId": "terry",
-        "eloPoints": 1513,
+        "eloPoints": 1502,
         "eloRank": "Diamante"
       }
     }
@@ -532,13 +532,13 @@
       "1787069005182-knkndcjgv"
     ],
     "createdAt": "2026-08-10T21:11:44.199Z",
-    "updatedAt": "2026-09-04T18:52:39.543Z",
+    "updatedAt": "2026-09-06T03:11:27.585Z",
     "communityId": "community_fgc_santa_clara",
     "games": {
       "ssbu": {
         "gameId": "ssbu",
         "mainCharacterId": "cloud",
-        "eloPoints": 1520,
+        "eloPoints": 1530,
         "eloRank": "Diamante"
       }
     }
@@ -848,13 +848,13 @@
     "gameId": "ssbu",
     "mainCharacterId": "bowser",
     "createdAt": "2026-08-15T01:28:49.455Z",
-    "updatedAt": "2026-09-04T18:52:39.558Z",
+    "updatedAt": "2026-09-06T02:45:43.607Z",
     "communityId": "community_fgc_santa_clara",
     "games": {
       "ssbu": {
         "gameId": "ssbu",
         "mainCharacterId": "bowser",
-        "eloPoints": 1500,
+        "eloPoints": 1511,
         "eloRank": "Diamante"
       }
     }
@@ -996,13 +996,13 @@
     "gameId": "ssbu",
     "mainCharacterId": "little_mac",
     "createdAt": "2026-08-15T15:35:35.517Z",
-    "updatedAt": "2026-09-04T18:52:39.565Z",
+    "updatedAt": "2026-09-06T03:11:27.585Z",
     "communityId": "community_fgc_santa_clara",
     "games": {
       "ssbu": {
         "gameId": "ssbu",
         "mainCharacterId": "little_mac",
-        "eloPoints": 1485,
+        "eloPoints": 1475,
         "eloRank": "Platino"
       }
     }
@@ -1308,14 +1308,14 @@
     "gameId": "ssbu",
     "mainCharacterId": "mr_game_and_watch",
     "createdAt": "2026-08-20T05:13:06.652Z",
-    "updatedAt": "2026-09-04T18:52:39.582Z",
+    "updatedAt": "2026-09-06T02:54:34.858Z",
     "communityId": "community_fgc_santa_clara",
     "games": {
       "ssbu": {
         "gameId": "ssbu",
         "mainCharacterId": "mr_game_and_watch",
-        "eloPoints": null,
-        "eloRank": "Sin puntos"
+        "eloPoints": 1515,
+        "eloRank": "Diamante"
       }
     }
   },

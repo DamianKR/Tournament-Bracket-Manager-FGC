@@ -1391,5 +1391,23 @@
       "evidence": null
     },
     "metadata": null
+  },
+  {
+    "id": "duel_1788664315841_te4cw5xq1",
+    "challengerId": "gp_1787409813244_ymqkq1e",
+    "challengedId": "gp_1786391892402_8intsz3",
+    "gameId": "mk11",
+    "communityId": "community_fgc_santa_clara",
+    "type": "normal",
+    "status": "pending",
+    "createdAt": "2026-09-06T03:11:55.843Z",
+    "expiresAt": "2026-09-13T03:11:55.841Z",
+    "acceptedAt": null,
+    "declinedAt": null,
+    "completedAt": null,
+    "matchId": null,
+    "challengerResult": null,
+    "challengedResult": null,
+    "metadata": null
   }
 ]

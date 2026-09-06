@@ -19,7 +19,8 @@ const MAX_EVIDENCE_SIZE_BYTES = MAX_EVIDENCE_SIZE_MB * 1024 * 1024;
 
 function ReportMatchModal({ league, match, participants, onClose, onSuccess }: ReportMatchModalProps) {
   const { t } = useTranslation();
-  const { canAdminCurrentCommunity } = useCommunity();
+  const { canAdminGame } = useCommunity();
+  const canAdminLeague = canAdminGame(league.gameId);
   const [winnerId, setWinnerId] = useState(match.participant1Id);
   const [score1, setScore1] = useState(2);
   const [score2, setScore2] = useState(0);
@@ -55,9 +56,19 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
       return;
     }
 
-    if (!isNoShow && (score1 < winScore && score2 < winScore)) {
-      setError(t('league.reportMatch.errors.winThreshold', { count: winScore, total: league.gamesPerMatch }));
-      return;
+    if (!isNoShow) {
+      if (score1 < winScore && score2 < winScore) {
+        setError(t('league.reportMatch.errors.winThreshold', { count: winScore, total: league.gamesPerMatch }));
+        return;
+      }
+      // Score consistency: the declared winner must be the one with the higher score
+      const scoreWinnerId = score1 > score2 ? match.participant1Id : match.participant2Id;
+      if (winnerId !== scoreWinnerId) {
+        setError(t('league.reportMatch.errors.scoreMismatch', {
+          defaultValue: 'El ganador seleccionado no coincide con el score ingresado.',
+        }));
+        return;
+      }
     }
 
     submittingRef.current = true;
@@ -72,13 +83,20 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     };
 
     let result = null;
-    if (canAdminCurrentCommunity && (match.status === 'pending_review' || match.status === 'reported')) {
-      result = await resolveLeagueMatch(league.id, match.id, baseResult);
-    } else {
-      result = await reportMatchResult(league.id, match.id, {
-        ...baseResult,
-        evidence: evidence || undefined,
-      });
+    try {
+      if (canAdminLeague && (match.status === 'pending_review' || match.status === 'reported')) {
+        result = await resolveLeagueMatch(league.id, match.id, baseResult);
+      } else {
+        result = await reportMatchResult(league.id, match.id, {
+          ...baseResult,
+          evidence: evidence || undefined,
+        });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('league.reportMatch.errors.submitFailed'));
+      submittingRef.current = false;
+      setSubmitting(false);
+      return;
     }
 
     submittingRef.current = false;
@@ -90,6 +108,18 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     }
 
     onSuccess();
+  }
+
+  /** Al elegir ganador manualmente, ajusta el score para que sea consistente. */
+  function handleWinnerSelect(pid: string) {
+    setWinnerId(pid);
+    if (pid === match.participant1Id && score1 <= score2) {
+      setScore1(winScore);
+      setScore2(Math.min(score2, winScore - 1));
+    } else if (pid === match.participant2Id && score2 <= score1) {
+      setScore2(winScore);
+      setScore1(Math.min(score1, winScore - 1));
+    }
   }
 
   function handleScoreChange(player: 1 | 2, value: number) {
@@ -198,7 +228,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
                     <input
                       type="radio"
                       checked={winnerId === match.participant1Id}
-                      onChange={() => setWinnerId(match.participant1Id)}
+                      onChange={() => handleWinnerSelect(match.participant1Id)}
                     />
                     {p1Name}
                   </label>
@@ -206,7 +236,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
                     <input
                       type="radio"
                       checked={winnerId === match.participant2Id}
-                      onChange={() => setWinnerId(match.participant2Id)}
+                      onChange={() => handleWinnerSelect(match.participant2Id)}
                     />
                     {p2Name}
                   </label>
@@ -238,7 +268,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
             </>
           )}
 
-          {!(canAdminCurrentCommunity && (match.status === 'pending_review' || match.status === 'reported')) && (
+          {!(canAdminLeague && (match.status === 'pending_review' || match.status === 'reported')) && (
             <div className="form-section">
               <label>{t('league.reportMatch.evidenceLabel', { size: MAX_EVIDENCE_SIZE_MB })}</label>
               <input
@@ -258,7 +288,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
           <button className="btn-primary" onClick={handleSubmit} disabled={submitting}>
             {submitting
               ? t('league.reportMatch.submitting')
-              : canAdminCurrentCommunity && match.status === 'pending_review'
+              : canAdminLeague && match.status === 'pending_review'
                 ? t('league.reportMatch.resolve')
                 : t('league.reportMatch.submit')}
           </button>

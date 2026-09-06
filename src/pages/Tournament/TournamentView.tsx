@@ -17,7 +17,7 @@ function TournamentView() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getPath, canAdminCurrentCommunity } = useCommunity();
+  const { getPath, canAdminGame } = useCommunity();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('bracket');
   const [error, setError] = useState('');
@@ -160,9 +160,9 @@ function TournamentView() {
               <BracketView
                 bracket={tournament.bracket}
                 participants={tournament.participants}
-                onMatchResult={canAdminCurrentCommunity ? handleMatchResult : undefined}
-                onRevertMatch={canAdminCurrentCommunity && tournament.status !== 'completed' ? handleRevertMatch : undefined}
-                readOnly={tournament.status === 'completed' || !canAdminCurrentCommunity}
+                onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
+                onRevertMatch={canAdminGame(tournament.gameId) && tournament.status !== 'completed' ? handleRevertMatch : undefined}
+                readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
               />
             )}
 

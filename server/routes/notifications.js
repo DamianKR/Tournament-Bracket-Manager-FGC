@@ -22,12 +22,23 @@ const router = Router();
 // All endpoints require auth
 router.use(requireAuth);
 
+/** Todos los participantIds del user: hogar + membresías activas (multi-comunidad). */
+function userParticipantIds(user) {
+  const ids = new Set();
+  if (user.participantId) ids.add(user.participantId);
+  for (const pid of Object.values(user.participantByCommunity ?? {})) ids.add(pid);
+  return [...ids];
+}
+
 // GET /api/notifications
 router.get('/', async (req, res) => {
   try {
-    const participantId = req.user.participantId;
-    if (!participantId) return res.json([]);
-    const notifs = await getNotificationsForRecipient(participantId);
+    const pids = userParticipantIds(req.user);
+    if (pids.length === 0) return res.json([]);
+    const lists = await Promise.all(pids.map(getNotificationsForRecipient));
+    const notifs = lists.flat().sort(
+      (a, b) => new Date(b.scheduledAt || b.createdAt) - new Date(a.scheduledAt || a.createdAt)
+    );
     res.json(notifs);
   } catch (err) {
     console.error('[Notifications] GET / error:', err);
@@ -38,10 +49,10 @@ router.get('/', async (req, res) => {
 // GET /api/notifications/unread-count
 router.get('/unread-count', async (req, res) => {
   try {
-    const participantId = req.user.participantId;
-    if (!participantId) return res.json({ count: 0 });
-    const notifs = await getNotificationsForRecipient(participantId);
-    const count = notifs.filter(n => !n.read).length;
+    const pids = userParticipantIds(req.user);
+    if (pids.length === 0) return res.json({ count: 0 });
+    const lists = await Promise.all(pids.map(getNotificationsForRecipient));
+    const count = lists.flat().filter(n => !n.read).length;
     res.json({ count });
   } catch (err) {
     console.error('[Notifications] GET /unread-count error:', err);
@@ -52,10 +63,10 @@ router.get('/unread-count', async (req, res) => {
 // PUT /api/notifications/read-all
 router.put('/read-all', async (req, res) => {
   try {
-    const participantId = req.user.participantId;
-    if (!participantId) return res.json({ marked: 0 });
-    const count = await markAllRead(participantId);
-    res.json({ marked: count });
+    const pids = userParticipantIds(req.user);
+    if (pids.length === 0) return res.json({ marked: 0 });
+    const counts = await Promise.all(pids.map(markAllRead));
+    res.json({ marked: counts.reduce((a, b) => a + b, 0) });
   } catch (err) {
     console.error('[Notifications] PUT /read-all error:', err);
     res.status(500).json({ error: 'Failed to mark all read' });
@@ -65,9 +76,10 @@ router.put('/read-all', async (req, res) => {
 // PUT /api/notifications/:id/read
 router.put('/:id/read', async (req, res) => {
   try {
+    const pids = new Set(userParticipantIds(req.user));
     const notif = await markNotificationRead(req.params.id);
     if (!notif) return res.status(404).json({ error: 'Notification not found' });
-    if (notif.recipientId !== req.user.participantId && req.user.role !== 'admin') {
+    if (!pids.has(notif.recipientId) && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Not your notification' });
     }
     res.json(notif);

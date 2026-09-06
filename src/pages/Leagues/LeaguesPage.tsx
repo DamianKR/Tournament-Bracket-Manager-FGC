@@ -91,7 +91,7 @@ function LeaguesPage() {
                   <div className="league-card-meta">
                     <div className="info-row">
                       <span>{t('leagues.game')}</span>
-                      <span>{game?.shortName || league.gameId}</span>
+                      <span style={{ color: game?.color, fontWeight: 700 }}>{game?.shortName || league.gameId}</span>
                     </div>
                     <div className="info-row">
                       <span>{t('leagues.players')}</span>

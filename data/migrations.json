@@ -13,5 +13,10 @@
     "id": "game_id_migration_v1",
     "applied": true,
     "appliedAt": "2026-09-04T23:31:24.821Z"
+  },
+  {
+    "id": "game_id_migration_v2",
+    "applied": true,
+    "appliedAt": "2026-09-05T17:57:41.337Z"
   }
 ]

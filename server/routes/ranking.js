@@ -24,7 +24,7 @@ import {
   setParticipantGameElo,
 } from '../utils/participantGames.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
+import { filterByCommunity, isInUserScope, getTargetCommunityId, canAdminGame, participantIdFor } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -153,6 +153,13 @@ router.post('/match', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'Both participants must belong to the target community' });
     }
 
+    // Autorización: solo un jugador del match o un admin de ESE juego
+    const myPid = participantIdFor(req.user, communityId);
+    const isMatchPlayer = myPid === playerAId || myPid === playerBId;
+    if (!isMatchPlayer && !canAdminGame(req.user, matchGameId)) {
+      return res.status(403).json({ error: 'Only a match participant or an admin of this game can record the result' });
+    }
+
     const pA = normalizeParticipant(rawA);
     const pB = normalizeParticipant(rawB);
 
@@ -234,6 +241,10 @@ router.post('/reset/hard', requireAuth, requireAdmin, async (req, res) => {
     if (!isInUserScope(req.user, communityId)) {
       return res.status(403).json({ error: 'Cannot reset ranking for this community' });
     }
+    // game-scoped admin: debe especificar un juego del que es admin
+    if (!canAdminGame(req.user, gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
 
     const all = (await participants.getAll()).map(normalizeParticipant);
     const resetPoints = 1500;
@@ -284,6 +295,9 @@ router.post('/reset/soft', requireAuth, requireAdmin, async (req, res) => {
     const gameId = req.body.gameId || null;
     if (!isInUserScope(req.user, communityId)) {
       return res.status(403).json({ error: 'Cannot reset ranking for this community' });
+    }
+    if (!canAdminGame(req.user, gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
     const all = (await participants.getAll()).map(normalizeParticipant);
@@ -341,6 +355,9 @@ router.delete('/matches/:matchId', requireAuth, requireAdmin, async (req, res) =
     if (!match) return res.status(404).json({ error: 'Match not found' });
     if (!isInUserScope(req.user, match.communityId)) {
       return res.status(403).json({ error: 'Match is not in your community scope' });
+    }
+    if (!canAdminGame(req.user, match.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
     }
     const deleted = await rankedMatches.remove(req.params.matchId);
     if (!deleted) return res.status(404).json({ error: 'Match not found' });

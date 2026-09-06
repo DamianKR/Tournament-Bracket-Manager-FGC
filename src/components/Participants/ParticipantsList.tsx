@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { Participant, GlobalParticipant } from '@/models/types';
 import { getGame, getCharacter } from '@/data/games';
+import { gameBadgeStyle } from '@/utils/gameColor';
 import {
   getAllParticipants,
   getAllParticipantsAsync,
@@ -113,7 +114,7 @@ function ParticipantsList({
           </div>
           {gameId && characterId && (
             <div className="pp-item-tags">
-              <span className="pp-item-tag pp-item-tag-game">
+              <span className="pp-item-tag pp-item-tag-game" style={gameBadgeStyle(gameId)}>
                 {getGame(gameId)?.shortName}
               </span>
               <span className="pp-item-tag pp-item-tag-char">

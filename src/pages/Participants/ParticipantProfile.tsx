@@ -10,6 +10,7 @@ import {
   removeParticipant,
   getParticipantLeagueStats,
   getAllParticipantsAsync,
+  inviteToCommunity,
   type LeagueStatsSummary,
 } from '@/services/participants/participantService';
 import { loadTournamentsForParticipantAsync } from '@/services/storage/localStorage';
@@ -18,6 +19,7 @@ import { getAllMatches } from '@/services/ranking/rankingService';
 import { initials, avatarColor } from './ParticipantsPage';
 import { getCharacter, getGame, GAMES } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
+import { gameBadgeStyle } from '@/utils/gameColor';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
 import { getParticipantElo, getParticipantRank, allGameProfiles } from '@/utils/participantGames';
 import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
@@ -48,9 +50,20 @@ function ParticipantProfile() {
   const communityId = currentCommunity?.id;
   const [searchParams] = useSearchParams();
   const { user, isAdmin, isCommunityOwner, isSuperAdmin } = useAuth();
-  const isOwnProfile = !!(user && user.participantId === id);
-  // Can edit profile fields only if in own community AND has admin rights, or is own profile
-  const canEdit = (canAdminCurrentCommunity) || isOwnProfile;
+  const myParticipantIds = new Set([
+    user?.participantId,
+    ...Object.values(user?.participantByCommunity ?? {}),
+  ].filter(Boolean));
+  const isOwnProfile = !!(user && id && myParticipantIds.has(id));
+  // Admin con gameAdminFor: solo edita participantes que compartan sus juegos
+  const isScopedAdmin = user?.role === 'admin' && (user.gameAdminFor?.length ?? 0) > 0;
+  const participantSharesAdminGame = (p: GlobalParticipant | null): boolean => {
+    if (!isScopedAdmin) return true;
+    if (!p) return false;
+    const games = new Set(Object.keys(p.games ?? {}));
+    if (p.gameId) games.add(p.gameId);
+    return [...games].some(g => user!.gameAdminFor!.includes(g));
+  };
   // Can manage other people's accounts only if community owner AND in own community
   const canManageAccounts = canAdminCurrentCommunity && isCommunityOwner;
 
@@ -66,7 +79,7 @@ function ParticipantProfile() {
   const [participant, setParticipant] = useState<GlobalParticipant | null>(null);
   const [stats, setStats] = useState<ComputedStats | null>(null);
   const [leagueStats, setLeagueStats] = useState<LeagueStatsSummary | null>(null);
-  const [tab, setTab] = useState<Tab>(initialTab === 'edit' && canEdit ? 'edit' : 'overview');
+  const [tab, setTab] = useState<Tab>(initialTab === 'edit' && (canAdminCurrentCommunity || isOwnProfile) ? 'edit' : 'overview');
   const [resultsSubTab, setResultsSubTab] = useState<'tournaments' | 'leagues'>('tournaments');
   const [notFound, setNotFound] = useState(false);
   const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
@@ -120,13 +133,31 @@ function ParticipantProfile() {
   const [admPassword, setAdmPassword] = useState('');
   const [admConfirm, setAdmConfirm] = useState('');
   const [admRole, setAdmRole] = useState<AuthUser['role']>('user');
+  const [admGames, setAdmGames] = useState<string[]>([]);
   const [admIsActive, setAdmIsActive] = useState(true);
   const [admError, setAdmError] = useState('');
   const [admSuccess, setAdmSuccess] = useState(false);
+
+  // Jerarquía: nadie edita la cuenta/participant de un usuario de nivel igual o superior
+  const adminLevel = (u: { role?: string; gameAdminFor?: string[] } | null | undefined): number => {
+    if (!u) return -1;
+    if (u.role === 'superadmin') return 4;
+    if (u.role === 'community_admin') return 3;
+    if (u.role === 'admin') return (u.gameAdminFor?.length ?? 0) > 0 ? 1 : 2;
+    return 0;
+  };
+  const outranksLinkedUser = !linkedUser || linkedUser.id === user?.id || adminLevel(user) > adminLevel(linkedUser);
+  // Can edit profile fields only if in own community AND has admin rights, or is own profile
+  const canEdit = (canAdminCurrentCommunity && participantSharesAdminGame(participant) && outranksLinkedUser) || isOwnProfile;
   const [admSaving, setAdmSaving] = useState(false);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteSaving, setDeleteSaving] = useState(false);
+
+  // Multi-community invite
+  const [inviteSaving, setInviteSaving] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState('');
+  const [inviteError, setInviteError] = useState('');
 
   useEffect(() => {
     if (!id || !communityId) return;
@@ -208,12 +239,14 @@ function ParticipantProfile() {
         setAdmPassword('');
         setAdmConfirm('');
         setAdmRole(u.role);
+        setAdmGames(u.gameAdminFor ?? []);
         setAdmIsActive(u.isActive);
       } else {
         setAdmUsername('');
         setAdmPassword('');
         setAdmConfirm('');
         setAdmRole('user');
+        setAdmGames([]);
         setAdmIsActive(true);
       }
       setAdmError('');
@@ -340,6 +373,14 @@ function ParticipantProfile() {
       if (admPassword.trim()) updates.password = admPassword.trim();
       if (admRole !== linkedUser.role) updates.role = admRole;
       if (admIsActive !== linkedUser.isActive) updates.isActive = admIsActive;
+      if (admRole === 'admin') {
+        const prev = linkedUser.gameAdminFor ?? [];
+        if (JSON.stringify([...admGames].sort()) !== JSON.stringify([...prev].sort())) {
+          updates.gameAdminFor = admGames;
+        }
+      } else if (linkedUser.gameAdminFor) {
+        updates.gameAdminFor = [];
+      }
       const targetCommunityId = currentCommunity?.id ?? null;
       if (admRole !== 'superadmin' && targetCommunityId && linkedUser.communityId !== targetCommunityId) {
         updates.communityId = targetCommunityId;
@@ -357,6 +398,19 @@ function ParticipantProfile() {
       setAdmError(err.message || t('participantProfile.errors.updateAccountFailed'));
     } finally {
       setAdmSaving(false);
+    }
+  }
+
+  async function handleInviteToCommunity() {
+    if (!participant || !communityId) return;
+    setInviteSaving(true); setInviteError(''); setInviteMsg('');
+    try {
+      await inviteToCommunity(participant.id, communityId);
+      setInviteMsg(t('participantProfile.edit.inviteSent', { defaultValue: 'Invitación enviada' }));
+    } catch (err: any) {
+      setInviteError(err.message || 'Failed to send invite');
+    } finally {
+      setInviteSaving(false);
     }
   }
 
@@ -465,7 +519,7 @@ function ParticipantProfile() {
                 )}
                 {participant.gameId && participant.mainCharacterId && (
                   <span className="profile-character">
-                    <span className="profile-character-game">
+                    <span className="profile-character-game" style={{ color: getGame(participant.gameId)?.color }}>
                       {getGame(participant.gameId)?.shortName}
                     </span>
                     <span className="profile-character-name">
@@ -592,7 +646,7 @@ function ParticipantProfile() {
                       const rank = profile.eloRank;
                       return (
                         <div key={profile.gameId} className="profile-game-item">
-                          <span className="profile-game-name">{game?.name ?? profile.gameId}</span>
+                          <span className="profile-game-name" style={{ color: game?.color }}>{game?.name ?? profile.gameId}</span>
                           <span className="profile-game-rank" style={{ color: getRankColor(rank) }}>
                             <i className={getRankIcon(rank)} /> {rank === 'Sin puntos' ? t('common.unranked') : rank}
                           </span>
@@ -940,7 +994,9 @@ function ParticipantProfile() {
                       <div key={m.id} className={`match-item ${won ? 'win' : 'loss'}`}>
                         <div className="match-item-header">
                           {m.gameId && (
-                            <span className="match-item-game">{m.gameId.toUpperCase()}</span>
+                            <span className="match-item-game" style={gameBadgeStyle(m.gameId)}>
+                              {m.gameId.toUpperCase()}
+                            </span>
                           )}
                           <span className={`match-item-result ${won ? 'win' : 'loss'}`}>
                             {won ? <><i className="fas fa-trophy" /> {t('participantProfile.matches.win')}</> : <><i className="fas fa-times" /> {t('participantProfile.matches.loss')}</>}
@@ -1039,20 +1095,25 @@ function ParticipantProfile() {
             </div>
             <div className="profile-game-list">
               <h4>{t('participantProfile.edit.games')}</h4>
-              {GAMES.map((g) => (
-                <div key={g.id} className="profile-game-row">
+              {GAMES.map((g) => {
+                const outOfScope = isScopedAdmin && !user!.gameAdminFor!.includes(g.id);
+                return (
+                <div key={g.id} className="profile-game-row" style={outOfScope ? { opacity: 0.45 } : undefined}
+                  title={outOfScope ? t('participantProfile.edit.gameAdminNotYourGame', { defaultValue: 'You are not admin of this game' }) : undefined}>
                   <label className="profile-game-checkbox">
                     <input
                       type="checkbox"
                       checked={editGameIds.includes(g.id)}
+                      disabled={outOfScope}
                       onChange={(e) => toggleGame(g.id, e.target.checked)}
                     />
-                    <span>{g.shortName}</span>
+                    <span style={{ color: g.color }}>{g.shortName}</span>
                   </label>
                   {editGameIds.includes(g.id) && (
                     <select
                       className="form-control"
                       value={editGameMainChars[g.id] ?? ''}
+                      disabled={outOfScope}
                       onChange={(e) => setGameMain(g.id, e.target.value || null)}
                     >
                       <option value="">{t('common.noMain')}</option>
@@ -1062,7 +1123,8 @@ function ParticipantProfile() {
                     </select>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {editGameIds.length > 0 && (
@@ -1164,6 +1226,33 @@ function ParticipantProfile() {
                           </select>
                         </div>
                       )}
+                      {admRole === 'admin' && (
+                        <div className="form-group game-admin-scope">
+                          <label>{t('participantProfile.edit.gameAdminScopeLabel', { defaultValue: 'Juegos que puede administrar (vacío = todos)' })}</label>
+                          <div className="game-admin-games">
+                            {GAMES.map(g => {
+                              const active = admGames.includes(g.id);
+                              return (
+                                <label
+                                  key={g.id}
+                                  className={`game-admin-row ${active ? 'active' : ''}`}
+                                  style={active ? { borderColor: g.color, background: `${g.color}0d` } : undefined}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={active}
+                                    onChange={(e) => setAdmGames(prev =>
+                                      e.target.checked ? [...prev, g.id] : prev.filter(x => x !== g.id)
+                                    )}
+                                  />
+                                  <span className="game-admin-row-name" style={{ color: active ? g.color : undefined }}>{g.name}</span>
+                                  <span className="game-admin-row-id">{g.id.toUpperCase()}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                       <div className="form-group pp-account-active-toggle">
                         <label>
                           <input
@@ -1183,6 +1272,24 @@ function ParticipantProfile() {
                   </>
                 ) : (
                   <p className="text-secondary">{t('participantProfile.edit.noAccount')}</p>
+                )}
+
+                {(isSuperAdmin || canManageAccounts) && participant && communityId &&
+                  participant.communityId !== communityId && (
+                  <>
+                    <hr className="profile-password-sep" />
+                    <h3>{t('participantProfile.edit.inviteSectionTitle', { defaultValue: 'Invitar a esta comunidad' })}</h3>
+                    <p className="text-secondary mb-2">
+                      {t('participantProfile.edit.inviteSectionDesc', { defaultValue: 'El participante recibirá una invitación para unirse a esta comunidad.' })}
+                    </p>
+                    {inviteMsg && <div className="success-message">{inviteMsg}</div>}
+                    {inviteError && <div className="error-message">{inviteError}</div>}
+                    <div className="form-actions">
+                      <button className="btn-outline" onClick={handleInviteToCommunity} disabled={inviteSaving || !!inviteMsg}>
+                        <i className="fas fa-user-plus" /> {inviteSaving ? t('participantProfile.edit.saving') : t('participantProfile.edit.inviteToCommunity', { defaultValue: 'Invitar' })}
+                      </button>
+                    </div>
+                  </>
                 )}
 
                 <hr className="profile-password-sep" />

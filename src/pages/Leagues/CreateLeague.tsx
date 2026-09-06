@@ -13,15 +13,17 @@ import './CreateLeague.css';
 function CreateLeague() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentCommunity, getPath } = useCommunity();
+  const { currentCommunity, getPath, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
+  // Admin con gameAdminFor: solo puede crear ligas de SUS juegos
+  const creatableGames = GAMES.filter(g => canAdminGame(g.id));
 
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   // Form state
   const [name, setName] = useState('');
-  const [gameId, setGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
+  const [gameId, setGameId] = useState<string>(creatableGames[0]?.id ?? GAMES[0]?.id ?? 'ssbu');
   const [roundsPerOpponent, setRoundsPerOpponent] = useState<1 | 2 | 3>(2);
   const [gamesPerMatch, setGamesPerMatch] = useState<3 | 5 | 7 | 9>(3);
   const [matchesPerPeriod, setMatchesPerPeriod] = useState(2);
@@ -156,7 +158,7 @@ function CreateLeague() {
           <div className="form-section">
             <label>{t('league.create.gameLabel')}</label>
             <select value={gameId} onChange={(e) => setGameId(e.target.value)}>
-              {GAMES.map((g) => (
+              {creatableGames.map((g) => (
                 <option key={g.id} value={g.id}>{g.name}</option>
               ))}
             </select>

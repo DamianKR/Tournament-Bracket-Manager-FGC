@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { GlobalParticipant, ComputedStats } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
 import { getCharacter, getGame, GAMES } from '@/data/games';
+import { gameBadgeStyle } from '@/utils/gameColor';
 import {
   getAllParticipants,
   getAllParticipantsAsync,
@@ -32,6 +33,35 @@ function ParticipantsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { currentCommunity, getPath, isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
+  // Admin con gameAdminFor: solo gestiona participantes que compartan sus juegos
+  const isScopedAdmin = user?.role === 'admin' && (user.gameAdminFor?.length ?? 0) > 0;
+  const canManageParticipant = (p: GlobalParticipant): boolean => {
+    // Jerarquía: nadie gestiona el participant de un usuario de nivel igual o superior
+    const linked = usersMap.get(p.id);
+    const level = (u: { role?: string; gameAdminFor?: string[] } | null | undefined): number => {
+      if (!u) return -1;
+      if (u.role === 'superadmin') return 4;
+      if (u.role === 'community_admin') return 3;
+      if (u.role === 'admin') return (u.gameAdminFor?.length ?? 0) > 0 ? 1 : 2;
+      return 0;
+    };
+    if (linked && linked.id !== user?.id && level(user) <= level(linked)) return false;
+    if (!isScopedAdmin) return true;
+    const games = new Set(Object.keys(p.games ?? {}));
+    if (p.gameId) games.add(p.gameId);
+    return [...games].some(g => user!.gameAdminFor!.includes(g));
+  };
+  // Un admin scopenado solo VE participantes que compartan sus juegos
+  const sharesMyGames = (p: GlobalParticipant): boolean => {
+    if (!isScopedAdmin) return true;
+    const games = new Set(Object.keys(p.games ?? {}));
+    if (p.gameId) games.add(p.gameId);
+    return [...games].some(g => user!.gameAdminFor!.includes(g));
+  };
+  // Al crear un participante solo se pueden asignar los juegos que administra
+  const creatableGames = isScopedAdmin
+    ? GAMES.filter(g => user!.gameAdminFor!.includes(g.id))
+    : GAMES;
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [statsMap, setStatsMap] = useState<Map<string, ComputedStats>>(new Map());
   const [loading, setLoading] = useState(true);
@@ -116,6 +146,7 @@ function ParticipantsPage() {
   // ── Filtering & sorting ───────────────────────────────────────────────
 
   const filtered = participants
+    .filter(sharesMyGames)
     .filter((p) => {
       if (!searchQuery) return true;
       const q = searchQuery.toLowerCase();
@@ -221,7 +252,7 @@ function ParticipantsPage() {
 
         <div className="pp-header">
           <div>
-            <h1>{t('participants.title')} <span className="pp-count">{participants.length}</span></h1>
+            <h1>{t('participants.title')} <span className="pp-count">{filtered.length}</span></h1>
             <p className="text-secondary">{t('participants.subtitle')}</p>
           </div>
           {canAdminCurrentCommunity && (
@@ -263,7 +294,7 @@ function ParticipantsPage() {
               <div className="pp-create-section">
                 <h4>{t('participants.gameAndMain')}</h4>
                 <div className="pp-game-list">
-                  {GAMES.map((g) => (
+                  {creatableGames.map((g) => (
                     <div key={g.id} className="pp-game-row">
                       <label className="pp-game-checkbox">
                         <input
@@ -360,7 +391,7 @@ function ParticipantsPage() {
                   </div>
                   {newPrimaryGameId && (
                     <div className="pp-item-tags">
-                      <span className="pp-item-tag pp-item-tag-game">{getGame(newPrimaryGameId)?.shortName}</span>
+                      <span className="pp-item-tag pp-item-tag-game" style={gameBadgeStyle(newPrimaryGameId)}>{getGame(newPrimaryGameId)?.shortName}</span>
                       <span className="pp-item-tag pp-item-tag-char">{newGameMainChars[newPrimaryGameId] ? getCharacter(newPrimaryGameId, newGameMainChars[newPrimaryGameId])?.name : t('common.noMain')}</span>
                     </div>
                   )}
@@ -420,7 +451,7 @@ function ParticipantsPage() {
                       </div>
                       {p.gameId && p.mainCharacterId && (
                         <div className="pp-item-tags">
-                          <span className="pp-item-tag pp-item-tag-game">{getGame(p.gameId)?.shortName}</span>
+                          <span className="pp-item-tag pp-item-tag-game" style={gameBadgeStyle(p.gameId)}>{getGame(p.gameId)?.shortName}</span>
                           <span className="pp-item-tag pp-item-tag-char">
                             {getCharacter(p.gameId, p.mainCharacterId)?.name}
                           </span>
@@ -458,10 +489,10 @@ function ParticipantsPage() {
                         </span>
                       );
                     })()}
-                    {canAdminCurrentCommunity && (
+                    {canAdminCurrentCommunity && canManageParticipant(p) && (
                       <button className="btn-icon" onClick={() => goToEdit(p)} title={t('participants.edit')}><i className="fas fa-pen" /></button>
                     )}
-                    {canAdminCurrentCommunity && (
+                    {canAdminCurrentCommunity && canManageParticipant(p) && (
                       <button className="btn-icon btn-danger" onClick={() => requestDelete(p.id, p.name)} title={t('participants.delete')}><i className="fas fa-trash" /></button>
                     )}
                   </div>

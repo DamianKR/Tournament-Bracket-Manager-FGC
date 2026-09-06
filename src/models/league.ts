@@ -68,6 +68,8 @@ export interface LeagueMatch {
   noShowParticipantId?: string;
   
   // ELO changes (copiados del ranking engine después de procesar)
+  participant1EloBefore?: number;
+  participant2EloBefore?: number;
   participant1EloChange?: number;
   participant2EloChange?: number;
   

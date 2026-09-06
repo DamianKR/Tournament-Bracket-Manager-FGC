@@ -14,7 +14,7 @@ import { tournaments, tournamentMatches } from '../db/collections.js';
 import { validateTournament } from '../models/tournament.js';
 import { applyTournamentElo } from '../utils/tournamentElo.js';
 import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, getTargetCommunityId, isInUserScope } from '../utils/communityScope.js';
+import { filterByCommunity, getTargetCommunityId, isInUserScope, canAdminGame } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -82,6 +82,11 @@ router.post('/', requireAuth, async (req, res) => {
         return res.status(403).json({ error: 'Cannot modify a tournament outside your community scope' });
       }
       t.communityId = targetCommunityId;
+      // game_admin: solo puede tocar torneos de sus juegos asignados
+      const tGameId = t.gameId ?? prev?.gameId ?? null;
+      if (req.user.role === 'admin' && !canAdminGame(req.user, tGameId)) {
+        return res.status(403).json({ error: 'You are not admin of this game' });
+      }
       const becomesCompleted = t.status === 'completed' && (!prev || prev.status !== 'completed');
       const alreadyApplied   = t.eloApplied || (prev && prev.eloApplied);
 
@@ -138,6 +143,12 @@ router.put('/:id', requireAuth, async (req, res) => {
     }
     body.communityId = targetCommunityId;
 
+    // game_admin: solo puede tocar torneos de sus juegos asignados
+    const bodyGameId = body.gameId ?? existing?.gameId ?? null;
+    if (req.user.role === 'admin' && !canAdminGame(req.user, bodyGameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
+
     // When a tournament transitions to 'completed', award ELO points for placements once.
     const becomesCompleted = body.status === 'completed' && (!existing || existing.status !== 'completed');
     const alreadyApplied   = body.eloApplied || (existing && existing.eloApplied);
@@ -169,6 +180,9 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
     if (!isInUserScope(req.user, tournament.communityId)) {
       return res.status(403).json({ error: 'Tournament is not in your community scope' });
+    }
+    if (!canAdminGame(req.user, tournament.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
     }
     const deleted = await tournaments.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Tournament not found' });
@@ -202,13 +216,25 @@ router.get('/:id/matches', async (req, res) => {
   }
 });
 
-// POST /api/tournaments/:id/matches
+// POST /api/tournaments/:id/matches — record a match result (admin of the tournament's game)
 router.post('/:id/matches', requireAuth, async (req, res) => {
   try {
     const match = req.body;
     if (!match.tournamentId || !match.player1Id || !match.player2Id || !match.winnerId) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+    if (match.tournamentId !== req.params.id) {
+      return res.status(400).json({ error: 'Match does not belong to this tournament' });
+    }
+    const tournament = await tournaments.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+    if (!isInUserScope(req.user, tournament.communityId)) {
+      return res.status(403).json({ error: 'Tournament is not in your community scope' });
+    }
+    if (!canAdminGame(req.user, tournament.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
+    if (!match.gameId) match.gameId = tournament.gameId;
     await tournamentMatches.upsert(match);
     res.status(201).json(match);
   } catch (err) {

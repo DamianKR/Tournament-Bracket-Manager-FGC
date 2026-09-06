@@ -4,9 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
 import { getAllMatches } from '@/services/ranking/rankingService';
+import { getAllLeagueMatches, getAllLeagues } from '@/services/leagues/leagueService';
 import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
-import { MatchRecord, GlobalParticipant } from '@/models/types';
+import { MatchRecord, GlobalParticipant, LeagueMatch } from '@/models/types';
 import { GAMES } from '@/data/games';
+import { gameBadgeStyle } from '@/utils/gameColor';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import Loading from '@/components/Loading/Loading';
 import './HistoryTab.css';
@@ -52,11 +54,15 @@ function HistoryTab() {
     if (!communityId) return;
     setLoading(true);
     try {
-      const [tournamentMatches, rankedMatches, participants] = await Promise.all([
+      const [tournamentMatches, rankedMatches, leagueMatches, leagueList, participants] = await Promise.all([
         getAllTournamentMatchesAsync(communityId),
         getAllMatches(communityId),
+        getAllLeagueMatches(communityId),
+        getAllLeagues(communityId),
         getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : getAllParticipants(communityId)),
       ]);
+
+      const leagueNameById = new Map(leagueList.map(l => [l.id, l.name]));
 
       setAllParticipants(participants);
 
@@ -106,10 +112,28 @@ function HistoryTab() {
         date: m.createdAt,
       }));
 
-      // TODO: Add league matches
+      // Convert league matches
+      const unifiedLeague: UnifiedMatch[] = leagueMatches.map((m: LeagueMatch) => ({
+        id: m.id,
+        type: 'league' as const,
+        gameId: m.gameId,
+        player1Id: m.participant1Id,
+        player2Id: m.participant2Id,
+        winnerId: m.winnerId ?? '',
+        player1Name: getParticipantName(m.participant1Id, participants),
+        player2Name: getParticipantName(m.participant2Id, participants),
+        player1EloBefore: m.participant1EloBefore ?? 0,
+        player2EloBefore: m.participant2EloBefore ?? 0,
+        player1EloAfter: (m.participant1EloBefore ?? 0) + (m.participant1EloChange ?? 0),
+        player2EloAfter: (m.participant2EloBefore ?? 0) + (m.participant2EloChange ?? 0),
+        player1EloChange: m.participant1EloChange ?? 0,
+        player2EloChange: m.participant2EloChange ?? 0,
+        date: m.completedDate ?? m.scheduledDate ?? new Date(0).toISOString(),
+        context: leagueNameById.get(m.leagueId),
+      }));
 
       // Combine all sources and sort by date (newest first)
-      const all = [...unifiedTournament, ...unifiedRanked].sort(
+      const all = [...unifiedTournament, ...unifiedRanked, ...unifiedLeague].sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
       );
 
@@ -251,7 +275,9 @@ function HistoryTab() {
                     {' '}{t(`history.${match.type}` as any, { defaultValue: match.type })}
                   </span>
                   {match.gameId && (
-                    <span className="match-banner-game">{match.gameId.toUpperCase()}</span>
+                    <span className="match-banner-game" style={gameBadgeStyle(match.gameId)}>
+                      {match.gameId.toUpperCase()}
+                    </span>
                   )}
                   <span className="match-banner-date">{formatDate(match.date)}</span>
                 </div>

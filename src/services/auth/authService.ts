@@ -131,12 +131,13 @@ export async function createUserAccount(
   username: string,
   password: string,
   role: AuthUser['role'] = 'user',
-  communityId?: string
+  communityId?: string,
+  gameAdminFor?: string[]
 ): Promise<AuthUser> {
   const res = await fetch(`${SERVER_URL}/api/auth/users`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ participantId, username, password, role, communityId }),
+    body: JSON.stringify({ participantId, username, password, role, communityId, gameAdminFor }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Failed to create user');
@@ -146,7 +147,7 @@ export async function createUserAccount(
 /** Actualiza username / password / isActive / role de un usuario. */
 export async function updateUserAccount(
   userId: string,
-  updates: Partial<{ username: string; password: string; isActive: boolean; role: AuthUser['role']; communityId: string | null }>
+  updates: Partial<{ username: string; password: string; isActive: boolean; role: AuthUser['role']; communityId: string | null; gameAdminFor: string[] }>
 ): Promise<AuthUser> {
   const res = await fetch(`${SERVER_URL}/api/auth/users/${userId}`, {
     method: 'PUT',

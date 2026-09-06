@@ -22,8 +22,8 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET, JWT_EXPIRY, requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
-import { isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
-import { users } from '../db/collections.js';
+import { isInUserScope, getTargetCommunityId, canManageUser } from '../utils/communityScope.js';
+import { users, participants } from '../db/collections.js';
 import { getNotificationsForRecipient } from '../services/notificationService.js';
 
 const router = Router();
@@ -41,6 +41,44 @@ function safeUser(user) {
   return safe;
 }
 
+/**
+ * Game-scoped admin check: un admin con gameAdminFor solo puede tocar usuarios
+ * cuyo participant comparta al menos uno de sus juegos administrados.
+ * Devuelve true si el caller PUEDE modificar al target.
+ */
+async function adminSharesGameWithUser(caller, targetUser) {
+  if (caller.role !== 'admin') return true; // owners/superadmin: sin restricción
+  if (!Array.isArray(caller.gameAdminFor) || caller.gameAdminFor.length === 0) return true;
+  // Participant del target en la comunidad del caller
+  const pid = caller.communityId === targetUser.communityId
+    ? targetUser.participantId
+    : (targetUser.participantByCommunity?.[caller.communityId] ?? targetUser.participantId);
+  const target = pid ? await participants.findById(pid) : null;
+  const targetGames = new Set(Object.keys(target?.games || {}));
+  if (target?.gameId) targetGames.add(target.gameId);
+  return [...targetGames].some(g => caller.gameAdminFor.includes(g));
+}
+
+/** Comunidades donde el user tiene membresía activa: communityId + memberships. */
+function getUserCommunityIds(user) {
+  const ids = new Set();
+  if (user.communityId) ids.add(user.communityId);
+  for (const m of user.memberships ?? []) {
+    if (m.isActive !== false) ids.add(m.communityId);
+  }
+  return [...ids];
+}
+
+/** Mapa communityId → participantId del user (hogar + membresías activas). */
+function getParticipantByCommunity(user) {
+  const map = {};
+  if (user.communityId && user.participantId) map[user.communityId] = user.participantId;
+  for (const m of user.memberships ?? []) {
+    if (m.isActive !== false && m.participantId) map[m.communityId] = m.participantId;
+  }
+  return map;
+}
+
 function signToken(user) {
   return jwt.sign(
     {
@@ -49,6 +87,9 @@ function signToken(user) {
       role: user.role,
       participantId: user.participantId ?? null,
       communityId: user.communityId ?? null,
+      communityIds: getUserCommunityIds(user),
+      participantByCommunity: getParticipantByCommunity(user),
+      gameAdminFor: user.gameAdminFor ?? [],
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRY }
@@ -128,18 +169,26 @@ router.post('/login', async (req, res) => {
   const token = signToken(user);
 
   // Load unread notifications on login so the user sees them immediately
+  // (agrega notificaciones de TODOS los participants del user: hogar + membresías)
   let notifications = [];
   try {
-    if (user.participantId) {
-      notifications = await getNotificationsForRecipient(user.participantId);
-    }
+    const pids = new Set(Object.values(getParticipantByCommunity(user)));
+    if (user.participantId) pids.add(user.participantId);
+    const lists = await Promise.all([...pids].map(getNotificationsForRecipient));
+    notifications = lists.flat().sort(
+      (a, b) => new Date(b.scheduledAt || b.createdAt) - new Date(a.scheduledAt || a.createdAt)
+    );
   } catch (err) {
     console.error('[Auth] Failed to load notifications on login:', err);
   }
 
   res.json({
     token,
-    user: safeUser(user),
+    user: {
+      ...safeUser(user),
+      communityIds: getUserCommunityIds(user),
+      participantByCommunity: getParticipantByCommunity(user),
+    },
     notifications,
   });
 });
@@ -158,7 +207,11 @@ router.get('/me', requireAuth, async (req, res) => {
   if (!user || !user.isActive) {
     return res.status(401).json({ error: 'User not found or disabled' });
   }
-  res.json(safeUser(user));
+  res.json({
+    ...safeUser(user),
+    communityIds: getUserCommunityIds(user),
+    participantByCommunity: getParticipantByCommunity(user),
+  });
 });
 
 // ── PUT /api/auth/me/password ─────────────────────────────────────────────
@@ -200,7 +253,7 @@ router.get('/users', requireAuth, requireAdmin, async (req, res) => {
 // Admin crea una cuenta para un participant existente.
 
 router.post('/users', requireAuth, requireAdmin, async (req, res) => {
-  const { participantId, username, password, role = 'user', communityId } = req.body;
+  const { participantId, username, password, role = 'user', communityId, gameAdminFor } = req.body;
 
   if (!participantId || !username?.trim() || !password?.trim()) {
     return res.status(400).json({ error: 'participantId, username and password are required' });
@@ -257,6 +310,11 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
     passwordHash,
     role,
     communityId: targetCommunityId,
+    // gameAdminFor solo aplica a role 'admin'; lista de gameIds que puede administrar.
+    // Si es undefined/null → admin de todos los juegos de la comunidad (comportamiento actual).
+    gameAdminFor: role === 'admin' && Array.isArray(gameAdminFor) && gameAdminFor.length > 0
+      ? gameAdminFor
+      : undefined,
     isActive: true,
     createdAt: new Date().toISOString(),
     lastLoginAt: null,
@@ -270,7 +328,7 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
 
 router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
-  const { username, password, isActive, role, communityId } = req.body;
+  const { username, password, isActive, role, communityId, gameAdminFor } = req.body;
   const isCommunityOwner = ['superadmin', 'community_admin'].includes(req.user.role);
 
   const user = await users.findById(id);
@@ -279,6 +337,16 @@ router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
   // A community admin can only modify users in their own community
   if (!isInUserScope(req.user, user.communityId)) {
     return res.status(403).json({ error: 'Cannot modify user outside your community scope' });
+  }
+
+  // Game-scoped admin: el usuario objetivo debe compartir alguno de sus juegos
+  if (!(await adminSharesGameWithUser(req.user, user))) {
+    return res.status(403).json({ error: 'You are not admin of any of this user\'s games' });
+  }
+
+  // Jerarquía: nadie modifica a un usuario de nivel igual o superior
+  if (!canManageUser(req.user, user)) {
+    return res.status(403).json({ error: 'You cannot modify a user with equal or higher admin level' });
   }
 
   if (username !== undefined) {
@@ -321,8 +389,24 @@ router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
     }
     if (role === 'superadmin') {
       user.communityId = null; // superadmin is not tied to a single community
+      user.gameAdminFor = undefined;
     }
     user.role = role;
+  }
+
+  // gameAdminFor: solo owners pueden modificarlo y solo aplica a role 'admin'
+  if (gameAdminFor !== undefined) {
+    if (!isCommunityOwner) {
+      return res.status(403).json({ error: 'Only community owners can change game admin scope' });
+    }
+    const effectiveRole = role !== undefined ? role : user.role;
+    if (effectiveRole === 'admin') {
+      user.gameAdminFor = Array.isArray(gameAdminFor) && gameAdminFor.length > 0
+        ? gameAdminFor
+        : undefined; // vacío = admin de todos los juegos
+    } else {
+      user.gameAdminFor = undefined;
+    }
   }
   user.updatedAt = new Date().toISOString();
 
@@ -340,6 +424,14 @@ router.delete('/users/:id', requireAuth, requireAdmin, async (req, res) => {
 
   if (!isInUserScope(req.user, user.communityId)) {
     return res.status(403).json({ error: 'Cannot delete user outside your community scope' });
+  }
+
+  if (!(await adminSharesGameWithUser(req.user, user))) {
+    return res.status(403).json({ error: 'You are not admin of any of this user\'s games' });
+  }
+
+  if (!canManageUser(req.user, user)) {
+    return res.status(403).json({ error: 'You cannot delete a user with equal or higher admin level' });
   }
 
   if (user.role === 'superadmin' && req.user.role !== 'superadmin') {

@@ -17,6 +17,7 @@ import {
 import { getAllParticipantsAsync } from '@/services/participants/participantService';
 import { DEFAULT_DUEL_SETTINGS, DuelSettings } from '@/models/duel';
 import { getParticipantElo as getGameElo } from '@/utils/participantGames';
+import { gameBadgeStyle } from '@/utils/gameColor';
 import './ActiveChallenges.css';
 
 interface ActiveChallengesProps {
@@ -26,11 +27,14 @@ interface ActiveChallengesProps {
 function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
+  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, canAdminGame, myParticipantId } = useCommunity();
   const communityId = currentCommunity?.id;
 
   // User belongs to this community (or is superadmin)
   const isAdminHere = canAdminCurrentCommunity;
+  // Admin con gameAdminFor: solo puede crear duelos de SUS juegos
+  const isScopedAdmin = user?.role === 'admin' && (user.gameAdminFor?.length ?? 0) > 0;
+  const creatableGames = isScopedAdmin ? GAMES.filter(g => canAdminGame(g.id)) : GAMES;
   // Regular participant in this community can create/accept challenges
   const canInteract = isInMyCommunity && user != null;
   const [allChallenges, setAllChallenges] = useState<DuelChallenge[]>([]);
@@ -39,7 +43,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [player1Id, setPlayer1Id] = useState('');
   const [player2Id, setPlayer2Id] = useState('');
-  const [duelGameId, setDuelGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
+  const [duelGameId, setDuelGameId] = useState<string>(creatableGames[0]?.id ?? GAMES[0]?.id ?? 'ssbu');
   const [duelType, setDuelType] = useState<'normal' | 'mandatory'>('normal');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'accepted' | 'completed' | 'pending_review' | 'expired'>('all');
   const [filterParticipantId, setFilterParticipantId] = useState<string | null>(null);
@@ -52,10 +56,10 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
 
   useEffect(() => {
     // Auto-set player1 to current user's participant if not admin
-    if (!isAdminHere && user?.participantId && showCreateModal) {
-      setPlayer1Id(user.participantId);
+    if (!isAdminHere && myParticipantId && showCreateModal) {
+      setPlayer1Id(myParticipantId);
     }
-  }, [isAdminHere, user, showCreateModal]);
+  }, [isAdminHere, myParticipantId, showCreateModal]);
 
   const loadData = async () => {
     if (!communityId) return;
@@ -219,6 +223,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         <div className="challenges-list">
           {filteredChallenges.map(challenge => (
             <div key={challenge.id} className={`challenge-card card challenge-card--${challenge.status}`}>
+              <span className="challenge-game" style={gameBadgeStyle(challenge.gameId)}>{challenge.gameId?.toUpperCase()}</span>
               <div className="challenge-main">
                 <div className="challenge-players">
                   <div className="challenge-player">
@@ -235,7 +240,6 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                 </div>
 
                 <div className="challenge-meta">
-                  <span className="challenge-game">{challenge.gameId?.toUpperCase()}</span>
                   <span className={`challenge-status status-${challenge.status}`}>
                     {challenge.status === 'pending' && <i className="fas fa-clock" />}
                     {challenge.status === 'accepted' && <i className="fas fa-check" />}
@@ -250,7 +254,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               </div>
 
               <div className="challenge-actions">
-                {challenge.status === 'pending' && canInteract && (isAdminHere || user?.participantId === challenge.challengedId) && (
+                {challenge.status === 'pending' && canInteract && (canAdminGame(challenge.gameId) || myParticipantId === challenge.challengedId) && (
                   <>
                     <button
                       className="btn-success btn-sm"
@@ -270,7 +274,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                 )}
                 {challenge.status === 'accepted' && canInteract && (
                   <>
-                    {(user?.participantId === challenge.challengerId || user?.participantId === challenge.challengedId || isAdminHere) && (
+                    {(myParticipantId === challenge.challengerId || myParticipantId === challenge.challengedId || canAdminGame(challenge.gameId)) && (
                       <button
                         className="btn-primary btn-sm"
                         onClick={() => handleRecordMatch(challenge)}
@@ -281,7 +285,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     )}
                   </>
                 )}
-                {challenge.status === 'pending_review' && isAdminHere && (
+                {challenge.status === 'pending_review' && canAdminGame(challenge.gameId) && (
                   <button
                     className="btn-warning btn-sm"
                     onClick={() => handleRecordMatch(challenge)}
@@ -320,7 +324,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                   onChange={e => { setDuelGameId(e.target.value); setCreateError(''); }}
                   className="form-control"
                 >
-                  {GAMES.map((g) => (
+                  {creatableGames.map((g) => (
                     <option key={g.id} value={g.id}>{g.name}</option>
                   ))}
                 </select>

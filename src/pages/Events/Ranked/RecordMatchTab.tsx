@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
 import { GAMES } from '@/data/games';
-import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
 import {
@@ -27,8 +26,7 @@ interface RecordMatchTabProps {
 
 function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTabProps) {
   const { t } = useTranslation();
-  const { user } = useAuth();
-  const { currentCommunity, canAdminCurrentCommunity } = useCommunity();
+  const { currentCommunity, canAdminCurrentCommunity, canAdminGame, myParticipantId } = useCommunity();
   const communityId = currentCommunity?.id;
   // Only allow write actions if the user is in their own community
   const isAdminHere = canAdminCurrentCommunity;
@@ -38,6 +36,8 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
   // Challenge data
   const [challenge, setChallenge] = useState<DuelChallenge | null>(null);
+  // Admin del juego del challenge seleccionado (respeta gameAdminFor)
+  const isChallengeGameAdmin = canAdminGame(challenge?.gameId);
 
   // Record match
   const [playerAId, setPlayerAId] = useState('');
@@ -80,14 +80,14 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
     }
   }, [selectedChallengeId, allParticipants]);
 
-  // Check if current user is a participant in the challenge
-  const isParticipant = challenge && user?.participantId && 
-    (user.participantId === challenge.challengerId || user.participantId === challenge.challengedId);
+  // Check if current user is a participant in the challenge (participant de esta comunidad)
+  const isParticipant = challenge && myParticipantId &&
+    (myParticipantId === challenge.challengerId || myParticipantId === challenge.challengedId);
 
   // Check if user has already reported
-  const hasReported = challenge && user?.participantId && (
-    (user.participantId === challenge.challengerId && challenge.challengerResult) ||
-    (user.participantId === challenge.challengedId && challenge.challengedResult)
+  const hasReported = challenge && myParticipantId && (
+    (myParticipantId === challenge.challengerId && challenge.challengerResult) ||
+    (myParticipantId === challenge.challengedId && challenge.challengedResult)
   );
 
   async function handleReportResult() {
@@ -149,7 +149,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
   }
 
   async function handleAdminResolve() {
-    if (!challenge || !isAdminHere) return;
+    if (!challenge || !isChallengeGameAdmin) return;
     if (!winnerId) { setRecordError(t('ranked.duelInfo.record.selectWon')); return; }
 
     setRecording(true);
@@ -291,7 +291,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
             )}
 
             {/* Evidence section for pending_review */}
-            {challenge.status === 'pending_review' && isAdminHere && (
+            {challenge.status === 'pending_review' && isChallengeGameAdmin && (
               <div className="rk-evidence-section">
                 <h4>{t('ranked.duelInfo.record.reportedResults')}</h4>
                 <div className="rk-evidence-grid">
@@ -364,7 +364,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
             {recordError && <p className="rk-error">{recordError}</p>}
 
             {/* Action buttons */}
-            {challenge.status === 'pending_review' && isAdminHere ? (
+            {challenge.status === 'pending_review' && isChallengeGameAdmin ? (
               <div className="rk-record-actions">
                 <button
                   className="btn btn-primary"
@@ -374,7 +374,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                   {recording ? t('ranked.duelInfo.record.resolving') : t('ranked.duelInfo.record.confirmWinner')}
                 </button>
               </div>
-            ) : challenge.status === 'accepted' && isAdminHere ? (
+            ) : challenge.status === 'accepted' && isChallengeGameAdmin ? (
               <div className="rk-record-actions">
                 <button
                   className="btn btn-primary"
@@ -396,7 +396,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
               </div>
             ) : hasReported ? (
               <div className="rk-record-notice">
-                <i className="fas fa-check-circle" /> {t('ranked.duelInfo.record.alreadyReported', { player: user?.participantId === challenge.challengerId ? pName(challenge.challengedId) : pName(challenge.challengerId) })}
+                <i className="fas fa-check-circle" /> {t('ranked.duelInfo.record.alreadyReported', { player: myParticipantId === challenge.challengerId ? pName(challenge.challengedId) : pName(challenge.challengerId) })}
               </div>
             ) : null}
 
@@ -422,10 +422,13 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
 function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticipants: GlobalParticipant[]; communityId?: string }) {
   const { t } = useTranslation();
+  const { canAdminGame } = useCommunity();
+  // Admin con gameAdminFor: solo puede registrar partidas de SUS juegos
+  const adminGames = GAMES.filter(g => canAdminGame(g.id));
   const [playerAId, setPlayerAId] = useState('');
   const [playerBId, setPlayerBId] = useState('');
   const [winnerId, setWinnerId] = useState('');
-  const [gameId, setGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
+  const [gameId, setGameId] = useState<string>(adminGames[0]?.id ?? GAMES[0]?.id ?? 'ssbu');
   const [recording, setRecording] = useState(false);
   const [recordError, setRecordError] = useState('');
   const [lastResult, setLastResult] = useState<MatchResult | null>(null);
@@ -436,6 +439,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
     if (!playerAId || !playerBId) { setRecordError(t('ranked.duelInfo.record.selectBoth')); return; }
     if (playerAId === playerBId) { setRecordError(t('ranked.duelInfo.record.sameParticipant')); return; }
     if (!winnerId) { setRecordError(t('ranked.duelInfo.record.selectWon')); return; }
+    if (!canAdminGame(gameId)) { setRecordError(t('participantProfile.edit.gameAdminNotYourGame', { defaultValue: 'You are not admin of this game' })); return; }
 
     setRecording(true);
     setRecordError('');
@@ -490,7 +494,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
                 value={gameId}
                 onChange={(e) => { setGameId(e.target.value); setWinnerId(''); setLastResult(null); }}
               >
-                {GAMES.map((g) => (
+                {adminGames.map((g) => (
                   <option key={g.id} value={g.id}>{g.name}</option>
                 ))}
               </select>

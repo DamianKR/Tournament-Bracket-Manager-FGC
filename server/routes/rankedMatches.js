@@ -11,7 +11,7 @@ import { Router } from 'express';
 import { rankedMatches } from '../db/collections.js';
 import { rankedMatchShape, validateRankedMatch } from '../models/rankedMatch.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity } from '../utils/communityScope.js';
+import { filterByCommunity, isInUserScope, canAdminGame, participantIdFor } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -49,6 +49,14 @@ router.post('/', requireAuth, async (req, res) => {
     }
 
     const match = rankedMatchShape(id, matchType, gameId, playerAId, playerBId, winnerId, eloData, communityId);
+
+    // Autorización: jugador del match o admin de ese juego
+    const myPid = participantIdFor(req.user, communityId);
+    const isMatchPlayer = myPid === playerAId || myPid === playerBId;
+    if (!isMatchPlayer && !canAdminGame(req.user, gameId)) {
+      return res.status(403).json({ error: 'Only a match participant or an admin of this game can record this match' });
+    }
+
     const validation = validateRankedMatch(match);
 
     if (!validation.valid) {
@@ -66,6 +74,14 @@ router.post('/', requireAuth, async (req, res) => {
 // DELETE /api/ranked-matches/:id
 router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
+    const match = await rankedMatches.findById(req.params.id);
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    if (!isInUserScope(req.user, match.communityId)) {
+      return res.status(403).json({ error: 'Match is not in your community scope' });
+    }
+    if (!canAdminGame(req.user, match.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
     const deleted = await rankedMatches.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Match not found' });
     res.json({ success: true });

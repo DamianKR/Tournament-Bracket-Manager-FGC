@@ -341,6 +341,7 @@ export async function setMatchWinner(
         id: `tm_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         tournamentId,
         tournamentName: updatedTournament.name,
+        gameId: updatedTournament.gameId || null,
         player1Id: match.participant1Id,
         player2Id: match.participant2Id,
         player1GlobalId: p1?.globalParticipantId ?? null,
@@ -438,6 +439,7 @@ export interface TournamentMatchRecord {
   id: string;
   tournamentId: string;
   tournamentName: string;
+  gameId?: string | null;
   player1Id: string;
   player2Id: string;
   player1GlobalId: string | null;

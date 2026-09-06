@@ -8,6 +8,7 @@ import TournamentsTab from './Tournaments/TournamentsTab';
 import LeaguesTab from './Leagues/LeaguesTab';
 import RankedTab from './Ranked/RankedTab';
 import HistoryTab from './History/HistoryTab';
+import Loading from '@/components/Loading/Loading';
 import './EventsPage.css';
 
 export type EventTab = 'tournaments' | 'leagues' | 'ranked' | 'history';
@@ -49,7 +50,7 @@ function EventsPage() {
     return (
       <div className="events-page">
         <div className="events-content">
-          <p className="text-secondary">{t('events.loadingCommunity')}</p>
+          <Loading message={t('events.loadingCommunity')} />
         </div>
       </div>
     );

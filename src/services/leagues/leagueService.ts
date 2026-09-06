@@ -102,6 +102,18 @@ export async function getLeagueMatches(leagueId: string): Promise<LeagueMatch[]>
   }
 }
 
+export async function getAllLeagueMatches(communityId?: string): Promise<LeagueMatch[]> {
+  try {
+    const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+    const res = await fetch(`${SERVER_URL}/api/leagues/matches${query}`);
+    if (!res.ok) throw new Error('Failed to fetch all league matches');
+    return await res.json();
+  } catch (err) {
+    console.error('[LeagueService] getAllLeagueMatches error:', err);
+    return [];
+  }
+}
+
 export async function getLeagueStandings(leagueId: string): Promise<LeagueStanding[]> {
   try {
     const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/standings`);
@@ -130,11 +142,14 @@ export async function reportMatchResult(
       headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(result),
     });
-    if (!res.ok) throw new Error('Failed to report match result');
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Failed to report match result (${res.status})`);
+    }
     return await res.json();
   } catch (err) {
     console.error('[LeagueService] reportMatchResult error:', err);
-    return null;
+    throw err;
   }
 }
 
@@ -154,11 +169,14 @@ export async function resolveLeagueMatch(
       headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(result),
     });
-    if (!res.ok) throw new Error('Failed to resolve match dispute');
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Failed to resolve match dispute (${res.status})`);
+    }
     return await res.json();
   } catch (err) {
     console.error('[LeagueService] resolveLeagueMatch error:', err);
-    return null;
+    throw err;
   }
 }
 

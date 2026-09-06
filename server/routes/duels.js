@@ -19,7 +19,7 @@ import { Router } from 'express';
 import { duels, duelSettings, participants } from '../db/collections.js';
 import { duelChallengeShape, validateDuelChallenge, duelSettingsShape } from '../models/duel.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
+import { filterByCommunity, isInUserScope, getTargetCommunityId, canAdminGame, participantIdFor } from '../utils/communityScope.js';
 import { expireDuel } from '../services/duelExpiration.js';
 import { createNotification } from '../services/notificationService.js';
 import { getEffectiveElo } from '../utils/participantGames.js';
@@ -29,6 +29,11 @@ const router = Router();
 const ADMIN_ROLES = ['superadmin', 'community_admin', 'admin'];
 function isAdmin(user) {
   return user && ADMIN_ROLES.includes(user.role);
+}
+
+/** Admin con permiso sobre el juego del duelo (respeta gameAdminFor). */
+function isGameAdmin(user, gameId) {
+  return isAdmin(user) && canAdminGame(user, gameId);
 }
 
 // Max evidence (base64) size: 6MB string, which is roughly 4.5MB decoded image
@@ -49,9 +54,12 @@ router.get('/settings', optionalAuth, async (req, res) => {
   }
 });
 
-// PUT /api/duels/settings
+// PUT /api/duels/settings — cross-game settings: not allowed for game-scoped admins
 router.put('/settings', requireAuth, requireAdmin, async (req, res) => {
   try {
+    if (req.user.role === 'admin' && Array.isArray(req.user.gameAdminFor) && req.user.gameAdminFor.length > 0) {
+      return res.status(403).json({ error: 'Game-scoped admins cannot edit global duel settings' });
+    }
     const communityId = getTargetCommunityId(req.user, req.body.communityId);
     if (!isInUserScope(req.user, communityId)) {
       return res.status(403).json({ error: 'Cannot update settings for this community' });
@@ -128,14 +136,14 @@ router.post('/', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'Invalid duel type' });
     }
 
-    // Non-admin users can only challenge as themselves
-    if (!isAdmin(req.user) && req.user.participantId !== challengerId) {
-      return res.status(403).json({ error: 'You can only create challenges as yourself' });
-    }
-
     const communityId = getTargetCommunityId(req.user, req.body.communityId);
     if (!isInUserScope(req.user, communityId)) {
       return res.status(403).json({ error: 'Cannot create challenge in this community' });
+    }
+
+    // Solo el propio jugador o un admin DE ESE JUEGO puede crear el challenge
+    if (participantIdFor(req.user, communityId) !== challengerId && !isGameAdmin(req.user, gameId)) {
+      return res.status(403).json({ error: 'You can only create challenges as yourself unless you are an admin of this game' });
     }
 
     // Both participants must belong to the target community and be registered for the game
@@ -266,8 +274,8 @@ router.put('/:id/accept', requireAuth, async (req, res) => {
     if (!isInUserScope(req.user, challenge.communityId)) {
       return res.status(403).json({ error: 'Challenge is not in your community scope' });
     }
-    if (!isAdmin(req.user) && req.user.participantId !== challenge.challengedId) {
-      return res.status(403).json({ error: 'Only the challenged player or admin can accept' });
+    if (!isGameAdmin(req.user, challenge.gameId) && participantIdFor(req.user, challenge.communityId) !== challenge.challengedId) {
+      return res.status(403).json({ error: 'Only the challenged player or an admin of this game can accept' });
     }
 
     challenge.status = 'accepted';
@@ -338,8 +346,8 @@ router.put('/:id/decline', requireAuth, async (req, res) => {
     if (!isInUserScope(req.user, challenge.communityId)) {
       return res.status(403).json({ error: 'Challenge is not in your community scope' });
     }
-    if (!isAdmin(req.user) && req.user.participantId !== challenge.challengedId) {
-      return res.status(403).json({ error: 'Only the challenged player or admin can decline' });
+    if (!isGameAdmin(req.user, challenge.gameId) && participantIdFor(req.user, challenge.communityId) !== challenge.challengedId) {
+      return res.status(403).json({ error: 'Only the challenged player or an admin of this game can decline' });
     }
 
     challenge.status = 'declined';
@@ -365,11 +373,12 @@ router.put('/:id/complete', requireAuth, async (req, res) => {
     const { matchId } = req.body;
     if (!matchId) return res.status(400).json({ error: 'Missing matchId' });
 
-    // Authorize: admin or either participant
-    const userIsParticipant = req.user.participantId === challenge.challengerId ||
-                              req.user.participantId === challenge.challengedId;
-    if (!isAdmin(req.user) && !userIsParticipant) {
-      return res.status(403).json({ error: 'Only the duel participants or admin can complete' });
+    // Authorize: admin or either participant (participant de esa comunidad)
+    const myPid = participantIdFor(req.user, challenge.communityId);
+    const userIsParticipant = myPid === challenge.challengerId ||
+                              myPid === challenge.challengedId;
+    if (!isGameAdmin(req.user, challenge.gameId) && !userIsParticipant) {
+      return res.status(403).json({ error: 'Only the duel participants or an admin of this game can complete' });
     }
 
     challenge.status = 'completed';
@@ -388,6 +397,11 @@ router.put('/:id/complete', requireAuth, async (req, res) => {
 // Applies ELO penalties if the challenge was accepted and someone didn't confirm
 router.put('/:id/expire', requireAuth, async (req, res) => {
   try {
+    const existing = await duels.findById(req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Challenge not found' });
+    if (!isGameAdmin(req.user, existing.gameId)) {
+      return res.status(403).json({ error: 'Only an admin of this game can expire a challenge' });
+    }
     const challenge = await expireDuel(req.params.id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
     res.json(challenge);
@@ -404,6 +418,9 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
     if (!isInUserScope(req.user, challenge.communityId)) {
       return res.status(403).json({ error: 'Challenge is not in your community scope' });
+    }
+    if (!isGameAdmin(req.user, challenge.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
     }
     const deleted = await duels.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Challenge not found' });
@@ -428,11 +445,13 @@ router.put('/:id/report-result', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'Challenge must be accepted before reporting results' });
     }
 
-    // Check if user is one of the participants
-    const isChallenger = req.user.participantId === challenge.challengerId;
-    const isChallenged = req.user.participantId === challenge.challengedId;
+    // Check if user is one of the participants (participant de esa comunidad)
+    const myPid2 = participantIdFor(req.user, challenge.communityId);
+    const isChallenger = myPid2 === challenge.challengerId;
+    const isChallenged = myPid2 === challenge.challengedId;
 
-    if (!isChallenger && !isChallenged && !isAdmin(req.user)) {
+    const adminCanAct = isGameAdmin(req.user, challenge.gameId);
+    if (!isChallenger && !isChallenged && !adminCanAct) {
       return res.status(403).json({ error: 'Only participants can report results' });
     }
 
@@ -456,7 +475,7 @@ router.put('/:id/report-result', requireAuth, async (req, res) => {
     };
 
     // Admin can confirm directly without consensus
-    if (isAdmin(req.user)) {
+    if (adminCanAct) {
       challenge.challengerResult = { ...result, evidence: null };
       challenge.challengedResult = { ...result, evidence: null };
       challenge.status = 'completed';
@@ -505,6 +524,9 @@ router.put('/:id/resolve-conflict', requireAuth, requireAdmin, async (req, res) 
 
     if (challenge.status !== 'pending_review') {
       return res.status(400).json({ error: 'Challenge is not pending review' });
+    }
+    if (!isGameAdmin(req.user, challenge.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
     const { winnerId } = req.body;

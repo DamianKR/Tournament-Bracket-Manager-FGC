@@ -32,7 +32,9 @@ function CreateTournament() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { currentCommunity, getPath } = useCommunity();
+  const { currentCommunity, getPath, canAdminGame } = useCommunity();
+  // Admin con gameAdminFor: solo puede crear torneos de SUS juegos
+  const creatableGames = GAMES.filter(g => canAdminGame(g.id));
   const [tournamentId, setTournamentId] = useState<string | null>(id || null);
   const [tournamentName, setTournamentName] = useState('');
   const [mode, setMode] = useState<TournamentMode>('double_elimination');
@@ -41,7 +43,7 @@ function CreateTournament() {
   const [seedingMode, setSeedingMode] = useState<SeedingMode>('none');
   const [partialSeedCount, setPartialSeedCount] = useState<PartialSeedCount>(8);
   const [givesPoints, setGivesPoints] = useState(true);
-  const [gameId, setGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
+  const [gameId, setGameId] = useState<string>(creatableGames[0]?.id ?? GAMES[0]?.id ?? 'ssbu');
   const [viewMode, setViewMode] = useState<ViewMode>('participants');
   const [participants, setParticipants] = useState<any[]>([]);
   const [newParticipantName, setNewParticipantName] = useState('');
@@ -350,7 +352,7 @@ function CreateTournament() {
                   onChange={(e) => setGameId(e.target.value)}
                   className="w-full"
                 >
-                  {GAMES.map((g) => (
+                  {creatableGames.map((g) => (
                     <option key={g.id} value={g.id}>{g.name}</option>
                   ))}
                 </select>

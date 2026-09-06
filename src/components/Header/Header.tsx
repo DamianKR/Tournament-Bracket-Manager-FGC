@@ -11,7 +11,7 @@ function Header() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { user, isAdmin, isAuthenticated, logout } = useAuth();
-  const { currentCommunity, allCommunities } = useCommunity();
+  const { currentCommunity, allCommunities, myParticipantId } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
 
   // La comunidad activa para navegación: la que se está viendo en el URL,
@@ -165,9 +165,9 @@ function Header() {
             {isAuthenticated ? (
               <div className="header-user-pill">
                 <span
-                  className={`header-username ${user?.participantId ? 'clickable' : ''}`}
-                  onClick={() => user?.participantId && handleNav(currentCommunity ? `/c/${currentCommunity.id}/participants/${user.participantId}` : '/communities')}
-                  title={user?.participantId ? t('common.viewProfile') : user!.username}
+                  className={`header-username ${myParticipantId ? 'clickable' : ''}`}
+                  onClick={() => myParticipantId && handleNav(currentCommunity ? `/c/${currentCommunity.id}/participants/${myParticipantId}` : '/communities')}
+                  title={myParticipantId ? t('common.viewProfile') : user!.username}
                 >
                   <i className="fas fa-user-circle" />
                   <span className="header-username-text">{user!.username}</span>

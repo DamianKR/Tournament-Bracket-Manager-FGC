@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
-import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { formatInTimeZone } from '@/utils/timeZone';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
@@ -17,8 +16,8 @@ interface LeagueScheduleTabProps {
 
 function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: LeagueScheduleTabProps) {
   const { t } = useTranslation();
-  const { user } = useAuth();
-  const { isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
+  const { isInMyCommunity, canAdminGame, myParticipantId } = useCommunity();
+  const canAdminLeague = canAdminGame(league.gameId);
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
   const [weekFilter, setWeekFilter] = useState<number | 'all'>('all');
 
@@ -144,8 +143,8 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                       </span>
                     )}
 
-                    {!isCompleted && !isFutureWeek && matchStarted && isInMyCommunity && (canAdminCurrentCommunity ||
-                      (user?.participantId && (match.participant1Id === user.participantId || match.participant2Id === user.participantId))) && (
+                    {!isCompleted && !isFutureWeek && matchStarted && isInMyCommunity && (canAdminLeague ||
+                      (myParticipantId && (match.participant1Id === myParticipantId || match.participant2Id === myParticipantId))) && (
                       <button
                         className="btn-primary btn-sm"
                         onClick={() => setSelectedMatch(match)}

@@ -24,7 +24,7 @@ import { calculateMatchElo, getRankName } from '../utils/eloEngine.js';
 import { notifyAdminsOfBanEligibility } from '../services/leagueExpiration.js';
 import { scheduleLeagueNotifications } from '../services/notificationScheduler.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, isInUserScope, getTargetCommunityId } from '../utils/communityScope.js';
+import { filterByCommunity, isInUserScope, getTargetCommunityId, canAdminGame, participantIdFor } from '../utils/communityScope.js';
 import {
   migrateParticipantGames,
   getEffectiveElo,
@@ -37,6 +37,30 @@ const router = Router();
 
 function generateId(prefix = 'league') {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
+/**
+ * Valida que el score "N-M" sea consistente con el winnerId:
+ * - Formato "N-M" con enteros no-negativos
+ * - No puede ser empate
+ * - participant1 tiene el primer número, participant2 el segundo;
+ *   el mayor debe corresponder al winnerId declarado
+ * Devuelve el mensaje de error o null si es válido.
+ */
+function validateScoreConsistency(match, winnerId, score) {
+  if (!score) return null;
+  const parts = String(score).split('-').map(s => s.trim());
+  if (parts.length !== 2) return `Invalid score format "${score}" (expected "N-M")`;
+  const [p1Score, p2Score] = parts.map(Number);
+  if (isNaN(p1Score) || isNaN(p2Score) || p1Score < 0 || p2Score < 0 || !Number.isInteger(p1Score) || !Number.isInteger(p2Score)) {
+    return `Invalid score "${score}" (expected non-negative integers "N-M")`;
+  }
+  if (p1Score === p2Score) return `Score cannot be a tie (${score})`;
+  const scoreWinnerId = p1Score > p2Score ? match.participant1Id : match.participant2Id;
+  if (scoreWinnerId !== winnerId) {
+    return `Score inconsistency: score ${score} indicates Player ${p1Score > p2Score ? 1 : 2} won, but the selected winner is Player ${winnerId === match.participant1Id ? 1 : 2}`;
+  }
+  return null;
 }
 
 async function applyLeagueMatchElo(match) {
@@ -205,6 +229,37 @@ router.get('/', optionalAuth, async (req, res) => {
   }
 });
 
+// GET /api/leagues/matches — get all completed league matches for a community
+// IMPORTANTE: registrada ANTES de /:id o Express interpreta 'matches' como league id
+router.get('/matches', optionalAuth, async (req, res) => {
+  try {
+    const { communityId } = req.query;
+    if (communityId && !isInUserScope(req.user, communityId)) {
+      return res.status(403).json({ error: 'Community is not in your scope' });
+    }
+    const allMatches = await leagueMatches.getAll();
+    let filtered = allMatches.filter(m => m.status === 'completed' || m.status === 'no_show');
+
+    if (communityId) {
+      const allLeagues = await leagues.getAll();
+      const communityLeagueIds = new Set(
+        allLeagues.filter(l => l.communityId === communityId).map(l => l.id)
+      );
+      filtered = filtered.filter(m => communityLeagueIds.has(m.leagueId));
+    } else {
+      // Sin communityId: los matches no tienen communityId propio — se resuelve via su liga
+      const scopedLeagues = filterByCommunity(req.user, await leagues.getAll());
+      const ids = new Set(scopedLeagues.map(l => l.id));
+      filtered = filtered.filter(m => ids.has(m.leagueId));
+    }
+
+    res.json(filtered);
+  } catch (err) {
+    console.error('[Leagues] GET /matches error:', err);
+    res.status(500).json({ error: 'Failed to read league matches' });
+  }
+});
+
 // GET /api/leagues/:id
 router.get('/:id', optionalAuth, async (req, res) => {
   try {
@@ -269,6 +324,10 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     const communityId = getTargetCommunityId(req.user, req.body.communityId);
     if (!isInUserScope(req.user, communityId)) {
       return res.status(403).json({ error: 'Cannot create league in this community' });
+    }
+    // game_admin solo puede crear ligas de sus juegos asignados
+    if (!canAdminGame(req.user, gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
     // All selected participants must have this game in their profile and belong to the community
@@ -401,11 +460,13 @@ router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'League is not in your community scope' });
     }
 
-    const isParticipant = req.user.participantId &&
-      (match.participant1Id === req.user.participantId || match.participant2Id === req.user.participantId);
-    const isAdmin = ['superadmin', 'community_admin', 'admin'].includes(req.user.role);
+    const userPid = participantIdFor(req.user, league.communityId);
+    const isParticipant = userPid &&
+      (match.participant1Id === userPid || match.participant2Id === userPid);
+    const isAdmin = ['superadmin', 'community_admin', 'admin'].includes(req.user.role) &&
+      canAdminGame(req.user, league.gameId);
     if (!isParticipant && !isAdmin) {
-      return res.status(403).json({ error: 'Only participants or admins can report results' });
+      return res.status(403).json({ error: 'Only participants or admins of this game can report results' });
     }
 
     // Apply per-game ELO through the shared helper
@@ -413,6 +474,8 @@ router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
       match.noShowParticipantId = noShowParticipantId;
       match.winnerId = noShowParticipantId === match.participant1Id ? match.participant2Id : match.participant1Id;
     } else {
+      const scoreError = validateScoreConsistency(match, winnerId, score);
+      if (scoreError) return res.status(400).json({ error: scoreError });
       match.winnerId = winnerId;
       match.score = score;
     }
@@ -486,6 +549,9 @@ router.post('/:id/matches/:matchId/mark-no-show', requireAuth, requireAdmin, asy
 
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
+    if (!canAdminGame(req.user, league.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
 
     const absentId = noShowParticipantId;
     const presentId = absentId === match.participant1Id ? match.participant2Id : match.participant1Id;
@@ -534,6 +600,11 @@ router.post('/:id/matches/:matchId/cancel', requireAuth, requireAdmin, async (re
     if (match.leagueId !== req.params.id) return res.status(400).json({ error: 'Match does not belong to this league' });
     if (match.status !== 'pending_review') return res.status(400).json({ error: 'Match is not pending review' });
 
+    const leagueForCancel = await leagues.findById(req.params.id);
+    if (leagueForCancel && !canAdminGame(req.user, leagueForCancel.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
+
     // Simply mark as completed with no winner/loser and no ELO change
     match.status = 'completed';
     match.score = 'Cancelled';
@@ -554,6 +625,9 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
     
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
+    if (!canAdminGame(req.user, league.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
 
     if (!participantIds || !Array.isArray(participantIds) || participantIds.length === 0) {
       return res.status(400).json({ error: 'No participants to ban' });
@@ -651,6 +725,9 @@ router.get('/:id/eligible-for-ban', async (req, res) => {
   try {
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
+    if (!canAdminGame(req.user, league.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
 
     const leagueMatchList = await leagueMatches.getByField('leagueId', league.id);
 
@@ -689,6 +766,9 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!league) return res.status(404).json({ error: 'League not found' });
     if (!isInUserScope(req.user, league.communityId)) {
       return res.status(403).json({ error: 'League is not in your community scope' });
+    }
+    if (!canAdminGame(req.user, league.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
     }
     const deleted = await leagues.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'League not found' });
@@ -734,11 +814,17 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'No-show player must be one of the participants' });
     }
 
-    const reporterId = req.user.participantId;
+    if (!isNoShow) {
+      const scoreError = validateScoreConsistency(match, winnerId, score);
+      if (scoreError) return res.status(400).json({ error: scoreError });
+    }
+
+    const reporterId = participantIdFor(req.user, league.communityId);
     const isParticipant = reporterId === match.participant1Id || reporterId === match.participant2Id;
-    const isAdminRole = ['superadmin', 'community_admin', 'admin'].includes(req.user.role);
+    const isAdminRole = ['superadmin', 'community_admin', 'admin'].includes(req.user.role) &&
+      canAdminGame(req.user, league.gameId);
     if (!isParticipant && !isAdminRole) {
-      return res.status(403).json({ error: 'Only participants or admins can report results' });
+      return res.status(403).json({ error: 'Only participants or admins of this game can report results' });
     }
 
     if (!match.reportedResults) match.reportedResults = [];
@@ -814,9 +900,21 @@ router.post('/:id/matches/:matchId/resolve', requireAuth, requireAdmin, async (r
       return res.status(400).json({ error: 'Winner must be one of the participants' });
     }
 
+    const leagueForResolve = await leagues.findById(req.params.id);
+    if (leagueForResolve && !canAdminGame(req.user, leagueForResolve.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
+
+    // Validate BEFORE mutating the match
+    if (!isNoShow) {
+      const scoreError = validateScoreConsistency(match, winnerId, score);
+      if (scoreError) return res.status(400).json({ error: scoreError });
+    }
+
     match.winnerId = winnerId;
     match.score = score;
     match.noShowParticipantId = isNoShow ? noShowParticipantId : undefined;
+    
     const eloChanges = await applyLeagueMatchElo(match);
     res.json({ match, eloChanges });
   } catch (err) {
@@ -852,6 +950,9 @@ router.post('/:id/regenerate-schedule', requireAuth, requireAdmin, async (req, r
   try {
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
+    if (!canAdminGame(req.user, league.gameId)) {
+      return res.status(403).json({ error: 'You are not admin of this game' });
+    }
 
     // Get active participants (not banned)
     const activeParticipants = league.participantIds.filter(pid => !league.bannedParticipantIds.includes(pid));

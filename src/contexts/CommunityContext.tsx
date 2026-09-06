@@ -26,10 +26,22 @@ interface CommunityContextValue {
    */
   isInMyCommunity: boolean;
   /**
+   * participantId del user EN la comunidad activa (multi-comunidad: cada
+   * comunidad tiene un participant distinto). null si no es miembro.
+   */
+  myParticipantId: string | null;
+  /**
    * true if the user is an admin-level role AND is in their own community.
    * Shorthand for: isAdmin && isInMyCommunity.
    */
   canAdminCurrentCommunity: boolean;
+  /**
+   * true if the user can administrate a specific game in the current community.
+   * - superadmin/community_admin → siempre.
+   * - admin sin gameAdminFor → todos los juegos.
+   * - admin con gameAdminFor → solo los juegos listados.
+   */
+  canAdminGame: (gameId: string | null | undefined) => boolean;
 }
 
 const CommunityContext = createContext<CommunityContextValue | null>(null);
@@ -72,15 +84,35 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     refresh();
   }, [refresh]);
 
-  // A user "owns" the current community if they are superadmin OR their communityId matches.
+  // A user "owns" the current community if they are superadmin OR their communityId matches
+  // OR the community is in their membership list (multi-community).
   const isInMyCommunity =
     user?.role === 'superadmin' ||
-    (user != null && user.communityId === currentCommunity?.id);
+    (user != null && (
+      user.communityId === currentCommunity?.id ||
+      (user.communityIds?.includes(currentCommunity?.id ?? '') ?? false)
+    ));
 
   const canAdminCurrentCommunity =
     isInMyCommunity &&
     user != null &&
     (ALL_ADMIN_ROLES as readonly string[]).includes(user.role);
+
+  const canAdminGame = useCallback((gameId: string | null | undefined): boolean => {
+    if (!canAdminCurrentCommunity || !user) return false;
+    if (user.role === 'superadmin' || user.role === 'community_admin') return true;
+    if (user.role === 'admin') {
+      if (!user.gameAdminFor || user.gameAdminFor.length === 0) return true;
+      return gameId != null && user.gameAdminFor.includes(gameId);
+    }
+    return false;
+  }, [canAdminCurrentCommunity, user]);
+
+  // Participant del user en la comunidad activa: hogar o membresía.
+  const myParticipantId = currentCommunity
+    ? (user?.participantByCommunity?.[currentCommunity.id] ??
+       (user?.communityId === currentCommunity.id ? user.participantId : null))
+    : (user?.participantId ?? null);
 
   const value: CommunityContextValue = {
     currentCommunity,
@@ -89,7 +121,9 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     refresh,
     getPath,
     isInMyCommunity,
+    myParticipantId,
     canAdminCurrentCommunity,
+    canAdminGame,
   };
 
   return (

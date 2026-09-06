@@ -18,6 +18,8 @@ export interface Game {
   id: string;
   name: string;
   shortName: string;
+  /** Color de marca asociado al juego (marketing/logo) para acentos en la UI. */
+  color: string;
   characters: Character[];
 }
 
@@ -365,36 +367,42 @@ export const GAMES: Game[] = [
     id: 'ssbu',
     name: 'Super Smash Bros. Ultimate',
     shortName: 'Smash Ultimate',
+    color: '#c026d3', // Fucsia vibrante — Smash Ball multicolor (logo Ultimate)
     characters: SSBU_CHARACTERS,
   },
   {
     id: 'sf6',
     name: 'Street Fighter 6',
     shortName: 'SF6',
+    color: '#ea580c', // Naranja fuego — logo SF6 negro/naranja con chispas
     characters: SF6_CHARACTERS,
   },
   {
     id: 'ggst',
     name: 'Guilty Gear -STRIVE-',
     shortName: 'GGST',
+    color: '#991b1b', // Rojo sangre — branding Guilty Gear
     characters: GGST_CHARACTERS,
   },
   {
     id: 'mk11',
     name: 'Mortal Kombat 11',
     shortName: 'MK11',
+    color: '#eab308', // Dorado — dragón del logo de Mortal Kombat
     characters: MK11_CHARACTERS,
   },
   {
     id: 'tekken8',
     name: 'Tekken 8',
     shortName: 'T8',
+    color: '#dc2626', // Rojo puño — logo Tekken
     characters: T8_CHARACTERS,
   },
   {
     id: 'sc6',
     name: 'SoulCalibur VI',
     shortName: 'SC6',
+    color: '#0ea5e9', // Azul cian — Soul Calibur (espada de luz azul)
     characters: SC6_CHARACTERS,
   },
 ];

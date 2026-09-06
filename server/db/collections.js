@@ -73,6 +73,9 @@ export const users              = col('users.json',              'users');
 // Notificaciones
 export const notifications      = col('notifications.json',      'notifications');
 
+// Membresías multi-comunidad (solicitudes e invitaciones)
+export const membershipRequests = col('membership_requests.json', 'membership_requests');
+
 // Migraciones
 export const migrations         = col('migrations.json',         'migrations');
 
