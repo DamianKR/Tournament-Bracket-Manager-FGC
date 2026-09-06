@@ -5,8 +5,25 @@
     "sourceParticipantId": "gp_1786387234567_aoe1z95",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
     "direction": "request",
-    "status": "pending",
+    "status": "declined",
     "requestedBy": "user_1787803682892_c3ay3q8",
-    "createdAt": "2026-09-06T06:24:19.279Z"
+    "createdAt": "2026-09-06T06:24:19.279Z",
+    "resolvedAt": "2026-09-06T06:30:41.819Z",
+    "resolvedBy": "user_1787803682471_sfmycpv"
+  },
+  {
+    "id": "mreq_1788676959814_wma62gk",
+    "userId": "user_1787803683939_74ycpng",
+    "sourceParticipantId": "gp_1786391783115_87zwx03",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "direction": "request",
+    "status": "accepted",
+    "requestedBy": "user_1787803683939_74ycpng",
+    "applicantName": "Tails",
+    "applicantAlias": null,
+    "reason": "Me interesa esa comunidad y jugar ahi",
+    "createdAt": "2026-09-06T06:42:39.814Z",
+    "resolvedAt": "2026-09-06T06:45:17.430Z",
+    "resolvedBy": "user_1788378964333_nkd0d4q"
   }
 ]

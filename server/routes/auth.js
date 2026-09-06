@@ -243,9 +243,19 @@ router.put('/me/password', requireAuth, async (req, res) => {
 
 router.get('/users', requireAuth, requireAdmin, async (req, res) => {
   const all = await users.getAll();
-  const filtered = req.user.role === 'superadmin'
-    ? all
-    : all.filter(u => isInUserScope(req.user, u.communityId));
+  const visibleTo = (u) => {
+    if (req.user.role === 'superadmin') return true;
+    const communityIds = new Set();
+    if (u.communityId) communityIds.add(u.communityId);
+    for (const m of u.memberships ?? []) {
+      if (m.isActive !== false) communityIds.add(m.communityId);
+    }
+    for (const cid of communityIds) {
+      if (isInUserScope(req.user, cid)) return true;
+    }
+    return false;
+  };
+  const filtered = all.filter(visibleTo);
   res.json(filtered.map(safeUser));
 });
 

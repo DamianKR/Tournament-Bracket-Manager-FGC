@@ -1600,5 +1600,18 @@
         "eloRank": "Sin puntos"
       }
     }
+  },
+  {
+    "id": "gp_1788677117433_o5t5tpx",
+    "name": "Tails",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": null,
+    "mainCharacterId": null,
+    "games": {},
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "createdAt": "2026-09-06T06:45:17.433Z",
+    "updatedAt": "2026-09-06T06:45:17.433Z"
   }
 ]

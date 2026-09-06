@@ -99,9 +99,16 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:04.148Z",
-    "lastLoginAt": "2026-09-02T21:28:23.303Z",
+    "lastLoginAt": "2026-09-06T06:41:00.519Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:11:59.955Z"
+    "updatedAt": "2026-09-06T06:45:17.434Z",
+    "memberships": [
+      {
+        "participantId": "gp_1788677117433_o5t5tpx",
+        "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+        "isActive": true
+      }
+    ]
   },
   {
     "id": "user_1787803684148_4gzwgj9",
@@ -635,13 +642,13 @@
     "id": "user_1788378964333_nkd0d4q",
     "participantId": "gp_1788378964090_k9goxlg",
     "username": "usp1",
-    "passwordHash": "$2b$12$qqN1BuMXEYuOh3O9RaQOVu.JQdhUzX1FA8vNaYhnvDC2y42V.58VS",
+    "passwordHash": "$2b$12$IRYEr3tS8/XumwdW6FdVUuKd89oP.RSKmEfg8J1uMx7U/fcO07RTS",
     "role": "community_admin",
     "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
     "isActive": true,
     "createdAt": "2026-09-02T19:56:04.333Z",
-    "lastLoginAt": "2026-09-02T21:05:03.297Z",
-    "updatedAt": "2026-09-02T20:21:23.184Z"
+    "lastLoginAt": "2026-09-06T06:43:24.835Z",
+    "updatedAt": "2026-09-06T06:26:28.241Z"
   },
   {
     "id": "user_1788379061578_oni8u0o",

@@ -166,6 +166,9 @@ async function notifyCommunityAdmins(communityId, type, title, message, data) {
     const allUsers = await users.getAll();
     for (const u of allUsers) {
       if (!APPROVER_ROLES.includes(u.role)) continue;
+      // Solo superadmin, community_admin y admin SIN scope reciben notificaciones de comunidad.
+      // Los admin con gameAdminFor (scopenados) no gestionan ingresos.
+      if (u.role === 'admin' && (u.gameAdminFor?.length ?? 0) > 0) continue;
       const isInScope = u.role === 'superadmin' || u.communityId === communityId ||
         (u.memberships ?? []).some(m => m.communityId === communityId && m.isActive !== false);
       if (!isInScope) continue;
@@ -235,6 +238,7 @@ router.post('/:id/join-request', requireAuth, async (req, res) => {
     );
     if (pending) return res.status(409).json({ error: 'There is already a pending request/invite' });
 
+    const { name, alias, reason } = req.body;
     const request = {
       id: `mreq_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
       userId: user.id,
@@ -243,16 +247,21 @@ router.post('/:id/join-request', requireAuth, async (req, res) => {
       direction: 'request',
       status: 'pending',
       requestedBy: req.user.userId,
+      applicantName: (name?.trim() || p.name)?.trim(),
+      applicantAlias: (alias?.trim() || p.alias)?.trim() || null,
+      reason: reason?.trim() || null,
       createdAt: new Date().toISOString(),
     };
     await membershipRequests.upsert(request);
 
+    const displayName = request.applicantAlias || request.applicantName;
+    const reasonLine = request.reason ? ` - "${request.reason}"` : '';
     await notifyCommunityAdmins(
       communityId,
       'membership_request',
       'Solicitud de ingreso',
-      `${p.alias || p.name} quiere unirse a ${community.name}`,
-      { requestId: request.id, userId: user.id, communityId }
+      `${displayName} quiere unirse a ${community.name}${reasonLine}`,
+      { requestId: request.id, userId: user.id, communityId, reason: request.reason }
     );
 
     res.status(201).json(request);
@@ -338,7 +347,8 @@ router.get('/membership-requests', requireAuth, async (req, res) => {
 
     const isAdminOf = (cid) =>
       req.user.role === 'superadmin' ||
-      (APPROVER_ROLES.includes(req.user.role) && isInUserScope(req.user, cid));
+      (req.user.role === 'community_admin' && isInUserScope(req.user, cid)) ||
+      (req.user.role === 'admin' && !(req.user.gameAdminFor?.length ?? 0) && isInUserScope(req.user, cid));
 
     const visible = pending.filter(r => {
       // Invites: visibles para el user invitado
@@ -377,7 +387,8 @@ router.post('/membership-requests/:id/resolve', requireAuth, async (req, res) =>
     if (request.direction === 'request') {
       allowed =
         req.user.role === 'superadmin' ||
-        (APPROVER_ROLES.includes(req.user.role) && isInUserScope(req.user, request.communityId));
+        (req.user.role === 'community_admin' && isInUserScope(req.user, request.communityId)) ||
+        (req.user.role === 'admin' && !(req.user.gameAdminFor?.length ?? 0) && isInUserScope(req.user, request.communityId));
     } else {
       allowed = req.user.role === 'superadmin' || req.user.userId === request.userId;
     }

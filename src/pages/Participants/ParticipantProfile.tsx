@@ -44,10 +44,10 @@ function ordinal(n: number): string {
 
 function ParticipantProfile() {
   const { t } = useTranslation();
-  const { id } = useParams<{ id: string }>();
+  const { id, communityId: urlCommunityId } = useParams<{ id: string; communityId: string }>();
   const navigate = useNavigate();
   const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
-  const communityId = currentCommunity?.id;
+  const communityId = urlCommunityId || currentCommunity?.id;
   const [searchParams] = useSearchParams();
   const { user, isAdmin, isCommunityOwner, isSuperAdmin } = useAuth();
   const myParticipantIds = new Set([
@@ -157,12 +157,14 @@ function ParticipantProfile() {
     (async () => {
       let loadedParticipant: GlobalParticipant | null = null;
       try {
+        // Refrescar participantes del servidor; no confiar en localStorage tras nuevas membresías
+        const all = await getAllParticipantsAsync(communityId);
+        const p = all.find((x) => x.id === id) ?? getParticipant(id, communityId);
+        if (!p) { setNotFound(true); return; }
         const [tournaments, ls] = await Promise.all([
           loadTournamentsForParticipantAsync(id),
           getParticipantLeagueStats(id),
         ]);
-        const p = getParticipant(id, communityId);
-        if (!p) { setNotFound(true); return; }
         loadedParticipant = p;
         setParticipant(p);
         setStats(computeStats(p, tournaments));
@@ -225,7 +227,10 @@ function ParticipantProfile() {
     setLoadingUser(true);
     try {
       const all = await listUsers();
-      const u = all.find(x => x.participantId === id) ?? null;
+      const u = all.find(
+        x => x.participantId === id ||
+        (x.memberships ?? []).some(m => m.participantId === id)
+      ) ?? null;
       setLinkedUser(u);
       if (u) {
         setAdmUsername(u.username);

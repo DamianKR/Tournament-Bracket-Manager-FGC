@@ -342,17 +342,27 @@ export interface MembershipRequest {
   direction: 'request' | 'invite';
   status: 'pending' | 'accepted' | 'declined';
   requestedBy: string;
+  /** Nombre e identidad del solicitante en el momento de la petición. */
+  applicantName: string;
+  applicantAlias: string | null;
+  reason: string | null;
   createdAt: string;
   resolvedAt?: string;
   resolvedBy?: string;
 }
 
+export interface JoinRequestInput {
+  name?: string;
+  alias?: string;
+  reason?: string;
+}
+
 /** El user autenticado pide entrar a una comunidad pública. */
-export async function requestJoinCommunity(participantId: string, communityId: string): Promise<MembershipRequest> {
+export async function requestJoinCommunity(participantId: string, communityId: string, input?: JoinRequestInput): Promise<MembershipRequest> {
   const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/join-request`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ communityId }),
+    body: JSON.stringify({ communityId, ...input }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Failed to create join request');

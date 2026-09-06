@@ -114,6 +114,7 @@ function Header() {
                     {t('header.participants')}
                   </button>
                 )}
+
               </>
             ) : (
               <>
@@ -129,6 +130,7 @@ function Header() {
                 >
                   {t('header.ranking')}
                 </button>
+
               </>
             )}
           </nav>

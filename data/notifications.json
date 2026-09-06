@@ -4573,7 +4573,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Smash new at last has started. Your opponents this week: Dio, Delvi, KruX.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-02T21:44:49.761Z",
     "scheduledAt": "2026-09-02T21:44:49.761Z",
     "data": {
@@ -4584,7 +4584,8 @@
         "gp_1786391892402_8intsz3",
         "gp_1786387087046_wnwtadb"
       ]
-    }
+    },
+    "readAt": "2026-09-06T06:41:08.310Z"
   },
   {
     "id": "notif_1788385489763_4x01ms1yk",
@@ -4798,14 +4799,15 @@
     "type": "membership_request",
     "title": "Solicitud de ingreso",
     "message": "Gino quiere unirse a FGC Sancti",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-06T06:24:19.281Z",
     "scheduledAt": "2026-09-06T06:24:19.281Z",
     "data": {
       "requestId": "mreq_1788675859279_w0i300j",
       "userId": "user_1787803682892_c3ay3q8",
       "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8"
-    }
+    },
+    "readAt": "2026-09-06T06:39:48.116Z"
   },
   {
     "id": "notif_1788675859283_b3dxp9s09",
@@ -4819,6 +4821,52 @@
     "data": {
       "requestId": "mreq_1788675859279_w0i300j",
       "userId": "user_1787803682892_c3ay3q8",
+      "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8"
+    }
+  },
+  {
+    "id": "notif_1788676959816_r74ohk1lj",
+    "recipientId": "gp_1788378964090_k9goxlg",
+    "type": "membership_request",
+    "title": "Solicitud de ingreso",
+    "message": "Tails quiere unirse a FGC Sancti - \"Me interesa esa comunidad y jugar ahi\"",
+    "read": true,
+    "createdAt": "2026-09-06T06:42:39.816Z",
+    "scheduledAt": "2026-09-06T06:42:39.816Z",
+    "data": {
+      "requestId": "mreq_1788676959814_wma62gk",
+      "userId": "user_1787803683939_74ycpng",
+      "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+      "reason": "Me interesa esa comunidad y jugar ahi"
+    },
+    "readAt": "2026-09-06T06:43:33.307Z"
+  },
+  {
+    "id": "notif_1788676959819_fb1h5mi09",
+    "recipientId": "gp_1788379061334_fbsbbjo",
+    "type": "membership_request",
+    "title": "Solicitud de ingreso",
+    "message": "Tails quiere unirse a FGC Sancti - \"Me interesa esa comunidad y jugar ahi\"",
+    "read": false,
+    "createdAt": "2026-09-06T06:42:39.819Z",
+    "scheduledAt": "2026-09-06T06:42:39.819Z",
+    "data": {
+      "requestId": "mreq_1788676959814_wma62gk",
+      "userId": "user_1787803683939_74ycpng",
+      "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+      "reason": "Me interesa esa comunidad y jugar ahi"
+    }
+  },
+  {
+    "id": "notif_1788677117436_mo7u9fi0r",
+    "recipientId": "gp_1788677117433_o5t5tpx",
+    "type": "membership_accepted",
+    "title": "Membresía aceptada",
+    "message": "Ahora eres miembro de una nueva comunidad",
+    "read": false,
+    "createdAt": "2026-09-06T06:45:17.436Z",
+    "scheduledAt": "2026-09-06T06:45:17.436Z",
+    "data": {
       "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8"
     }
   }

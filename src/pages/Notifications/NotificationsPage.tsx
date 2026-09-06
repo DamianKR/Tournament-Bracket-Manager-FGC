@@ -13,6 +13,8 @@ const TYPE_ICONS: Record<string, string> = {
   league_week_start: 'fa-calendar-week',
   league_match_expiring: 'fa-clock',
   matchmaking: 'fa-random',
+  membership_request: 'fa-user-plus',
+  membership_accepted: 'fa-check-circle',
 };
 
 export default function NotificationsPage() {
@@ -40,6 +42,8 @@ export default function NotificationsPage() {
     } else if (notif.type === 'league_week_start' || notif.type === 'league_match_expiring') {
       if (notif.data?.leagueId) navigate(getPath(`events/leagues/${notif.data.leagueId}`));
       else navigate(getPath('events?tab=leagues'));
+    } else if (notif.type === 'membership_request' || notif.type === 'membership_accepted') {
+      navigate('/membership-requests');
     }
   }
 

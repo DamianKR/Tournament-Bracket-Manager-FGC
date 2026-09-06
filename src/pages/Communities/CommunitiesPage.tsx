@@ -28,6 +28,12 @@ function CommunitiesPage() {
   const [updating, setUpdating] = useState(false);
   const [membershipRequests, setMembershipRequests] = useState<MembershipRequest[]>([]);
   const [requestError, setRequestError] = useState<string | null>(null);
+  const [requestSuccess, setRequestSuccess] = useState<string | null>(null);
+  const [joinTarget, setJoinTarget] = useState<Community | null>(null);
+  const [joinName, setJoinName] = useState('');
+  const [joinAlias, setJoinAlias] = useState('');
+  const [joinReason, setJoinReason] = useState('');
+  const [joinLoading, setJoinLoading] = useState(false);
 
   const isAdminRole = ['superadmin', 'community_admin', 'admin'].includes(user?.role ?? '');
 
@@ -58,14 +64,27 @@ function CommunitiesPage() {
     );
   }
 
-  async function handleRequestJoin(community: Community) {
-    if (!user?.participantId) return;
+  async function handleRequestJoin() {
+    if (!user?.participantId || !joinTarget) return;
     setRequestError(null);
+    setRequestSuccess(null);
+    setJoinLoading(true);
     try {
-      await requestJoinCommunity(user.participantId, community.id);
+      await requestJoinCommunity(user.participantId, joinTarget.id, {
+        name: joinName,
+        alias: joinAlias,
+        reason: joinReason,
+      });
+      setJoinTarget(null);
+      setJoinName('');
+      setJoinAlias('');
+      setJoinReason('');
+      setRequestSuccess(t('communities.requestSuccess', { name: joinTarget.name, defaultValue: `Solicitud enviada a ${joinTarget.name}` }));
       await reloadRequests();
     } catch (err) {
       setRequestError(err instanceof Error ? err.message : 'Failed to request join');
+    } finally {
+      setJoinLoading(false);
     }
   }
 
@@ -201,7 +220,12 @@ function CommunitiesPage() {
                     ) : (
                       <button
                         className="communities-join-btn btn-outline"
-                        onClick={() => handleRequestJoin(c)}
+                        onClick={() => {
+                          setJoinTarget(c);
+                          setJoinName(user.username);
+                          setJoinAlias('');
+                          setJoinReason('');
+                        }}
                       >
                         <i className="fas fa-user-plus" /> {t('communities.requestJoin', { defaultValue: 'Solicitar unirse' })}
                       </button>
@@ -228,6 +252,7 @@ function CommunitiesPage() {
         )}
 
         {requestError && <p className="communities-error">{requestError}</p>}
+        {requestSuccess && <p className="communities-success" role="status">{requestSuccess}</p>}
 
         {membershipRequests.length > 0 && (
           <section className="card communities-requests">
@@ -265,6 +290,42 @@ function CommunitiesPage() {
           </section>
         )}
       </div>
+
+      {joinTarget && (
+        <div className="communities-modal-overlay" onClick={() => setJoinTarget(null)}>
+          <div className="card communities-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="communities-modal-header">
+              <h2 className="communities-section-title">
+                {t('communities.joinTitle', { name: joinTarget.name, defaultValue: `Unirse a ${joinTarget.name}` })}
+              </h2>
+              <button className="communities-modal-close" onClick={() => setJoinTarget(null)}>×</button>
+            </div>
+            <div className="communities-modal-body">
+              <div className="form-group">
+                <label htmlFor="join-name">{t('communities.joinName', { defaultValue: 'Nombre' })}</label>
+                <input id="join-name" type="text" value={joinName} onChange={(e) => setJoinName(e.target.value)} required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="join-alias">{t('communities.joinAlias', { defaultValue: 'Nick / Alias' })}</label>
+                <input id="join-alias" type="text" value={joinAlias} onChange={(e) => setJoinAlias(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label htmlFor="join-reason">{t('communities.joinReason', { defaultValue: '¿Por qué quieres unirte?' })}</label>
+                <textarea id="join-reason" value={joinReason} onChange={(e) => setJoinReason(e.target.value)} rows={3} />
+              </div>
+              {requestError && <p className="communities-error">{requestError}</p>}
+              <div className="form-actions">
+                <button className="btn-outline" onClick={() => setJoinTarget(null)}>
+                  {t('common.cancel', { defaultValue: 'Cancelar' })}
+                </button>
+                <button className="btn-primary" onClick={handleRequestJoin} disabled={!joinName.trim() || joinLoading}>
+                  {joinLoading ? t('common.sending', { defaultValue: 'Enviando...' }) : t('communities.sendRequest', { defaultValue: 'Enviar solicitud' })}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showCreate && (
         <div className="communities-modal-overlay" onClick={closeCreate}>

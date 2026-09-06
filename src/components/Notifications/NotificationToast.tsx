@@ -8,6 +8,8 @@ const TYPE_ICONS: Record<string, string> = {
   league_week_start: 'fa-calendar-week',
   league_match_expiring: 'fa-clock',
   matchmaking: 'fa-random',
+  membership_request: 'fa-user-plus',
+  membership_accepted: 'fa-check-circle',
   summary: 'fa-bell',
 };
 
@@ -17,6 +19,8 @@ const TYPE_COLORS: Record<string, string> = {
   league_week_start: '#22c55e',
   league_match_expiring: '#f59e0b',
   matchmaking: '#06b6d4',
+  membership_request: '#10b981',
+  membership_accepted: '#22c55e',
   summary: '#7c3aed',
 };
 

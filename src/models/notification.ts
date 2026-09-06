@@ -8,7 +8,9 @@ export type NotificationType =
   | 'duel_expiring'
   | 'league_week_start'
   | 'league_match_expiring'
-  | 'matchmaking'; // Reserved for future matchmaking system
+  | 'matchmaking' // Reserved for future matchmaking system
+  | 'membership_request'
+  | 'membership_accepted';
 
 export interface AppNotification {
   id: string;

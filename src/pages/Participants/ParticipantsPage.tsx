@@ -140,6 +140,11 @@ function ParticipantsPage() {
         if (u.participantId && participantIds.has(u.participantId)) {
           map.set(u.participantId, u);
         }
+        for (const m of u.memberships ?? []) {
+          if (m.participantId && participantIds.has(m.participantId)) {
+            map.set(m.participantId, u);
+          }
+        }
       });
       setUsersMap(map);
     } finally {

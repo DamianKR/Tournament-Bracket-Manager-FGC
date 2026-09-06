@@ -1,0 +1,139 @@
+.membership-requests-page {
+  padding: 2.5rem 0;
+}
+
+.mr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.mr-header h1 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.mr-header .btn-primary {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  font-weight: 500;
+  color: white;
+}
+
+.mr-section {
+  margin-bottom: 2rem;
+}
+
+.mr-section-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.mr-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.mr-request {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.mr-request-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.mr-request-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mr-request-date {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.mr-request-community {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.12);
+  color: var(--primary-color);
+}
+
+.mr-request-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mr-request-alias {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.mr-request-reason {
+  margin: 0;
+  color: var(--text-primary);
+  font-style: italic;
+  word-break: break-word;
+}
+
+.mr-request-no-reason {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.mr-request-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.mr-empty {
+  padding: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .mr-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mr-request {
+    flex-direction: column;
+  }
+
+  .mr-request-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

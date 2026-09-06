@@ -24,6 +24,9 @@ export function isInUserScope(user, communityId) {
   if (communityId === home) return true;
   // Multi-comunidad: el usuario puede actuar en comunidades donde es miembro
   if (Array.isArray(user.communityIds) && user.communityIds.includes(communityId)) return true;
+  for (const m of user.memberships ?? []) {
+    if (m.isActive !== false && m.communityId === communityId) return true;
+  }
   return false;
 }
 

@@ -20,6 +20,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
 import CommunitiesPage from './pages/Communities/CommunitiesPage';
 import CommunityDashboard from './pages/CommunityDashboard/CommunityDashboard';
+import MembershipRequestsPage from './pages/MembershipRequests/MembershipRequestsPage';
 
 function App() {
   // En GitHub Pages el sitio vive en /Tournament-Bracket-Manager-FGC/.
@@ -45,6 +46,11 @@ function App() {
 
               {/* Communities - public list */}
               <Route path="/communities" element={<CommunitiesPage />} />
+
+              {/* Membership requests */}
+              <Route path="/membership-requests" element={
+                <ProtectedRoute><MembershipRequestsPage /></ProtectedRoute>
+              } />
 
               {/* Community-scoped routes */}
               <Route path="/c/:communityId/*" element={<CommunityLayout />}>
