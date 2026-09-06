@@ -46,26 +46,33 @@ function ParticipantsPage() {
       return 0;
     };
     if (linked && linked.id !== user?.id && level(user) <= level(linked)) return false;
+    // Borrar: solo si el "default/primary game" del participante está en su scope
     if (!isScopedAdmin) return true;
-    const games = new Set(Object.keys(p.games ?? {}));
-    if (p.gameId) games.add(p.gameId);
-    return [...games].some(g => user!.gameAdminFor!.includes(g));
-  };
-  // Un admin scopenado solo VE participantes que compartan sus juegos
-  const sharesMyGames = (p: GlobalParticipant): boolean => {
-    if (!isScopedAdmin) return true;
-    const games = new Set(Object.keys(p.games ?? {}));
-    if (p.gameId) games.add(p.gameId);
-    return [...games].some(g => user!.gameAdminFor!.includes(g));
+    return !!p.gameId && user!.gameAdminFor!.includes(p.gameId);
   };
   // Al crear un participante solo se pueden asignar los juegos que administra
   const creatableGames = isScopedAdmin
     ? GAMES.filter(g => user!.gameAdminFor!.includes(g.id))
     : GAMES;
+  // Editar: cualquier admin de la comunidad (respeta jerarquía, pero no juegos)
+  const canEditParticipant = (p: GlobalParticipant): boolean => {
+    if (!canAdminCurrentCommunity) return false;
+    const linked = usersMap.get(p.id);
+    const level = (u: { role?: string; gameAdminFor?: string[] } | null | undefined): number => {
+      if (!u) return -1;
+      if (u.role === 'superadmin') return 4;
+      if (u.role === 'community_admin') return 3;
+      if (u.role === 'admin') return (u.gameAdminFor?.length ?? 0) > 0 ? 1 : 2;
+      return 0;
+    };
+    if (linked && linked.id !== user?.id && level(user) <= level(linked)) return false;
+    return true;
+  };
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [statsMap, setStatsMap] = useState<Map<string, ComputedStats>>(new Map());
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [gameFilter, setGameFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortKey>('name');
   const [error, setError] = useState('');
 
@@ -145,9 +152,13 @@ function ParticipantsPage() {
 
   // ── Filtering & sorting ───────────────────────────────────────────────
 
+  const participantHasGame = (p: GlobalParticipant, gameId: string): boolean =>
+    p.gameId === gameId ||
+    Object.keys(p.games ?? {}).includes(gameId);
+
   const filtered = participants
-    .filter(sharesMyGames)
     .filter((p) => {
+      if (gameFilter !== 'all' && !participantHasGame(p, gameFilter)) return false;
       if (!searchQuery) return true;
       const q = searchQuery.toLowerCase();
       const charName = p.gameId && p.mainCharacterId
@@ -415,6 +426,17 @@ function ParticipantsPage() {
         <div className="pp-filters card">
           <input type="text" className="pp-search" placeholder={t('participants.searchPlaceholder')}
             value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          <select
+            className="game-filter-select"
+            value={gameFilter}
+            onChange={(e) => setGameFilter(e.target.value)}
+            aria-label={t('common.game')}
+          >
+            <option value="all">{t('ranking.allGames')}</option>
+            {GAMES.map((g) => (
+              <option key={g.id} value={g.id} style={{ color: g.color, fontWeight: 700 }}>{g.name}</option>
+            ))}
+          </select>
           <div className="pp-sort">
             <span className="text-secondary text-sm">{t('participants.sortBy')}</span>
             {(['name', 'wins', 'tournamentsPlayed', 'winRate'] as SortKey[]).map((key) => (
@@ -489,7 +511,7 @@ function ParticipantsPage() {
                         </span>
                       );
                     })()}
-                    {canAdminCurrentCommunity && canManageParticipant(p) && (
+                    {canAdminCurrentCommunity && canEditParticipant(p) && (
                       <button className="btn-icon" onClick={() => goToEdit(p)} title={t('participants.edit')}><i className="fas fa-pen" /></button>
                     )}
                     {canAdminCurrentCommunity && canManageParticipant(p) && (

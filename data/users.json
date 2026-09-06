@@ -7,7 +7,7 @@
     "role": "superadmin",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.682Z",
-    "lastLoginAt": "2026-09-06T03:13:39.184Z",
+    "lastLoginAt": "2026-09-06T06:24:49.639Z",
     "communityId": null,
     "updatedAt": "2026-09-02T15:00:00.000Z"
   },
@@ -31,7 +31,7 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:03.101Z",
-    "lastLoginAt": "2026-09-01T20:19:51.765Z",
+    "lastLoginAt": "2026-09-06T06:23:27.541Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-01T22:11:59.951Z"
   },
@@ -43,7 +43,7 @@
     "role": "admin",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:03.309Z",
-    "lastLoginAt": "2026-09-06T03:44:03.294Z",
+    "lastLoginAt": "2026-09-06T04:43:26.248Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-06T03:14:14.747Z",
     "gameAdminFor": [

@@ -455,10 +455,6 @@ router.get('/', optionalAuth, async (req, res) => {
     const { communityId } = req.query;
     const data = await participants.getAll();
     let filtered = filterByCommunity(req.user, data, communityId);
-    // Game-scoped admin: solo ve participantes que compartan alguno de sus juegos
-    if (isScopedAdmin(req.user)) {
-      filtered = filtered.filter(p => adminSharesGameWithParticipant(req.user, p));
-    }
     res.json(filtered);
   } catch (err) {
     console.error('[Participants] GET / error:', err);
@@ -473,11 +469,6 @@ router.get('/:id', optionalAuth, async (req, res) => {
     if (!p) return res.status(404).json({ error: 'Participant not found' });
     if (!isInUserScope(req.user, p.communityId)) {
       return res.status(403).json({ error: 'Participant is not in your community scope' });
-    }
-    // Game-scoped admin: solo puede leer participantes que compartan sus juegos
-    if (isScopedAdmin(req.user) && !adminSharesGameWithParticipant(req.user, p)
-        && participantIdFor(req.user, p.communityId) !== p.id) {
-      return res.status(403).json({ error: 'You are not admin of any of this participant\'s games' });
     }
     res.json(p);
   } catch (err) {
@@ -581,10 +572,6 @@ router.put('/:id', requireAuth, async (req, res) => {
       if (myPid !== existing.id && !isAdminRole(req.user)) {
         return res.status(403).json({ error: 'You can only edit your own participant' });
       }
-      // Game-scoped admin: el participant debe compartir alguno de sus juegos
-      if (!adminSharesGameWithParticipant(req.user, existing)) {
-        return res.status(403).json({ error: 'You are not admin of any of this participant\'s games' });
-      }
       // Jerarquía: nadie edita el participant de un usuario de nivel igual o superior
       if (isAdminRole(req.user) && !(await callerOutranksParticipantUser(req.user, existing))) {
         return res.status(403).json({ error: 'You cannot edit a participant linked to an equal or higher admin' });
@@ -642,24 +629,26 @@ router.put('/:id', requireAuth, async (req, res) => {
     // Update game list and primary game (with per-game main characters)
     if (Array.isArray(gameIds)) {
       let effectiveIds = gameIds;
-      let effectivePrimary = primaryGameId;
       let effectiveMains = gameMainCharacters || {};
       if (isScopedAdmin(req.user)) {
         // Solo puede modificar juegos de su scope: los demás se conservan
         const allowed = new Set(req.user.gameAdminFor);
         const preserved = Object.keys(existing.games || {}).filter(g => !allowed.has(g));
         if (existing.gameId && !allowed.has(existing.gameId)) preserved.push(existing.gameId);
+        if (existing.primaryGameId && !allowed.has(existing.primaryGameId)) preserved.push(existing.primaryGameId);
         effectiveIds = [...new Set([...preserved, ...gameIds.filter(g => allowed.has(g))])];
-        if (effectivePrimary && !allowed.has(effectivePrimary)) {
-          effectivePrimary = effectiveIds.find(g => allowed.has(g)) ?? effectiveIds[0] ?? null;
-        }
+        // No puede cambiar el default/primary game del participante
         for (const g of Object.keys(effectiveMains)) {
           if (!allowed.has(g)) delete effectiveMains[g];
         }
       }
+      const effectivePrimary = existing.primaryGameId || existing.gameId;
       setParticipantGameList(updated, effectiveIds, effectivePrimary, effectiveMains);
     } else if (gameId !== undefined) {
-      setParticipantPrimaryGame(updated, gameId, mainCharacterId !== undefined ? mainCharacterId : updated.mainCharacterId);
+      // Game-scoped admin no puede cambiar el default game del participante
+      if (!isScopedAdmin(req.user)) {
+        setParticipantPrimaryGame(updated, gameId, mainCharacterId !== undefined ? mainCharacterId : updated.mainCharacterId);
+      }
     } else if (mainCharacterId !== undefined && updated.gameId) {
       setParticipantGameMain(updated, updated.gameId, mainCharacterId);
     }
@@ -688,8 +677,10 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!isInUserScope(req.user, p.communityId)) {
       return res.status(403).json({ error: 'Participant is not in your community scope' });
     }
-    if (!adminSharesGameWithParticipant(req.user, p)) {
-      return res.status(403).json({ error: 'You are not admin of any of this participant\'s games' });
+    // Game-scoped admin: solo puede borrar si el primary game del participante
+    // está en su scope (no basta con compartir cualquier juego).
+    if (isScopedAdmin(req.user) && (!p.gameId || !req.user.gameAdminFor.includes(p.gameId))) {
+      return res.status(403).json({ error: 'You can only delete participants whose primary game you administer' });
     }
     if (!(await callerOutranksParticipantUser(req.user, p))) {
       return res.status(403).json({ error: 'You cannot delete a participant linked to an equal or higher admin' });

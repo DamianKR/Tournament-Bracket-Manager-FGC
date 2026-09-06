@@ -3087,7 +3087,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Timing League Creation has started. Your opponents this week: Pokred, Pal.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-01T20:21:00.028Z",
     "scheduledAt": "2026-09-01T20:21:00.028Z",
     "data": {
@@ -3097,7 +3097,8 @@
         "gp_1787202786652_4bme4ih",
         "gp_1786399934148_stq7jpb"
       ]
-    }
+    },
+    "readAt": "2026-09-06T06:23:35.212Z"
   },
   {
     "id": "notif_1788294060029_bx9nbhmm5",
@@ -4020,7 +4021,7 @@
     "type": "league_week_start",
     "title": "League Week 1 started",
     "message": "Week 1 of Smash new at last has started. Your opponents this week: Pokred, Pal, Neuthor.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-02T21:44:49.684Z",
     "scheduledAt": "2026-09-02T21:44:49.684Z",
     "data": {
@@ -4031,7 +4032,8 @@
         "gp_1786399934148_stq7jpb",
         "gp_1787069564643_5pithds"
       ]
-    }
+    },
+    "readAt": "2026-09-06T06:23:35.215Z"
   },
   {
     "id": "notif_1788385489686_o8iylgqhl",
@@ -4788,6 +4790,36 @@
       "duelId": "duel_1788664315841_te4cw5xq1",
       "challengerId": "gp_1787409813244_ymqkq1e",
       "type": "normal"
+    }
+  },
+  {
+    "id": "notif_1788675859281_qdq8jvm9g",
+    "recipientId": "gp_1788378964090_k9goxlg",
+    "type": "membership_request",
+    "title": "Solicitud de ingreso",
+    "message": "Gino quiere unirse a FGC Sancti",
+    "read": false,
+    "createdAt": "2026-09-06T06:24:19.281Z",
+    "scheduledAt": "2026-09-06T06:24:19.281Z",
+    "data": {
+      "requestId": "mreq_1788675859279_w0i300j",
+      "userId": "user_1787803682892_c3ay3q8",
+      "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8"
+    }
+  },
+  {
+    "id": "notif_1788675859283_b3dxp9s09",
+    "recipientId": "gp_1788379061334_fbsbbjo",
+    "type": "membership_request",
+    "title": "Solicitud de ingreso",
+    "message": "Gino quiere unirse a FGC Sancti",
+    "read": false,
+    "createdAt": "2026-09-06T06:24:19.283Z",
+    "scheduledAt": "2026-09-06T06:24:19.283Z",
+    "data": {
+      "requestId": "mreq_1788675859279_w0i300j",
+      "userId": "user_1787803682892_c3ay3q8",
+      "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8"
     }
   }
 ]

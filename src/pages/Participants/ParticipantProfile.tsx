@@ -55,15 +55,8 @@ function ParticipantProfile() {
     ...Object.values(user?.participantByCommunity ?? {}),
   ].filter(Boolean));
   const isOwnProfile = !!(user && id && myParticipantIds.has(id));
-  // Admin con gameAdminFor: solo edita participantes que compartan sus juegos
+  // Admin con gameAdminFor
   const isScopedAdmin = user?.role === 'admin' && (user.gameAdminFor?.length ?? 0) > 0;
-  const participantSharesAdminGame = (p: GlobalParticipant | null): boolean => {
-    if (!isScopedAdmin) return true;
-    if (!p) return false;
-    const games = new Set(Object.keys(p.games ?? {}));
-    if (p.gameId) games.add(p.gameId);
-    return [...games].some(g => user!.gameAdminFor!.includes(g));
-  };
   // Can manage other people's accounts only if community owner AND in own community
   const canManageAccounts = canAdminCurrentCommunity && isCommunityOwner;
 
@@ -148,7 +141,7 @@ function ParticipantProfile() {
   };
   const outranksLinkedUser = !linkedUser || linkedUser.id === user?.id || adminLevel(user) > adminLevel(linkedUser);
   // Can edit profile fields only if in own community AND has admin rights, or is own profile
-  const canEdit = (canAdminCurrentCommunity && participantSharesAdminGame(participant) && outranksLinkedUser) || isOwnProfile;
+  const canEdit = (canAdminCurrentCommunity && outranksLinkedUser) || isOwnProfile;
   const [admSaving, setAdmSaving] = useState(false);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -330,7 +323,8 @@ function ParticipantProfile() {
         name: editName,
         alias: editAlias,
         gameIds: editGameIds,
-        primaryGameId: editPrimaryGameId,
+        // Un admin scopenado no puede cambiar el default game del participante
+        ...(!isScopedAdmin ? { primaryGameId: editPrimaryGameId } : {}),
         gameMainCharacters: editGameMainChars,
         phoneNumber: editPhone || null,
       });
@@ -1130,15 +1124,21 @@ function ParticipantProfile() {
             {editGameIds.length > 0 && (
               <div className="form-group">
                 <label>{t('participantProfile.edit.primaryGame')}</label>
-                <select
-                  className="form-control"
-                  value={editPrimaryGameId ?? ''}
-                  onChange={(e) => setEditPrimaryGameId(e.target.value || null)}
-                >
-                  {editGameIds.map((gId) => (
-                    <option key={gId} value={gId}>{getGame(gId)?.shortName ?? gId}</option>
-                  ))}
-                </select>
+                {isScopedAdmin ? (
+                  <div className="form-control" style={{ opacity: 0.6 }}>
+                    {getGame(editPrimaryGameId ?? '')?.shortName ?? editPrimaryGameId ?? t('common.none', { defaultValue: 'None' })}
+                  </div>
+                ) : (
+                  <select
+                    className="form-control"
+                    value={editPrimaryGameId ?? ''}
+                    onChange={(e) => setEditPrimaryGameId(e.target.value || null)}
+                  >
+                    {editGameIds.map((gId) => (
+                      <option key={gId} value={gId}>{getGame(gId)?.shortName ?? gId}</option>
+                    ))}
+                  </select>
+                )}
               </div>
             )}
             <div className="form-actions">
