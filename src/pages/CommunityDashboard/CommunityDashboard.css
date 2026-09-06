@@ -313,9 +313,15 @@
   align-items: start;
 }
 
+.cd-main {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .cd-sidebar {
   position: sticky;
   top: 1rem;
+  min-width: 0;
 }
 
 .cd-active-list {
@@ -327,7 +333,9 @@
 .cd-active-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  min-width: 0;
   padding: 0.9rem 1rem;
   text-decoration: none;
   color: inherit;
