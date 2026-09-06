@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
@@ -7,15 +7,16 @@ import { createCommunity, updateCommunity } from '@/services/communities/communi
 import {
   requestJoinCommunity,
   getMembershipRequests,
-  resolveMembershipRequest,
   type MembershipRequest,
 } from '@/services/participants/participantService';
 import type { Community } from '@/models/community';
+import { isCommunityAdminOf } from '@/utils/membershipRole';
 import './CommunitiesPage.css';
 
 function CommunitiesPage() {
   const { t } = useTranslation();
   const { isSuperAdmin, user } = useAuth();
+  const navigate = useNavigate();
   const { allCommunities, currentCommunity, refresh } = useCommunity();
   const [showCreate, setShowCreate] = useState(false);
   const [editingCommunity, setEditingCommunity] = useState<Community | null>(null);
@@ -35,7 +36,6 @@ function CommunitiesPage() {
   const [joinReason, setJoinReason] = useState('');
   const [joinLoading, setJoinLoading] = useState(false);
 
-  const isAdminRole = ['superadmin', 'community_admin', 'admin'].includes(user?.role ?? '');
 
   useEffect(() => {
     if (!user) return;
@@ -88,17 +88,6 @@ function CommunitiesPage() {
     }
   }
 
-  async function handleResolve(request: MembershipRequest, action: 'accept' | 'decline') {
-    setRequestError(null);
-    try {
-      await resolveMembershipRequest(request.id, action);
-      await reloadRequests();
-      await refresh();
-    } catch (err) {
-      setRequestError(err instanceof Error ? err.message : 'Failed to resolve request');
-    }
-  }
-
   function resetForm() {
     setName('');
     setShortName('');
@@ -110,6 +99,7 @@ function CommunitiesPage() {
   function openCreate() {
     setEditingCommunity(null);
     resetForm();
+    setRequestSuccess(null);
     setShowCreate(true);
   }
 
@@ -126,16 +116,13 @@ function CommunitiesPage() {
     setDescription(community.description ?? '');
     setIsPublic(community.isPublic !== false);
     setError(null);
+    setRequestSuccess(null);
     setShowCreate(true);
   }
 
   function canEdit(community: Community): boolean {
-    if (isSuperAdmin) return true;
-    // community_admin puede editar su propia comunidad (ownerAdminId es el user.id, no participantId)
-    if (user?.role === 'community_admin' && community.ownerAdminId === user.id) return true;
-    // También permitir si la comunidad está en el scope del community_admin
-    if (user?.role === 'community_admin' && user.communityId === community.id) return true;
-    return false;
+    // superadmin o community_admin DE esa comunidad (por membership).
+    return isCommunityAdminOf(user, community.id);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -149,6 +136,7 @@ function CommunitiesPage() {
         resetForm();
         setShowCreate(false);
         setEditingCommunity(null);
+        setRequestSuccess(t('communities.updateSuccess', { defaultValue: 'Comunidad actualizada correctamente' }));
         await refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : t('communities.errors.update'));
@@ -163,6 +151,7 @@ function CommunitiesPage() {
       await createCommunity(name.trim(), shortName.trim(), description.trim(), isPublic);
       resetForm();
       setShowCreate(false);
+      setRequestSuccess(t('communities.createSuccess', { defaultValue: 'Comunidad creada correctamente' }));
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : t('communities.errors.create'));
@@ -184,6 +173,21 @@ function CommunitiesPage() {
             </button>
           )}
         </div>
+
+        {requestError && <p className="communities-error">{requestError}</p>}
+        {requestSuccess && <p className="communities-success" role="status">{requestSuccess}</p>}
+
+        {membershipRequests.length > 0 && (
+          <section className="card communities-requests communities-requests-notice">
+            <span className="communities-requests-text">
+              <i className="fas fa-user-plus" />
+              {t('communities.pendingRequestsNotice', { count: membershipRequests.length, defaultValue: 'Tienes solicitudes o invitaciones pendientes.' })}
+            </span>
+            <button className="btn-primary" onClick={() => navigate('/membership-requests')}>
+              {t('communities.viewRequests', { defaultValue: 'Ver solicitudes' })}
+            </button>
+          </section>
+        )}
 
         {hasCommunities ? (
           <section className="card communities-list">
@@ -251,44 +255,6 @@ function CommunitiesPage() {
           </section>
         )}
 
-        {requestError && <p className="communities-error">{requestError}</p>}
-        {requestSuccess && <p className="communities-success" role="status">{requestSuccess}</p>}
-
-        {membershipRequests.length > 0 && (
-          <section className="card communities-requests">
-            <h2 className="communities-section-title">
-              {t('communities.pendingRequests', { defaultValue: 'Solicitudes e invitaciones pendientes' })}
-            </h2>
-            <ul>
-              {membershipRequests.map((r) => {
-                const community = allCommunities.find(c => c.id === r.communityId);
-                const canResolve =
-                  r.direction === 'invite'
-                    ? r.userId === user?.id || isSuperAdmin
-                    : isAdminRole;
-                return (
-                  <li key={r.id} className="communities-request-item">
-                    <span>
-                      {r.direction === 'invite'
-                        ? t('communities.inviteToYou', { name: community?.name ?? r.communityId, defaultValue: `Te invitaron a unirte a ${community?.name ?? r.communityId}` })
-                        : t('communities.requestToYou', { name: community?.name ?? r.communityId, defaultValue: `Solicitud de ingreso a ${community?.name ?? r.communityId}` })}
-                    </span>
-                    {canResolve && (
-                      <span className="communities-request-actions">
-                        <button className="btn-primary" onClick={() => handleResolve(r, 'accept')}>
-                          {t('common.accept', { defaultValue: 'Aceptar' })}
-                        </button>
-                        <button className="btn-outline" onClick={() => handleResolve(r, 'decline')}>
-                          {t('common.decline', { defaultValue: 'Rechazar' })}
-                        </button>
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        )}
       </div>
 
       {joinTarget && (

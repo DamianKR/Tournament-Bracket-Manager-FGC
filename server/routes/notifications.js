@@ -27,6 +27,9 @@ function userParticipantIds(user) {
   const ids = new Set();
   if (user.participantId) ids.add(user.participantId);
   for (const pid of Object.values(user.participantByCommunity ?? {})) ids.add(pid);
+  for (const m of user.memberships ?? []) {
+    if (m.isActive !== false && m.participantId) ids.add(m.participantId);
+  }
   return [...ids];
 }
 
@@ -79,7 +82,7 @@ router.put('/:id/read', async (req, res) => {
     const pids = new Set(userParticipantIds(req.user));
     const notif = await markNotificationRead(req.params.id);
     if (!notif) return res.status(404).json({ error: 'Notification not found' });
-    if (!pids.has(notif.recipientId) && req.user.role !== 'admin') {
+    if (!pids.has(notif.recipientId) && req.user.role !== 'superadmin') {
       return res.status(403).json({ error: 'Not your notification' });
     }
     res.json(notif);

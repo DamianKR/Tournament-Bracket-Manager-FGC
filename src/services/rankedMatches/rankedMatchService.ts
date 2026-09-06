@@ -17,6 +17,7 @@
 import { RankedMatch } from '@/models/rankedMatch';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
+import { getAuthHeader } from '@/services/auth/authService';
 
 const API_BASE = `${SERVER_URL}/api/ranked-matches`;
 const LS_KEY = 'bracket_ranked_matches';
@@ -128,7 +129,7 @@ export async function createRankedMatch(
     try {
       const res = await fetch(API_BASE, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
         body: JSON.stringify(match),
       });
       if (!res.ok) throw new Error('Server rejected match');
@@ -151,7 +152,7 @@ export async function deleteRankedMatch(id: string): Promise<boolean> {
   lsWriteMatches(filtered);
 
   if (await isServerAvailable()) {
-    fetch(`${API_BASE}/${id}`, { method: 'DELETE' }).catch((err) => {
+    fetch(`${API_BASE}/${id}`, { method: 'DELETE', headers: getAuthHeader() }).catch((err) => {
       console.warn('[RankedMatches] Server delete failed:', err);
       resetServerCache();
     });

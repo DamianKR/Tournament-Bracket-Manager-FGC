@@ -170,7 +170,10 @@ export async function recordMatch(
 
 /** Deletes a match record. Does NOT revert ELO. */
 export async function deleteMatch(matchId: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/matches/${matchId}`, { method: 'DELETE' });
+  const res = await fetch(`${API_BASE}/matches/${matchId}`, {
+    method: 'DELETE',
+    headers: { ...getAuthHeader() },
+  });
   if (!res.ok) throw new Error(`Failed to delete match: ${res.status}`);
 }
 
@@ -181,7 +184,7 @@ export async function hardResetRanking(communityId?: string, gameId?: string): P
   if (gameId) body.gameId = gameId;
   const res = await fetch(`${API_BASE}/reset/hard`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Hard reset failed: ${res.status}`);
@@ -199,7 +202,7 @@ export async function softResetRanking(communityId?: string, gameId?: string): P
   if (gameId) body.gameId = gameId;
   const res = await fetch(`${API_BASE}/reset/soft`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Soft reset failed: ${res.status}`);

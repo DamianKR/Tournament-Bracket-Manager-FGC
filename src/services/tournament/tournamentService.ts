@@ -77,7 +77,7 @@ export async function addParticipant(
   }
 
   // Find existing GlobalParticipant in this tournament's community and check game eligibility
-  const global = findGlobalParticipantByName(trimmed);
+  const global = findGlobalParticipantByName(trimmed, tournament.communityId);
   if (!global || global.communityId !== tournament.communityId) {
     throw new Error('Participant not found in this community');
   }
@@ -141,7 +141,7 @@ export async function addTeam(
   const members = [];
   const targetGameId = tournament.gameId ?? 'ssbu';
   for (const name of memberNames) {
-    const global = findGlobalParticipantByName(name.trim());
+    const global = findGlobalParticipantByName(name.trim(), tournament.communityId);
     if (!global || global.communityId !== tournament.communityId) {
       throw new Error(`Participant "${name.trim()}" not found in this community`);
     }

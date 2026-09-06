@@ -336,6 +336,27 @@
   padding-top: 0.5rem;
 }
 
+.communities-requests-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.communities-requests-text {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.communities-requests-text i {
+  color: var(--primary-color);
+}
+
 @media (max-width: 640px) {
   .communities-header {
     flex-direction: column;

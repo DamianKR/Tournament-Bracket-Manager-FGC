@@ -10,8 +10,15 @@
  * Gestión de usuarios (solo admin):
  * GET    /api/auth/users           — lista todos los usuarios (sin passwordHash)
  * POST   /api/auth/users           — crea cuenta vinculada a un participant
- * PUT    /api/auth/users/:id       — actualiza username / password / isActive / role
- * DELETE /api/auth/users/:id       — desactiva cuenta (no la borra)
+ * PUT    /api/auth/users/:id       — actualiza cuenta global (username/password/isActive)
+ *                                     y/o membership de una comunidad (role/gameAdminFor)
+ * DELETE /api/auth/users/:id       — borra la cuenta (no la desactiva)
+ *
+ * ── Modelo de roles (membership) ────────────────────────────────────────
+ * `user.role` solo puede ser 'superadmin' o null — es el ÚNICO rol global.
+ * Todo lo demás ('community_admin', 'admin', 'user') vive en
+ * `user.memberships[].role`, uno por comunidad (incluida la comunidad home).
+ * Ver server/utils/communityScope.js para el detalle completo.
  *
  * Migración → Supabase:
  *   Reemplazar bcrypt + jwt propios por supabase.auth.signInWithPassword()
@@ -22,12 +29,22 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET, JWT_EXPIRY, requireAuth, requireAdmin } from '../utils/jwtMiddleware.js';
-import { isInUserScope, getTargetCommunityId, canManageUser } from '../utils/communityScope.js';
+import {
+  isInUserScope,
+  getTargetCommunityId,
+  participantIdFor,
+  communityRole,
+  isCommunityAdmin,
+  isAdminInCommunity,
+  canManageUserInCommunity,
+  canManageUserAnyCommunity,
+} from '../utils/communityScope.js';
 import { users, participants } from '../db/collections.js';
 import { getNotificationsForRecipient } from '../services/notificationService.js';
 
 const router = Router();
 const SALT_ROUNDS = 12;
+const MEMBERSHIP_ROLES = ['user', 'admin', 'community_admin'];
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -43,20 +60,35 @@ function safeUser(user) {
 
 /**
  * Game-scoped admin check: un admin con gameAdminFor solo puede tocar usuarios
- * cuyo participant comparta al menos uno de sus juegos administrados.
- * Devuelve true si el caller PUEDE modificar al target.
+ * cuyo participant (en `communityId`) comparta al menos uno de sus juegos.
+ * community_admin/superadmin de esa comunidad: sin restricción.
  */
-async function adminSharesGameWithUser(caller, targetUser) {
-  if (caller.role !== 'admin') return true; // owners/superadmin: sin restricción
-  if (!Array.isArray(caller.gameAdminFor) || caller.gameAdminFor.length === 0) return true;
-  // Participant del target en la comunidad del caller
-  const pid = caller.communityId === targetUser.communityId
-    ? targetUser.participantId
-    : (targetUser.participantByCommunity?.[caller.communityId] ?? targetUser.participantId);
+async function adminSharesGameWithUser(caller, targetUser, communityId) {
+  const role = communityRole(caller, communityId);
+  if (role !== 'admin') return true; // community_admin/superadmin: sin restricción
+  const m = (caller.memberships ?? []).find(x => x.communityId === communityId);
+  const scope = Array.isArray(m?.gameAdminFor) ? m.gameAdminFor : [];
+  if (scope.length === 0) return true;
+  const pid = participantIdFor(targetUser, communityId);
   const target = pid ? await participants.findById(pid) : null;
   const targetGames = new Set(Object.keys(target?.games || {}));
   if (target?.gameId) targetGames.add(target.gameId);
-  return [...targetGames].some(g => caller.gameAdminFor.includes(g));
+  return [...targetGames].some(g => scope.includes(g));
+}
+
+/** Igual que arriba pero probando TODAS las comunidades donde el target participa. */
+async function adminSharesGameWithUserAnyCommunity(caller, targetUser) {
+  if (caller.role === 'superadmin') return true;
+  const communityIds = new Set();
+  if (targetUser.communityId) communityIds.add(targetUser.communityId);
+  for (const m of targetUser.memberships ?? []) {
+    if (m.isActive !== false) communityIds.add(m.communityId);
+  }
+  for (const cid of communityIds) {
+    if (!isInUserScope(caller, cid)) continue;
+    if (await adminSharesGameWithUser(caller, targetUser, cid)) return true;
+  }
+  return false;
 }
 
 /** Comunidades donde el user tiene membresía activa: communityId + memberships. */
@@ -89,7 +121,6 @@ function signToken(user) {
       communityId: user.communityId ?? null,
       communityIds: getUserCommunityIds(user),
       participantByCommunity: getParticipantByCommunity(user),
-      gameAdminFor: user.gameAdminFor ?? [],
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRY }
@@ -129,6 +160,7 @@ router.post('/setup', async (req, res) => {
     passwordHash,
     role: 'superadmin',
     communityId: null, // superadmin is not tied to a single community
+    memberships: [],
     isActive: true,
     createdAt: new Date().toISOString(),
     lastLoginAt: null,
@@ -260,7 +292,8 @@ router.get('/users', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // ── POST /api/auth/users ──────────────────────────────────────────────────
-// Admin crea una cuenta para un participant existente.
+// Admin crea una cuenta para un participant existente. Crea SIEMPRE la
+// membership correspondiente a la comunidad destino (incluida si es su "home").
 
 router.post('/users', requireAuth, requireAdmin, async (req, res) => {
   const { participantId, username, password, role = 'user', communityId, gameAdminFor } = req.body;
@@ -271,26 +304,8 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
   if (password.length < 6) {
     return res.status(400).json({ error: 'Password must be at least 6 characters' });
   }
-  if (!['superadmin', 'community_admin', 'admin', 'user'].includes(role)) {
+  if (!['superadmin', ...MEMBERSHIP_ROLES].includes(role)) {
     return res.status(400).json({ error: 'Invalid role' });
-  }
-
-  // Role privilege checks — strictly enforced by actor's own role
-  // superadmin   → can assign any role
-  // community_admin → can assign 'user' or 'admin' ONLY (not community_admin or superadmin)
-  // admin        → cannot assign roles at all; all new accounts are 'user'
-  if (role === 'superadmin' && req.user.role !== 'superadmin') {
-    return res.status(403).json({ error: 'Only superadmin can create superadmin users' });
-  }
-  if (role === 'community_admin' && !['superadmin'].includes(req.user.role)) {
-    return res.status(403).json({ error: 'Only superadmin can assign community_admin role' });
-  }
-  if (role === 'admin' && !['superadmin', 'community_admin'].includes(req.user.role)) {
-    return res.status(403).json({ error: 'Only community owners can create admin users' });
-  }
-  // admin assistants always create 'user' accounts
-  if (req.user.role === 'admin' && role !== 'user') {
-    return res.status(403).json({ error: 'Admin assistants can only create regular user accounts' });
   }
 
   // Community scope
@@ -301,6 +316,32 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
 
   if (role !== 'superadmin' && !isInUserScope(req.user, targetCommunityId)) {
     return res.status(403).json({ error: 'Cannot create user in this community' });
+  }
+  // Ser miembro no basta: hay que ser admin DE ESA comunidad (o superadmin).
+  // requireAdmin solo exige ser admin de ALGUNA comunidad.
+  if (role !== 'superadmin' && req.user.role !== 'superadmin' &&
+      !isAdminInCommunity(req.user, targetCommunityId)) {
+    return res.status(403).json({ error: 'Only community admins can create accounts in this community' });
+  }
+
+  // Rol efectivo del caller EN la comunidad destino (o 'superadmin' si lo es globalmente).
+  const callerRoleHere = req.user.role === 'superadmin' ? 'superadmin' : communityRole(req.user, targetCommunityId);
+
+  // Role privilege checks — strictly enforced by the caller's role IN THIS COMMUNITY
+  // superadmin       → can assign any role
+  // community_admin  → can assign 'user' or 'admin' ONLY (not community_admin or superadmin)
+  // admin            → cannot assign roles at all; all new accounts are 'user'
+  if (role === 'superadmin' && req.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Only superadmin can create superadmin users' });
+  }
+  if (role === 'community_admin' && req.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Only superadmin can assign community_admin role' });
+  }
+  if (role === 'admin' && !['superadmin', 'community_admin'].includes(callerRoleHere)) {
+    return res.status(403).json({ error: 'Only community owners can create admin users' });
+  }
+  if (callerRoleHere === 'admin' && role !== 'user') {
+    return res.status(403).json({ error: 'Admin assistants can only create regular user accounts' });
   }
 
   const all = await users.getAll();
@@ -313,18 +354,24 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
   }
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+  const isSuperadmin = role === 'superadmin';
   const newUser = {
     id: generateId(),
     participantId,
     username: username.trim().toLowerCase(),
     passwordHash,
-    role,
+    role: isSuperadmin ? 'superadmin' : null,
     communityId: targetCommunityId,
-    // gameAdminFor solo aplica a role 'admin'; lista de gameIds que puede administrar.
-    // Si es undefined/null → admin de todos los juegos de la comunidad (comportamiento actual).
-    gameAdminFor: role === 'admin' && Array.isArray(gameAdminFor) && gameAdminFor.length > 0
-      ? gameAdminFor
-      : undefined,
+    // La comunidad home también es una membership (fuente única de verdad de rol/scope).
+    memberships: isSuperadmin ? [] : [{
+      participantId,
+      communityId: targetCommunityId,
+      isActive: true,
+      role,
+      gameAdminFor: role === 'admin' && Array.isArray(gameAdminFor) && gameAdminFor.length > 0
+        ? gameAdminFor
+        : [],
+    }],
     isActive: true,
     createdAt: new Date().toISOString(),
     lastLoginAt: null,
@@ -335,28 +382,25 @@ router.post('/users', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // ── PUT /api/auth/users/:id ───────────────────────────────────────────────
+// Dos tipos de cambios, con reglas distintas:
+//  A) Cuenta global: username / password / isActive → solo el propio usuario
+//     o superadmin (isActive también permitido a un community owner de alguna
+//     de las comunidades del usuario).
+//  B) Membership (role / gameAdminFor) de UNA comunidad concreta → requiere
+//     `communityId` explícito en el body para saber qué membership tocar.
 
 router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { username, password, isActive, role, communityId, gameAdminFor } = req.body;
-  const isCommunityOwner = ['superadmin', 'community_admin'].includes(req.user.role);
 
   const user = await users.findById(id);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  // A community admin can only modify users in their own community
-  if (!isInUserScope(req.user, user.communityId)) {
-    return res.status(403).json({ error: 'Cannot modify user outside your community scope' });
-  }
+  const isSelf = req.user.userId === id;
 
-  // Game-scoped admin: el usuario objetivo debe compartir alguno de sus juegos
-  if (!(await adminSharesGameWithUser(req.user, user))) {
-    return res.status(403).json({ error: 'You are not admin of any of this user\'s games' });
-  }
-
-  // Jerarquía: nadie modifica a un usuario de nivel igual o superior
-  if (!canManageUser(req.user, user)) {
-    return res.status(403).json({ error: 'You cannot modify a user with equal or higher admin level' });
+  // ── A) Cuenta global ─────────────────────────────────────────────────
+  if ((username !== undefined || password !== undefined) && !isSelf && req.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Only the account owner or superadmin can change username or password' });
   }
 
   if (username !== undefined) {
@@ -372,54 +416,95 @@ router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
     user.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
   }
 
-  // Only community owners (or superadmin) can change role / isActive / communityId
-  if (!isCommunityOwner && (isActive !== undefined || role !== undefined || communityId !== undefined)) {
-    return res.status(403).json({ error: 'Only community owners can change role or active status' });
-  }
-
-  if (communityId !== undefined && isCommunityOwner) {
-    const targetCommunityId = getTargetCommunityId(req.user, communityId);
-    if (!isInUserScope(req.user, targetCommunityId)) {
-      return res.status(403).json({ error: 'Cannot assign user to this community' });
-    }
-    user.communityId = targetCommunityId;
-  }
-
-  if (isActive !== undefined) user.isActive = !!isActive;
-  if (role !== undefined && ['superadmin', 'community_admin', 'admin', 'user'].includes(role)) {
-    // Strict role-assignment hierarchy:
-    // - Only superadmin can assign superadmin or community_admin
-    // - community_admin can assign user or admin ONLY
-    // - admin cannot change roles at all (already blocked above)
-    if (role === 'superadmin' && req.user.role !== 'superadmin') {
+  // Promoción/degradación de superadmin: acción global, solo superadmin.
+  if (role === 'superadmin') {
+    if (req.user.role !== 'superadmin') {
       return res.status(403).json({ error: 'Only superadmin can promote to superadmin' });
     }
-    if (role === 'community_admin' && req.user.role !== 'superadmin') {
-      return res.status(403).json({ error: 'Only superadmin can assign community_admin role' });
-    }
-    if (role === 'superadmin') {
-      user.communityId = null; // superadmin is not tied to a single community
-      user.gameAdminFor = undefined;
-    }
-    user.role = role;
+    user.role = 'superadmin';
+    user.communityId = null;
+    user.updatedAt = new Date().toISOString();
+    await users.upsert(user);
+    return res.json(safeUser(user));
+  }
+  if (user.role === 'superadmin' && role !== undefined && req.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Only superadmin can change another superadmin\'s role' });
+  }
+  if (user.role === 'superadmin' && role !== undefined) {
+    // Un superadmin puede "bajar" a otro superadmin a usuario normal.
+    user.role = null;
   }
 
-  // gameAdminFor: solo owners pueden modificarlo y solo aplica a role 'admin'
-  if (gameAdminFor !== undefined) {
-    if (!isCommunityOwner) {
-      return res.status(403).json({ error: 'Only community owners can change game admin scope' });
+  if (isActive !== undefined) {
+    const canToggleActive =
+      isSelf ||
+      req.user.role === 'superadmin' ||
+      isCommunityAdmin(req.user, communityId || user.communityId || getTargetCommunityId(req.user));
+    if (!canToggleActive) {
+      return res.status(403).json({ error: 'Only a community owner or superadmin can change active status' });
     }
-    const effectiveRole = role !== undefined ? role : user.role;
-    if (effectiveRole === 'admin') {
-      user.gameAdminFor = Array.isArray(gameAdminFor) && gameAdminFor.length > 0
-        ? gameAdminFor
-        : undefined; // vacío = admin de todos los juegos
-    } else {
-      user.gameAdminFor = undefined;
+    user.isActive = !!isActive;
+  }
+
+  // ── B) Membership (role / gameAdminFor) de una comunidad concreta ───────
+  if (role !== undefined || gameAdminFor !== undefined) {
+    if (!communityId) {
+      return res.status(400).json({ error: 'communityId is required to change role or game scope' });
+    }
+    if (!isInUserScope(req.user, communityId)) {
+      return res.status(403).json({ error: 'Cannot modify membership outside your community scope' });
+    }
+    if (!(await adminSharesGameWithUser(req.user, user, communityId))) {
+      return res.status(403).json({ error: 'You are not admin of any of this user\'s games' });
+    }
+    if (!canManageUserInCommunity(req.user, user, communityId)) {
+      return res.status(403).json({ error: 'You cannot modify a user with equal or higher admin level in this community' });
+    }
+
+    if (!Array.isArray(user.memberships)) user.memberships = [];
+    let membership = user.memberships.find(m => m.communityId === communityId);
+    if (!membership) {
+      membership = {
+        participantId: participantIdFor(user, communityId),
+        communityId,
+        isActive: true,
+        role: 'user',
+        gameAdminFor: [],
+      };
+      user.memberships.push(membership);
+    }
+
+    if (role !== undefined) {
+      if (!MEMBERSHIP_ROLES.includes(role)) {
+        return res.status(400).json({ error: 'Invalid role' });
+      }
+      // Solo el community_admin DE ESTA comunidad (o superadmin) puede asignar
+      // roles. Un 'admin' aquí, o un admin de OTRA comunidad que aquí es 'user',
+      // no gestiona roles.
+      if (!isCommunityAdmin(req.user, communityId)) {
+        return res.status(403).json({ error: 'Only community owners can assign roles' });
+      }
+      if (role === 'community_admin' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ error: 'Only superadmin can assign community_admin role' });
+      }
+      membership.role = role;
+      if (role !== 'admin') membership.gameAdminFor = [];
+    }
+
+    if (gameAdminFor !== undefined) {
+      const effectiveRole = role !== undefined ? role : membership.role;
+      if (effectiveRole === 'admin') {
+        if (!isCommunityAdmin(req.user, communityId)) {
+          return res.status(403).json({ error: 'Only community owners can change game admin scope' });
+        }
+        membership.gameAdminFor = Array.isArray(gameAdminFor) ? gameAdminFor : [];
+      } else {
+        membership.gameAdminFor = [];
+      }
     }
   }
+
   user.updatedAt = new Date().toISOString();
-
   await users.upsert(user);
   res.json(safeUser(user));
 });
@@ -432,15 +517,21 @@ router.delete('/users/:id', requireAuth, requireAdmin, async (req, res) => {
   const user = await users.findById(id);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  if (!isInUserScope(req.user, user.communityId)) {
+  const targetCommunityIds = new Set();
+  if (user.communityId) targetCommunityIds.add(user.communityId);
+  for (const m of user.memberships ?? []) {
+    if (m.isActive !== false) targetCommunityIds.add(m.communityId);
+  }
+  const inScope = [...targetCommunityIds].some(cid => isInUserScope(req.user, cid));
+  if (targetCommunityIds.size > 0 && !inScope) {
     return res.status(403).json({ error: 'Cannot delete user outside your community scope' });
   }
 
-  if (!(await adminSharesGameWithUser(req.user, user))) {
+  if (!(await adminSharesGameWithUserAnyCommunity(req.user, user))) {
     return res.status(403).json({ error: 'You are not admin of any of this user\'s games' });
   }
 
-  if (!canManageUser(req.user, user)) {
+  if (!canManageUserAnyCommunity(req.user, user)) {
     return res.status(403).json({ error: 'You cannot delete a user with equal or higher admin level' });
   }
 

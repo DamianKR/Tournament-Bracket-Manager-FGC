@@ -58,12 +58,22 @@ export async function requireAuth(req, res, next) {
   }
 }
 
-const ALL_ADMIN_ROLES = ['superadmin', 'community_admin', 'admin'];
-const COMMUNITY_OWNER_ROLES = ['superadmin', 'community_admin'];
-
-/** Cualquier usuario con privilegios admin (admin asistente, community owner o superadmin). */
+/**
+ * Gate "grueso": el usuario debe ser admin de ALGUNA comunidad (o superadmin).
+ * Desde el refactor a membership-roles, `req.user.role` solo es 'superadmin'
+ * o null — el rol real vive en `req.user.memberships[].role` por comunidad.
+ * Este middleware NO valida el recurso concreto; cada ruta debe hacer el
+ * chequeo fino con `isAdminInCommunity`/`canAdminGame` una vez que conoce el
+ * `communityId` real del recurso.
+ */
 export function requireAdmin(req, res, next) {
-  if (!req.user || !ALL_ADMIN_ROLES.includes(req.user.role)) {
+  const u = req.user;
+  if (!u) return res.status(403).json({ error: 'Admin access required' });
+  if (u.role === 'superadmin') return next();
+  const hasAdminSomewhere = (u.memberships ?? []).some(
+    m => m.isActive !== false && (m.role === 'admin' || m.role === 'community_admin')
+  );
+  if (!hasAdminSomewhere) {
     return res.status(403).json({ error: 'Admin access required' });
   }
   next();
@@ -77,9 +87,15 @@ export function requireSuperAdmin(req, res, next) {
   next();
 }
 
-/** Community owner (community_admin) o superadmin. Puede dar/quitar admin. */
+/** Community owner (community_admin de alguna comunidad) o superadmin. */
 export function requireCommunityAdmin(req, res, next) {
-  if (!req.user || !COMMUNITY_OWNER_ROLES.includes(req.user.role)) {
+  const u = req.user;
+  if (!u) return res.status(403).json({ error: 'Community owner access required' });
+  if (u.role === 'superadmin') return next();
+  const isCommunityOwnerSomewhere = (u.memberships ?? []).some(
+    m => m.isActive !== false && m.role === 'community_admin'
+  );
+  if (!isCommunityOwnerSomewhere) {
     return res.status(403).json({ error: 'Community owner access required' });
   }
   next();

@@ -5,6 +5,7 @@ import { useCommunity } from '@/contexts/CommunityContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { AppNotification } from '@/models/notification';
 import Loading from '@/components/Loading/Loading';
+import { localizedNotification } from '@/utils/notificationText';
 import './NotificationsPage.css';
 
 const TYPE_ICONS: Record<string, string> = {
@@ -14,6 +15,7 @@ const TYPE_ICONS: Record<string, string> = {
   league_match_expiring: 'fa-clock',
   matchmaking: 'fa-random',
   membership_request: 'fa-user-plus',
+  membership_invite: 'fa-envelope',
   membership_accepted: 'fa-check-circle',
 };
 
@@ -32,7 +34,8 @@ export default function NotificationsPage() {
   }
   const { notifications, unreadCount, markRead, markAllRead, deleteNotification, loading } = useNotifications();
   const navigate = useNavigate();
-  const { getPath } = useCommunity();
+  const { getPath, allCommunities } = useCommunity();
+  const communityName = (id: string) => allCommunities.find(c => c.id === id)?.name;
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   async function handleClick(notif: AppNotification) {
@@ -42,7 +45,11 @@ export default function NotificationsPage() {
     } else if (notif.type === 'league_week_start' || notif.type === 'league_match_expiring') {
       if (notif.data?.leagueId) navigate(getPath(`events/leagues/${notif.data.leagueId}`));
       else navigate(getPath('events?tab=leagues'));
-    } else if (notif.type === 'membership_request' || notif.type === 'membership_accepted') {
+    } else if (
+      notif.type === 'membership_request' ||
+      notif.type === 'membership_invite' ||
+      notif.type === 'membership_accepted'
+    ) {
       navigate('/membership-requests');
     }
   }
@@ -80,23 +87,25 @@ export default function NotificationsPage() {
           </div>
         ) : (
           <div className="notif-page-list">
-            {notifications.map(notif => (
-              <div
-                key={notif.id}
-                className={`notif-page-item card ${notif.read ? 'read' : 'unread'}`}
-                onClick={() => handleClick(notif)}
-              >
-                <div className="notif-page-item-icon">
-                  <i className={`fas ${TYPE_ICONS[notif.type] ?? 'fa-bell'}`} />
-                </div>
-                <div className="notif-page-item-body">
-                  <div className="notif-page-item-meta">
-                    <span className="notif-page-item-type">{typeLabel(notif.type)}</span>
-                    <span className="notif-page-item-time">{timeAgo(notif.createdAt)}</span>
+            {notifications.map(notif => {
+              const text = localizedNotification(notif, t, communityName);
+              return (
+                <div
+                  key={notif.id}
+                  className={`notif-page-item card ${notif.read ? 'read' : 'unread'}`}
+                  onClick={() => handleClick(notif)}
+                >
+                  <div className="notif-page-item-icon">
+                    <i className={`fas ${TYPE_ICONS[notif.type] ?? 'fa-bell'}`} />
                   </div>
-                  <div className="notif-page-item-title">{notif.title}</div>
-                  <div className="notif-page-item-message">{notif.message}</div>
-                </div>
+                  <div className="notif-page-item-body">
+                    <div className="notif-page-item-meta">
+                      <span className="notif-page-item-type">{typeLabel(notif.type)}</span>
+                      <span className="notif-page-item-time">{timeAgo(notif.createdAt)}</span>
+                    </div>
+                    <div className="notif-page-item-title">{text.title}</div>
+                    <div className="notif-page-item-message">{text.message}</div>
+                  </div>
                 <div className="notif-page-item-actions">
                   {!notif.read && (
                     <button
@@ -116,8 +125,9 @@ export default function NotificationsPage() {
                   </button>
                 </div>
                 {!notif.read && <div className="notif-page-unread-bar" />}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

@@ -9,26 +9,32 @@ import type { AppNotification } from './notification';
  *   AuthSession.token → supabase session.access_token
  */
 
-/** Identidad del user en una comunidad extra: participant separado con sus propios datos. */
+/** Identidad del user en una comunidad: participant separado con sus propios datos. */
 export interface CommunityMembership {
   participantId: string;
   communityId: string;
   isActive: boolean;
+  /** Rol del usuario dentro de esta comunidad. */
+  role?: 'user' | 'admin' | 'community_admin';
+  /** Juegos que administra dentro de esta comunidad (solo cuando role === 'admin'). */
+  gameAdminFor?: string[];
 }
 
 export interface AuthUser {
   id: string;
   username: string;
-  role: 'superadmin' | 'community_admin' | 'admin' | 'user';
+  /** Único rol global: superadmin. null/undefined = usuario normal; su poder vive en memberships. */
+  role?: 'superadmin' | 'community_admin' | 'admin' | 'user' | null;
   participantId: string | null;
   communityId: string | null;
-  /** Membresías en comunidades extra: cada una apunta a un participant distinto. */
+  /** Membresías en comunidades: cada una apunta a un participant distinto y a un rol. */
   memberships?: CommunityMembership[];
   /** Comunidades activas (hogar + membresías). Devuelto por /me y en el JWT. */
   communityIds?: string[];
   /** communityId → participantId del user en esa comunidad. */
   participantByCommunity?: Record<string, string>;
-  gameAdminFor?: string[]; // Array de gameIds para los que este admin tiene permisos (solo para role='admin')
+  /** @deprecated Usar membership.gameAdminFor. Conservado para fallback. */
+  gameAdminFor?: string[];
   isActive: boolean;
   createdAt: string;
   lastLoginAt: string | null;
@@ -45,14 +51,16 @@ export interface AuthSession {
 export interface SessionUser {
   id: string;
   username: string;
-  role: 'superadmin' | 'community_admin' | 'admin' | 'user';
+  /** @deprecated Usar memberships; solo superadmin es global. */
+  role?: 'superadmin' | 'community_admin' | 'admin' | 'user' | null;
   participantId: string | null;
   communityId: string | null;
-  /** Membresías en comunidades extra (participant distinto por comunidad). */
+  /** Membresías en comunidades (participant distinto por comunidad). */
   memberships?: CommunityMembership[];
   /** Comunidades activas (hogar + membresías). */
   communityIds?: string[];
   /** communityId → participantId del user en esa comunidad. */
   participantByCommunity?: Record<string, string>;
-  gameAdminFor?: string[]; // Array de gameIds para los que este admin tiene permisos
+  /** @deprecated Usar memberships. */
+  gameAdminFor?: string[];
 }

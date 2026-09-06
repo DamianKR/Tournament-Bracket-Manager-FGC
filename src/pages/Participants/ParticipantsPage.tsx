@@ -20,6 +20,7 @@ import {
 import { saveGlobalParticipants } from '@/services/storage/localStorage';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
+import { outranksOf, isCommunityAdminOf, communityRoleOf } from '@/utils/membershipRole';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import './ParticipantsPage.css';
@@ -32,40 +33,27 @@ function ParticipantsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { currentCommunity, getPath, isInMyCommunity, canAdminCurrentCommunity } = useCommunity();
+  const { currentCommunity, getPath, isInMyCommunity, canAdminCurrentCommunity, communityRole, gameAdminForHere } = useCommunity();
   // Admin con gameAdminFor: solo gestiona participantes que compartan sus juegos
-  const isScopedAdmin = user?.role === 'admin' && (user.gameAdminFor?.length ?? 0) > 0;
+  const isScopedAdmin = communityRole === 'admin' && gameAdminForHere.length > 0;
+  const communityIdForChecks = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
   const canManageParticipant = (p: GlobalParticipant): boolean => {
     // Jerarquía: nadie gestiona el participant de un usuario de nivel igual o superior
     const linked = usersMap.get(p.id);
-    const level = (u: { role?: string; gameAdminFor?: string[] } | null | undefined): number => {
-      if (!u) return -1;
-      if (u.role === 'superadmin') return 4;
-      if (u.role === 'community_admin') return 3;
-      if (u.role === 'admin') return (u.gameAdminFor?.length ?? 0) > 0 ? 1 : 2;
-      return 0;
-    };
-    if (linked && linked.id !== user?.id && level(user) <= level(linked)) return false;
+    if (linked && linked.id !== user?.id && !outranksOf(user, linked, communityIdForChecks)) return false;
     // Borrar: solo si el "default/primary game" del participante está en su scope
     if (!isScopedAdmin) return true;
-    return !!p.gameId && user!.gameAdminFor!.includes(p.gameId);
+    return !!p.gameId && gameAdminForHere.includes(p.gameId);
   };
   // Al crear un participante solo se pueden asignar los juegos que administra
   const creatableGames = isScopedAdmin
-    ? GAMES.filter(g => user!.gameAdminFor!.includes(g.id))
+    ? GAMES.filter(g => gameAdminForHere.includes(g.id))
     : GAMES;
   // Editar: cualquier admin de la comunidad (respeta jerarquía, pero no juegos)
   const canEditParticipant = (p: GlobalParticipant): boolean => {
     if (!canAdminCurrentCommunity) return false;
     const linked = usersMap.get(p.id);
-    const level = (u: { role?: string; gameAdminFor?: string[] } | null | undefined): number => {
-      if (!u) return -1;
-      if (u.role === 'superadmin') return 4;
-      if (u.role === 'community_admin') return 3;
-      if (u.role === 'admin') return (u.gameAdminFor?.length ?? 0) > 0 ? 1 : 2;
-      return 0;
-    };
-    if (linked && linked.id !== user?.id && level(user) <= level(linked)) return false;
+    if (linked && linked.id !== user?.id && !outranksOf(user, linked, communityIdForChecks)) return false;
     return true;
   };
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
@@ -84,7 +72,7 @@ function ParticipantsPage() {
   const [newPrimaryGameId, setNewPrimaryGameId] = useState<string | null>(null);
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [newRole, setNewRole] = useState<AuthUser['role']>('user');
+  const [newRole, setNewRole] = useState<string>('user');
   const [creating, setCreating] = useState(false);
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
@@ -102,13 +90,13 @@ function ParticipantsPage() {
 
   // Only community_admin and superadmin can assign roles.
   // admin assistants can only create regular 'user' accounts.
-  const canAssignRole = isInMyCommunity && (user?.role === 'superadmin' || user?.role === 'community_admin');
+  const canAssignRole = isInMyCommunity && isCommunityAdminOf(user, communityId);
 
   // Role options visible in the Create form, based on the actor's own role.
   // - superadmin: can assign any role (including community_admin)
   // - community_admin: can assign user, admin (NOT community_admin or superadmin to others)
   // - admin: no role assignment at all (they always create 'user')
-  const roleOptions: AuthUser['role'][] = user?.role === 'superadmin'
+  const roleOptions: string[] = user?.role === 'superadmin'
     ? ['user', 'admin', 'community_admin']
     : ['user', 'admin'];
 
@@ -197,7 +185,7 @@ function ParticipantsPage() {
     try {
       const p = await createParticipant(newName, newAlias, newGameIds, newPrimaryGameId, newGameMainChars, communityId);
       const username = newUsername.trim() || generateUsernameFromName();
-      const u = await createUserAccount(p.id, username, newPassword.trim(), newRole, communityId);
+      const u = await createUserAccount(p.id, username, newPassword.trim(), newRole as AuthUser['role'], communityId);
       const next = [...participants, p];
       setParticipants(next); refreshStats(next);
       const nextUsers = new Map(usersMap);
@@ -384,7 +372,7 @@ function ParticipantsPage() {
                 {canAssignRole && roleOptions.length > 1 && (
                   <div className="form-group">
                     <label>{t('participants.role')}</label>
-                    <select value={newRole} onChange={(e) => setNewRole(e.target.value as AuthUser['role'])}>
+                    <select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
                       {roleOptions.map((r) => <option key={r} value={r}>{t(`participantProfile.edit.roles.${r}`)}</option>)}
                     </select>
                   </div>
@@ -504,10 +492,11 @@ function ParticipantsPage() {
                     {/* Account badge */}
                     {(() => {
                       const u = usersMap.get(p.id);
+                      const roleHere = u ? communityRoleOf(u, communityIdForChecks) : null;
                       return u ? (
                         <span className={`pp-account-badge ${u.isActive ? 'has-account' : 'inactive-account'}`}>
                           <i className="fas fa-user-check" />
-                          {u.isActive ? `${u.username} (${u.role})` : t('participants.accountInactive')}
+                          {u.isActive ? `${u.username} (${roleHere ?? 'user'})` : t('participants.accountInactive')}
                         </span>
                       ) : (
                         <span className="pp-account-badge no-account">

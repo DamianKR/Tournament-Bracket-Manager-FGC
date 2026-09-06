@@ -55,7 +55,7 @@ export async function createParticipant(
 ): Promise<GlobalParticipant> {
   const trimmedName = name.trim();
   if (!trimmedName) throw new Error('Participant name is required');
-  if (findGlobalParticipantByName(trimmedName)) {
+  if (findGlobalParticipantByName(trimmedName, communityId)) {
     throw new Error(`A participant named "${trimmedName}" already exists`);
   }
 
@@ -83,7 +83,7 @@ export async function findOrCreateParticipant(
   name: string,
   communityId: string = DEFAULT_COMMUNITY_ID
 ): Promise<GlobalParticipant> {
-  const existing = findGlobalParticipantByName(name);
+  const existing = findGlobalParticipantByName(name, communityId);
   if (existing) return existing;
   return createParticipant(name, '', [], null, {}, communityId);
 }
@@ -111,7 +111,10 @@ export async function updateParticipant(
 
   if (updates.name) {
     const trimmed = updates.name.trim();
-    const conflict = all.find((p) => p.id !== id && p.name.toLowerCase() === trimmed.toLowerCase());
+    const participantCommunity = updates.communityId ?? participant.communityId;
+    const conflict = all.find(
+      (p) => p.id !== id && p.communityId === participantCommunity && p.name.toLowerCase() === trimmed.toLowerCase()
+    );
     if (conflict) throw new Error(`A participant named "${trimmed}" already exists`);
     participant.name = trimmed;
   }
@@ -367,6 +370,15 @@ export async function requestJoinCommunity(participantId: string, communityId: s
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Failed to create join request');
   return data;
+}
+
+/** Info mínima de la cuenta vinculada a un participant (para saber si es invitable). */
+export async function getParticipantAccountSummary(participantId: string): Promise<{ hasAccount: boolean; communityIds: string[] }> {
+  const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/account-summary`, {
+    headers: getAuthHeader(),
+  });
+  if (!res.ok) return { hasAccount: false, communityIds: [] };
+  return res.json();
 }
 
 /** superadmin / community_admin invita a un participant a su comunidad. */

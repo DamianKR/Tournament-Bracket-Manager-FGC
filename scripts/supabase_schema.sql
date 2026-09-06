@@ -69,6 +69,11 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Notificaciones
+CREATE TABLE IF NOT EXISTS membership_requests (
+  id   TEXT PRIMARY KEY,
+  data JSONB NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS notifications (
   id   TEXT PRIMARY KEY,
   data JSONB NOT NULL

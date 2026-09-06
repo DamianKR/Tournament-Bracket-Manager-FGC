@@ -348,9 +348,11 @@ export async function linkParticipantToTournament(participantId: string, tournam
   }
 }
 
-export function findGlobalParticipantByName(name: string): GlobalParticipant | null {
+export function findGlobalParticipantByName(name: string, communityId?: string): GlobalParticipant | null {
   return lsReadParticipants().find(
-    (p) => p.name.toLowerCase() === name.trim().toLowerCase()
+    (p) =>
+      (!communityId || p.communityId === communityId) &&
+      p.name.toLowerCase() === name.trim().toLowerCase()
   ) ?? null;
 }
 

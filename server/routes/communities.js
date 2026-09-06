@@ -11,7 +11,7 @@ import { randomUUID } from 'crypto';
 import { communities } from '../db/collections.js';
 import { communityShape, validateCommunity } from '../models/community.js';
 import { requireAuth, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { isInUserScope } from '../utils/communityScope.js';
+import { isInUserScope, isCommunityAdmin } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -92,11 +92,9 @@ router.put('/:id', requireAuth, async (req, res) => {
     const community = await communities.findById(req.params.id);
     if (!community) return res.status(404).json({ error: 'Community not found' });
 
-    // Superadmin puede editar cualquier comunidad; community_admin solo la suya.
-    const canEdit =
-      req.user.role === 'superadmin' ||
-      (req.user.role === 'community_admin' && community.ownerAdminId === req.user.userId) ||
-      (req.user.role === 'community_admin' && isInUserScope(req.user, community.id));
+    // Superadmin puede editar cualquier comunidad; community_admin solo la suya
+    // (community_admin de la membership correspondiente a ESTA comunidad).
+    const canEdit = isCommunityAdmin(req.user, community.id);
 
     if (!canEdit) {
       return res.status(403).json({ error: 'Only community owners or superadmin can edit this community' });

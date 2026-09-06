@@ -10,8 +10,8 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { user, isAdmin, isAuthenticated, logout } = useAuth();
-  const { currentCommunity, allCommunities, myParticipantId } = useCommunity();
+  const { user, isAuthenticated, logout } = useAuth();
+  const { currentCommunity, allCommunities, myParticipantId, canAdminCurrentCommunity, communityRole } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
 
   // La comunidad activa para navegación: la que se está viendo en el URL,
@@ -106,7 +106,7 @@ function Header() {
                 >
                   {t('header.ranking')}
                 </button>
-                {isAdmin && (
+                {canAdminCurrentCommunity && (
                   <button
                     className={`header-nav-item ${isActive(`/c/${effectiveCommunityId}/participants`) ? 'active' : ''}`}
                     onClick={() => handleNav(`/c/${effectiveCommunityId}/participants`)}
@@ -179,9 +179,9 @@ function Header() {
                     {userCommunity.shortName || userCommunity.name}
                   </span>
                 )}
-                {user?.role === 'superadmin' && <span className="header-role-badge">{t('header.roles.superadmin')}</span>}
-                {user?.role === 'community_admin' && <span className="header-role-badge">{t('header.roles.community_admin')}</span>}
-                {user?.role === 'admin' && <span className="header-role-badge">{t('header.roles.admin')}</span>}
+                {communityRole === 'superadmin' && <span className="header-role-badge">{t('header.roles.superadmin')}</span>}
+                {communityRole === 'community_admin' && <span className="header-role-badge">{t('header.roles.community_admin')}</span>}
+                {communityRole === 'admin' && <span className="header-role-badge">{t('header.roles.admin')}</span>}
                 <button className="header-logout-btn" onClick={handleLogout} title={t('header.logout')} aria-label={t('header.logout')}>
                   <i className="fas fa-sign-out-alt" />
                 </button>

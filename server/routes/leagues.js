@@ -326,7 +326,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       return res.status(403).json({ error: 'Cannot create league in this community' });
     }
     // game_admin solo puede crear ligas de sus juegos asignados
-    if (!canAdminGame(req.user, gameId)) {
+    if (!canAdminGame(req.user, communityId, gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
@@ -463,8 +463,7 @@ router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
     const userPid = participantIdFor(req.user, league.communityId);
     const isParticipant = userPid &&
       (match.participant1Id === userPid || match.participant2Id === userPid);
-    const isAdmin = ['superadmin', 'community_admin', 'admin'].includes(req.user.role) &&
-      canAdminGame(req.user, league.gameId);
+    const isAdmin = canAdminGame(req.user, league.communityId, league.gameId);
     if (!isParticipant && !isAdmin) {
       return res.status(403).json({ error: 'Only participants or admins of this game can report results' });
     }
@@ -549,7 +548,7 @@ router.post('/:id/matches/:matchId/mark-no-show', requireAuth, requireAdmin, asy
 
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
-    if (!canAdminGame(req.user, league.gameId)) {
+    if (!canAdminGame(req.user, league.communityId, league.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
@@ -601,7 +600,7 @@ router.post('/:id/matches/:matchId/cancel', requireAuth, requireAdmin, async (re
     if (match.status !== 'pending_review') return res.status(400).json({ error: 'Match is not pending review' });
 
     const leagueForCancel = await leagues.findById(req.params.id);
-    if (leagueForCancel && !canAdminGame(req.user, leagueForCancel.gameId)) {
+    if (leagueForCancel && !canAdminGame(req.user, leagueForCancel.communityId, leagueForCancel.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
@@ -625,7 +624,7 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
     
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
-    if (!canAdminGame(req.user, league.gameId)) {
+    if (!canAdminGame(req.user, league.communityId, league.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
@@ -721,11 +720,11 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
 });
 
 // GET /api/leagues/:id/eligible-for-ban — get participants eligible for ban
-router.get('/:id/eligible-for-ban', async (req, res) => {
+router.get('/:id/eligible-for-ban', requireAuth, async (req, res) => {
   try {
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
-    if (!canAdminGame(req.user, league.gameId)) {
+    if (!canAdminGame(req.user, league.communityId, league.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
@@ -767,7 +766,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!isInUserScope(req.user, league.communityId)) {
       return res.status(403).json({ error: 'League is not in your community scope' });
     }
-    if (!canAdminGame(req.user, league.gameId)) {
+    if (!canAdminGame(req.user, league.communityId, league.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
     const deleted = await leagues.remove(req.params.id);
@@ -821,8 +820,7 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
 
     const reporterId = participantIdFor(req.user, league.communityId);
     const isParticipant = reporterId === match.participant1Id || reporterId === match.participant2Id;
-    const isAdminRole = ['superadmin', 'community_admin', 'admin'].includes(req.user.role) &&
-      canAdminGame(req.user, league.gameId);
+    const isAdminRole = canAdminGame(req.user, league.communityId, league.gameId);
     if (!isParticipant && !isAdminRole) {
       return res.status(403).json({ error: 'Only participants or admins of this game can report results' });
     }
@@ -901,7 +899,7 @@ router.post('/:id/matches/:matchId/resolve', requireAuth, requireAdmin, async (r
     }
 
     const leagueForResolve = await leagues.findById(req.params.id);
-    if (leagueForResolve && !canAdminGame(req.user, leagueForResolve.gameId)) {
+    if (leagueForResolve && !canAdminGame(req.user, leagueForResolve.communityId, leagueForResolve.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
@@ -950,7 +948,7 @@ router.post('/:id/regenerate-schedule', requireAuth, requireAdmin, async (req, r
   try {
     const league = await leagues.findById(req.params.id);
     if (!league) return res.status(404).json({ error: 'League not found' });
-    if (!canAdminGame(req.user, league.gameId)) {
+    if (!canAdminGame(req.user, league.communityId, league.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
 

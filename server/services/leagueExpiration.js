@@ -1,5 +1,6 @@
 import { leagues, leagueMatches, users, participants } from '../db/collections.js';
 import { createNotification } from './notificationService.js';
+import { canAdminGame, participantIdFor } from '../utils/communityScope.js';
 
 /**
  * Auto-expire league matches that have passed their grace period.
@@ -65,9 +66,12 @@ export async function notifyAdminsOfBanEligibility(leagueId, participantId, noSh
     return;
   }
 
+  // Admins de la comunidad de la liga que pueden administrar su juego
+  // (roles viven en memberships; superadmin es global).
   const adminParticipants = allUsers
-    .filter(u => u.role === 'admin' && u.participantId)
-    .map(u => u.participantId);
+    .filter(u => canAdminGame(u, league?.communityId, league?.gameId))
+    .map(u => participantIdFor(u, league?.communityId))
+    .filter(Boolean);
 
   if (adminParticipants.length === 0) return;
 

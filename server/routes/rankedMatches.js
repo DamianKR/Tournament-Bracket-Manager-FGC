@@ -53,7 +53,7 @@ router.post('/', requireAuth, async (req, res) => {
     // Autorización: jugador del match o admin de ese juego
     const myPid = participantIdFor(req.user, communityId);
     const isMatchPlayer = myPid === playerAId || myPid === playerBId;
-    if (!isMatchPlayer && !canAdminGame(req.user, gameId)) {
+    if (!isMatchPlayer && !canAdminGame(req.user, communityId, gameId)) {
       return res.status(403).json({ error: 'Only a match participant or an admin of this game can record this match' });
     }
 
@@ -79,7 +79,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!isInUserScope(req.user, match.communityId)) {
       return res.status(403).json({ error: 'Match is not in your community scope' });
     }
-    if (!canAdminGame(req.user, match.gameId)) {
+    if (!canAdminGame(req.user, match.communityId, match.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
     const deleted = await rankedMatches.remove(req.params.id);

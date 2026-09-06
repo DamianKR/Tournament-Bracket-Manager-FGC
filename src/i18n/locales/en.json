@@ -140,7 +140,10 @@
       "duel_expiring": "Duel Expiring",
       "league_week_start": "League Week",
       "league_match_expiring": "League Match",
-      "matchmaking": "Matchmaking"
+      "matchmaking": "Matchmaking",
+      "membership_request": "Membership request",
+      "membership_invite": "Invitation",
+      "membership_accepted": "Membership accepted"
     },
     "viewAll": "View all",
     "close": "Close",
@@ -160,6 +163,15 @@
       "hoursAgo": "{{count}}h ago",
       "yesterday": "Yesterday",
       "daysAgo": "{{count}}d ago"
+    },
+    "membership": {
+      "requestTitle": "Membership request",
+      "requestMessage": "{{name}} wants to join {{community}}",
+      "inviteTitle": "Community invitation",
+      "inviteMessage": "You have been invited to join {{community}}",
+      "acceptedTitle": "Membership accepted",
+      "acceptedMessage": "You are now a member of {{community}}",
+      "acceptedMessageGeneric": "You are now a member of a new community"
     }
   },
   "participants": {
@@ -423,7 +435,8 @@
     "emptyDuelDesc": "Create challenges in Ranked Match to get started",
     "emptyDefaultDesc": "Play some matches to see them here",
     "goToRanked": "Go to Ranked",
-    "unknownPlayer": "Unknown"
+    "unknownPlayer": "Unknown",
+    "noMatchesForGame": "No events for this game"
   },
   "communities": {
     "title": "Communities",
@@ -452,7 +465,22 @@
     "errors": {
       "create": "Failed to create community",
       "update": "Failed to update community"
-    }
+    },
+    "requestSuccess": "Request sent to {{name}}",
+    "updateSuccess": "Community updated successfully",
+    "createSuccess": "Community created successfully",
+    "requestPending": "Request pending",
+    "requestJoin": "Request to join",
+    "pendingRequests": "Pending requests and invites",
+    "inviteToYou": "You were invited to join {{name}}",
+    "requestToYou": "Join request for {{name}}",
+    "joinTitle": "Join {{name}}",
+    "joinName": "Name",
+    "joinAlias": "Nick / Alias",
+    "joinReason": "Why do you want to join?",
+    "sendRequest": "Send request",
+    "pendingRequestsNotice": "You have pending requests or invites.",
+    "viewRequests": "View requests"
   },
   "communityDashboard": {
     "communityHome": "Community home",
@@ -563,7 +591,15 @@
     "noResults": "No results",
     "date": "Date",
     "time": "Time",
-    "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "days": [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ],
     "edit": "Edit",
     "saveAccount": "Save Account Changes",
     "accountActive": "Account active",
@@ -586,7 +622,11 @@
     "game": "Game",
     "mainCharacter": "Main Character",
     "noGame": "— No game —",
-    "noMain": "— No main —"
+    "noMain": "— No main —",
+    "accept": "Accept",
+    "decline": "Decline",
+    "sending": "Sending...",
+    "none": "None"
   },
   "characterSelect": {
     "gameLabel": "Game",
@@ -727,7 +767,13 @@
       "dangerZoneDesc": "This will permanently delete the participant and any linked login account.",
       "deleteParticipant": "Delete Participant",
       "deleteConfirmTitle": "Delete participant",
-      "deleteConfirmMessage": "Delete \"{{name}}\" and all linked data? This cannot be undone."
+      "deleteConfirmMessage": "Delete \"{{name}}\" and all linked data? This cannot be undone.",
+      "gameAdminNotYourGame": "You are not admin of this game",
+      "gameAdminScopeLabel": "Games this admin can manage (empty = all)",
+      "inviteSectionTitle": "Invite to your community",
+      "inviteSectionDesc": "The participant will receive an invitation to join the selected community.",
+      "inviteToCommunity": "Invite",
+      "inviteSent": "Invitation sent"
     },
     "errors": {
       "passwordTooShort": "Password must be at least 6 characters",
@@ -1043,7 +1089,9 @@
       "reportResult": "Report Result",
       "startsSoon": "Starts soon",
       "lockedWeek": "Week {{week}}",
-      "vs": "vs"
+      "vs": "vs",
+      "lockedUntil": "Available in week {{week}}",
+      "weekNumber": "Week {{week}}"
     },
     "options": {
       "title": "League Options",
@@ -1085,7 +1133,9 @@
       },
       "gameName": {
         "ssbu": "Super Smash Bros. Ultimate"
-      }
+      },
+      "matchesPerPlayer_one": "{{count}} match per player",
+      "matchesPerPlayer_other": "{{count}} matches per player"
     },
     "pending": {
       "title": "Pending Review",
@@ -1173,12 +1223,14 @@
       "errors": {
         "imageTooLarge": "Evidence image is too large. Maximum is {{size}}MB.",
         "winThreshold": "One player must win {{count}} games (Best of {{total}})",
-        "submitFailed": "Failed to report match result"
+        "submitFailed": "Failed to report match result",
+        "scoreMismatch": "The selected winner does not match the entered score."
       },
       "cancel": "Cancel",
       "submit": "Submit Result",
       "resolve": "Resolve",
-      "submitting": "Submitting..."
+      "submitting": "Submitting...",
+      "absentHint": "Select the player who did not show up."
     },
     "create": {
       "title": "Create New League",
@@ -1239,5 +1291,17 @@
         "createFailed": "Failed to create league"
       }
     }
+  },
+  "membershipRequests": {
+    "title": "Membership requests",
+    "subtitle": "Review and manage requests to join your communities.",
+    "toCommunities": "Communities",
+    "noneTitle": "No pending requests",
+    "noneDescription": "When someone asks to join a community, it will appear here.",
+    "incomingTitle": "Incoming requests",
+    "unknown": "Unknown",
+    "noReason": "No reason given.",
+    "invitesTitle": "Received invites",
+    "inviteText": "You were invited to {{name}}"
   }
 }

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { AppNotification } from '@/models/notification';
+import { localizedNotification } from '@/utils/notificationText';
 import './NotificationBell.css';
 
 
@@ -13,6 +14,9 @@ const TYPE_ICONS: Record<string, string> = {
   league_week_start: 'fa-calendar-week',
   league_match_expiring: 'fa-clock',
   matchmaking: 'fa-random',
+  membership_request: 'fa-user-plus',
+  membership_invite: 'fa-envelope',
+  membership_accepted: 'fa-check-circle',
   summary: 'fa-bell',
 };
 
@@ -33,7 +37,8 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { getPath } = useCommunity();
+  const { getPath, allCommunities } = useCommunity();
+  const communityName = (id: string) => allCommunities.find(c => c.id === id)?.name;
 
   // Close on outside click
   useEffect(() => {
@@ -59,6 +64,12 @@ export default function NotificationBell() {
     } else if (notif.type === 'league_week_start' || notif.type === 'league_match_expiring') {
       if (notif.data?.leagueId) navigate(getPath(`events/leagues/${notif.data.leagueId}`));
       else navigate(getPath('events?tab=leagues'));
+    } else if (
+      notif.type === 'membership_request' ||
+      notif.type === 'membership_invite' ||
+      notif.type === 'membership_accepted'
+    ) {
+      navigate('/membership-requests');
     }
   }
 
@@ -122,23 +133,26 @@ export default function NotificationBell() {
                 <p>{t('notifications.noNew')}</p>
               </div>
             ) : (
-              unreadNotifications.map(notif => (
-                <div
-                  key={notif.id}
-                  className="notif-item unread"
-                  onClick={() => handleNotifClick(notif)}
-                >
-                  <div className="notif-item-icon">
-                    <i className={`fas ${TYPE_ICONS[notif.type] ?? 'fa-bell'}`} />
+              unreadNotifications.map(notif => {
+                const text = localizedNotification(notif, t, communityName);
+                return (
+                  <div
+                    key={notif.id}
+                    className="notif-item unread"
+                    onClick={() => handleNotifClick(notif)}
+                  >
+                    <div className="notif-item-icon">
+                      <i className={`fas ${TYPE_ICONS[notif.type] ?? 'fa-bell'}`} />
+                    </div>
+                    <div className="notif-item-body">
+                      <div className="notif-item-title">{text.title}</div>
+                      <div className="notif-item-message">{text.message}</div>
+                      <div className="notif-item-time">{timeAgo(notif.createdAt)}</div>
+                    </div>
+                    <div className="notif-unread-dot" />
                   </div>
-                  <div className="notif-item-body">
-                    <div className="notif-item-title">{notif.title}</div>
-                    <div className="notif-item-message">{notif.message}</div>
-                    <div className="notif-item-time">{timeAgo(notif.createdAt)}</div>
-                  </div>
-                  <div className="notif-unread-dot" />
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

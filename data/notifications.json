@@ -4869,5 +4869,143 @@
     "data": {
       "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8"
     }
+  },
+  {
+    "id": "notif_1788700952189_6sacs4qth",
+    "recipientId": "gp_1788378964090_k9goxlg",
+    "type": "membership_request",
+    "title": "Solicitud de ingreso",
+    "message": "KruX quiere unirse a FGC Sancti - \"Puedo ser de ayuda en la comunidad\"",
+    "read": true,
+    "createdAt": "2026-09-06T13:22:32.189Z",
+    "scheduledAt": "2026-09-06T13:22:32.189Z",
+    "data": {
+      "requestId": "mreq_1788700952187_4cj28va",
+      "userId": "user_1787803682684_psoq3qr",
+      "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+      "reason": "Puedo ser de ayuda en la comunidad"
+    },
+    "readAt": "2026-09-06T13:28:26.854Z"
+  },
+  {
+    "id": "notif_1788700952193_k64wwyxqo",
+    "recipientId": "gp_1788379061334_fbsbbjo",
+    "type": "membership_request",
+    "title": "Solicitud de ingreso",
+    "message": "KruX quiere unirse a FGC Sancti - \"Puedo ser de ayuda en la comunidad\"",
+    "read": false,
+    "createdAt": "2026-09-06T13:22:32.193Z",
+    "scheduledAt": "2026-09-06T13:22:32.193Z",
+    "data": {
+      "requestId": "mreq_1788700952187_4cj28va",
+      "userId": "user_1787803682684_psoq3qr",
+      "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+      "reason": "Puedo ser de ayuda en la comunidad"
+    }
+  },
+  {
+    "id": "notif_1788702092506_jzd2hz7v7",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "duel_challenge",
+    "title": "Mandatory Duel Challenge!",
+    "message": "Rhadam has sent you a MANDATORY duel challenge. You cannot decline it — it goes straight to Record Match.",
+    "read": false,
+    "createdAt": "2026-09-06T13:41:32.506Z",
+    "scheduledAt": "2026-09-06T13:41:32.506Z",
+    "data": {
+      "duelId": "duel_1788702092500_rdkdtp2bg",
+      "challengerId": "gp_1787409902362_3u9f0qr",
+      "type": "mandatory"
+    }
+  },
+  {
+    "id": "notif_1788702892659_zipf3zjoe",
+    "recipientId": "gp_1788380302327_fa06m7d",
+    "type": "membership_invite",
+    "title": "Invitación a comunidad",
+    "message": "Te han invitado a unirte a FGC Santa Clara",
+    "read": true,
+    "createdAt": "2026-09-06T13:54:52.659Z",
+    "scheduledAt": "2026-09-06T13:54:52.659Z",
+    "data": {
+      "requestId": "mreq_1788702892656_d9rexsj",
+      "userId": "user_1788380302555_h6q998v",
+      "communityId": "community_fgc_santa_clara"
+    },
+    "readAt": "2026-09-06T13:56:20.834Z"
+  },
+  {
+    "id": "notif_1788702987887_de0t2u223",
+    "recipientId": "gp_1788702987883_tp3grlj",
+    "type": "membership_accepted",
+    "title": "Membresía aceptada",
+    "message": "Ahora eres miembro de una nueva comunidad",
+    "read": true,
+    "createdAt": "2026-09-06T13:56:27.887Z",
+    "scheduledAt": "2026-09-06T13:56:27.887Z",
+    "data": {
+      "communityId": "community_fgc_santa_clara"
+    },
+    "readAt": "2026-09-06T14:01:01.881Z"
+  },
+  {
+    "id": "notif_1788703635979_2aw79hqz4",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "membership_request",
+    "title": "Solicitud de ingreso",
+    "message": "USP1 quiere unirse a FGC Santa Clara - \"admin\"",
+    "read": true,
+    "createdAt": "2026-09-06T14:07:15.978Z",
+    "scheduledAt": "2026-09-06T14:07:15.978Z",
+    "data": {
+      "requestId": "mreq_1788703635976_99i5bhh",
+      "userId": "user_1788378964333_nkd0d4q",
+      "communityId": "community_fgc_santa_clara",
+      "reason": "admin"
+    },
+    "readAt": "2026-09-06T14:08:16.010Z"
+  },
+  {
+    "id": "notif_1788703668141_2y37kmy3p",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "membership_invite",
+    "title": "Invitación a comunidad",
+    "message": "Te han invitado a unirte a FGC Sancti",
+    "read": true,
+    "createdAt": "2026-09-06T14:07:48.141Z",
+    "scheduledAt": "2026-09-06T14:07:48.141Z",
+    "data": {
+      "requestId": "mreq_1788703668139_n76g0ey",
+      "userId": "user_1787803682892_c3ay3q8",
+      "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8"
+    },
+    "readAt": "2026-09-06T14:09:53.794Z"
+  },
+  {
+    "id": "notif_1788703731408_9p8yjlk6n",
+    "recipientId": "gp_1788703731404_jeqf68g",
+    "type": "membership_accepted",
+    "title": "Membresía aceptada",
+    "message": "Ahora eres miembro de una nueva comunidad",
+    "read": false,
+    "createdAt": "2026-09-06T14:08:51.407Z",
+    "scheduledAt": "2026-09-06T14:08:51.407Z",
+    "data": {
+      "communityId": "community_fgc_santa_clara"
+    }
+  },
+  {
+    "id": "notif_1788703804414_jmdckwjhi",
+    "recipientId": "gp_1788703804411_ypfwlqu",
+    "type": "membership_accepted",
+    "title": "Membresía aceptada",
+    "message": "Ahora eres miembro de una nueva comunidad",
+    "read": true,
+    "createdAt": "2026-09-06T14:10:04.414Z",
+    "scheduledAt": "2026-09-06T14:10:04.414Z",
+    "data": {
+      "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8"
+    },
+    "readAt": "2026-09-06T14:10:13.909Z"
   }
 ]

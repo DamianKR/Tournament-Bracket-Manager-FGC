@@ -14,6 +14,7 @@ import type { Community } from '@/models/community';
 import type { GlobalParticipant, Tournament } from '@/models/types';
 import type { League } from '@/models/league';
 import Loading from '@/components/Loading/Loading';
+import { isCommunityAdminOf } from '@/utils/membershipRole';
 import './CommunityDashboard.css';
 
 export default function CommunityDashboard() {
@@ -22,16 +23,15 @@ export default function CommunityDashboard() {
   const { allCommunities, setCommunityId, refresh } = useCommunity();
   const { user } = useAuth();
   const [community, setCommunity] = useState<Community | null>(null);
-  // Solo el owner de la comunidad (community_admin) o superadmin pueden editarla
-  const canEditCommunity = user?.role === 'superadmin' ||
-    (user?.role === 'community_admin' && community != null &&
-      (community.ownerAdminId === user.id || user.communityId === community.id || (user.communityIds ?? []).includes(community.id)));
+  // Solo el owner de la comunidad (community_admin de ESTA comunidad) o superadmin pueden editarla
+  const canEditCommunity = community != null && isCommunityAdminOf(user, community.id);
   const [editOpen, setEditOpen] = useState(false);
   const [editName, setEditName] = useState('');
   const [editShort, setEditShort] = useState('');
   const [editDesc, setEditDesc] = useState('');
   const [editIsPublic, setEditIsPublic] = useState(true);
   const [editError, setEditError] = useState('');
+  const [editSuccess, setEditSuccess] = useState('');
   const [editSaving, setEditSaving] = useState(false);
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -78,7 +78,11 @@ export default function CommunityDashboard() {
   if (!community) return <div className="community-dashboard not-found">{t('communityDashboard.notFound')}</div>;
 
   const displayName = community.name;
-  const isMyCommunity = user?.communityId === communityId || user?.role === 'superadmin';
+  // "Mi comunidad" = cualquier comunidad donde el usuario tenga membresía activa
+  // (home + memberships), o superadmin.
+  const isMyCommunity = user?.role === 'superadmin' ||
+    user?.communityId === communityId ||
+    (user?.communityIds ?? []).includes(communityId ?? '');
 
   const activeTournaments = tournaments.filter(t => t.status !== 'completed');
   const activeLeagues = leagues.filter(l => l.status === 'active');
@@ -90,6 +94,7 @@ export default function CommunityDashboard() {
     setEditDesc(community.description ?? '');
     setEditIsPublic(community.isPublic !== false);
     setEditError('');
+    setEditSuccess('');
     setEditOpen(true);
   }
 
@@ -107,6 +112,7 @@ export default function CommunityDashboard() {
       setCommunity(updated);
       await refresh();
       setEditOpen(false);
+      setEditSuccess(t('communities.updateSuccess', { defaultValue: 'Comunidad actualizada correctamente' }));
     } catch (err: any) {
       setEditError(err.message || t('communityDashboard.errors.save'));
     } finally {
@@ -133,6 +139,7 @@ export default function CommunityDashboard() {
               <> — <span className="cd-my-community">{t('communityDashboard.myCommunity')}</span></>
             )}
           </p>
+          {editSuccess && <p className="success-message cd-save-success" role="status">{editSuccess}</p>}
           {canEditCommunity && (
             <div className="cd-hero-actions">
               <button className="cd-hero-edit-btn" onClick={openEdit}>

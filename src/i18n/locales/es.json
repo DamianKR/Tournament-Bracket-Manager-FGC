@@ -140,7 +140,10 @@
       "duel_expiring": "Duelo por expirar",
       "league_week_start": "Semana de liga",
       "league_match_expiring": "Partido de liga",
-      "matchmaking": "Matchmaking"
+      "matchmaking": "Matchmaking",
+      "membership_request": "Solicitud de ingreso",
+      "membership_invite": "Invitación",
+      "membership_accepted": "Ingreso aceptado"
     },
     "viewAll": "Ver todo",
     "close": "Cerrar",
@@ -160,6 +163,15 @@
       "hoursAgo": "hace {{count}} h",
       "yesterday": "Ayer",
       "daysAgo": "hace {{count}} d"
+    },
+    "membership": {
+      "requestTitle": "Solicitud de ingreso",
+      "requestMessage": "{{name}} quiere unirse a {{community}}",
+      "inviteTitle": "Invitación a comunidad",
+      "inviteMessage": "Te han invitado a unirte a {{community}}",
+      "acceptedTitle": "Membresía aceptada",
+      "acceptedMessage": "Ahora eres miembro de {{community}}",
+      "acceptedMessageGeneric": "Ahora eres miembro de una nueva comunidad"
     }
   },
   "participants": {
@@ -423,7 +435,8 @@
     "emptyDuelDesc": "Crea desafíos en Ranked Match para comenzar",
     "emptyDefaultDesc": "Juega partidas para verlas aquí",
     "goToRanked": "Ir a Ranked",
-    "unknownPlayer": "Desconocido"
+    "unknownPlayer": "Desconocido",
+    "noMatchesForGame": "No hay eventos para este juego"
   },
   "communities": {
     "title": "Comunidades",
@@ -452,7 +465,22 @@
     "errors": {
       "create": "Error al crear comunidad",
       "update": "Error al actualizar comunidad"
-    }
+    },
+    "requestSuccess": "Solicitud enviada a {{name}}",
+    "updateSuccess": "Comunidad actualizada correctamente",
+    "createSuccess": "Comunidad creada correctamente",
+    "requestPending": "Solicitud pendiente",
+    "requestJoin": "Solicitar unirse",
+    "pendingRequests": "Solicitudes e invitaciones pendientes",
+    "inviteToYou": "Te invitaron a unirte a {{name}}",
+    "requestToYou": "Solicitud de ingreso a {{name}}",
+    "joinTitle": "Unirse a {{name}}",
+    "joinName": "Nombre",
+    "joinAlias": "Nick / Alias",
+    "joinReason": "¿Por qué quieres unirte?",
+    "sendRequest": "Enviar solicitud",
+    "pendingRequestsNotice": "Tienes solicitudes o invitaciones pendientes.",
+    "viewRequests": "Ver solicitudes"
   },
   "communityDashboard": {
     "communityHome": "Home de la comunidad",
@@ -563,7 +591,15 @@
     "noResults": "Sin resultados",
     "date": "Fecha",
     "time": "Hora",
-    "days": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+    "days": [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado"
+    ],
     "edit": "Editar",
     "saveAccount": "Guardar cambios de cuenta",
     "accountActive": "Cuenta activa",
@@ -586,7 +622,11 @@
     "game": "Juego",
     "mainCharacter": "Personaje principal",
     "noGame": "— Sin juego —",
-    "noMain": "— Sin personaje —"
+    "noMain": "— Sin personaje —",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "sending": "Enviando...",
+    "none": "Ninguno"
   },
   "characterSelect": {
     "gameLabel": "Juego",
@@ -727,7 +767,13 @@
       "dangerZoneDesc": "Esto eliminará permanentemente al participante y cualquier cuenta de acceso vinculada.",
       "deleteParticipant": "Eliminar participante",
       "deleteConfirmTitle": "Eliminar participante",
-      "deleteConfirmMessage": "¿Eliminar a \"{{name}}\" y todos sus datos vinculados? Esto no se puede deshacer."
+      "deleteConfirmMessage": "¿Eliminar a \"{{name}}\" y todos sus datos vinculados? Esto no se puede deshacer.",
+      "gameAdminNotYourGame": "No administras este juego",
+      "gameAdminScopeLabel": "Juegos que puede administrar (vacío = todos)",
+      "inviteSectionTitle": "Invitar a tu comunidad",
+      "inviteSectionDesc": "El participante recibirá una invitación para unirse a la comunidad seleccionada.",
+      "inviteToCommunity": "Invitar",
+      "inviteSent": "Invitación enviada"
     },
     "errors": {
       "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
@@ -1043,7 +1089,9 @@
       "reportResult": "Reportar resultado",
       "startsSoon": "Empieza pronto",
       "lockedWeek": "Semana {{week}}",
-      "vs": "vs"
+      "vs": "vs",
+      "lockedUntil": "Disponible en la semana {{week}}",
+      "weekNumber": "Semana {{week}}"
     },
     "options": {
       "title": "Opciones de la liga",
@@ -1085,7 +1133,9 @@
       },
       "gameName": {
         "ssbu": "Super Smash Bros. Ultimate"
-      }
+      },
+      "matchesPerPlayer_one": "{{count}} partido por jugador",
+      "matchesPerPlayer_other": "{{count}} partidos por jugador"
     },
     "pending": {
       "title": "Revisión pendiente",
@@ -1173,12 +1223,14 @@
       "errors": {
         "imageTooLarge": "La imagen de evidencia es demasiado grande. El máximo es {{size}}MB.",
         "winThreshold": "Un jugador debe ganar {{count}} juegos (Best of {{total}})",
-        "submitFailed": "Error al reportar el resultado del partido"
+        "submitFailed": "Error al reportar el resultado del partido",
+        "scoreMismatch": "El ganador seleccionado no coincide con el score ingresado."
       },
       "cancel": "Cancelar",
       "submit": "Enviar resultado",
       "resolve": "Resolver",
-      "submitting": "Enviando..."
+      "submitting": "Enviando...",
+      "absentHint": "Selecciona el jugador que no se presentó."
     },
     "create": {
       "title": "Crear nueva liga",
@@ -1239,5 +1291,17 @@
         "createFailed": "Error al crear la liga"
       }
     }
+  },
+  "membershipRequests": {
+    "title": "Solicitudes de ingreso",
+    "subtitle": "Revisa y gestiona las peticiones para unirse a tus comunidades.",
+    "toCommunities": "Comunidades",
+    "noneTitle": "No hay solicitudes pendientes",
+    "noneDescription": "Cuando alguien pida unirse a una comunidad, aparecerá aquí.",
+    "incomingTitle": "Solicitudes entrantes",
+    "unknown": "Desconocido",
+    "noReason": "No indicó un motivo.",
+    "invitesTitle": "Invitaciones recibidas",
+    "inviteText": "Te invitaron a {{name}}"
   }
 }

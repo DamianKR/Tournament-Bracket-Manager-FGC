@@ -25,5 +25,57 @@
     "createdAt": "2026-09-06T06:42:39.814Z",
     "resolvedAt": "2026-09-06T06:45:17.430Z",
     "resolvedBy": "user_1788378964333_nkd0d4q"
+  },
+  {
+    "id": "mreq_1788700952187_4cj28va",
+    "userId": "user_1787803682684_psoq3qr",
+    "sourceParticipantId": "gp_1786387087046_wnwtadb",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "direction": "request",
+    "status": "pending",
+    "requestedBy": "user_1787803682684_psoq3qr",
+    "applicantName": "kruz",
+    "applicantAlias": "KruX",
+    "reason": "Puedo ser de ayuda en la comunidad",
+    "createdAt": "2026-09-06T13:22:32.187Z"
+  },
+  {
+    "id": "mreq_1788702892656_d9rexsj",
+    "userId": "user_1788380302555_h6q998v",
+    "sourceParticipantId": "gp_1788380302327_fa06m7d",
+    "communityId": "community_fgc_santa_clara",
+    "direction": "invite",
+    "status": "accepted",
+    "requestedBy": "user_1787803682684_psoq3qr",
+    "createdAt": "2026-09-06T13:54:52.656Z",
+    "resolvedAt": "2026-09-06T13:56:27.881Z",
+    "resolvedBy": "user_1788380302555_h6q998v"
+  },
+  {
+    "id": "mreq_1788703635976_99i5bhh",
+    "userId": "user_1788378964333_nkd0d4q",
+    "sourceParticipantId": "gp_1788378964090_k9goxlg",
+    "communityId": "community_fgc_santa_clara",
+    "direction": "request",
+    "status": "accepted",
+    "requestedBy": "user_1788378964333_nkd0d4q",
+    "applicantName": "usp1",
+    "applicantAlias": "USP1",
+    "reason": "admin",
+    "createdAt": "2026-09-06T14:07:15.977Z",
+    "resolvedAt": "2026-09-06T14:08:51.401Z",
+    "resolvedBy": "user_1787803682684_psoq3qr"
+  },
+  {
+    "id": "mreq_1788703668139_n76g0ey",
+    "userId": "user_1787803682892_c3ay3q8",
+    "sourceParticipantId": "gp_1786387234567_aoe1z95",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "direction": "invite",
+    "status": "accepted",
+    "requestedBy": "user_1788378964333_nkd0d4q",
+    "createdAt": "2026-09-06T14:07:48.139Z",
+    "resolvedAt": "2026-09-06T14:10:04.409Z",
+    "resolvedBy": "user_1787803682892_c3ay3q8"
   }
 ]

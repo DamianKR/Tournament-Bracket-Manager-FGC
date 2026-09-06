@@ -12,6 +12,14 @@ import type { Community } from '@/models/community';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAllCommunities } from '@/services/communities/communityService';
+import {
+  communityRoleOf,
+  isCommunityAdminOf,
+  isAdminInCommunity as isAdminInCommunityOf,
+  canAdminGameOf,
+  gameAdminForOf,
+  type CommunityRoleValue,
+} from '@/utils/membershipRole';
 
 interface CommunityContextValue {
   currentCommunity: Community | null;
@@ -31,8 +39,8 @@ interface CommunityContextValue {
    */
   myParticipantId: string | null;
   /**
-   * true if the user is an admin-level role AND is in their own community.
-   * Shorthand for: isAdmin && isInMyCommunity.
+   * true if the user has an admin-level role (admin/community_admin/superadmin)
+   * IN the community currently being viewed (por membership, no rol global).
    */
   canAdminCurrentCommunity: boolean;
   /**
@@ -42,11 +50,15 @@ interface CommunityContextValue {
    * - admin con gameAdminFor → solo los juegos listados.
    */
   canAdminGame: (gameId: string | null | undefined) => boolean;
+  /** Rol efectivo del usuario EN la comunidad activa (o null si no es miembro). */
+  communityRole: CommunityRoleValue;
+  /** true si es superadmin o community_admin DE la comunidad activa. */
+  isCommunityAdminHere: boolean;
+  /** Juegos que administra en la comunidad activa (solo aplica a role 'admin'; [] = todos). */
+  gameAdminForHere: string[];
 }
 
 const CommunityContext = createContext<CommunityContextValue | null>(null);
-
-const ALL_ADMIN_ROLES = ['superadmin', 'community_admin', 'admin'] as const;
 
 export function CommunityProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -93,24 +105,24 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
       (user.communityIds?.includes(currentCommunity?.id ?? '') ?? false)
     ));
 
-  const canAdminCurrentCommunity =
-    isInMyCommunity &&
-    user != null &&
-    (ALL_ADMIN_ROLES as readonly string[]).includes(user.role);
+  // Rol efectivo del usuario EN la comunidad activa (fuente única de verdad:
+  // membership de esa comunidad, o 'superadmin' si lo es globalmente).
+  const communityRole = communityRoleOf(user, currentCommunity?.id);
+  const isCommunityAdminHere = isCommunityAdminOf(user, currentCommunity?.id);
+  const gameAdminForHere = gameAdminForOf(user, currentCommunity?.id);
+  const canAdminCurrentCommunity = isAdminInCommunityOf(user, currentCommunity?.id);
 
   const canAdminGame = useCallback((gameId: string | null | undefined): boolean => {
-    if (!canAdminCurrentCommunity || !user) return false;
-    if (user.role === 'superadmin' || user.role === 'community_admin') return true;
-    if (user.role === 'admin') {
-      if (!user.gameAdminFor || user.gameAdminFor.length === 0) return true;
-      return gameId != null && user.gameAdminFor.includes(gameId);
-    }
-    return false;
-  }, [canAdminCurrentCommunity, user]);
+    return canAdminGameOf(user, currentCommunity?.id, gameId);
+  }, [user, currentCommunity?.id]);
 
-  // Participant del user en la comunidad activa: hogar o membresía.
+  // Participant del user en la comunidad activa: membership activa (fuente de
+  // verdad), luego mapa legacy participantByCommunity, luego participantId home.
   const myParticipantId = currentCommunity
-    ? (user?.participantByCommunity?.[currentCommunity.id] ??
+    ? ((user?.memberships ?? []).find(
+        (m) => m.isActive !== false && m.communityId === currentCommunity.id
+      )?.participantId ??
+       user?.participantByCommunity?.[currentCommunity.id] ??
        (user?.communityId === currentCommunity.id ? user.participantId : null))
     : (user?.participantId ?? null);
 
@@ -124,6 +136,9 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     myParticipantId,
     canAdminCurrentCommunity,
     canAdminGame,
+    communityRole,
+    isCommunityAdminHere,
+    gameAdminForHere,
   };
 
   return (

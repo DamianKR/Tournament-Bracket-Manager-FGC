@@ -27,13 +27,13 @@ interface ActiveChallengesProps {
 function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, canAdminGame, myParticipantId } = useCommunity();
+  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, canAdminGame, myParticipantId, communityRole, gameAdminForHere } = useCommunity();
   const communityId = currentCommunity?.id;
 
   // User belongs to this community (or is superadmin)
   const isAdminHere = canAdminCurrentCommunity;
-  // Admin con gameAdminFor: solo puede crear duelos de SUS juegos
-  const isScopedAdmin = user?.role === 'admin' && (user.gameAdminFor?.length ?? 0) > 0;
+  // Admin con gameAdminFor EN esta comunidad: solo puede crear duelos de SUS juegos
+  const isScopedAdmin = communityRole === 'admin' && gameAdminForHere.length > 0;
   const creatableGames = isScopedAdmin ? GAMES.filter(g => canAdminGame(g.id)) : GAMES;
   // Regular participant in this community can create/accept challenges
   const canInteract = isInMyCommunity && user != null;

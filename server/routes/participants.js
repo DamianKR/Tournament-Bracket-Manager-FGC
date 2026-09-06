@@ -18,7 +18,17 @@ import { Router } from 'express';
 import { participants, tournaments, leagues, leagueMatches, communities, users, membershipRequests } from '../db/collections.js';
 import { validateParticipant } from '../models/participant.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, isInUserScope, getTargetCommunityId, participantIdFor, canManageUser } from '../utils/communityScope.js';
+import {
+  filterByCommunity,
+  isInUserScope,
+  getTargetCommunityId,
+  participantIdFor,
+  communityRole,
+  isAdminInCommunity,
+  isCommunityAdmin,
+  gameAdminForInCommunity,
+  canManageUserInCommunity,
+} from '../utils/communityScope.js';
 import { createNotification } from '../services/notificationService.js';
 import {
   migrateParticipantGames,
@@ -32,34 +42,38 @@ const router = Router();
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-const ADMIN_ROLES = ['superadmin', 'community_admin', 'admin'];
-function isAdminRole(user) {
-  return user && ADMIN_ROLES.includes(user.role);
+/** true si el usuario tiene cualquier rol admin EN la comunidad del participant. */
+function isAdminRole(user, communityId) {
+  return isAdminInCommunity(user, communityId);
 }
 
 /**
- * Un admin con gameAdminFor solo puede modificar participantes que compartan
- * alguno de sus juegos administrados. Otros roles no se restringen aquí.
+ * Un admin con gameAdminFor (EN esa comunidad) solo puede modificar
+ * participantes que compartan alguno de sus juegos administrados.
+ * community_admin/superadmin/admin-sin-scope: sin restricción.
  */
-function adminSharesGameWithParticipant(user, participant) {
-  if (user.role !== 'admin') return true;
-  if (!Array.isArray(user.gameAdminFor) || user.gameAdminFor.length === 0) return true;
+function adminSharesGameWithParticipant(user, communityId, participant) {
+  if (communityRole(user, communityId) !== 'admin') return true;
+  const scope = gameAdminForInCommunity(user, communityId);
+  if (scope.length === 0) return true;
   const games = new Set(Object.keys(participant?.games || {}));
   if (participant?.gameId) games.add(participant.gameId);
-  return [...games].some(g => user.gameAdminFor.includes(g));
+  return [...games].some(g => scope.includes(g));
 }
 
-function isScopedAdmin(user) {
-  return user?.role === 'admin' && Array.isArray(user.gameAdminFor) && user.gameAdminFor.length > 0;
+/** true si el usuario es 'admin' CON gameAdminFor no vacío EN esa comunidad. */
+function isScopedAdmin(user, communityId) {
+  return communityRole(user, communityId) === 'admin' && gameAdminForInCommunity(user, communityId).length > 0;
 }
 
 /**
- * Recorta los juegos de un participant body a los que el scoped admin gestiona.
- * gameIds, gameId/primaryGameId y gameMainCharacters quedan limitados al scope.
+ * Recorta los juegos de un participant body a los que el scoped admin gestiona
+ * EN la comunidad del participant. gameIds, gameId/primaryGameId y
+ * gameMainCharacters quedan limitados al scope.
  */
-function clampGamesToAdminScope(user, body) {
-  if (!isScopedAdmin(user)) return body;
-  const allowed = new Set(user.gameAdminFor);
+function clampGamesToAdminScope(user, communityId, body) {
+  if (!isScopedAdmin(user, communityId)) return body;
+  const allowed = new Set(gameAdminForInCommunity(user, communityId));
   if (Array.isArray(body.gameIds)) body.gameIds = body.gameIds.filter(g => allowed.has(g));
   if (body.gameId && !allowed.has(body.gameId)) body.gameId = body.gameIds?.[0] ?? undefined;
   if (body.primaryGameId && !allowed.has(body.primaryGameId)) body.primaryGameId = body.gameIds?.[0] ?? undefined;
@@ -73,7 +87,8 @@ function clampGamesToAdminScope(user, body) {
 
 /**
  * Busca la cuenta de usuario vinculada a un participant y verifica que el
- * caller tenga nivel estrictamente superior (nadie toca a un igual/superior).
+ * caller tenga nivel estrictamente superior EN esa comunidad (nadie toca a
+ * un igual/superior).
  */
 async function callerOutranksParticipantUser(caller, participant) {
   const allUsers = await users.getAll();
@@ -84,7 +99,7 @@ async function callerOutranksParticipantUser(caller, participant) {
   );
   if (!linked) return true; // participant sin cuenta: cualquier admin lo gestiona
   if (linked.id === caller.id) return true;
-  return canManageUser(caller, linked);
+  return canManageUserInCommunity(caller, linked, participant.communityId);
 }
 
 /** Merge per-game profiles: server ELO is authoritative, main character can come from client. */
@@ -142,8 +157,6 @@ function resolveGames(existing, incoming) {
 //   - invite: superadmin/community_admin invita al user (desde el perfil de un
 //     participant suyo) → el user acepta → mismo resultado.
 
-const APPROVER_ROLES = ['superadmin', 'community_admin', 'admin'];
-
 /** Comunidades donde el user tiene membresía activa (hogar + extras). */
 function userCommunityIds(u) {
   const ids = new Set();
@@ -161,17 +174,20 @@ function participantIdForCommunity(u, communityId) {
   return m?.participantId ?? null;
 }
 
+/** true si el user administra ingresos/solicitudes de esa comunidad:
+ *  superadmin, community_admin, o admin SIN scope de juego (los scopenados no). */
+function isMembershipApprover(u, communityId) {
+  const role = communityRole(u, communityId);
+  if (role === 'superadmin' || role === 'community_admin') return true;
+  if (role === 'admin') return gameAdminForInCommunity(u, communityId).length === 0;
+  return false;
+}
+
 async function notifyCommunityAdmins(communityId, type, title, message, data) {
   try {
     const allUsers = await users.getAll();
     for (const u of allUsers) {
-      if (!APPROVER_ROLES.includes(u.role)) continue;
-      // Solo superadmin, community_admin y admin SIN scope reciben notificaciones de comunidad.
-      // Los admin con gameAdminFor (scopenados) no gestionan ingresos.
-      if (u.role === 'admin' && (u.gameAdminFor?.length ?? 0) > 0) continue;
-      const isInScope = u.role === 'superadmin' || u.communityId === communityId ||
-        (u.memberships ?? []).some(m => m.communityId === communityId && m.isActive !== false);
-      if (!isInScope) continue;
+      if (!isMembershipApprover(u, communityId)) continue;
       const pid = participantIdForCommunity(u, communityId);
       if (pid) await createNotification(pid, type, title, message, data);
     }
@@ -197,7 +213,7 @@ async function createMembershipParticipant(user, sourceParticipant, communityId)
   };
   await participants.upsert(p);
   if (!Array.isArray(user.memberships)) user.memberships = [];
-  user.memberships.push({ participantId: p.id, communityId, isActive: true });
+  user.memberships.push({ participantId: p.id, communityId, isActive: true, role: 'user', gameAdminFor: [] });
   user.updatedAt = new Date().toISOString();
   await users.upsert(user);
   return p;
@@ -261,7 +277,14 @@ router.post('/:id/join-request', requireAuth, async (req, res) => {
       'membership_request',
       'Solicitud de ingreso',
       `${displayName} quiere unirse a ${community.name}${reasonLine}`,
-      { requestId: request.id, userId: user.id, communityId, reason: request.reason }
+      {
+        requestId: request.id,
+        userId: user.id,
+        communityId,
+        communityName: community.name,
+        applicantName: displayName,
+        reason: request.reason,
+      }
     );
 
     res.status(201).json(request);
@@ -285,9 +308,7 @@ router.post('/:id/invite', requireAuth, async (req, res) => {
     if (!community) return res.status(404).json({ error: 'Community not found' });
 
     // Solo superadmin o community_admin DE ESA comunidad puede invitar
-    const canInvite =
-      req.user.role === 'superadmin' ||
-      (req.user.role === 'community_admin' && isInUserScope(req.user, communityId));
+    const canInvite = isCommunityAdmin(req.user, communityId);
     if (!canInvite) {
       return res.status(403).json({ error: 'Only superadmin or the community owner can invite' });
     }
@@ -328,7 +349,7 @@ router.post('/:id/invite', requireAuth, async (req, res) => {
       'membership_invite',
       'Invitación a comunidad',
       `Te han invitado a unirte a ${community.name}`,
-      { requestId: request.id, userId: targetUser.id, communityId }
+      { requestId: request.id, userId: targetUser.id, communityId, communityName: community.name }
     );
 
     res.status(201).json(request);
@@ -345,10 +366,7 @@ router.get('/membership-requests', requireAuth, async (req, res) => {
     const all = await membershipRequests.getAll();
     const pending = all.filter(r => r.status === 'pending');
 
-    const isAdminOf = (cid) =>
-      req.user.role === 'superadmin' ||
-      (req.user.role === 'community_admin' && isInUserScope(req.user, cid)) ||
-      (req.user.role === 'admin' && !(req.user.gameAdminFor?.length ?? 0) && isInUserScope(req.user, cid));
+    const isAdminOf = (cid) => isMembershipApprover(req.user, cid);
 
     const visible = pending.filter(r => {
       // Invites: visibles para el user invitado
@@ -385,10 +403,7 @@ router.post('/membership-requests/:id/resolve', requireAuth, async (req, res) =>
     // - invite   → el propio user invitado (o superadmin)
     let allowed = false;
     if (request.direction === 'request') {
-      allowed =
-        req.user.role === 'superadmin' ||
-        (req.user.role === 'community_admin' && isInUserScope(req.user, request.communityId)) ||
-        (req.user.role === 'admin' && !(req.user.gameAdminFor?.length ?? 0) && isInUserScope(req.user, request.communityId));
+      allowed = isMembershipApprover(req.user, request.communityId);
     } else {
       allowed = req.user.role === 'superadmin' || req.user.userId === request.userId;
     }
@@ -403,12 +418,13 @@ router.post('/membership-requests/:id/resolve', requireAuth, async (req, res) =>
     if (action === 'accept' && !userCommunityIds(targetUser).includes(request.communityId)) {
       const source = await participants.findById(request.sourceParticipantId);
       newParticipant = await createMembershipParticipant(targetUser, source, request.communityId);
+      const acceptedCommunity = await communities.findById(request.communityId);
       await createNotification(
         newParticipant.id,
         'membership_accepted',
         'Membresía aceptada',
-        `Ahora eres miembro de una nueva comunidad`,
-        { communityId: request.communityId }
+        `Ahora eres miembro de ${acceptedCommunity?.name ?? 'una nueva comunidad'}`,
+        { communityId: request.communityId, communityName: acceptedCommunity?.name }
       );
     }
 
@@ -441,7 +457,7 @@ router.delete('/:id/communities/:cid', requireAuth, async (req, res) => {
     }
 
     const isSelf = req.user.userId === targetUser.id;
-    const isAdminOfTarget = APPROVER_ROLES.includes(req.user.role) && isInUserScope(req.user, cid);
+    const isAdminOfTarget = isAdminInCommunity(req.user, cid);
     if (!isSelf && !isAdminOfTarget) {
       return res.status(403).json({ error: 'Only the member or an admin of that community can remove membership' });
     }
@@ -470,6 +486,28 @@ router.get('/', optionalAuth, async (req, res) => {
   } catch (err) {
     console.error('[Participants] GET / error:', err);
     res.status(500).json({ error: 'Failed to read participants' });
+  }
+});
+
+// GET /api/participants/:id/account-summary — info mínima de la cuenta
+// vinculada, para que un community_admin de OTRA comunidad pueda saber si el
+// participant tiene cuenta invitable sin exponer el listado completo de users.
+router.get('/:id/account-summary', requireAuth, async (req, res) => {
+  try {
+    const p = await participants.findById(req.params.id);
+    if (!p) return res.status(404).json({ error: 'Participant not found' });
+
+    const all = await users.getAll();
+    const targetUser = all.find(u =>
+      u.participantId === p.id ||
+      (u.memberships ?? []).some(m => m.participantId === p.id)
+    );
+    if (!targetUser) return res.json({ hasAccount: false, communityIds: [] });
+
+    res.json({ hasAccount: true, communityIds: userCommunityIds(targetUser) });
+  } catch (err) {
+    console.error('[Participants] GET /:id/account-summary error:', err);
+    res.status(500).json({ error: 'Failed to read account summary' });
   }
 });
 
@@ -511,7 +549,7 @@ router.post('/', requireAuth, async (req, res) => {
       const merged = req.body.map((incoming) => {
         const current = existingMap.get(incoming.id);
         const communityId = getTargetCommunityId(req.user, incoming.communityId);
-        clampGamesToAdminScope(req.user, incoming);
+        clampGamesToAdminScope(req.user, communityId, incoming);
 
         // Per-game ELO is written by the ranking engine. Preserve the server
         // profiles and only merge in new game profiles / main characters from the client.
@@ -524,7 +562,10 @@ router.post('/', requireAuth, async (req, res) => {
         };
       });
 
-      if (isScopedAdmin(req.user)) {
+      // Un admin scopenado (en la comunidad destino) no ve ni gestiona a los
+      // demás: conservar los participantes que no vienen en el payload.
+      const syncCommunityId = getTargetCommunityId(req.user, req.body[0]?.communityId);
+      if (isScopedAdmin(req.user, syncCommunityId)) {
         // Un admin scopenado no ve ni gestiona a los demás: conservar los
         // participantes que no vienen en el payload para no borrarlos.
         const incomingIds = new Set(merged.map(m => m.id));
@@ -537,11 +578,12 @@ router.post('/', requireAuth, async (req, res) => {
     }
 
     // Single object upsert
-    const body = clampGamesToAdminScope(req.user, req.body);
-    body.communityId = getTargetCommunityId(req.user, body.communityId);
-    if (!isInUserScope(req.user, body.communityId)) {
+    const newCommunityId = getTargetCommunityId(req.user, req.body.communityId);
+    if (!isInUserScope(req.user, newCommunityId)) {
       return res.status(403).json({ error: 'Cannot create participant in this community' });
     }
+    const body = clampGamesToAdminScope(req.user, newCommunityId, req.body);
+    body.communityId = newCommunityId;
     const { valid, errors } = validateParticipant(body);
     if (!valid) return res.status(400).json({ error: 'Invalid participant data', details: errors });
 
@@ -578,13 +620,13 @@ router.put('/:id', requireAuth, async (req, res) => {
     }
 
     if (existing) {
-      // Solo el dueño del participant o un admin puede editarlo
+      // Solo el dueño del participant o un admin (de esa comunidad) puede editarlo
       const myPid = participantIdFor(req.user, existing.communityId);
-      if (myPid !== existing.id && !isAdminRole(req.user)) {
+      if (myPid !== existing.id && !isAdminRole(req.user, existing.communityId)) {
         return res.status(403).json({ error: 'You can only edit your own participant' });
       }
       // Jerarquía: nadie edita el participant de un usuario de nivel igual o superior
-      if (isAdminRole(req.user) && !(await callerOutranksParticipantUser(req.user, existing))) {
+      if (isAdminRole(req.user, existing.communityId) && !(await callerOutranksParticipantUser(req.user, existing))) {
         return res.status(403).json({ error: 'You cannot edit a participant linked to an equal or higher admin' });
       }
     }
@@ -618,11 +660,13 @@ router.put('/:id', requireAuth, async (req, res) => {
     // UPDATE: merge editable fields only
     const { name, alias, avatarUrl, stats, gameId, mainCharacterId, gameIds, primaryGameId, gameMainCharacters } = req.body;
 
-    // Check for duplicate name if name is changing
+    // Check for duplicate name if name is changing (scoped to the participant's community)
     if (name && name.trim().toLowerCase() !== existing.name.toLowerCase()) {
       const all = await participants.getAll();
       const duplicate = all.find(
-        (p) => p.id !== req.params.id && p.name.toLowerCase() === name.trim().toLowerCase()
+        (p) => p.id !== req.params.id &&
+               p.communityId === existing.communityId &&
+               p.name.toLowerCase() === name.trim().toLowerCase()
       );
       if (duplicate) {
         return res.status(409).json({ error: 'A participant with that name already exists' });
@@ -641,9 +685,9 @@ router.put('/:id', requireAuth, async (req, res) => {
     if (Array.isArray(gameIds)) {
       let effectiveIds = gameIds;
       let effectiveMains = gameMainCharacters || {};
-      if (isScopedAdmin(req.user)) {
+      if (isScopedAdmin(req.user, existing.communityId)) {
         // Solo puede modificar juegos de su scope: los demás se conservan
-        const allowed = new Set(req.user.gameAdminFor);
+        const allowed = new Set(gameAdminForInCommunity(req.user, existing.communityId));
         const preserved = Object.keys(existing.games || {}).filter(g => !allowed.has(g));
         if (existing.gameId && !allowed.has(existing.gameId)) preserved.push(existing.gameId);
         if (existing.primaryGameId && !allowed.has(existing.primaryGameId)) preserved.push(existing.primaryGameId);
@@ -657,7 +701,7 @@ router.put('/:id', requireAuth, async (req, res) => {
       setParticipantGameList(updated, effectiveIds, effectivePrimary, effectiveMains);
     } else if (gameId !== undefined) {
       // Game-scoped admin no puede cambiar el default game del participante
-      if (!isScopedAdmin(req.user)) {
+      if (!isScopedAdmin(req.user, existing.communityId)) {
         setParticipantPrimaryGame(updated, gameId, mainCharacterId !== undefined ? mainCharacterId : updated.mainCharacterId);
       }
     } else if (mainCharacterId !== undefined && updated.gameId) {
@@ -690,7 +734,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     }
     // Game-scoped admin: solo puede borrar si el primary game del participante
     // está en su scope (no basta con compartir cualquier juego).
-    if (isScopedAdmin(req.user) && (!p.gameId || !req.user.gameAdminFor.includes(p.gameId))) {
+    if (isScopedAdmin(req.user, p.communityId) && (!p.gameId || !gameAdminForInCommunity(req.user, p.communityId).includes(p.gameId))) {
       return res.status(403).json({ error: 'You can only delete participants whose primary game you administer' });
     }
     if (!(await callerOutranksParticipantUser(req.user, p))) {

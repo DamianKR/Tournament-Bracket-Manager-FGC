@@ -9,11 +9,12 @@ import {
   type MembershipRequest,
 } from '@/services/participants/participantService';
 import Loading from '@/components/Loading/Loading';
+import { communityRoleOf, gameAdminForOf } from '@/utils/membershipRole';
 import './MembershipRequestsPage.css';
 
 function MembershipRequestsPage() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { allCommunities, currentCommunity } = useCommunity();
   const [requests, setRequests] = useState<MembershipRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +45,9 @@ function MembershipRequestsPage() {
     try {
       await resolveMembershipRequest(req.id, action);
       setRequests((prev) => prev.filter((r) => r.id !== req.id));
+      // Al aceptar una invitación propia se crea una membership nueva —
+      // refrescar el session user para que participantByCommunity se actualice.
+      if (action === 'accept') await refreshUser();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to resolve request');
     } finally {
@@ -57,13 +61,14 @@ function MembershipRequestsPage() {
   const incoming = requests.filter((r) => r.direction === 'request');
   const invites = requests.filter((r) => r.direction === 'invite');
 
+  // Resuelve quienes reciben la notificación: superadmin, community_admin de
+  // esa comunidad, o admin SIN scope de juego. Un admin scopado no gestiona
+  // solicitudes.
   const canResolveRequest = (r: MembershipRequest) => {
-    if (user?.role === 'superadmin') return true;
-    if (!['superadmin', 'community_admin', 'admin'].includes(user?.role ?? '')) return false;
-    return (
-      user?.communityId === r.communityId ||
-      (user?.memberships ?? []).some((m) => m.communityId === r.communityId && m.isActive !== false)
-    );
+    const role = communityRoleOf(user, r.communityId);
+    if (role === 'superadmin' || role === 'community_admin') return true;
+    if (role === 'admin') return gameAdminForOf(user, r.communityId).length === 0;
+    return false;
   };
 
   const formatDate = (d: string) =>

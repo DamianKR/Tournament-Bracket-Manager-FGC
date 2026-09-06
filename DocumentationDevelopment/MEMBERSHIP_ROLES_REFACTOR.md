@@ -348,3 +348,123 @@ No requiere cambios estructurales, solo asegurar que al aceptarse se cree la mem
 ## Nota final
 
 Este refactor es grande pero es el único modo de resolver de raíz el problema que describes: **cuentas globales vs. permisos por comunidad**. Hacer parches parciales en `auth.js` o `ParticipantProfile` sin mover `role` a `membership` seguirá dejando agujeros.
+
+---
+
+## Revisión post-plan: gaps encontrados antes de implementar
+
+Tras revisar el código real (`jwtMiddleware.js`, `AuthContext.tsx`, `auth.js`, `communities.js`), aparecen 8 huecos concretos que el plan original no cubría. Hay que resolverlos **antes** de tocar código, si no el refactor va a romper cosas a mitad de camino.
+
+### Gap 1 — Los middlewares `requireAdmin`/`requireCommunityAdmin`/`requireSuperAdmin` quedan rotos
+
+`server/utils/jwtMiddleware.js` filtra **antes** de que la ruta sepa a qué comunidad pertenece el recurso:
+
+```js
+export function requireAdmin(req, res, next) {
+  if (!req.user || !ALL_ADMIN_ROLES.includes(req.user.role)) { ... } // usa req.user.role GLOBAL
+}
+```
+
+Se usa como gate duro en `auth.js`, `participants.js`, `duels.js`, `tournaments.js`, `rankedMatches.js`, `ranking.js`, `leagues.js` (32 usos). Tras el refactor, `req.user.role` será `null` para cualquier admin que no sea `superadmin`, así que **todos los admins de comunidad quedarían bloqueados en el gate antes de llegar a la lógica de la ruta**.
+
+**Solución:** crear un gate "grueso" nuevo que solo verifica que el usuario sea admin de **alguna** comunidad (o superadmin), y dejar que la ruta haga el chequeo fino con `communityId` real:
+
+```js
+export function requireAnyAdmin(req, res, next) {
+  const u = req.user;
+  if (u?.role === 'superadmin') return next();
+  const hasAdminSomewhere = (u?.memberships ?? []).some(
+    m => m.isActive !== false && ['admin', 'community_admin'].includes(m.role)
+  );
+  if (!hasAdminSomewhere) return res.status(403).json({ error: 'Admin access required' });
+  next();
+}
+```
+
+`requireAdmin` se reemplaza por `requireAnyAdmin` en todas las rutas listadas arriba. El chequeo preciso (¿es admin de ESTA comunidad/juego?) ya se hace dentro del handler en la mayoría de rutas (patrón que ya existe hoy con `canAdminGame`), así que el gate solo necesita descartar usuarios sin ningún rol admin.
+
+`requireCommunityAdmin` no se usa en ninguna ruta actualmente (código muerto) — se puede actualizar igual por consistencia o eliminar.
+
+### Gap 2 — `AuthContext` global (`isAdmin`, `isSuperAdmin`, `isCommunityOwner`, `isCommunityAdminAssistant`) tiene mucho más radio de impacto del listado
+
+El plan original solo mencionaba tocar `AuthContext.tsx`, `ParticipantProfile.tsx`, `ParticipantsPage.tsx`, `CommunityDashboard.tsx`, `CommunitiesPage.tsx`, `Header.tsx`. Grep real de `user.role` / `isAdmin` / `gameAdminFor` en `src/` da **16 archivos**, incluyendo varios no listados:
+
+- `src/components/AdminRoute/AdminRoute.tsx` — gate de ruta (`/c/:id/participants`, etc.) usa `isAdmin` global.
+- `src/pages/Dashboard/Dashboard.tsx`
+- `src/pages/CreateTournament/CreateTournament.tsx`
+- `src/pages/Leagues/CreateLeague.tsx`
+- `src/pages/Events/Ranked/ActiveChallenges.tsx`
+- `src/pages/Events/Ranked/RecordMatchTab.tsx`
+- `src/services/auth/authService.ts`
+
+**Definición que hay que fijar explícitamente** (el plan no lo aclaraba):
+
+- `isAdmin` (global, en `AuthContext`) pasa a significar **"admin de alguna comunidad, o superadmin"** — sirve solo como gate grueso de rutas (`AdminRoute`) y para decidir si se muestra la sección de administración en la navegación.
+- Todo lo que hoy depende de "soy admin de MI comunidad actual" debe usar el helper ya existente `canAdminCurrentCommunity` de `CommunityContext` (que ya combina rol + pertenencia), ajustado para leer el rol desde la `membership` de `currentCommunity.id` en vez de `user.role` global. Esto ya es el patrón correcto — solo hay que redirigir su fuente de datos.
+- Cada uno de los 7 archivos extra debe auditarse fila por fila: decidir si el uso actual de `user.role`/`isAdmin` debería ser el gate grueso (queda igual) o el gate fino por comunidad (cambia a `canAdminCurrentCommunity` / `canAdminGame`).
+
+### Gap 3 — Duplicación de "home" (`user.communityId` / `user.participantId` / `user.role` planos) vs. `memberships`
+
+Esto es exactamente la clase de bug que ya nos mordió dos veces hoy (perfil "No account" y "Participant not found" tras aceptar una membership) por tener el mismo dato en dos lugares que se desincronizan.
+
+**Hallazgo concreto:** `POST /api/auth/users` (crear cuenta) hoy **NO** crea ninguna entrada en `memberships` — el rol/gameAdminFor/comunidad "home" viven *solo* en los campos planos del user. Si el refactor mueve el rol a `memberships` pero esta ruta se queda sin tocar, cualquier cuenta nueva creada después de migrar quedaría sin membership real y por tanto sin permisos.
+
+**Recomendación (cambio al plan):** no mantener el home como caso especial. Tratarlo como **una membership más**:
+
+- `POST /api/auth/users` debe crear también la entrada correspondiente en `memberships` (misma comunidad, mismo rol, mismo `gameAdminFor`), no solo los campos planos.
+- Los helpers (`getMembership`, `communityRole`, `canAdminGame`, etc.) deben ser la **única** fuente de verdad, incluso para la comunidad home. Los campos planos `user.role`/`user.communityId`/`user.gameAdminFor` quedan solo como cache de conveniencia (para saber a qué comunidad redirigir por default) pero nunca se leen para autorizar nada.
+- Esto elimina de raíz la clase de bug de "dos fuentes de verdad desincronizadas".
+
+### Gap 4 — Cambio de firma de `canAdminGame` no está enumerado
+
+El plan dice "cambio mecánico" pero no lista los call sites reales. Verificados por grep, hay que tocar como mínimo:
+
+- `server/routes/duels.js`
+- `server/routes/tournaments.js`
+- `server/routes/leagues.js`
+- `server/routes/ranking.js`
+- `server/routes/rankedMatches.js`
+- `server/routes/participants.js`
+- `server/routes/auth.js` (función interna `adminSharesGameWithUser`, que reimplementa una versión ad-hoc de esta misma lógica y también hay que migrarla)
+
+Antes de implementar, correr `grep -rn "canAdminGame\|gameAdminFor" server/` y armar la lista exacta de líneas a tocar, para no dejar ninguna con la firma vieja (2 args) mezclada con la nueva (3 args) — eso compilaría en JS sin error y fallaría silenciosamente en producción.
+
+### Gap 5 — `gameAdminFor` obsoleto cuando cambia el rol
+
+Si un `admin` con `gameAdminFor: ['ssbu']` es ascendido a `community_admin` y luego regresado a `admin`, sin limpieza explícita recuperaría el scope viejo. Regla a agregar:
+
+> Cada vez que `membership.role` cambia a algo distinto de `'admin'`, `membership.gameAdminFor` se limpia a `[]`. Si vuelve a `'admin'`, empieza sin scope (admin de todos los juegos) hasta que se le asigne explícitamente.
+
+### Gap 6 — Múltiples `community_admin` por comunidad: confirmar que es intencional
+
+El modelo por membership permite naturalmente que una comunidad tenga más de un `community_admin` (co-owners). Esto es coherente con "el creador no siempre es quien administra" (ver Gap 7), pero hay que decirlo explícitamente en las reglas de negocio para que el frontend no asuma "solo puede haber un dueño".
+
+### Gap 7 — `ownerAdminId` no siempre es un admin real
+
+Verificado en `server/routes/communities.js`: `POST /api/communities` es `requireSuperAdmin`-only, y `ownerAdminId` se guarda como `req.user.userId`, es decir, **el superadmin que creó la comunidad**, no necesariamente la persona que la va a administrar. Asignar `community_admin` a alguien es una acción aparte y posterior (vía gestión de membership).
+
+**Bug ya corregido en el script de migración** (`scripts/migrateMembershipRoles.js`): la primera versión le creaba una membership `community_admin` a cualquier `ownerAdminId`, incluyendo superadmins que solo "de paso" crearon la comunidad. Se agregó un `if (owner.role === 'superadmin') continue;` para evitar ensuciar sus `memberships` con entradas innecesarias.
+
+### Gap 8 — Reasignación de "home" si se desactiva esa membership
+
+Si un usuario sale de su comunidad home (`DELETE /:id/communities/:cid` con `cid === user.communityId`), hoy esa ruta ya bloquea "no puedes salir de tu home community". Falta decidir: ¿se permite alguna vez cambiar de home?, y si es así, ¿qué pasa si la única membership activa que le queda es otra comunidad? Regla a agregar: si se permite salir del home, `user.communityId` se recalcula a la primera membership activa restante, o `null` si no queda ninguna.
+
+### Confirmaciones positivas (no son gaps, pero vale la pena dejarlas explícitas)
+
+- El JWT y `/me` ya recalculan `communityIds` / `participantByCommunity` dinámicamente (`getUserCommunityIds`, `getParticipantByCommunity` en `auth.js`) — no hay que tocar esa parte, y el objeto `memberships` completo ya viaja al frontend vía `safeUser()`, así que el frontend no necesita un endpoint nuevo para leer rol/gameAdminFor por comunidad.
+- `requireAuth` siempre relee al usuario desde la base de datos y sobreescribe el rol del JWT (`req.user = {...decoded, ...user}`), así que **no hace falta forzar re-login** tras la migración: en el próximo request cada usuario ya ve su nuevo rol por membership.
+- El frontend solo cachea el **token** en `localStorage`, no el objeto `user` completo (`authService.ts`), así que no hay riesgo de un `user.role` viejo quedando pegado en caché del navegador.
+
+## Alternativa considerada y descartada
+
+Se evaluó un enfoque más liviano: dejar `user.role` como "rol por defecto" y solo agregar overrides por comunidad cuando difieran del default. Se descarta porque reintroduce exactamente el problema de "dos fuentes de verdad" que causó los bugs de esta sesión (perfil sin cuenta vinculada, participante no encontrado tras F5). El modelo de membership como única fuente de verdad (Gap 3) es más código de migración inicial, pero elimina una clase entera de bugs futuros y es el que se recomienda.
+
+## Checklist actualizado antes de escribir código
+
+1. Confirmar las reglas de negocio de los Gaps 5, 6 y 8 (limpieza de `gameAdminFor`, múltiples `community_admin`, reasignación de home).
+2. Agregar `requireAnyAdmin` a `jwtMiddleware.js` y reemplazar los 32 usos de `requireAdmin` listados.
+3. Modificar `POST /api/auth/users` (Gap 3) para crear también la `membership` de la comunidad home, no solo campos planos.
+4. Enumerar y migrar los 7 call sites de `canAdminGame`/`gameAdminFor` (Gap 4), incluyendo `adminSharesGameWithUser` en `auth.js`.
+5. Redefinir `isAdmin`/`isSuperAdmin`/`isCommunityOwner`/`isCommunityAdminAssistant` en `AuthContext` con la semántica del Gap 2, y auditar los 16 archivos frontend (no solo los 6 originalmente listados).
+6. Corregir `ownerAdminId` en la migración para no crear memberships falsas a superadmins (ya corregido en el script).
+7. Ejecutar migración, typecheck, y las pruebas de la sección "Tests mínimos" ya definida más arriba.

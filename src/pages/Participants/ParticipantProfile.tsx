@@ -11,6 +11,7 @@ import {
   getParticipantLeagueStats,
   getAllParticipantsAsync,
   inviteToCommunity,
+  getParticipantAccountSummary,
   type LeagueStatsSummary,
 } from '@/services/participants/participantService';
 import { loadTournamentsForParticipantAsync } from '@/services/storage/localStorage';
@@ -25,6 +26,7 @@ import { getParticipantElo, getParticipantRank, allGameProfiles } from '@/utils/
 import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
+import { communityRoleOf, gameAdminForOf, outranksOf } from '@/utils/membershipRole';
 import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccount } from '@/services/auth/authService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
@@ -46,24 +48,24 @@ function ParticipantProfile() {
   const { t } = useTranslation();
   const { id, communityId: urlCommunityId } = useParams<{ id: string; communityId: string }>();
   const navigate = useNavigate();
-  const { currentCommunity, getPath, canAdminCurrentCommunity } = useCommunity();
+  const { currentCommunity, allCommunities, getPath, canAdminCurrentCommunity, isCommunityAdminHere, gameAdminForHere, communityRole } = useCommunity();
   const communityId = urlCommunityId || currentCommunity?.id;
   const [searchParams] = useSearchParams();
-  const { user, isAdmin, isCommunityOwner, isSuperAdmin } = useAuth();
+  const { user, isAdmin, isSuperAdmin } = useAuth();
   const myParticipantIds = new Set([
     user?.participantId,
     ...Object.values(user?.participantByCommunity ?? {}),
   ].filter(Boolean));
   const isOwnProfile = !!(user && id && myParticipantIds.has(id));
-  // Admin con gameAdminFor
-  const isScopedAdmin = user?.role === 'admin' && (user.gameAdminFor?.length ?? 0) > 0;
+  // Admin con gameAdminFor EN esta comunidad
+  const isScopedAdmin = communityRole === 'admin' && gameAdminForHere.length > 0;
   // Can manage other people's accounts only if community owner AND in own community
-  const canManageAccounts = canAdminCurrentCommunity && isCommunityOwner;
+  const canManageAccounts = canAdminCurrentCommunity && isCommunityAdminHere;
 
-  // Role options a manager can assign, restricted by their own role
-  const manageableRoles: AuthUser['role'][] = isSuperAdmin
+  // Role options a manager can assign, restringidos por su propio rol EN ESTA comunidad
+  const manageableRoles: string[] = isSuperAdmin
     ? ['user', 'admin', 'community_admin', 'superadmin']
-    : isCommunityOwner
+    : isCommunityAdminHere
       ? ['user', 'admin']
       : [];
 
@@ -125,21 +127,17 @@ function ParticipantProfile() {
   const [admUsername, setAdmUsername] = useState('');
   const [admPassword, setAdmPassword] = useState('');
   const [admConfirm, setAdmConfirm] = useState('');
-  const [admRole, setAdmRole] = useState<AuthUser['role']>('user');
+  const [admRole, setAdmRole] = useState<string>('user');
   const [admGames, setAdmGames] = useState<string[]>([]);
   const [admIsActive, setAdmIsActive] = useState(true);
   const [admError, setAdmError] = useState('');
   const [admSuccess, setAdmSuccess] = useState(false);
 
-  // Jerarquía: nadie edita la cuenta/participant de un usuario de nivel igual o superior
-  const adminLevel = (u: { role?: string; gameAdminFor?: string[] } | null | undefined): number => {
-    if (!u) return -1;
-    if (u.role === 'superadmin') return 4;
-    if (u.role === 'community_admin') return 3;
-    if (u.role === 'admin') return (u.gameAdminFor?.length ?? 0) > 0 ? 1 : 2;
-    return 0;
-  };
-  const outranksLinkedUser = !linkedUser || linkedUser.id === user?.id || adminLevel(user) > adminLevel(linkedUser);
+  // Username/password son GLOBALES: solo el propio usuario o un superadmin
+  // pueden tocarlos. Un community_admin NO puede cambiar credenciales de otro.
+  const canEditCredentials = isSuperAdmin || linkedUser?.id === user?.id;
+  // Jerarquía: nadie edita la cuenta/participant de un usuario de nivel igual o superior EN esta comunidad
+  const outranksLinkedUser = outranksOf(user, linkedUser, communityId);
   // Can edit profile fields only if in own community AND has admin rights, or is own profile
   const canEdit = (canAdminCurrentCommunity && outranksLinkedUser) || isOwnProfile;
   const [admSaving, setAdmSaving] = useState(false);
@@ -151,6 +149,33 @@ function ParticipantProfile() {
   const [inviteSaving, setInviteSaving] = useState(false);
   const [inviteMsg, setInviteMsg] = useState('');
   const [inviteError, setInviteError] = useState('');
+  const [inviteCommunityId, setInviteCommunityId] = useState('');
+  const [accountSummary, setAccountSummary] = useState<{ hasAccount: boolean; communityIds: string[] } | null>(null);
+
+  // Comunidades donde el viewer puede invitar: las que administra como
+  // community_admin (o TODAS si es superadmin), menos las donde el target
+  // ya es miembro. Independiente de poder editar el participant — un
+  // community_admin de otra comunidad puede invitar sin editar nada aquí.
+  const adminCommunityIds = isSuperAdmin
+    ? allCommunities.map((c) => c.id)
+    : (user?.memberships ?? [])
+        .filter((m) => m.isActive !== false && m.role === 'community_admin')
+        .map((m) => m.communityId);
+  const targetCommunityIds = new Set(
+    [
+      ...(accountSummary?.communityIds ?? []),
+      ...(linkedUser?.memberships ?? [])
+        .filter((m) => m.isActive !== false)
+        .map((m) => m.communityId),
+      linkedUser?.communityId,
+      participant?.communityId,
+    ].filter(Boolean) as string[]
+  );
+  const invitableCommunities = allCommunities.filter(
+    (c) => adminCommunityIds.includes(c.id) && !targetCommunityIds.has(c.id)
+  );
+  // Solo se puede invitar si el participant tiene cuenta vinculada
+  const canInvite = (accountSummary?.hasAccount ?? linkedUser != null) && invitableCommunities.length > 0;
 
   useEffect(() => {
     if (!id || !communityId) return;
@@ -222,6 +247,14 @@ function ParticipantProfile() {
     loadLinkedUser();
   }, [id, isAdmin]);
 
+  // Summary de cuenta para la invitación cross-community — se carga siempre
+  // que el viewer administre alguna comunidad, aunque NO pueda ver el user
+  // completo (fuera de su scope) ni editar este participant.
+  useEffect(() => {
+    if (!id || adminCommunityIds.length === 0) { setAccountSummary(null); return; }
+    getParticipantAccountSummary(id).then(setAccountSummary).catch(() => setAccountSummary(null));
+  }, [id, isSuperAdmin, user?.memberships]);
+
   async function loadLinkedUser() {
     if (!id) return;
     setLoadingUser(true);
@@ -236,8 +269,9 @@ function ParticipantProfile() {
         setAdmUsername(u.username);
         setAdmPassword('');
         setAdmConfirm('');
-        setAdmRole(u.role);
-        setAdmGames(u.gameAdminFor ?? []);
+        // Rol/scope se leen de la membership de ESTA comunidad, no de campos globales.
+        setAdmRole(communityRoleOf(u, communityId) ?? 'user');
+        setAdmGames(gameAdminForOf(u, communityId));
         setAdmIsActive(u.isActive);
       } else {
         setAdmUsername('');
@@ -368,21 +402,29 @@ function ParticipantProfile() {
     setAdmSaving(true); setAdmError(''); setAdmSuccess(false);
     try {
       const updates: Parameters<typeof updateUserAccount>[1] = {};
-      if (admUsername.trim() !== linkedUser.username) updates.username = admUsername.trim();
-      if (admPassword.trim()) updates.password = admPassword.trim();
-      if (admRole !== linkedUser.role) updates.role = admRole;
-      if (admIsActive !== linkedUser.isActive) updates.isActive = admIsActive;
-      if (admRole === 'admin') {
-        const prev = linkedUser.gameAdminFor ?? [];
-        if (JSON.stringify([...admGames].sort()) !== JSON.stringify([...prev].sort())) {
-          updates.gameAdminFor = admGames;
-        }
-      } else if (linkedUser.gameAdminFor) {
-        updates.gameAdminFor = [];
+      // Credenciales globales: solo si el editor es el propio usuario o superadmin.
+      if (canEditCredentials) {
+        if (admUsername.trim() !== linkedUser.username) updates.username = admUsername.trim();
+        if (admPassword.trim()) updates.password = admPassword.trim();
       }
-      const targetCommunityId = currentCommunity?.id ?? null;
-      if (admRole !== 'superadmin' && targetCommunityId && linkedUser.communityId !== targetCommunityId) {
-        updates.communityId = targetCommunityId;
+      if (admIsActive !== linkedUser.isActive) updates.isActive = admIsActive;
+
+      // Rol/gameAdminFor viven en la membership de ESTA comunidad (salvo 'superadmin',
+      // que es un flag global). El backend necesita `communityId` para saber qué
+      // membership actualizar.
+      const currentRoleHere = communityRoleOf(linkedUser, communityId) ?? 'user';
+      const currentGamesHere = gameAdminForOf(linkedUser, communityId);
+      const roleChanged = admRole !== currentRoleHere;
+      const gamesChanged = admRole === 'admin' &&
+        JSON.stringify([...admGames].sort()) !== JSON.stringify([...currentGamesHere].sort());
+
+      if (roleChanged) updates.role = admRole as AuthUser['role'];
+      if (roleChanged || gamesChanged) {
+        if (admRole === 'admin') updates.gameAdminFor = admGames;
+        else if (admRole !== 'superadmin') updates.gameAdminFor = [];
+      }
+      if ((roleChanged || gamesChanged) && admRole !== 'superadmin' && communityId) {
+        updates.communityId = communityId;
       }
 
       if (Object.keys(updates).length > 0) {
@@ -401,10 +443,11 @@ function ParticipantProfile() {
   }
 
   async function handleInviteToCommunity() {
-    if (!participant || !communityId) return;
+    const targetId = inviteCommunityId || invitableCommunities[0]?.id;
+    if (!participant || !targetId) return;
     setInviteSaving(true); setInviteError(''); setInviteMsg('');
     try {
-      await inviteToCommunity(participant.id, communityId);
+      await inviteToCommunity(participant.id, targetId);
       setInviteMsg(t('participantProfile.edit.inviteSent', { defaultValue: 'Invitación enviada' }));
     } catch (err: any) {
       setInviteError(err.message || 'Failed to send invite');
@@ -633,6 +676,35 @@ function ParticipantProfile() {
         {/* ── Overview tab ── */}
         {tab === 'overview' && (
           <>
+            {/* Invite to another community — visible to community_admin of the
+                target community (o superadmin), sin necesidad de permisos de
+                edición sobre este participant. */}
+            {canInvite && (
+              <div className="card profile-invite-card">
+                <h3><i className="fas fa-user-plus" /> {t('participantProfile.edit.inviteSectionTitle', { defaultValue: 'Invitar a tu comunidad' })}</h3>
+                <p className="text-secondary">
+                  {t('participantProfile.edit.inviteSectionDesc', { defaultValue: 'El participante recibirá una invitación para unirse a la comunidad seleccionada.' })}
+                </p>
+                <div className="profile-invite-row">
+                  {invitableCommunities.length > 1 && (
+                    <select
+                      className="form-control"
+                      value={inviteCommunityId || invitableCommunities[0]?.id}
+                      onChange={(e) => { setInviteCommunityId(e.target.value); setInviteMsg(''); setInviteError(''); }}
+                    >
+                      {invitableCommunities.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  )}
+                  <button className="btn-outline" onClick={handleInviteToCommunity} disabled={inviteSaving || !!inviteMsg}>
+                    <i className="fas fa-paper-plane" /> {inviteSaving ? t('participantProfile.edit.saving') : t('participantProfile.edit.inviteToCommunity', { defaultValue: 'Invitar' })}
+                  </button>
+                </div>
+                {inviteMsg && <div className="success-message">{inviteMsg}</div>}
+                {inviteError && <div className="error-message">{inviteError}</div>}
+              </div>
+            )}
                       {/* Per-game ELO profiles */}
             {participant && (
               <div className="card profile-games-card">
@@ -1095,7 +1167,7 @@ function ParticipantProfile() {
             <div className="profile-game-list">
               <h4>{t('participantProfile.edit.games')}</h4>
               {GAMES.map((g) => {
-                const outOfScope = isScopedAdmin && !user!.gameAdminFor!.includes(g.id);
+                const outOfScope = isScopedAdmin && !gameAdminForHere.includes(g.id);
                 return (
                 <div key={g.id} className="profile-game-row" style={outOfScope ? { opacity: 0.45 } : undefined}
                   title={outOfScope ? t('participantProfile.edit.gameAdminNotYourGame', { defaultValue: 'You are not admin of this game' }) : undefined}>
@@ -1199,30 +1271,34 @@ function ParticipantProfile() {
                 {linkedUser ? (
                   <>
                     <div className="profile-edit-grid">
-                      <div className="form-group">
-                        <label>{t('participantProfile.edit.usernameLabel')}</label>
-                        <input type="text" value={admUsername}
-                          onChange={(e) => setAdmUsername(e.target.value)}
-                          placeholder={t('participantProfile.edit.usernamePlaceholder')} autoComplete="off" />
-                      </div>
-                      <div className="form-group">
-                        <label>{t('participantProfile.edit.newPasswordAdminLabel')}</label>
-                        <input type="password" value={admPassword}
-                          onChange={(e) => setAdmPassword(e.target.value)}
-                          placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
-                      </div>
-                      {admPassword && (
-                        <div className="form-group">
-                          <label>{t('participantProfile.edit.confirmNewPasswordLabel')}</label>
-                          <input type="password" value={admConfirm}
-                            onChange={(e) => setAdmConfirm(e.target.value)}
-                            placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
-                        </div>
+                      {canEditCredentials && (
+                        <>
+                          <div className="form-group">
+                            <label>{t('participantProfile.edit.usernameLabel')}</label>
+                            <input type="text" value={admUsername}
+                              onChange={(e) => setAdmUsername(e.target.value)}
+                              placeholder={t('participantProfile.edit.usernamePlaceholder')} autoComplete="off" />
+                          </div>
+                          <div className="form-group">
+                            <label>{t('participantProfile.edit.newPasswordAdminLabel')}</label>
+                            <input type="password" value={admPassword}
+                              onChange={(e) => setAdmPassword(e.target.value)}
+                              placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
+                          </div>
+                          {admPassword && (
+                            <div className="form-group">
+                              <label>{t('participantProfile.edit.confirmNewPasswordLabel')}</label>
+                              <input type="password" value={admConfirm}
+                                onChange={(e) => setAdmConfirm(e.target.value)}
+                                placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
+                            </div>
+                          )}
+                        </>
                       )}
                       {manageableRoles.length > 0 && (
                         <div className="form-group">
                           <label>{t('participantProfile.edit.roleLabel')}</label>
-                          <select value={admRole} onChange={e => setAdmRole(e.target.value as AuthUser['role'])}>
+                          <select value={admRole} onChange={e => setAdmRole(e.target.value)}>
                             {manageableRoles.map(r => (
                               <option key={r} value={r}>
                                 {t(`participantProfile.edit.roles.${r}`)}
@@ -1277,24 +1353,6 @@ function ParticipantProfile() {
                   </>
                 ) : (
                   <p className="text-secondary">{t('participantProfile.edit.noAccount')}</p>
-                )}
-
-                {(isSuperAdmin || canManageAccounts) && participant && communityId &&
-                  participant.communityId !== communityId && (
-                  <>
-                    <hr className="profile-password-sep" />
-                    <h3>{t('participantProfile.edit.inviteSectionTitle', { defaultValue: 'Invitar a esta comunidad' })}</h3>
-                    <p className="text-secondary mb-2">
-                      {t('participantProfile.edit.inviteSectionDesc', { defaultValue: 'El participante recibirá una invitación para unirse a esta comunidad.' })}
-                    </p>
-                    {inviteMsg && <div className="success-message">{inviteMsg}</div>}
-                    {inviteError && <div className="error-message">{inviteError}</div>}
-                    <div className="form-actions">
-                      <button className="btn-outline" onClick={handleInviteToCommunity} disabled={inviteSaving || !!inviteMsg}>
-                        <i className="fas fa-user-plus" /> {inviteSaving ? t('participantProfile.edit.saving') : t('participantProfile.edit.inviteToCommunity', { defaultValue: 'Invitar' })}
-                      </button>
-                    </div>
-                  </>
                 )}
 
                 <hr className="profile-password-sep" />

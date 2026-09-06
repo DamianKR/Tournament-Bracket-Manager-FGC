@@ -14,7 +14,7 @@ import { tournaments, tournamentMatches } from '../db/collections.js';
 import { validateTournament } from '../models/tournament.js';
 import { applyTournamentElo } from '../utils/tournamentElo.js';
 import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, getTargetCommunityId, isInUserScope, canAdminGame } from '../utils/communityScope.js';
+import { filterByCommunity, getTargetCommunityId, isInUserScope, canAdminGame, communityRole } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -84,7 +84,7 @@ router.post('/', requireAuth, async (req, res) => {
       t.communityId = targetCommunityId;
       // game_admin: solo puede tocar torneos de sus juegos asignados
       const tGameId = t.gameId ?? prev?.gameId ?? null;
-      if (req.user.role === 'admin' && !canAdminGame(req.user, tGameId)) {
+      if (communityRole(req.user, targetCommunityId) === 'admin' && !canAdminGame(req.user, targetCommunityId, tGameId)) {
         return res.status(403).json({ error: 'You are not admin of this game' });
       }
       const becomesCompleted = t.status === 'completed' && (!prev || prev.status !== 'completed');
@@ -145,7 +145,7 @@ router.put('/:id', requireAuth, async (req, res) => {
 
     // game_admin: solo puede tocar torneos de sus juegos asignados
     const bodyGameId = body.gameId ?? existing?.gameId ?? null;
-    if (req.user.role === 'admin' && !canAdminGame(req.user, bodyGameId)) {
+    if (communityRole(req.user, targetCommunityId) === 'admin' && !canAdminGame(req.user, targetCommunityId, bodyGameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
@@ -181,7 +181,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!isInUserScope(req.user, tournament.communityId)) {
       return res.status(403).json({ error: 'Tournament is not in your community scope' });
     }
-    if (!canAdminGame(req.user, tournament.gameId)) {
+    if (!canAdminGame(req.user, tournament.communityId, tournament.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
     const deleted = await tournaments.remove(req.params.id);
@@ -231,7 +231,7 @@ router.post('/:id/matches', requireAuth, async (req, res) => {
     if (!isInUserScope(req.user, tournament.communityId)) {
       return res.status(403).json({ error: 'Tournament is not in your community scope' });
     }
-    if (!canAdminGame(req.user, tournament.gameId)) {
+    if (!canAdminGame(req.user, tournament.communityId, tournament.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
     if (!match.gameId) match.gameId = tournament.gameId;

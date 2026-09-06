@@ -59,7 +59,11 @@ export async function ensureDefaultCommunityAndMigrate() {
       if (!isSingleCommunity) {
         console.warn('[CommunityMigration] No superadmin found, but multiple communities exist. Skipping auto-promotion.');
       } else {
-        const firstAdmin = allUsers.find(u => u.role === 'admin' || u.role === 'community_admin');
+        // Post-refactor: el rol vive en memberships, no en user.role.
+        const hasAdminRole = (u) => (u.memberships ?? []).some(
+          m => m.isActive !== false && (m.role === 'admin' || m.role === 'community_admin')
+        );
+        const firstAdmin = allUsers.find(hasAdminRole);
         const candidate = firstAdmin || allUsers[0];
         if (candidate) {
           candidate.role = 'superadmin';
@@ -90,10 +94,17 @@ export async function ensureDefaultCommunityAndMigrate() {
 
     // 4. Set the default community owner only if it is missing.
     if (community && !community.ownerAdminId) {
+      // Post-refactor: el rol vive en memberships por comunidad.
+      const roleIn = (u, cid, roles) => (u.memberships ?? []).some(
+        m => m.communityId === cid && m.isActive !== false && roles.includes(m.role)
+      );
+      const hasRole = (u, roles) => (u.memberships ?? []).some(
+        m => m.isActive !== false && roles.includes(m.role)
+      );
       const owner =
-        allUsers.find(u => u.communityId === community.id && (u.role === 'community_admin' || u.role === 'admin')) ||
-        allUsers.find(u => u.role === 'community_admin') ||
-        allUsers.find(u => u.role === 'admin');
+        allUsers.find(u => roleIn(u, community.id, ['community_admin', 'admin'])) ||
+        allUsers.find(u => hasRole(u, ['community_admin'])) ||
+        allUsers.find(u => hasRole(u, ['admin']));
       if (owner) {
         community.ownerAdminId = owner.id;
         community.updatedAt = new Date().toISOString();

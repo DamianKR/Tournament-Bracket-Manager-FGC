@@ -22,6 +22,8 @@ import {
   deleteNotificationAsync,
 } from '@/services/notifications/notificationService';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCommunity } from '@/contexts/CommunityContext';
+import { localizedNotification } from '@/utils/notificationText';
 
 export interface Toast {
   id: string;           // notif id or unique id for grouped
@@ -50,6 +52,18 @@ const TOAST_DURATION_MS = 10 * 1000; // 10 seconds
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const { isAuthenticated, user, consumeLoginNotifications } = useAuth();
+  const { allCommunities } = useCommunity();
+  const communityName = useCallback(
+    (id: string) => allCommunities.find((c) => c.id === id)?.name,
+    [allCommunities]
+  );
+  const notifToast = useCallback(
+    (n: AppNotification): Toast => {
+      const text = localizedNotification(n, t, communityName);
+      return { id: n.id, title: text.title, message: text.message, type: n.type };
+    },
+    [t, communityName]
+  );
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [loading, setLoading] = useState(false);
@@ -82,7 +96,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       if (isFirstLoad.current) {
         isFirstLoad.current = false;
         if (unread.length === 1) {
-          addToast({ id: unread[0].id, title: unread[0].title, message: unread[0].message, type: unread[0].type });
+          addToast(notifToast(unread[0]));
         } else if (unread.length > 1) {
           addToast({
             id: 'login-summary',
@@ -96,7 +110,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         // On subsequent polls: only show toasts for brand-new notifications
         const brandNew = unread.filter(n => !prevUnreadIds.current.has(n.id));
         if (brandNew.length === 1) {
-          addToast({ id: brandNew[0].id, title: brandNew[0].title, message: brandNew[0].message, type: brandNew[0].type });
+          addToast(notifToast(brandNew[0]));
         } else if (brandNew.length > 1) {
           addToast({
             id: `new-${Date.now()}`,
@@ -112,7 +126,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated, user, addToast, t]);
+  }, [isAuthenticated, user, addToast, t, notifToast]);
 
   // Load on auth change, poll every 5 minutes
   useEffect(() => {
@@ -137,7 +151,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setNotifications(loginNotifs);
     const unread = loginNotifs.filter(n => !n.read);
     if (unread.length === 1) {
-      addToast({ id: unread[0].id, title: unread[0].title, message: unread[0].message, type: unread[0].type });
+      addToast(notifToast(unread[0]));
     } else if (unread.length > 1) {
       addToast({
         id: 'login-summary',
@@ -148,7 +162,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
     prevUnreadIds.current = new Set(unread.map(n => n.id));
     isFirstLoad.current = false;
-  }, [isAuthenticated, user, consumeLoginNotifications, addToast, t]);
+  }, [isAuthenticated, user, consumeLoginNotifications, addToast, t, notifToast]);
 
   const markRead = useCallback(async (id: string) => {
     await markNotificationReadAsync(id);
