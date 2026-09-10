@@ -9,12 +9,13 @@ import './BracketView.css';
 interface BracketViewProps {
   bracket: Bracket;
   participants: Participant[];
-  onMatchResult?: (matchId: string, winnerId: string) => void;
+  gameId?: string;
+  onMatchResult?: (matchId: string, winnerId: string, score1?: number, score2?: number, chars1?: string[], chars2?: string[]) => void;
   onRevertMatch?: (matchId: string) => void;
   readOnly?: boolean;
 }
 
-function BracketView({ bracket, participants, onMatchResult, onRevertMatch, readOnly = false }: BracketViewProps) {
+function BracketView({ bracket, participants, gameId, onMatchResult, onRevertMatch, readOnly = false }: BracketViewProps) {
   const { t } = useTranslation();
 
   // Refs to sync horizontal scroll between header row and matches
@@ -123,6 +124,7 @@ function BracketView({ bracket, participants, onMatchResult, onRevertMatch, read
                       match={match}
                       participant1Name={getParticipantName(match.participant1Id)}
                       participant2Name={getParticipantName(match.participant2Id)}
+                      gameId={gameId}
                       onSelectWinner={onMatchResult}
                       onRevertMatch={onRevertMatch}
                       readOnly={readOnly}
@@ -163,6 +165,7 @@ function BracketView({ bracket, participants, onMatchResult, onRevertMatch, read
               match={bracket.grandFinal}
               participant1Name={getParticipantName(bracket.grandFinal.participant1Id)}
               participant2Name={getParticipantName(bracket.grandFinal.participant2Id)}
+              gameId={gameId}
               onSelectWinner={onMatchResult}
               onRevertMatch={onRevertMatch}
               readOnly={readOnly}
@@ -176,6 +179,7 @@ function BracketView({ bracket, participants, onMatchResult, onRevertMatch, read
                   match={bracket.grandFinalReset}
                   participant1Name={getParticipantName(bracket.grandFinalReset.participant1Id)}
                   participant2Name={getParticipantName(bracket.grandFinalReset.participant2Id)}
+                  gameId={gameId}
                   onSelectWinner={onMatchResult}
                   onRevertMatch={onRevertMatch}
                   readOnly={readOnly}

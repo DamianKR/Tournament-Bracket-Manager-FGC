@@ -62,6 +62,11 @@ export interface Match {
   status: MatchStatus;
   nextWinnerMatchId: string | null; // Where winner advances
   nextLoserMatchId: string | null; // Where loser goes (only in winner bracket)
+  // Detailed match result data (optional, set when reporting result)
+  participant1Score?: number;
+  participant2Score?: number;
+  participant1Characters?: string[]; // Characters used in this specific match (can switch mid-set)
+  participant2Characters?: string[];
 }
 
 export interface Bracket {

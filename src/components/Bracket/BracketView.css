@@ -82,7 +82,7 @@
 .bracket-round {
   display: flex;
   flex-direction: column;
-  width: 320px;
+  width: 250px;
   flex-shrink: 0;
 }
 

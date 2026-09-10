@@ -38,11 +38,18 @@ function TournamentView() {
     setTournament(loadedTournament);
   };
 
-  const handleMatchResult = async (matchId: string, winnerId: string) => {
+  const handleMatchResult = async (
+    matchId: string, 
+    winnerId: string, 
+    score1?: number, 
+    score2?: number, 
+    chars1?: string[], 
+    chars2?: string[]
+  ) => {
     if (!id) return;
 
     try {
-      const updatedTournament = await setMatchWinner(id, matchId, winnerId);
+      const updatedTournament = await setMatchWinner(id, matchId, winnerId, score1, score2, chars1, chars2);
       setTournament(updatedTournament);
       setError('');
     } catch (err: any) {
@@ -160,6 +167,7 @@ function TournamentView() {
               <BracketView
                 bracket={tournament.bracket}
                 participants={tournament.participants}
+                gameId={tournament.gameId ?? undefined}
                 onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
                 onRevertMatch={canAdminGame(tournament.gameId) && tournament.status !== 'completed' ? handleRevertMatch : undefined}
                 readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}

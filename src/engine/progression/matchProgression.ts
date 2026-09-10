@@ -6,7 +6,11 @@ import { Match, Participant, Bracket, Tournament } from '@/models/types';
 export function recordMatchResult(
   tournament: Tournament,
   matchId: string,
-  winnerId: string
+  winnerId: string,
+  participant1Score?: number,
+  participant2Score?: number,
+  participant1Characters?: string[],
+  participant2Characters?: string[]
 ): Tournament {
   if (!tournament.bracket) {
     throw new Error('Tournament bracket not initialized');
@@ -38,6 +42,12 @@ export function recordMatchResult(
   match.winnerId = winnerId;
   match.loserId = loserId;
   match.status = 'completed';
+  
+  // Store detailed match result data
+  if (participant1Score !== undefined) match.participant1Score = participant1Score;
+  if (participant2Score !== undefined) match.participant2Score = participant2Score;
+  if (participant1Characters && participant1Characters.length > 0) match.participant1Characters = participant1Characters;
+  if (participant2Characters && participant2Characters.length > 0) match.participant2Characters = participant2Characters;
 
   // Update participant loss counts
   const loser = tournament.participants.find((p: Participant) => p.id === loserId);
@@ -312,10 +322,16 @@ export function revertMatchResult(
     removeParticipantFromMatch(tournament.bracket, match.nextLoserMatchId, match.loserId);
   }
 
-  // Reset match
+  // Reset match completely
   match.winnerId = null;
   match.loserId = null;
   match.status = 'pending';
+  
+  // Clear detailed match data
+  delete match.participant1Score;
+  delete match.participant2Score;
+  delete match.participant1Characters;
+  delete match.participant2Characters;
 
   // Recalculate partial positions after reverting
   assignFinalPositions(tournament);

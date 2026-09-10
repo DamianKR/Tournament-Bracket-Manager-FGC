@@ -529,6 +529,7 @@
     "keepMatch": "Keep Match",
     "back": "Back",
     "close": "Close",
+    "done": "Done",
     "viewProfile": "View profile",
     "memberOf": "Member of {{name}}",
     "openMenu": "Open menu",
@@ -582,7 +583,8 @@
     "randomize": "Randomize Order",
     "moveUp": "Move up",
     "moveDown": "Move down",
-    "remove": "Remove participant",
+    "remove": "Remove",
+    "removeParticipant": "Remove participant",
     "editName": "Edit name",
     "notConcluded": "Not Concluded",
     "eliminated": "Eliminated",
@@ -828,7 +830,20 @@
       "cancel": "Cancel",
       "revert": "Revert",
       "selectWinnerHint": "Click a player to select winner",
+      "reportResultHint": "Click to report result",
+      "clickToReport": "Click to report",
+      "clickToView": "Click to view details",
       "winnerLabel": "Winner: {{name}}?"
+    },
+    "matchResult": {
+      "title": "Report Match Result",
+      "viewTitle": "Match Details",
+      "addCharacter": "Add Character",
+      "selectCharacter": "Select Character for {{player}}",
+      "selectCharacters": "Select Characters for {{player}}",
+      "multiSelectHint": "Click multiple characters if they switched during the set",
+      "confirm": "Confirm Result",
+      "revert": "Revert Match"
     },
     "create": {
       "title": "Create New Tournament",

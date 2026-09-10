@@ -1993,5 +1993,41 @@
     "createdAt": "2026-09-05T03:14:47.477Z",
     "gameId": "mk11",
     "updatedAt": "2026-09-05T17:57:41.319Z"
+  },
+  {
+    "id": "tm_1789078738886_0sdhr29kh",
+    "tournamentId": "1789078500092-ch6eg5i7z",
+    "tournamentName": "Testing tournament improve e ts",
+    "gameId": "ssbu",
+    "player1Id": "1789078502452-7uncx9gwz",
+    "player2Id": "1789078504366-7247yj6id",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786387087046_wnwtadb",
+    "player1Name": "Alexis",
+    "player2Name": "Damiam",
+    "winnerId": "1789078502452-7uncx9gwz",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 1,
+    "matchNumber": 1,
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-10T22:18:58.886Z"
+  },
+  {
+    "id": "tm_1789079210651_nghd2oqpy",
+    "tournamentId": "1789078500092-ch6eg5i7z",
+    "tournamentName": "Testing tournament improve e ts",
+    "gameId": "ssbu",
+    "player1Id": "1789078507355-t1ssb2aby",
+    "player2Id": "1789078502452-7uncx9gwz",
+    "player1GlobalId": "gp_1786387234567_aoe1z95",
+    "player2GlobalId": "gp_1786387250178_ac5thmv",
+    "player1Name": "Gino",
+    "player2Name": "Alexis",
+    "winnerId": "1789078507355-t1ssb2aby",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 2,
+    "matchNumber": 1,
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-10T22:26:50.651Z"
   }
 ]

@@ -321,13 +321,25 @@ export async function startTournament(tournamentId: string): Promise<Tournament>
 export async function setMatchWinner(
   tournamentId: string,
   matchId: string,
-  winnerId: string
+  winnerId: string,
+  participant1Score?: number,
+  participant2Score?: number,
+  participant1Characters?: string[],
+  participant2Characters?: string[]
 ): Promise<Tournament> {
   const tournament = loadTournament(tournamentId);
   if (!tournament) throw new Error('Tournament not found');
   if (tournament.status !== 'in_progress') throw new Error('Tournament is not in progress');
 
-  const updatedTournament = recordMatchResult(tournament, matchId, winnerId);
+  const updatedTournament = recordMatchResult(
+    tournament, 
+    matchId, 
+    winnerId, 
+    participant1Score, 
+    participant2Score, 
+    participant1Characters, 
+    participant2Characters
+  );
 
   // Save tournament match record for history (singles only, no ELO)
   // type is undefined for old tournaments — treat anything that is not 'teams' as singles.
@@ -352,6 +364,11 @@ export async function setMatchWinner(
         winnerGlobalId: winnerId === match.participant1Id ? (p1?.globalParticipantId ?? null) : (p2?.globalParticipantId ?? null),
         round: match.roundNumber,
         matchNumber: match.matchNumber,
+        // Detailed match data
+        player1Score: match.participant1Score ?? null,
+        player2Score: match.participant2Score ?? null,
+        player1Characters: match.participant1Characters ?? null,
+        player2Characters: match.participant2Characters ?? null,
         communityId: updatedTournament.communityId,
         createdAt: new Date().toISOString(),
       };

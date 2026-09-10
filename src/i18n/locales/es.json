@@ -529,6 +529,7 @@
     "keepMatch": "Mantener partido",
     "back": "Volver",
     "close": "Cerrar",
+    "done": "Listo",
     "viewProfile": "Ver perfil",
     "memberOf": "Miembro de {{name}}",
     "openMenu": "Abrir menú",
@@ -582,7 +583,8 @@
     "randomize": "Orden aleatorio",
     "moveUp": "Subir",
     "moveDown": "Bajar",
-    "remove": "Eliminar participante",
+    "remove": "Eliminar",
+    "removeParticipant": "Eliminar participante",
     "editName": "Editar nombre",
     "notConcluded": "No concluido",
     "eliminated": "Eliminado",
@@ -828,7 +830,20 @@
       "cancel": "Cancelar",
       "revert": "Revertir",
       "selectWinnerHint": "Haz clic en un jugador para seleccionar ganador",
+      "reportResultHint": "Haz clic para reportar resultado",
+      "clickToReport": "Haz clic para reportar",
+      "clickToView": "Haz clic para ver detalles",
       "winnerLabel": "¿Ganador: {{name}}?"
+    },
+    "matchResult": {
+      "title": "Reportar Resultado del Partido",
+      "viewTitle": "Detalles del Partido",
+      "addCharacter": "Agregar Personaje",
+      "selectCharacter": "Seleccionar Personaje para {{player}}",
+      "selectCharacters": "Seleccionar Personajes para {{player}}",
+      "multiSelectHint": "Haz clic en varios personajes si cambiaron durante el set",
+      "confirm": "Confirmar Resultado",
+      "revert": "Revertir Partido"
     },
     "create": {
       "title": "Crear nuevo torneo",

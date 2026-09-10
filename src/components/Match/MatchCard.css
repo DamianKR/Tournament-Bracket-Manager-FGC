@@ -39,11 +39,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.5rem;
+  gap: 0.3rem;
+  padding: 0.35rem 0.45rem;
   border-right: 1px solid rgba(255,255,255,0.12);
   background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
-  min-width: 56px;
+  min-width: 50px;
   flex-shrink: 0;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .match-id {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 800;
   color: #fff;
   text-transform: uppercase;
@@ -63,8 +63,8 @@
 }
 
 .match-status {
-  font-size: 0.6rem;
-  padding: 0.1rem 0.35rem;
+  font-size: 0.55rem;
+  padding: 0.08rem 0.3rem;
   border-radius: var(--border-radius);
   font-weight: 600;
   text-align: center;
@@ -106,12 +106,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.3rem 0.5rem;
+  padding: 0.1rem 0.2rem;
   border: 2px solid transparent;
   background-color: var(--bg-primary);
   transition: all 0.15s;
   flex: 1;
   min-width: 0;
+  gap: 0.4rem;
 }
 
 .participant + .participant {
@@ -138,12 +139,59 @@
   text-decoration: line-through;
 }
 
+.participant-left {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.participant-right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.character-icons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.participant-character-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  border-radius: 3px;
+  flex-shrink: 0;
+  opacity: 0.9;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.more-characters {
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  margin-left: 2px;
+}
+
 .participant-name {
   flex: 1;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.participant-score {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 20px;
+  text-align: center;
 }
 
 .winner-badge {
@@ -161,11 +209,11 @@
 /* ── vs divider between the two participant rows ─────────────────────── */
 .match-divider {
   text-align: center;
-  font-size: 0.6rem;
+  font-size: 0.5rem;
   color: var(--text-tertiary);
   font-weight: 600;
   line-height: 1;
-  padding: 0.1rem 0;
+  padding: 0.05rem 0;
   background-color: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
@@ -241,41 +289,22 @@
   color: white;
 }
 
-/* ── hint text & revert button ────────────────────────────────────────── */
-.match-actions {
+/* ── Click hint ────────────────────────────────────────────── */
+.match-click-hint {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.15rem 0.3rem;
   border-top: 1px solid var(--border-color);
   background-color: var(--bg-secondary);
+  min-height: 20px;
 }
 
-.match-hint {
-  font-size: 0.65rem;
+.hint-text {
+  font-size: 0.55rem;
   color: var(--text-tertiary);
   font-style: italic;
   text-align: center;
-}
-
-.revert-btn {
-  background: transparent;
-  border: none;
-  color: var(--danger-color);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  cursor: pointer;
-  padding: 0.15rem 0.35rem;
-  border-radius: var(--border-radius);
-  transition: background-color 0.15s, color 0.15s;
-}
-
-.revert-btn:hover {
-  background-color: var(--danger-color);
-  color: white;
 }
 
 /* Empty participant slots */
@@ -291,22 +320,39 @@
   }
 
   .match-header {
-    min-width: 42px;
-    padding: 0.3rem 0.35rem;
-    gap: 0.25rem;
+    min-width: 38px;
+    padding: 0.25rem 0.3rem;
+    gap: 0.2rem;
   }
 
   .match-id,
   .match-status {
-    font-size: 0.55rem;
+    font-size: 0.5rem;
   }
 
   .participant {
-    padding: 0.25rem 0.4rem;
+    padding: 0.2rem 0.35rem;
+  }
+
+  .character-icons {
+    gap: 1px;
+  }
+
+  .participant-character-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .more-characters {
+    font-size: 0.5rem;
   }
 
   .participant-name {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+  }
+
+  .participant-score {
+    font-size: 0.75rem;
   }
 
   .winner-badge,
@@ -316,32 +362,16 @@
   }
 
   .match-divider {
+    font-size: 0.45rem;
+    padding: 0.05rem 0;
+  }
+
+  .match-click-hint {
+    padding: 0.1rem 0.25rem;
+    min-height: 18px;
+  }
+
+  .hint-text {
     font-size: 0.5rem;
-    padding: 0.075rem 0;
-  }
-
-  .match-actions {
-    padding: 0.2rem 0.4rem;
-  }
-
-  .match-hint {
-    font-size: 0.55rem;
-  }
-
-  .revert-btn {
-    font-size: 0.6rem;
-  }
-
-  .confirm-bar {
-    padding: 0.25rem 0.4rem;
-  }
-
-  .confirm-label {
-    font-size: 0.6rem;
-  }
-
-  .confirm-btn {
-    font-size: 0.55rem;
-    padding: 0.1rem 0.35rem;
   }
 }

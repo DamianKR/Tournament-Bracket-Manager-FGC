@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Match } from '@/models/types';
+import { getCharacterImageUrl } from '@/utils/characterImage';
+import MatchResultModal from './MatchResultModal';
 import './MatchCard.css';
 
 interface MatchCardProps {
   match: Match;
   participant1Name: string;
   participant2Name: string;
-  onSelectWinner?: (matchId: string, winnerId: string) => void;
+  gameId?: string;
+  onSelectWinner?: (matchId: string, winnerId: string, score1?: number, score2?: number, chars1?: string[], chars2?: string[]) => void;
   onRevertMatch?: (matchId: string) => void;
   readOnly?: boolean;
   isGrandFinal?: boolean;
@@ -18,6 +21,7 @@ function MatchCard({
   match,
   participant1Name,
   participant2Name,
+  gameId,
   onSelectWinner,
   onRevertMatch,
   readOnly = false,
@@ -25,44 +29,35 @@ function MatchCard({
   reversible = false,
 }: MatchCardProps) {
   const { t } = useTranslation();
-  // ID of participant pending confirmation, null = no pending selection
-  const [pendingWinnerId, setPendingWinnerId] = useState<string | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const canSelect = !readOnly && match.participant1Id && match.participant2Id && match.status !== 'completed';
+  const canView = match.status === 'completed' && match.participant1Id && match.participant2Id;
 
   const handleClickParticipant = (participantId: string | null) => {
-    if (!participantId || !canSelect) return;
-    // If same participant clicked again, cancel
-    if (pendingWinnerId === participantId) {
-      setPendingWinnerId(null);
-      return;
-    }
-    setPendingWinnerId(participantId);
+    if (!participantId) return;
+    // Open modal for reporting (pending) or viewing (completed)
+    setShowDetailModal(true);
   };
 
-  const handleConfirm = () => {
-    if (!pendingWinnerId || !onSelectWinner) return;
-    onSelectWinner(match.id, pendingWinnerId);
-    setPendingWinnerId(null);
-  };
-
-  const handleCancel = () => {
-    setPendingWinnerId(null);
+  const handleDetailedConfirm = (winnerId: string, score1: number, score2: number, chars1?: string[], chars2?: string[]) => {
+    if (!onSelectWinner) return;
+    onSelectWinner(match.id, winnerId, score1, score2, chars1, chars2);
+    setShowDetailModal(false);
   };
 
   const isWinner   = (id: string | null) => match.winnerId === id;
   const isLoser    = (id: string | null) => match.loserId === id;
-  const isPending  = (id: string | null) => pendingWinnerId === id;
 
   const isGhostMatch = match.status === 'completed' &&
     !match.participant1Id && !match.participant2Id && !match.winnerId;
 
-  const pendingName = pendingWinnerId === match.participant1Id
-    ? participant1Name
-    : participant2Name;
+  const hasScore = match.participant1Score !== undefined || match.participant2Score !== undefined;
+  const hasCharacters = (match.participant1Characters && match.participant1Characters.length > 0) || 
+                        (match.participant2Characters && match.participant2Characters.length > 0);
 
   return (
-    <div className={`match-card ${isGrandFinal ? 'grand-final-match' : ''} ${isGhostMatch ? 'ghost-match' : ''} ${pendingWinnerId ? 'confirming' : ''}`}>
+    <div className={`match-card ${isGrandFinal ? 'grand-final-match' : ''} ${isGhostMatch ? 'ghost-match' : ''}`}>
 
       {/* Left column: match id + status */}
       <div className="match-header">
@@ -86,13 +81,32 @@ function MatchCard({
             className={`participant
               ${isWinner(match.participant1Id) ? 'winner' : ''}
               ${isLoser(match.participant1Id) ? 'loser' : ''}
-              ${isPending(match.participant1Id) ? 'pending-winner' : ''}
               ${canSelect ? 'selectable' : ''}`}
             onClick={() => handleClickParticipant(match.participant1Id)}
           >
-            <span className="participant-name">{participant1Name}</span>
-            {isWinner(match.participant1Id) && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
-            {isPending(match.participant1Id) && <span className="pending-badge">{t('tournament.matchCard.pendingBadge')}</span>}
+            <div className="participant-left">
+              {match.participant1Characters && match.participant1Characters.length > 0 && gameId && (
+                <div className="character-icons">
+                  {match.participant1Characters.slice(0, 3).map((charId, idx) => (
+                    <img 
+                      key={idx}
+                      src={getCharacterImageUrl(gameId, charId) ?? ''} 
+                      alt=""
+                      className="participant-character-icon"
+                      title={charId}
+                    />
+                  ))}
+                  {match.participant1Characters.length > 3 && (
+                    <span className="more-characters">+{match.participant1Characters.length - 3}</span>
+                  )}
+                </div>
+              )}
+              <span className="participant-name">{participant1Name}</span>
+            </div>
+            <div className="participant-right">
+              {hasScore && <span className="participant-score">{match.participant1Score ?? 0}</span>}
+              {isWinner(match.participant1Id) && !hasScore && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
+            </div>
           </div>
 
           <div className="match-divider">{t('tournament.matchCard.vs')}</div>
@@ -102,36 +116,60 @@ function MatchCard({
             className={`participant
               ${isWinner(match.participant2Id) ? 'winner' : ''}
               ${isLoser(match.participant2Id) ? 'loser' : ''}
-              ${isPending(match.participant2Id) ? 'pending-winner' : ''}
               ${canSelect ? 'selectable' : ''}`}
             onClick={() => handleClickParticipant(match.participant2Id)}
           >
-            <span className="participant-name">{participant2Name}</span>
-            {isWinner(match.participant2Id) && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
-            {isPending(match.participant2Id) && <span className="pending-badge">{t('tournament.matchCard.pendingBadge')}</span>}
+            <div className="participant-left">
+              {match.participant2Characters && match.participant2Characters.length > 0 && gameId && (
+                <div className="character-icons">
+                  {match.participant2Characters.slice(0, 3).map((charId, idx) => (
+                    <img 
+                      key={idx}
+                      src={getCharacterImageUrl(gameId, charId) ?? ''} 
+                      alt=""
+                      className="participant-character-icon"
+                      title={charId}
+                    />
+                  ))}
+                  {match.participant2Characters.length > 3 && (
+                    <span className="more-characters">+{match.participant2Characters.length - 3}</span>
+                  )}
+                </div>
+              )}
+              <span className="participant-name">{participant2Name}</span>
+            </div>
+            <div className="participant-right">
+              {hasScore && <span className="participant-score">{match.participant2Score ?? 0}</span>}
+              {isWinner(match.participant2Id) && !hasScore && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
+            </div>
           </div>
         </div>
 
-        {/* Confirmation bar — appears below participants when a selection is pending */}
-        {pendingWinnerId ? (
-          <div className="confirm-bar">
-            <span className="confirm-label">{t('tournament.matchCard.winnerLabel', { name: pendingName })}</span>
-            <div className="confirm-actions">
-              <button className="confirm-btn confirm-yes" onClick={handleConfirm}><i className="fas fa-check" /> {t('tournament.matchCard.confirm')}</button>
-              <button className="confirm-btn confirm-no"  onClick={handleCancel}><i className="fas fa-xmark" /> {t('tournament.matchCard.cancel')}</button>
-            </div>
-          </div>
-        ) : (
-          <div className="match-actions">
-            {match.status === 'completed' && !readOnly && reversible && onRevertMatch && (
-              <button className="revert-btn" onClick={() => onRevertMatch(match.id)}>
-                <i className="fas fa-rotate-left" /> {t('tournament.matchCard.revert')}
-              </button>
-            )}
-            {canSelect && <div className="match-hint">{t('tournament.matchCard.selectWinnerHint')}</div>}
+        {/* Hint for clickable matches */}
+        {(canSelect || canView) && (
+          <div className="match-click-hint">
+            {canSelect && <div className="hint-text">{t('tournament.matchCard.clickToReport')}</div>}
+            {canView && (hasScore || hasCharacters) && <div className="hint-text">{t('tournament.matchCard.clickToView')}</div>}
           </div>
         )}
       </div>
+
+      {/* Detailed result modal */}
+      {showDetailModal && (canSelect || canView) && (
+        <MatchResultModal
+          match={match}
+          participant1Name={participant1Name}
+          participant2Name={participant2Name}
+          gameId={gameId}
+          onConfirm={handleDetailedConfirm}
+          onCancel={() => setShowDetailModal(false)}
+          onRevert={!readOnly && reversible && onRevertMatch ? () => {
+            onRevertMatch(match.id);
+            setShowDetailModal(false);
+          } : undefined}
+          readOnly={!canSelect}
+        />
+      )}
     </div>
   );
 }
