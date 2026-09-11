@@ -147,12 +147,27 @@ export async function recordMatch(
   winnerId: string,
   gameId: string,
   matchType: 'duel' | 'matchmaking' | 'free' = 'free',
-  communityId?: string
+  communityId?: string,
+  scoreA?: number,
+  scoreB?: number,
+  charactersA?: string[],
+  charactersB?: string[]
 ): Promise<MatchResult> {
   const res = await fetch(`${API_BASE}/match`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ playerAId, playerBId, winnerId, gameId, matchType, communityId }),
+    body: JSON.stringify({ 
+      playerAId, 
+      playerBId, 
+      winnerId, 
+      gameId, 
+      matchType, 
+      communityId,
+      player1Score: scoreA,
+      player2Score: scoreB,
+      player1Characters: charactersA,
+      player2Characters: charactersB,
+    }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));

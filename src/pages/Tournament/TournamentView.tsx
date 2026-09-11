@@ -120,7 +120,12 @@ function TournamentView() {
               </span>
               <span className="meta-separator">•</span>
               <span className="meta-item">
-                {t(tournament.mode === 'double_elimination' ? 'tournament.view.modeDouble' : 'tournament.view.modeSingle')}
+                {t(tournament.mode === 'manual'
+                  ? 'tournament.view.modeManual'
+                  : tournament.mode === 'double_elimination'
+                    ? 'tournament.view.modeDouble'
+                    : 'tournament.view.modeSingle'
+                )}
               </span>
               {tournament.championId && (
                 <>
@@ -148,6 +153,7 @@ function TournamentView() {
             participants={tournament.participants}
             tournamentName={tournament.name}
             gameId={tournament.gameId ?? undefined}
+            bracket={tournament.bracket}
           />
         )}
 

@@ -18,7 +18,8 @@ export type {
 export { DEFAULT_DUEL_SETTINGS } from './duel';
 
 export type TournamentStatus = 'setup' | 'in_progress' | 'completed';
-export type TournamentMode = 'single_elimination' | 'double_elimination';
+export type TournamentMode = 'single_elimination' | 'double_elimination' | 'manual' | 'manual_single' | 'manual_double';
+export type ManualTournamentMode = 'single' | 'double';
 export type TournamentType = 'singles' | 'teams';
 export type BracketType = 'winner' | 'loser' | 'grand_final';
 export type MatchStatus = 'pending' | 'in_progress' | 'completed';
@@ -48,6 +49,9 @@ export interface Participant {
   
   // For team tournaments: array of team members
   members?: TeamMember[];
+
+  // Characters used in this tournament (manual mode)
+  characters?: string[];
 }
 
 export interface Match {
@@ -79,7 +83,7 @@ export interface Bracket {
 export interface Tournament {
   id: string;
   name: string;
-  mode: TournamentMode;        // single_elimination | double_elimination
+  mode: TournamentMode;        // single_elimination | double_elimination | manual | manual_single | manual_double
   type: TournamentType;         // singles | teams
   status: TournamentStatus;
   gameId?: string | null;
@@ -94,6 +98,15 @@ export interface Tournament {
   communityId: string;          // Community this tournament belongs to
   createdAt: string;
   updatedAt: string;
+  startedAt?: string;           // When the tournament started
+  completedAt?: string;         // When the tournament finished
+  manualMode?: ManualTournamentMode; // 'single' or 'double' for manual tournaments (defaults to 'double')
+  manualStandings?: {           // Final standings for manual mode
+    id: string;
+    name: string;
+    placement: number;
+    characters?: string[];
+  }[];
 }
 
 export interface TournamentHistory {

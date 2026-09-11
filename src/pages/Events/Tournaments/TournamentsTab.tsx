@@ -163,9 +163,11 @@ function TournamentsTab() {
                 <div className="info-row">
                   <span><i className="fas fa-sitemap" /> {t('tournaments.mode')}</span>
                   <span>
-                    {tournament.mode === 'double_elimination'
-                      ? t('tournaments.doubleElimination')
-                      : t('tournaments.singleElimination')}
+                    {tournament.mode === 'manual'
+                      ? t('tournaments.manualMode')
+                      : tournament.mode === 'double_elimination'
+                        ? t('tournaments.doubleElimination')
+                        : t('tournaments.singleElimination')}
                   </span>
                 </div>
                 <div className="info-row">

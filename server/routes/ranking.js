@@ -194,6 +194,11 @@ router.post('/match', requireAuth, async (req, res) => {
       playerBRankBefore: getParticipantRank(pB, matchGameId),
       playerARankAfter: newRankA,
       playerBRankAfter: newRankB,
+      // Detailed match data (optional, retrocompatible)
+      ...(req.body.player1Score !== undefined && { player1Score: req.body.player1Score }),
+      ...(req.body.player2Score !== undefined && { player2Score: req.body.player2Score }),
+      ...(req.body.player1Characters && { player1Characters: req.body.player1Characters }),
+      ...(req.body.player2Characters && { player2Characters: req.body.player2Characters }),
       communityId,
       createdAt: new Date().toISOString(),
     };

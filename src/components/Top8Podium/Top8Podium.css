@@ -314,3 +314,54 @@
     text-overflow: clip;
   }
 }
+
+/* Character icons in podium */
+.top8-characters {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.top8-char-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: var(--primary-mid);
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s;
+}
+
+.top8-char-icon:hover {
+  transform: scale(1.2);
+}
+
+.champion-card .top8-characters {
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.champion-card .top8-char-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border-width: 2px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .top8-char-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .champion-card .top8-char-icon {
+    width: 26px;
+    height: 26px;
+  }
+}

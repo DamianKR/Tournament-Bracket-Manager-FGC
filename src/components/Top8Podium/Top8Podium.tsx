@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Participant, GlobalParticipant } from '@/models/types';
+import { Participant, GlobalParticipant, Bracket } from '@/models/types';
 import { loadGlobalParticipants } from '@/services/storage/localStorage';
 import { getCharacterIconUrl } from '@/utils/characterImage';
 import './Top8Podium.css';
@@ -9,11 +9,52 @@ interface Top8PodiumProps {
   participants: Participant[];
   tournamentName: string;
   gameId?: string;
+  bracket?: Bracket | null;
 }
 
 function getGlobal(p: Participant, globals: Map<string, GlobalParticipant>, names: Map<string, GlobalParticipant>): GlobalParticipant | null {
   if (p.globalParticipantId) return globals.get(p.globalParticipantId) ?? null;
   return names.get(p.name.toLowerCase()) ?? null;
+}
+
+function getMostUsedCharacters(participantId: string, bracket: Bracket | null | undefined): string[] {
+  if (!bracket) return [];
+
+  const counts = new Map<string, number>();
+  const firstSeen = new Map<string, number>();
+  let order = 0;
+
+  const allMatches = [
+    ...bracket.winnerBracket,
+    ...bracket.loserBracket,
+    ...(bracket.grandFinal ? [bracket.grandFinal] : []),
+    ...(bracket.grandFinalReset ? [bracket.grandFinalReset] : []),
+  ];
+
+  for (const match of allMatches) {
+    if (match.status !== 'completed') continue;
+
+    if (match.participant1Id === participantId && match.participant1Characters) {
+      for (const charId of match.participant1Characters) {
+        counts.set(charId, (counts.get(charId) ?? 0) + 1);
+        if (!firstSeen.has(charId)) firstSeen.set(charId, order++);
+      }
+    }
+    if (match.participant2Id === participantId && match.participant2Characters) {
+      for (const charId of match.participant2Characters) {
+        counts.set(charId, (counts.get(charId) ?? 0) + 1);
+        if (!firstSeen.has(charId)) firstSeen.set(charId, order++);
+      }
+    }
+  }
+
+  return Array.from(counts.entries())
+    .sort((a, b) => {
+      if (b[1] !== a[1]) return b[1] - a[1];
+      return (firstSeen.get(a[0]) ?? 0) - (firstSeen.get(b[0]) ?? 0);
+    })
+    .slice(0, 4)
+    .map(([charId]) => charId);
 }
 
 function getDisplayName(p: Participant, globals: Map<string, GlobalParticipant>, names: Map<string, GlobalParticipant>): string {
@@ -39,7 +80,29 @@ function Avatar({ global, gameId, fallbackIcon, large = false }: { global: Globa
   );
 }
 
-function Top8Podium({ participants, tournamentName, gameId }: Top8PodiumProps) {
+function TournamentCharacters({ p, gameId, bracket }: { p: Participant; gameId?: string; bracket?: Bracket | null }) {
+  const characterIds = p.characters ?? getMostUsedCharacters(p.id, bracket);
+  if (characterIds.length === 0 || !gameId) return null;
+  return (
+    <div className="top8-characters">
+      {characterIds.slice(0, 4).map((charId) => {
+        const imgUrl = getCharacterIconUrl(gameId, charId);
+        if (!imgUrl) return null;
+        return (
+          <img
+            key={charId}
+            src={imgUrl}
+            alt={charId}
+            className="top8-char-icon"
+            title={charId}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function Top8Podium({ participants, tournamentName, gameId, bracket }: Top8PodiumProps) {
   const { t } = useTranslation();
   const { globals, names } = useMemo(() => {
     const globals = new Map<string, GlobalParticipant>();
@@ -93,6 +156,7 @@ function Top8Podium({ participants, tournamentName, gameId }: Top8PodiumProps) {
               <div className="top8-rank-badge rank-1">1</div>
               <Avatar global={getGlobal(champion.p, globals, names)} gameId={gameId} fallbackIcon="fa-crown" large={true} />
               <div className="top8-player-name">{getDisplayName(champion.p, globals, names)}</div>
+              <TournamentCharacters p={champion.p} gameId={gameId} bracket={bracket} />
             </div>
           </div>
         )}
@@ -105,6 +169,7 @@ function Top8Podium({ participants, tournamentName, gameId }: Top8PodiumProps) {
                 <div className={`top8-rank-badge rank-${pos}`}>{pos}</div>
                 <Avatar global={getGlobal(p, globals, names)} gameId={gameId} fallbackIcon="fa-gamepad" />
                 <div className="top8-player-name">{getDisplayName(p, globals, names)}</div>
+                <TournamentCharacters p={p} gameId={gameId} bracket={bracket} />
               </div>
             ))}
           </div>
@@ -115,6 +180,7 @@ function Top8Podium({ participants, tournamentName, gameId }: Top8PodiumProps) {
                   <div className={`top8-rank-badge rank-${pos}`}>{pos}</div>
                   <Avatar global={getGlobal(p, globals, names)} gameId={gameId} fallbackIcon="fa-gamepad" />
                   <div className="top8-player-name">{getDisplayName(p, globals, names)}</div>
+                  <TournamentCharacters p={p} gameId={gameId} bracket={bracket} />
                 </div>
               ))}
             </div>

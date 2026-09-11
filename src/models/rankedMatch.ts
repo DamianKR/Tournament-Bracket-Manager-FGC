@@ -20,6 +20,12 @@ export interface RankedMatch {
   
   // Score
   score: string; // "2-1", "3-0", etc.
+  player1Score?: number; // Individual scores
+  player2Score?: number;
+  
+  // Characters used
+  player1Characters?: string[]; // Array of character IDs
+  player2Characters?: string[];
   
   // ELO changes
   player1EloBefore: number;

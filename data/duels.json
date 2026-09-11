@@ -1408,15 +1408,23 @@
     "gameId": "mk11",
     "communityId": "community_fgc_santa_clara",
     "type": "normal",
-    "status": "pending",
+    "status": "completed",
     "createdAt": "2026-09-06T03:11:55.843Z",
     "expiresAt": "2026-09-13T03:11:55.841Z",
-    "acceptedAt": null,
+    "acceptedAt": "2026-09-10T23:25:12.173Z",
     "declinedAt": null,
-    "completedAt": null,
-    "matchId": null,
-    "challengerResult": null,
-    "challengedResult": null,
+    "completedAt": "2026-09-10T23:26:34.750Z",
+    "matchId": "m_1789082794737_ooiy9fe",
+    "challengerResult": {
+      "winnerId": "gp_1787409813244_ymqkq1e",
+      "reportedAt": "2026-09-10T23:26:34.729Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1787409813244_ymqkq1e",
+      "reportedAt": "2026-09-10T23:26:34.729Z",
+      "evidence": null
+    },
     "metadata": null
   },
   {

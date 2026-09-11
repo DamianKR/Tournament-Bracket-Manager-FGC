@@ -2029,5 +2029,352 @@
     "matchNumber": 1,
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-09-10T22:26:50.651Z"
+  },
+  {
+    "id": "tm_1789081164473_pt90ffghy",
+    "tournamentId": "1789078500092-ch6eg5i7z",
+    "tournamentName": "Testing tournament improve e ts",
+    "gameId": "ssbu",
+    "player1Id": "1789078507355-t1ssb2aby",
+    "player2Id": "1789078502452-7uncx9gwz",
+    "player1GlobalId": "gp_1786387234567_aoe1z95",
+    "player2GlobalId": "gp_1786387250178_ac5thmv",
+    "player1Name": "Gino",
+    "player2Name": "Alexis",
+    "winnerId": "1789078507355-t1ssb2aby",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "player1Characters": [
+      "dark_samus",
+      "captain_falcon"
+    ],
+    "player2Characters": [
+      "ganondorf"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-10T22:59:24.473Z"
+  },
+  {
+    "id": "tm_1789081190037_aa0fw737a",
+    "tournamentId": "1789078500092-ch6eg5i7z",
+    "tournamentName": "Testing tournament improve e ts",
+    "gameId": "ssbu",
+    "player1Id": "1789078510530-3wh8mbq0m",
+    "player2Id": "1789078512243-qciiq7v2d",
+    "player1GlobalId": "gp_1786391936937_anlwmxy",
+    "player2GlobalId": "gp_1787409813244_ymqkq1e",
+    "player1Name": "Jose Enrique",
+    "player2Name": "Alexs",
+    "winnerId": "1789078510530-3wh8mbq0m",
+    "winnerGlobalId": "gp_1786391936937_anlwmxy",
+    "round": 1,
+    "matchNumber": 4,
+    "player1Score": 2,
+    "player2Score": 0,
+    "player1Characters": [
+      "diddy_kong"
+    ],
+    "player2Characters": [
+      "donkey_kong"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-10T22:59:50.037Z"
+  },
+  {
+    "id": "tm_1789091464074_2nqw649md",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091284354-x3ttj6j29",
+    "player2Id": "1789091286267-jm473dvua",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "Damiam",
+    "player2Name": "Gino",
+    "winnerId": "1789091284354-x3ttj6j29",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 1,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 1,
+    "player1Characters": [
+      "ganondorf",
+      "samus"
+    ],
+    "player2Characters": [
+      "link"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:51:04.074Z"
+  },
+  {
+    "id": "tm_1789091512404_d53t7n947",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091294177-gje293pef",
+    "player2Id": "1789091297795-aw4l1ptye",
+    "player1GlobalId": "gp_1786393850039_1imzf6x",
+    "player2GlobalId": "gp_1786396304199_u7v6gsb",
+    "player1Name": "Dionisio",
+    "player2Name": "Dianger",
+    "winnerId": "1789091294177-gje293pef",
+    "winnerGlobalId": "gp_1786393850039_1imzf6x",
+    "round": 1,
+    "matchNumber": 4,
+    "player1Score": 2,
+    "player2Score": 1,
+    "player1Characters": [
+      "steve"
+    ],
+    "player2Characters": [
+      "cloud",
+      "little_mac"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:51:52.404Z"
+  },
+  {
+    "id": "tm_1789091555960_hfuilbxk1",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091289387-mv26lftzm",
+    "player2Id": "1789091284354-x3ttj6j29",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1786387087046_wnwtadb",
+    "player1Name": "Ale",
+    "player2Name": "Damiam",
+    "winnerId": "1789091289387-mv26lftzm",
+    "winnerGlobalId": "gp_1786387243524_6er0c9u",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 1,
+    "player1Characters": [
+      "mario"
+    ],
+    "player2Characters": [
+      "roy",
+      "kirby"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:52:35.960Z"
+  },
+  {
+    "id": "tm_1789091597398_scrq9cq3w",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091290791-mb2o71ekx",
+    "player2Id": "1789091294177-gje293pef",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786393850039_1imzf6x",
+    "player1Name": "Alexis",
+    "player2Name": "Dionisio",
+    "winnerId": "1789091290791-mb2o71ekx",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 2,
+    "matchNumber": 2,
+    "player1Score": 2,
+    "player2Score": 0,
+    "player1Characters": [
+      "ken"
+    ],
+    "player2Characters": [
+      "steve"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:53:17.398Z"
+  },
+  {
+    "id": "tm_1789091638247_jkhlysoaj",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091289387-mv26lftzm",
+    "player2Id": "1789091290791-mb2o71ekx",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1786387250178_ac5thmv",
+    "player1Name": "Ale",
+    "player2Name": "Alexis",
+    "winnerId": "1789091289387-mv26lftzm",
+    "winnerGlobalId": "gp_1786387243524_6er0c9u",
+    "round": 3,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 1,
+    "player1Characters": [
+      "ryu",
+      "mario"
+    ],
+    "player2Characters": [
+      "ken",
+      "luigi"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:53:58.247Z"
+  },
+  {
+    "id": "tm_1789091664038_25okovkdl",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091286267-jm473dvua",
+    "player2Id": "1789091294177-gje293pef",
+    "player1GlobalId": "gp_1786387234567_aoe1z95",
+    "player2GlobalId": "gp_1786393850039_1imzf6x",
+    "player1Name": "Gino",
+    "player2Name": "Dionisio",
+    "winnerId": "1789091286267-jm473dvua",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "player1Characters": [
+      "link"
+    ],
+    "player2Characters": [
+      "steve"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:54:24.038Z"
+  },
+  {
+    "id": "tm_1789091691714_ntciwpty1",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091297795-aw4l1ptye",
+    "player2Id": "1789091284354-x3ttj6j29",
+    "player1GlobalId": "gp_1786396304199_u7v6gsb",
+    "player2GlobalId": "gp_1786387087046_wnwtadb",
+    "player1Name": "Dianger",
+    "player2Name": "Damiam",
+    "winnerId": "1789091284354-x3ttj6j29",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 2,
+    "matchNumber": 2,
+    "player1Score": 0,
+    "player2Score": 2,
+    "player1Characters": [
+      "cloud"
+    ],
+    "player2Characters": [
+      "roy",
+      "ganondorf"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:54:51.714Z"
+  },
+  {
+    "id": "tm_1789091727028_9rbkvqowm",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091286267-jm473dvua",
+    "player2Id": "1789091284354-x3ttj6j29",
+    "player1GlobalId": "gp_1786387234567_aoe1z95",
+    "player2GlobalId": "gp_1786387087046_wnwtadb",
+    "player1Name": "Gino",
+    "player2Name": "Damiam",
+    "winnerId": "1789091284354-x3ttj6j29",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 3,
+    "matchNumber": 1,
+    "player1Score": 1,
+    "player2Score": 2,
+    "player1Characters": [
+      "mega_man"
+    ],
+    "player2Characters": [
+      "samus",
+      "dark_samus"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:55:27.028Z"
+  },
+  {
+    "id": "tm_1789091757448_3mm5nhjkm",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091284354-x3ttj6j29",
+    "player2Id": "1789091290791-mb2o71ekx",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786387250178_ac5thmv",
+    "player1Name": "Damiam",
+    "player2Name": "Alexis",
+    "winnerId": "1789091284354-x3ttj6j29",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 4,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "player1Characters": [
+      "ganondorf"
+    ],
+    "player2Characters": [
+      "luigi",
+      "ken"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:55:57.448Z"
+  },
+  {
+    "id": "tm_1789091787651_1of60rqhk",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091289387-mv26lftzm",
+    "player2Id": "1789091284354-x3ttj6j29",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1786387087046_wnwtadb",
+    "player1Name": "Ale",
+    "player2Name": "Damiam",
+    "winnerId": "1789091284354-x3ttj6j29",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 1,
+    "matchNumber": 1,
+    "player1Score": 1,
+    "player2Score": 2,
+    "player1Characters": [
+      "mario"
+    ],
+    "player2Characters": [
+      "samus"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:56:27.651Z"
+  },
+  {
+    "id": "tm_1789091807476_l4zoyly9a",
+    "tournamentId": "1789091280781-j3e7bbz5s",
+    "tournamentName": "Tournament real podium",
+    "gameId": "ssbu",
+    "player1Id": "1789091289387-mv26lftzm",
+    "player2Id": "1789091284354-x3ttj6j29",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1786387087046_wnwtadb",
+    "player1Name": "Ale",
+    "player2Name": "Damiam",
+    "winnerId": "1789091284354-x3ttj6j29",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 1,
+    "player2Score": 2,
+    "player1Characters": [
+      "ryu"
+    ],
+    "player2Characters": [
+      "samus"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T01:56:47.476Z"
   }
 ]

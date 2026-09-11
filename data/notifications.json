@@ -7703,5 +7703,47 @@
         "gp_1786808135517_vfoni2a"
       ]
     }
+  },
+  {
+    "id": "notif_1789082712176_d7jxxrvtb",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "duel_accepted",
+    "title": "Duel Accepted!",
+    "message": "Delvi accepted your duel challenge. Play and record the result before it expires.",
+    "read": false,
+    "createdAt": "2026-09-10T23:25:12.176Z",
+    "scheduledAt": "2026-09-10T23:25:12.176Z",
+    "data": {
+      "duelId": "duel_1788664315841_te4cw5xq1",
+      "challengedId": "gp_1786391892402_8intsz3"
+    }
+  },
+  {
+    "id": "notif_1789082712180_srne2745j",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-10T23:25:12.180Z",
+    "scheduledAt": "2026-09-14T23:25:12.173Z",
+    "data": {
+      "duelId": "duel_1788664315841_te4cw5xq1",
+      "expiresAt": "2026-09-17T23:25:12.173Z"
+    }
+  },
+  {
+    "id": "notif_1789082712183_vowztnum3",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-10T23:25:12.183Z",
+    "scheduledAt": "2026-09-14T23:25:12.173Z",
+    "data": {
+      "duelId": "duel_1788664315841_te4cw5xq1",
+      "expiresAt": "2026-09-17T23:25:12.173Z"
+    }
   }
 ]

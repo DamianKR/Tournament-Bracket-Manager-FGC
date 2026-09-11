@@ -13,6 +13,7 @@ import {
   moveParticipant,
   shuffleParticipants,
   startTournament,
+  finishManualTournament,
   getTournament,
 } from '@/services/tournament/tournamentService';
 import { searchParticipants } from '@/services/participants/participantService';
@@ -24,9 +25,10 @@ import ParticipantsList from '@/components/Participants/ParticipantsList';
 import BracketPreview from '@/components/Bracket/BracketPreview';
 import AddTeamModal from '@/components/AddTeamModal/AddTeamModal';
 import SeedingPreview from '@/components/SeedingPreview/SeedingPreview';
+import ManualStandingsInput from '@/components/ManualTournament/ManualStandingsInput';
 import './CreateTournament.css';
 
-type ViewMode = 'participants' | 'bracket' | 'seeding-preview';
+type ViewMode = 'participants' | 'bracket' | 'seeding-preview' | 'manual-standings';
 
 function CreateTournament() {
   const { t } = useTranslation();
@@ -38,6 +40,7 @@ function CreateTournament() {
   const [tournamentId, setTournamentId] = useState<string | null>(id || null);
   const [tournamentName, setTournamentName] = useState('');
   const [mode, setMode] = useState<TournamentMode>('double_elimination');
+  const [manualMode, setManualMode] = useState<'single' | 'double'>('double');
   const [type, setType] = useState<TournamentType>('singles');
   const [teamSize, setTeamSize] = useState<TeamSize>(2);
   const [seedingMode, setSeedingMode] = useState<SeedingMode>('none');
@@ -52,6 +55,7 @@ function CreateTournament() {
   const [adding, setAdding] = useState(false);
   const [showStartConfirm, setShowStartConfirm] = useState(false);
   const [showAddTeamModal, setShowAddTeamModal] = useState(false);
+  const [finishingManual, setFinishingManual] = useState(false);
 
   // Autocomplete state
   const [suggestions, setSuggestions] = useState<GlobalParticipant[]>([]);
@@ -171,7 +175,8 @@ function CreateTournament() {
         type === 'singles' ? seedingMode : undefined,
         type === 'singles' && seedingMode === 'partial' ? partialSeedCount : undefined,
         givesPoints,
-        currentCommunity?.id ?? DEFAULT_COMMUNITY_ID
+        currentCommunity?.id ?? DEFAULT_COMMUNITY_ID,
+        mode === 'manual' ? manualMode : undefined
       );
       setTournamentId(tournament.id);
       setIsCreated(true);
@@ -272,6 +277,12 @@ function CreateTournament() {
       return;
     }
     
+    // If manual mode, show standings input
+    if (mode === 'manual') {
+      setViewMode('manual-standings');
+      return;
+    }
+    
     // If seeding is enabled for singles, show preview
     if (type === 'singles' && seedingMode !== 'none') {
       setViewMode('seeding-preview');
@@ -293,6 +304,18 @@ function CreateTournament() {
   };
 
   const cancelStartTournament = () => setShowStartConfirm(false);
+
+  const handleFinishManual = async (placements: any[]) => {
+    if (!tournamentId) return;
+    setFinishingManual(true);
+    try {
+      await finishManualTournament(tournamentId, placements);
+      navigate(getPath(`events/tournaments/${tournamentId}`));
+    } catch (err: any) {
+      setError(err.message);
+      setFinishingManual(false);
+    }
+  };
 
   const getExcludedTeamMemberNames = (): string[] => {
     // Names of all players already in other teams in this tournament
@@ -403,7 +426,25 @@ function CreateTournament() {
                 >
                   <option value="double_elimination">{t('tournament.create.modeDouble')}</option>
                   <option value="single_elimination">{t('tournament.create.modeSingle')}</option>
+                  <option value="manual">{t('tournament.create.modeManual')}</option>
                 </select>
+                {mode === 'manual' && (
+                  <>
+                    <p className="form-hint">{t('tournament.create.modeManualDesc')}</p>
+                    <label className="mt-2">{t('tournament.create.manualModeLabel')}</label>
+                    <select
+                      value={manualMode}
+                      onChange={(e) => setManualMode(e.target.value as 'single' | 'double')}
+                      className="w-full"
+                    >
+                      <option value="double">{t('tournament.create.manualModeDouble')}</option>
+                      <option value="single">{t('tournament.create.manualModeSingle')}</option>
+                    </select>
+                    <p className="form-hint">{manualMode === 'double'
+                      ? t('tournament.create.manualModeDoubleDesc')
+                      : t('tournament.create.manualModeSingleDesc')}</p>
+                  </>
+                )}
               </div>
 
               <div className="form-group form-group--inline">
@@ -587,6 +628,17 @@ function CreateTournament() {
                   onBack={() => setViewMode('participants')}
                   onConfirm={() => setShowStartConfirm(true)}
                   onParticipantsChange={setParticipants}
+                />
+              )}
+
+              {viewMode === 'manual-standings' && (
+                <ManualStandingsInput
+                  participants={participants}
+                  gameId={gameId}
+                  manualMode={manualMode}
+                  onFinish={handleFinishManual}
+                  onCancel={() => setViewMode('participants')}
+                  finishing={finishingManual}
                 />
               )}
 

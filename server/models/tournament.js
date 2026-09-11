@@ -107,7 +107,7 @@ export function validateTournament(obj) {
   if (typeof obj.id !== 'string' || !obj.id) errors.push('Missing id');
   if (typeof obj.name !== 'string' || !obj.name) errors.push('Missing name');
   if (!['setup', 'in_progress', 'completed'].includes(obj.status)) errors.push('Invalid status');
-  if (!['single_elimination', 'double_elimination'].includes(obj.mode)) errors.push('Invalid mode');
+  if (!['single_elimination', 'double_elimination', 'manual'].includes(obj.mode)) errors.push('Invalid mode');
   if (!Array.isArray(obj.participants)) errors.push('participants must be an array');
   
   // type is optional for backward compatibility (defaults to 'singles')

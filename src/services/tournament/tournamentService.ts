@@ -2,6 +2,7 @@ import { Tournament, Participant, TournamentMode, TournamentType, TeamSize, Seed
 import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progression/matchProgression';
+import { getTournamentPlacement } from '@/utils/tournamentPlacements';
 import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
 import { findGlobalParticipantByName } from '@/services/storage/localStorage';
 import { getAuthHeader } from '@/services/auth/authService';
@@ -23,7 +24,8 @@ export async function createTournament(
   seedingMode?: SeedingMode,
   partialSeedCount?: PartialSeedCount,
   givesPoints: boolean = true,
-  communityId: string = DEFAULT_COMMUNITY_ID
+  communityId: string = DEFAULT_COMMUNITY_ID,
+  manualMode?: 'single' | 'double'
 ): Promise<Tournament> {
   const tournament: Tournament = {
     id: generateId(),
@@ -41,6 +43,10 @@ export async function createTournament(
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+
+  if (mode === 'manual' && manualMode) {
+    tournament.manualMode = manualMode;
+  }
 
   // Only add teamSize for team tournaments
   if (type === 'teams' && teamSize) {
@@ -312,6 +318,75 @@ export async function startTournament(tournamentId: string): Promise<Tournament>
   tournament.updatedAt = new Date().toISOString();
 
   await saveTournamentAsync(tournament);
+  return tournament;
+}
+
+/**
+ * Finish a manual tournament with final standings
+ */
+export async function finishManualTournament(
+  tournamentId: string,
+  placements: Array<{ id: string; name: string; placement: number; characters?: string[] }>
+): Promise<Tournament> {
+  const tournament = loadTournament(tournamentId);
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.mode !== 'manual') throw new Error('Not a manual tournament');
+  if (tournament.status !== 'setup') throw new Error('Tournament already started');
+
+  const mode = tournament.manualMode ?? 'double';
+
+  // Recalcular placements usando el modo correcto para asegurar coherencia
+  const finalPlacements = placements.map((p, index) => ({
+    ...p,
+    placement: getTournamentPlacement(index + 1, mode),
+  }));
+
+  // Asignar posiciones finales a los participantes
+  finalPlacements.forEach(({ id, placement, characters }) => {
+    const participant = tournament.participants.find(p => p.id === id);
+    if (participant) {
+      participant.finalPosition = placement;
+      participant.eliminated = placement > 1; // Solo el 1er lugar no está eliminado
+      if (characters && characters.length > 0) {
+        participant.characters = characters;
+      }
+    }
+  });
+
+  // Determinar campeón
+  const champion = finalPlacements.find(p => p.placement === 1);
+  if (champion) {
+    tournament.championId = champion.id;
+  }
+
+  // Marcar como completado y guardar standings
+  tournament.status = 'completed';
+  tournament.startedAt = tournament.startedAt || new Date().toISOString();
+  tournament.completedAt = new Date().toISOString();
+  tournament.updatedAt = new Date().toISOString();
+  tournament.manualStandings = finalPlacements.map(p => ({
+    id: p.id,
+    name: p.name,
+    placement: p.placement,
+    characters: p.characters,
+  }));
+
+  // Guardar local y sincronizar con el servidor
+  await saveTournamentAsync(tournament);
+
+  // Forzar sincronización con el servidor si está disponible
+  if (await isServerAvailable()) {
+    try {
+      await fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournament.id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(tournament),
+      });
+    } catch (err) {
+      console.warn('[Tournament] Failed to sync manual tournament to server:', err);
+    }
+  }
+
   return tournament;
 }
 

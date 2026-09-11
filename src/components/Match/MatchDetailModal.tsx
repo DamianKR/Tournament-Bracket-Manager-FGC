@@ -51,6 +51,8 @@ function MatchDetailModal({
   const [chars2, setChars2] = useState<string[]>(data.participant2Characters ?? []);
   const [showChar1Picker, setShowChar1Picker] = useState(false);
   const [showChar2Picker, setShowChar2Picker] = useState(false);
+  const [charFilter1, setCharFilter1] = useState('');
+  const [charFilter2, setCharFilter2] = useState('');
 
   const game = gameId ? GAMES.find(g => g.id === gameId) : undefined;
   const characters = game?.characters ?? [];
@@ -116,6 +118,11 @@ function MatchDetailModal({
     return characters.find(c => c.id === charId)?.name ?? '';
   };
 
+  const openChar1Picker = () => { setCharFilter1(''); setShowChar1Picker(true); };
+  const closeChar1Picker = () => { setShowChar1Picker(false); setCharFilter1(''); };
+  const openChar2Picker = () => { setCharFilter2(''); setShowChar2Picker(true); };
+  const closeChar2Picker = () => { setShowChar2Picker(false); setCharFilter2(''); };
+
   const modalTitle = title ?? (readOnly ? t('tournament.matchResult.viewTitle') : t('tournament.matchResult.title'));
 
   return (
@@ -159,7 +166,7 @@ function MatchDetailModal({
               {!readOnly && characters.length > 0 && (
                 <button 
                   className="add-character-btn"
-                  onClick={() => setShowChar1Picker(true)}
+                  onClick={openChar1Picker}
                 >
                   <i className="fas fa-plus" /> {t('tournament.matchResult.addCharacter')}
                 </button>
@@ -231,7 +238,7 @@ function MatchDetailModal({
               {!readOnly && characters.length > 0 && (
                 <button 
                   className="add-character-btn"
-                  onClick={() => setShowChar2Picker(true)}
+                  onClick={openChar2Picker}
                 >
                   <i className="fas fa-plus" /> {t('tournament.matchResult.addCharacter')}
                 </button>
@@ -273,71 +280,93 @@ function MatchDetailModal({
 
           {/* Character Pickers */}
           {showChar1Picker && characters.length > 0 && gameId && (
-            <div className="character-picker-overlay" onClick={() => setShowChar1Picker(false)}>
+            <div className="character-picker-overlay" onClick={closeChar1Picker}>
               <div className="character-picker" onClick={(e) => e.stopPropagation()}>
                 <div className="picker-header">
                   <h3>{t('tournament.matchResult.selectCharacters', { player: data.participant1Name })}</h3>
-                  <p className="picker-hint">{t('tournament.matchResult.multiSelectHint')}</p>
+                  <button className="picker-done-btn" onClick={closeChar1Picker}>
+                    {t('common.done')}
+                  </button>
+                </div>
+                <div className="picker-search">
+                  <i className="fas fa-search picker-search-icon" />
+                  <input
+                    type="text"
+                    className="picker-search-input"
+                    placeholder={t('tournament.create.characterSearch', { defaultValue: 'Search character...' })}
+                    value={charFilter1}
+                    onChange={(e) => setCharFilter1(e.target.value)}
+                  />
                 </div>
                 <div className="character-grid">
-                  {characters.map(char => (
-                    <div
-                      key={char.id}
-                      className={`character-option ${chars1.includes(char.id) ? 'selected' : ''}`}
-                      onClick={() => toggleCharacter(1, char.id)}
-                    >
-                      <img 
-                        src={getCharacterImageUrl(gameId, char.id) ?? ''} 
-                        alt={char.name}
-                        className="character-option-img"
-                      />
-                      <span className="character-option-name">{char.name}</span>
-                      {chars1.includes(char.id) && (
-                        <div className="selected-indicator">
-                          <i className="fas fa-check" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {characters
+                    .filter(char => char.name.toLowerCase().includes(charFilter1.toLowerCase()))
+                    .map(char => (
+                      <div
+                        key={char.id}
+                        className={`character-option ${chars1.includes(char.id) ? 'selected' : ''}`}
+                        onClick={() => toggleCharacter(1, char.id)}
+                      >
+                        <img 
+                          src={getCharacterImageUrl(gameId, char.id) ?? ''} 
+                          alt={char.name}
+                          className="character-option-img"
+                        />
+                        <span className="character-option-name">{char.name}</span>
+                        {chars1.includes(char.id) && (
+                          <div className="selected-indicator">
+                            <i className="fas fa-check" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
                 </div>
-                <button className="btn-primary mt-2" onClick={() => setShowChar1Picker(false)}>
-                  {t('common.done')}
-                </button>
               </div>
             </div>
           )}
 
           {showChar2Picker && characters.length > 0 && gameId && (
-            <div className="character-picker-overlay" onClick={() => setShowChar2Picker(false)}>
+            <div className="character-picker-overlay" onClick={closeChar2Picker}>
               <div className="character-picker" onClick={(e) => e.stopPropagation()}>
                 <div className="picker-header">
                   <h3>{t('tournament.matchResult.selectCharacters', { player: data.participant2Name })}</h3>
-                  <p className="picker-hint">{t('tournament.matchResult.multiSelectHint')}</p>
+                  <button className="picker-done-btn" onClick={closeChar2Picker}>
+                    {t('common.done')}
+                  </button>
+                </div>
+                <div className="picker-search">
+                  <i className="fas fa-search picker-search-icon" />
+                  <input
+                    type="text"
+                    className="picker-search-input"
+                    placeholder={t('tournament.create.characterSearch', { defaultValue: 'Search character...' })}
+                    value={charFilter2}
+                    onChange={(e) => setCharFilter2(e.target.value)}
+                  />
                 </div>
                 <div className="character-grid">
-                  {characters.map(char => (
-                    <div
-                      key={char.id}
-                      className={`character-option ${chars2.includes(char.id) ? 'selected' : ''}`}
-                      onClick={() => toggleCharacter(2, char.id)}
-                    >
-                      <img 
-                        src={getCharacterImageUrl(gameId, char.id) ?? ''} 
-                        alt={char.name}
-                        className="character-option-img"
-                      />
-                      <span className="character-option-name">{char.name}</span>
-                      {chars2.includes(char.id) && (
-                        <div className="selected-indicator">
-                          <i className="fas fa-check" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {characters
+                    .filter(char => char.name.toLowerCase().includes(charFilter2.toLowerCase()))
+                    .map(char => (
+                      <div
+                        key={char.id}
+                        className={`character-option ${chars2.includes(char.id) ? 'selected' : ''}`}
+                        onClick={() => toggleCharacter(2, char.id)}
+                      >
+                        <img 
+                          src={getCharacterImageUrl(gameId, char.id) ?? ''} 
+                          alt={char.name}
+                          className="character-option-img"
+                        />
+                        <span className="character-option-name">{char.name}</span>
+                        {chars2.includes(char.id) && (
+                          <div className="selected-indicator">
+                            <i className="fas fa-check" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
                 </div>
-                <button className="btn-primary mt-2" onClick={() => setShowChar2Picker(false)}>
-                  {t('common.done')}
-                </button>
               </div>
             </div>
           )}

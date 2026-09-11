@@ -1316,5 +1316,35 @@
     "playerBRankAfter": "Diamante",
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-09-06T13:41:40.965Z"
+  },
+  {
+    "id": "m_1789082794737_ooiy9fe",
+    "playerAId": "gp_1787409813244_ymqkq1e",
+    "playerBId": "gp_1786391892402_8intsz3",
+    "winnerId": "gp_1787409813244_ymqkq1e",
+    "loserId": "gp_1786391892402_8intsz3",
+    "type": "duel",
+    "gameId": "mk11",
+    "playerAPointsBefore": 1555,
+    "playerBPointsBefore": 1533,
+    "playerAPointsAfter": 1555,
+    "playerBPointsAfter": 1533,
+    "playerADelta": 11,
+    "playerBDelta": -11,
+    "playerARankBefore": "Diamante",
+    "playerBRankBefore": "Diamante",
+    "playerARankAfter": "Diamante",
+    "playerBRankAfter": "Diamante",
+    "player1Score": 3,
+    "player2Score": 2,
+    "player1Characters": [
+      "dvorah",
+      "geras"
+    ],
+    "player2Characters": [
+      "geras"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-10T23:26:34.737Z"
   }
 ]

@@ -62,7 +62,7 @@
   letter-spacing: 0.04em;
   text-shadow: 0 1px 2px rgba(0,0,0,0.2);
   /* width synced with .bracket-round */
-  width: 320px;
+  width: 250px;
   flex-shrink: 0;
   box-sizing: border-box;
 }
