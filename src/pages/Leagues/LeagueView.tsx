@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { getEffectiveCurrentWeek } from '@/utils/leagueWeek';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { League, LeagueMatch, LeagueStanding } from '@/models/league';
 import { GlobalParticipant } from '@/models/types';
@@ -8,6 +10,8 @@ import {
   getLeague,
   getLeagueMatches,
   getLeagueStandings,
+  registerForLeague,
+  startLeague,
 } from '@/services/leagues/leagueService';
 import { getAllParticipantsAsync } from '@/services/participants/participantService';
 
@@ -26,6 +30,7 @@ function LeagueView() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { currentCommunity, getPath, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id;
 
@@ -36,6 +41,7 @@ function LeagueView() {
   const [tab, setTab] = useState<Tab>('standings');
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [registering, setRegistering] = useState(false);
 
   const canAdminLeague = canAdminGame(league?.gameId);
 
@@ -56,12 +62,49 @@ function LeagueView() {
       return;
     }
 
+    // Auto-start draft league if fixture close time (1h before startDate) has passed
+    if (leagueData.status === 'draft' && new Date().getTime() >= new Date(leagueData.startDate).getTime() - 60 * 60 * 1000 && leagueData.participantIds.length >= 2) {
+      try {
+        await startLeague(id);
+        const [reloadedLeague, reloadedMatches, reloadedStandings] = await Promise.all([
+          getLeague(id),
+          getLeagueMatches(id),
+          getLeagueStandings(id),
+        ]);
+        if (reloadedLeague) {
+          setLeague(reloadedLeague);
+          setMatches(reloadedMatches);
+          setStandings(reloadedStandings);
+          setParticipants(new Map(participantsData.map(p => [p.id, p])));
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.error('[LeagueView] Auto-start failed:', err);
+      }
+    }
+
     setLeague(leagueData);
     setMatches(matchesData);
     setStandings(standingsData);
     setParticipants(new Map(participantsData.map(p => [p.id, p])));
     setLoading(false);
   }
+
+  const handleRegister = async () => {
+    if (!id || !user) return;
+    setRegistering(true);
+    try {
+      const updated = await registerForLeague(id);
+      if (updated) {
+        setLeague(updated);
+      }
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setRegistering(false);
+    }
+  };
 
   useEffect(() => {
     loadData();
@@ -107,12 +150,27 @@ function LeagueView() {
           <div className="league-header-content">
             <h1 className="league-title"><i className="fas fa-trophy" /> {league.name}</h1>
             <div className="league-meta">
-              <span>{t('league.view.week', { week: league.currentWeek })}</span>
+              <span>{t('league.view.week', { week: getEffectiveCurrentWeek(league) })}</span>
               <span>•</span>
               <span>{t('league.view.matchesCompleted', { completed: completedMatches, total: totalMatches })}</span>
               <span>•</span>
               <span>{t('league.view.progressPercent', { percent: progressPercent })}</span>
             </div>
+
+            {league.status === 'draft' && user?.participantId && new Date().getTime() < new Date(league.startDate).getTime() - 60 * 60 * 1000 && !league.participantIds.includes(user.participantId) && (
+              <button
+                className="btn-primary"
+                onClick={handleRegister}
+                disabled={registering}
+              >
+                {registering ? t('league.view.registering') : t('league.view.register')}
+              </button>
+            )}
+            {league.status === 'draft' && user?.participantId && new Date().getTime() < new Date(league.startDate).getTime() - 60 * 60 * 1000 && league.participantIds.includes(user.participantId) && (
+              <span className="registered-badge">
+                <i className="fas fa-check" /> {t('league.view.registered')}
+              </span>
+            )}
             <div className="league-progress-bar">
               <div className="league-progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>

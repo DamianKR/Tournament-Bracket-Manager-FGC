@@ -159,7 +159,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
 
           {thisWeekMatches.length > 0 && (
             <div className="my-matches-section card">
-              <h3>{t('league.myMatches.thisWeek', { week: league.currentWeek })}</h3>
+              <h3>{t('league.myMatches.thisWeek', { week: effectiveCurrentWeek })}</h3>
               <div className="my-matches-list">
                 {thisWeekMatches.map(renderMatch)}
               </div>

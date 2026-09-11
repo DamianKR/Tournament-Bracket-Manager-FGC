@@ -7,7 +7,7 @@
  * even if tournament results are edited after the fact.
  */
 
-import { GlobalParticipant, Tournament, ComputedStats, PlacementEntry, LeagueResultEntry } from '@/models/types';
+import { GlobalParticipant, Tournament, ComputedStats, PlacementEntry, LeagueResultEntry, LeagueMatch } from '@/models/types';
 import {
   loadGlobalParticipants,
   loadGlobalParticipantsAsync,
@@ -330,6 +330,17 @@ export async function getParticipantLeagueStats(participantId: string): Promise<
   } catch (err) {
     console.error('[ParticipantService] getParticipantLeagueStats error:', err);
     return { leagues: [], totalMatches: 0, totalWins: 0, totalLosses: 0, winRate: 0 };
+  }
+}
+
+export async function getParticipantLeagueMatches(participantId: string): Promise<LeagueMatch[]> {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/league-matches`);
+    if (!res.ok) throw new Error('Failed to fetch league matches');
+    return await res.json();
+  } catch (err) {
+    console.error('[ParticipantService] getParticipantLeagueMatches error:', err);
+    return [];
   }
 }
 

@@ -3,7 +3,7 @@ import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progression/matchProgression';
 import { getTournamentPlacement } from '@/utils/tournamentPlacements';
-import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament } from '@/services/storage/localStorage';
+import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament, loadGlobalParticipants } from '@/services/storage/localStorage';
 import { findGlobalParticipantByName } from '@/services/storage/localStorage';
 import { getAuthHeader } from '@/services/auth/authService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
@@ -25,7 +25,8 @@ export async function createTournament(
   partialSeedCount?: PartialSeedCount,
   givesPoints: boolean = true,
   communityId: string = DEFAULT_COMMUNITY_ID,
-  manualMode?: 'single' | 'double'
+  manualMode?: 'single' | 'double',
+  registrationDeadline?: string
 ): Promise<Tournament> {
   const tournament: Tournament = {
     id: generateId(),
@@ -46,6 +47,9 @@ export async function createTournament(
 
   if (mode === 'manual' && manualMode) {
     tournament.manualMode = manualMode;
+  }
+  if (registrationDeadline) {
+    tournament.registrationDeadline = registrationDeadline;
   }
 
   // Only add teamSize for team tournaments
@@ -298,6 +302,39 @@ export function updateTournamentParticipants(
 /**
  * Start the tournament and generate bracket
  */
+export async function registerForTournament(
+  tournamentId: string,
+  globalParticipantId: string
+): Promise<Tournament> {
+  const tournament = loadTournament(tournamentId);
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'setup') throw new Error('Registration is closed');
+  if (tournament.registrationDeadline && new Date(tournament.registrationDeadline) <= new Date()) {
+    throw new Error('Registration deadline has passed');
+  }
+  if (tournament.participants.some(p => p.globalParticipantId === globalParticipantId)) {
+    throw new Error('Already registered');
+  }
+
+  const global = loadGlobalParticipants().find(p => p.id === globalParticipantId);
+  if (!global) throw new Error('Participant not found');
+
+  const participant: Participant = {
+    id: generateId(),
+    name: global.name,
+    alias: global.alias?.trim() || undefined,
+    seed: tournament.participants.length + 1,
+    eliminated: false,
+    lossCount: 0,
+    globalParticipantId: global.id,
+  };
+
+  tournament.participants.push(participant);
+  tournament.updatedAt = new Date().toISOString();
+  await saveTournamentAsync(tournament);
+  return tournament;
+}
+
 export async function startTournament(tournamentId: string): Promise<Tournament> {
   const tournament = loadTournament(tournamentId);
   if (!tournament) throw new Error('Tournament not found');

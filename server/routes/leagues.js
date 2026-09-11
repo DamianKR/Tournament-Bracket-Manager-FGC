@@ -23,6 +23,7 @@ import {
 import { calculateMatchElo, getRankName } from '../utils/eloEngine.js';
 import { notifyAdminsOfBanEligibility } from '../services/leagueExpiration.js';
 import { scheduleLeagueNotifications } from '../services/notificationScheduler.js';
+import { startLeague, scheduleLeagueStart } from '../services/leagueStart.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
 import { filterByCommunity, isInUserScope, getTargetCommunityId, canAdminGame, participantIdFor } from '../utils/communityScope.js';
 import {
@@ -275,6 +276,64 @@ router.get('/:id', optionalAuth, async (req, res) => {
   }
 });
 
+// POST /api/leagues/:id/register — self-register for a league
+router.post('/:id/register', requireAuth, async (req, res) => {
+  try {
+    const league = await leagues.findById(req.params.id);
+    if (!league) return res.status(404).json({ error: 'League not found' });
+    if (!isInUserScope(req.user, league.communityId)) {
+      return res.status(403).json({ error: 'League is not in your community scope' });
+    }
+    const HOUR_MS = 60 * 60 * 1000;
+    if (new Date().getTime() >= new Date(league.startDate).getTime() - HOUR_MS) {
+      return res.status(400).json({ error: 'Registration is closed' });
+    }
+
+    const participantId = await participantIdFor(req.user, league.communityId);
+    if (!participantId) {
+      return res.status(400).json({ error: 'You are not a participant of this community' });
+    }
+    if (league.participantIds.includes(participantId)) {
+      return res.status(400).json({ error: 'Already registered' });
+    }
+
+    league.participantIds.push(participantId);
+    league.updatedAt = new Date().toISOString();
+    await leagues.upsert(league);
+    res.json(league);
+  } catch (err) {
+    console.error('[Leagues] POST /:id/register error:', err);
+    res.status(500).json({ error: 'Failed to register for league' });
+  }
+});
+
+// POST /api/leagues/:id/start — manually/auto-start a draft league at close time
+router.post('/:id/start', requireAuth, async (req, res) => {
+  try {
+    const league = await leagues.findById(req.params.id);
+    if (!league) return res.status(404).json({ error: 'League not found' });
+    if (!isInUserScope(req.user, league.communityId)) {
+      return res.status(403).json({ error: 'League is not in your community scope' });
+    }
+    if (league.status !== 'draft') {
+      return res.status(400).json({ error: 'League already started' });
+    }
+    const HOUR_MS = 60 * 60 * 1000;
+    if (new Date().getTime() < new Date(league.startDate).getTime() - HOUR_MS) {
+      return res.status(400).json({ error: 'Registration is still open' });
+    }
+    if (league.participantIds.length < 2) {
+      return res.status(400).json({ error: 'Need at least 2 participants' });
+    }
+
+    const matchesCreated = await startLeague(league);
+    res.json({ league, matchesCreated });
+  } catch (err) {
+    console.error('[Leagues] POST /:id/start error:', err);
+    res.status(500).json({ error: 'Failed to start league' });
+  }
+});
+
 // POST /api/leagues/estimate — preview duration before creating
 router.post('/estimate', async (req, res) => {
   try {
@@ -340,6 +399,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'One or more participants are not registered for this game' });
     }
 
+    const isDraft = startDate && new Date(startDate) > new Date();
     const league = {
       id: generateId('league'),
       name,
@@ -352,69 +412,28 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       periodDays: periodDays || 7,
       startDate: startDate || new Date().toISOString(),
       timeZone: timeZone || 'America/Havana',
-      weekStartDates: {}, // Will be populated below
+      weekStartDates: {},
       maxNoShowsBeforeKick: maxNoShowsBeforeKick || 3,
       gracePeriodDays: gracePeriodDays ?? 30,
       playoffsEnabled: playoffsEnabled ?? true,
       playoffsEloMultiplier: playoffsEloMultiplier || 1.5,
       communityId,
-      status: 'active',
-      currentWeek: 1,
+      status: isDraft ? 'draft' : 'active',
+      currentWeek: isDraft ? 0 : 1,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    
+
     await leagues.upsert(league);
-    
-    // Generate schedule
-    const pairings = generateRoundRobinPairings(participantIds, league.roundsPerOpponent);
-    const weekDistribution = distributeIntoWeeks(pairings, league.matchesPerPlayerPerPeriod, participantIds.length);
-    
-    // Create match records and populate weekStartDates
-    const matchRecords = [];
-    const start = new Date(league.startDate);
-    const weekStartDates = {};
-    
-    for (const { week, rounds } of weekDistribution) {
-      const weekStart = new Date(start.getTime() + (week - 1) * league.periodDays * 24 * 60 * 60 * 1000);
-      weekStartDates[week] = weekStart.toISOString();
-      
-      for (const roundNum of rounds) {
-        const roundData = pairings.find(p => p.round === roundNum);
-        if (!roundData) continue;
-        
-        for (const [p1, p2] of roundData.pairings) {
-          matchRecords.push({
-            id: generateId('lmatch'),
-            leagueId: league.id,
-            gameId: league.gameId,
-            round: roundNum,
-            week,
-            participant1Id: p1,
-            participant2Id: p2,
-            status: 'scheduled',
-            scheduledDate: weekStart.toISOString(),
-            deadline: new Date(
-              weekStart.getTime() + (league.periodDays + league.gracePeriodDays) * 24 * 60 * 60 * 1000
-            ).toISOString(),
-          });
-        }
-      }
-    }
-    
-    // Update league with weekStartDates
-    league.weekStartDates = weekStartDates;
-    await leagues.upsert(league);
-    
-    // Save all matches
-    for (const match of matchRecords) {
-      await leagueMatches.upsert(match);
+
+    let matchesCreated = 0;
+    if (isDraft) {
+      scheduleLeagueStart(league);
+    } else {
+      matchesCreated = await startLeague(league);
     }
 
-    // Schedule future notifications for each league week start
-    scheduleLeagueNotifications(league);
-    
-    res.status(201).json({ league, matchesCreated: matchRecords.length });
+    res.status(201).json({ league, matchesCreated });
   } catch (err) {
     console.error('[Leagues] POST / error:', err);
     res.status(500).json({ error: 'Failed to create league' });

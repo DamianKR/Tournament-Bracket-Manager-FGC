@@ -60,7 +60,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
   }
 });
 
-// POST /api/tournaments — replace full array (used by bulk sync)
+// POST /api/tournaments — upsert a list of tournaments (no longer replaces all)
 // Also detects any tournament that just transitioned to 'completed' and
 // applies ELO placement points automatically.
 router.post('/', requireAuth, async (req, res) => {
@@ -105,7 +105,10 @@ router.post('/', requireAuth, async (req, res) => {
       updatedBody.push(t);
     }
 
-    await tournaments.replaceAll(updatedBody);
+    // Upsert each tournament individually; do NOT replace all to avoid deleting other communities' data
+    for (const t of updatedBody) {
+      await tournaments.upsert(t);
+    }
 
     res.json({
       ok: true,

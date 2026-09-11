@@ -5,6 +5,7 @@ import { useCommunity } from '@/contexts/CommunityContext';
 import { League } from '@/models/league';
 import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
+import { getEffectiveCurrentWeek } from '@/utils/leagueWeek';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import './LeaguesPage.css';
@@ -99,7 +100,7 @@ function LeaguesPage() {
                     </div>
                     <div className="info-row">
                       <span>{t('leagues.week')}</span>
-                      <span>{league.currentWeek}</span>
+                      <span>{getEffectiveCurrentWeek(league)}</span>
                     </div>
                     <div className="info-row">
                       <span>{t('leagues.format')}</span>

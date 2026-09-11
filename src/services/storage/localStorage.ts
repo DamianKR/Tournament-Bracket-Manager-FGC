@@ -194,7 +194,20 @@ export function loadTournament(id: string): Tournament | null {
 
 export function deleteTournament(id: string): void {
   const filtered = lsReadTournaments().filter((t) => t.id !== id);
-  saveTournaments(filtered);
+  lsWriteTournaments(filtered);
+  isServerAvailable().then((available) => {
+    if (available) {
+      fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers: getAuthHeader(),
+      }).catch((err) => { console.warn('[Storage] Local server tournament delete failed:', err); resetServerCache(); });
+    }
+  });
+  if (hasSupabase()) {
+    _supabaseSyncTournaments(filtered).catch((err) =>
+      console.warn('[Storage] Supabase tournament delete sync failed:', err)
+    );
+  }
 }
 
 export function clearAllTournaments(): void {
@@ -334,7 +347,18 @@ export async function saveGlobalParticipant(p: GlobalParticipant): Promise<void>
 
 export async function deleteGlobalParticipant(id: string): Promise<void> {
   const filtered = lsReadParticipants().filter((p) => p.id !== id);
-  await saveGlobalParticipants(filtered);
+  lsWriteParticipants(filtered);
+  if (await isServerAvailable()) {
+    fetch(`${SERVER_URL}/api/participants/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: getAuthHeader(),
+    }).catch((err) => { console.warn('[Storage] Local server participant delete failed:', err); resetServerCache(); });
+  }
+  if (hasSupabase()) {
+    _supabaseSyncParticipants(filtered).catch((err) =>
+      console.warn('[Storage] Supabase participant delete sync failed:', err)
+    );
+  }
 }
 
 // Adds a tournamentId to the participant's FK list (bidirectional link)
@@ -344,7 +368,8 @@ export async function linkParticipantToTournament(participantId: string, tournam
   if (p && !p.tournamentIds.includes(tournamentId)) {
     p.tournamentIds.push(tournamentId);
     p.updatedAt = new Date().toISOString();
-    await saveGlobalParticipants(all);
+    lsWriteParticipants(all);
+    await saveGlobalParticipant(p);
   }
 }
 

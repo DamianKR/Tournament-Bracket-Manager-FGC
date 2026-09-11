@@ -28,6 +28,7 @@ import communitiesRouter from './server/routes/communities.js';
 import { expireAllOldDuels } from './server/services/duelExpiration.js';
 import { expireAllOldLeagueMatches } from './server/services/leagueExpiration.js';
 import { reschedulableLeagueNotifications } from './server/services/notificationScheduler.js';
+import { rescheduleAllLeagueStarts } from './server/services/leagueStart.js';
 import { ensureDefaultCommunityAndMigrate } from './server/services/communityMigration.js';
 import { migrateParticipantGameProfiles } from './server/services/participantGameMigration.js';
 import { migrateGameIds } from './server/services/gameIdMigration.js';
@@ -131,6 +132,11 @@ app.listen(PORT, () => {
   // Reschedule any pending league week notifications on startup (setTimeout is in-memory only)
   reschedulableLeagueNotifications().catch(err =>
     console.error('[Notifications] Failed to reschedule league week notifications:', err)
+  );
+
+  // Reschedule league fixture generation (1 hour before startDate) on startup
+  rescheduleAllLeagueStarts().catch(err =>
+    console.error('[LeagueStart] Failed to reschedule league fixture generation:', err)
   );
 
   setInterval(() => {

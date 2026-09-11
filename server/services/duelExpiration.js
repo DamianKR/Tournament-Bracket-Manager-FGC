@@ -100,7 +100,8 @@ export async function expireDuel(id) {
  * @returns {Promise<number>} number of expired duels
  */
 export async function expireAllOldDuels() {
-  const allSettings = await duelSettings.getAll();
+  const rawSettings = await duelSettings.getAll();
+  const allSettings = Array.isArray(rawSettings) ? rawSettings : (rawSettings ? [rawSettings] : []);
   const settingsByCommunity = new Map(allSettings.map(s => [s.communityId, s]));
   const getSettings = (communityId) => settingsByCommunity.get(communityId) || duelSettingsShape(communityId);
 

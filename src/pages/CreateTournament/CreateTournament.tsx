@@ -46,6 +46,7 @@ function CreateTournament() {
   const [seedingMode, setSeedingMode] = useState<SeedingMode>('none');
   const [partialSeedCount, setPartialSeedCount] = useState<PartialSeedCount>(8);
   const [givesPoints, setGivesPoints] = useState(true);
+  const [registrationDeadline, setRegistrationDeadline] = useState<string>('');
   const [gameId, setGameId] = useState<string>(creatableGames[0]?.id ?? GAMES[0]?.id ?? 'ssbu');
   const [viewMode, setViewMode] = useState<ViewMode>('participants');
   const [participants, setParticipants] = useState<any[]>([]);
@@ -176,7 +177,8 @@ function CreateTournament() {
         type === 'singles' && seedingMode === 'partial' ? partialSeedCount : undefined,
         givesPoints,
         currentCommunity?.id ?? DEFAULT_COMMUNITY_ID,
-        mode === 'manual' ? manualMode : undefined
+        mode === 'manual' ? manualMode : undefined,
+        registrationDeadline || undefined
       );
       setTournamentId(tournament.id);
       setIsCreated(true);
@@ -460,6 +462,19 @@ function CreateTournament() {
                   {givesPoints
                     ? t('tournament.create.pointsHintYes')
                     : t('tournament.create.pointsHintNo')}
+                </p>
+              </div>
+
+              <div className="form-group">
+                <label>{t('tournament.create.registrationDeadline', { defaultValue: 'Registration Deadline' })}</label>
+                <input
+                  type="datetime-local"
+                  value={registrationDeadline}
+                  onChange={(e) => setRegistrationDeadline(e.target.value)}
+                  className="w-full"
+                />
+                <p className="text-secondary text-sm mt-1">
+                  {t('tournament.create.registrationDeadlineHint', { defaultValue: 'Users can self-register until this time' })}
                 </p>
               </div>
 

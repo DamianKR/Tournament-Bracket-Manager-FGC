@@ -4,9 +4,9 @@
   "description": "A frontend-only double elimination tournament bracket manager",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n \"API,VITE\" -c \"cyan,magenta\" \"node server.js\" \"vite\"",
+    "dev": "concurrently -n \"API,VITE\" -c \"cyan,magenta\" \"node --env-file=.env.local server.js\" \"vite\"",
     "dev:vite": "vite",
-    "server": "node server.js",
+    "server": "node --env-file=.env.local server.js",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",

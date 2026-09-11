@@ -562,17 +562,11 @@ router.post('/', requireAuth, async (req, res) => {
         };
       });
 
-      // Un admin scopenado (en la comunidad destino) no ve ni gestiona a los
-      // demás: conservar los participantes que no vienen en el payload.
-      const syncCommunityId = getTargetCommunityId(req.user, req.body[0]?.communityId);
-      if (isScopedAdmin(req.user, syncCommunityId)) {
-        // Un admin scopenado no ve ni gestiona a los demás: conservar los
-        // participantes que no vienen en el payload para no borrarlos.
-        const incomingIds = new Set(merged.map(m => m.id));
-        const untouched = existing.filter(p => !incomingIds.has(p.id));
-        await participants.replaceAll([...untouched, ...merged]);
-      } else {
-        await participants.replaceAll(merged);
+      // Upsert each participant individually. Never replace the whole collection,
+      // to avoid deleting participants from other communities if a scoped client
+      // only sends one community's data.
+      for (const p of merged) {
+        await participants.upsert(p);
       }
       return res.json({ ok: true, count: merged.length });
     }
@@ -872,8 +866,8 @@ router.get('/:id/league-stats', async (req, res) => {
       });
     }
 
-    // Only show results for completed leagues in the profile
-    const completedResults = results.filter((r) => r.status === 'completed');
+    // Show results for active and completed leagues (matches themselves are already filtered to completed/no_show)
+    const completedResults = results.filter((r) => r.status === 'active' || r.status === 'completed');
 
     const totalLeagueMatches = completedResults.reduce((sum, r) => sum + r.matchesPlayed, 0);
     const totalLeagueWins = completedResults.reduce((sum, r) => sum + r.wins, 0);
@@ -892,6 +886,32 @@ router.get('/:id/league-stats', async (req, res) => {
   } catch (err) {
     console.error('[Participants] GET /:id/league-stats error:', err);
     res.status(500).json({ error: 'Failed to read league stats' });
+  }
+});
+
+// GET /api/participants/:id/league-matches — completed/no_show matches for this participant
+router.get('/:id/league-matches', async (req, res) => {
+  try {
+    const p = await participants.findById(req.params.id);
+    if (!p) return res.status(404).json({ error: 'Participant not found' });
+
+    const allLeagues = await leagues.getAll();
+    const allLeagueMatches = await leagueMatches.getAll();
+    const participantLeagueIds = new Set(
+      allLeagues.filter((l) => l.participantIds?.includes(req.params.id)).map((l) => l.id)
+    );
+
+    const myMatches = allLeagueMatches.filter(
+      (m) =>
+        participantLeagueIds.has(m.leagueId) &&
+        (m.participant1Id === req.params.id || m.participant2Id === req.params.id) &&
+        (m.status === 'completed' || m.status === 'no_show')
+    );
+
+    res.json(myMatches);
+  } catch (err) {
+    console.error('[Participants] GET /:id/league-matches error:', err);
+    res.status(500).json({ error: 'Failed to read league matches' });
   }
 });
 

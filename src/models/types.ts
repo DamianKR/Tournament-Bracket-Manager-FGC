@@ -107,6 +107,8 @@ export interface Tournament {
     placement: number;
     characters?: string[];
   }[];
+  // Self-registration
+  registrationDeadline?: string; // ISO datetime; after this users can't self-register
 }
 
 export interface TournamentHistory {

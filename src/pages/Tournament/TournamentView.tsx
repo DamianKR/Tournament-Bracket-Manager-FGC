@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { Tournament } from '@/models/types';
-import { getTournament, setMatchWinner, undoMatchResult } from '@/services/tournament/tournamentService';
+import { getTournament, setMatchWinner, undoMatchResult, registerForTournament } from '@/services/tournament/tournamentService';
 
 import Sidebar from '@/components/Sidebar/Sidebar';
 import BracketView from '@/components/Bracket/BracketView';
@@ -17,10 +18,12 @@ function TournamentView() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { getPath, canAdminGame } = useCommunity();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('bracket');
   const [error, setError] = useState('');
+  const [registering, setRegistering] = useState(false);
 
   useEffect(() => {
     loadTournament();
@@ -71,6 +74,30 @@ function TournamentView() {
 
   const handleBackToDashboard = () => {
     navigate(getPath('events'));
+  };
+
+  const getCurrentParticipantId = () => {
+    if (!user) return null;
+    return user.participantId;
+  };
+
+  const handleRegister = async () => {
+    if (!id || !user) return;
+    const participantId = getCurrentParticipantId();
+    if (!participantId) {
+      setError(t('tournament.view.noParticipant'));
+      return;
+    }
+    setRegistering(true);
+    setError('');
+    try {
+      const updated = await registerForTournament(id, participantId);
+      setTournament(updated);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setRegistering(false);
+    }
   };
 
   if (!tournament) {
@@ -141,6 +168,37 @@ function TournamentView() {
             {t('tournament.view.backToDashboard')}
           </button>
         </div>
+
+        {tournament.status === 'setup' && tournament.registrationDeadline && (
+          <div className="tournament-registration">
+            <div className="registration-info">
+              <i className="fas fa-clock" />
+              <span>
+                {t('tournament.view.registrationCloses', {
+                  date: new Date(tournament.registrationDeadline).toLocaleString()
+                })}
+              </span>
+            </div>
+            {user?.participantId && !tournament.participants.some(p => p.globalParticipantId === user.participantId) && (
+              <button
+                className="btn-primary"
+                onClick={handleRegister}
+                disabled={registering || new Date(tournament.registrationDeadline) <= new Date()}
+              >
+                {registering
+                  ? t('tournament.view.registering')
+                  : new Date(tournament.registrationDeadline) <= new Date()
+                    ? t('tournament.view.registrationClosed')
+                    : t('tournament.view.register')}
+              </button>
+            )}
+            {user?.participantId && tournament.participants.some(p => p.globalParticipantId === user.participantId) && (
+              <span className="registered-badge">
+                <i className="fas fa-check" /> {t('tournament.view.registered')}
+              </span>
+            )}
+          </div>
+        )}
 
         {error && (
           <div className="error-message">

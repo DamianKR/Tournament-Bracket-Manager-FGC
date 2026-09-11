@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { GlobalParticipant, ComputedStats, LeagueResultEntry, MatchRecord } from '@/models/types';
+import { GlobalParticipant, ComputedStats, LeagueResultEntry, MatchRecord, LeagueMatch } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
 import {
   getParticipant,
@@ -9,6 +9,7 @@ import {
   updateParticipant,
   removeParticipant,
   getParticipantLeagueStats,
+  getParticipantLeagueMatches,
   getAllParticipantsAsync,
   inviteToCommunity,
   getParticipantAccountSummary,
@@ -293,9 +294,10 @@ function ParticipantProfile() {
     if (!id || !communityId) return;
     setLoadingMatches(true);
     try {
-      const [tournamentMatches, rankedMatches, allParticipants] = await Promise.all([
+      const [tournamentMatches, rankedMatches, leagueMatches, allParticipants] = await Promise.all([
         getAllTournamentMatchesAsync(communityId),
         getAllMatches(communityId),
+        getParticipantLeagueMatches(id),
         getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : []),
       ]);
 
@@ -344,6 +346,27 @@ function ParticipantProfile() {
             player2EloChange: m.playerBDelta,
             date: m.createdAt,
           })),
+        ...leagueMatches
+          .filter((m: LeagueMatch) =>
+            (m.participant1Id === id || m.participant2Id === id) &&
+            (m.status === 'completed' || m.status === 'no_show')
+          )
+          .map((m: LeagueMatch) => {
+            const p1 = participantMap.get(m.participant1Id);
+            const p2 = participantMap.get(m.participant2Id);
+            return {
+              id: m.id,
+              type: 'league' as const,
+              gameId: m.gameId,
+              player1Id: m.participant1Id,
+              player2Id: m.participant2Id,
+              winnerId: m.winnerId,
+              player1Name: p1 ? `${p1.name}${p1.alias ? ` (${p1.alias})` : ''}` : t('tournament.bracket.unknown'),
+              player2Name: p2 ? `${p2.name}${p2.alias ? ` (${p2.alias})` : ''}` : t('tournament.bracket.unknown'),
+              date: m.completedDate ?? m.scheduledDate ?? '',
+              context: `League ${m.week ? `Week ${m.week}` : ''}`,
+            };
+          }),
       ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
       setAllMatches(unified);
@@ -893,7 +916,7 @@ function ParticipantProfile() {
                 className={`results-subtab ${resultsSubTab === 'leagues' ? 'active' : ''}`}
                 onClick={() => setResultsSubTab('leagues')}
               >
-                <i className="fas fa-trophy" /> {t('participantProfile.results.leaguesTab', { count: leagueStats?.leagues.length ?? 0 })}
+                <i className="fas fa-trophy" /> {t('participantProfile.results.leaguesTab', { count: completedLeagues.length })}
               </button>
             </div>
 
@@ -927,11 +950,11 @@ function ParticipantProfile() {
             {resultsSubTab === 'leagues' && (
               <>
                 <h3 className="mb-3">{t('participantProfile.results.leagueTitle')}</h3>
-                {(leagueStats?.leagues.length ?? 0) === 0 ? (
+                {completedLeagues.length === 0 ? (
                   <p className="text-secondary">{t('participantProfile.results.noLeagueResults')}</p>
                 ) : (
                   <div className="profile-results-list">
-                    {leagueStats!.leagues.map((pl: LeagueResultEntry) => (
+                    {completedLeagues.map((pl: LeagueResultEntry) => (
                       <div key={pl.leagueId} className="profile-result-row"
                         onClick={() => navigate(getPath(`events/leagues/${pl.leagueId}`))}>
                         <span className={`prr-medal prr-rank rank-${pl.rank}`}>

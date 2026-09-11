@@ -91,6 +91,37 @@ export async function createLeague(config: {
   }
 }
 
+export async function registerForLeague(leagueId: string): Promise<League | null> {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || 'Failed to register for league');
+    }
+    return await res.json();
+  } catch (err) {
+    console.error('[LeagueService] registerForLeague error:', err);
+    throw err;
+  }
+}
+
+export async function startLeague(leagueId: string): Promise<{ league: League; matchesCreated: number } | null> {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    });
+    if (!res.ok) throw new Error('Failed to start league');
+    return await res.json();
+  } catch (err) {
+    console.error('[LeagueService] startLeague error:', err);
+    throw err;
+  }
+}
+
 export async function getLeagueMatches(leagueId: string): Promise<LeagueMatch[]> {
   try {
     const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches`);
