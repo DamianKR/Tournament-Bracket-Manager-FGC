@@ -11,12 +11,12 @@
  * @param {number} rounds - How many times each pair plays (1, 2, or 3)
  * @returns {Array<{round: number, pairings: Array<[string, string]>}>}
  */
-export function generateRoundRobinPairings(participantIds, rounds = 1) {
+export function generateRoundRobinPairings(participantIds, rounds = 1, bannedIds = []) {
   const n = participantIds.length;
   if (n < 2) return [];
   
-  // For odd number of participants, add a "BYE"
-  const players = [...participantIds];
+  // Keep original order but mark banned as BYE
+  const players = participantIds.map(id => bannedIds.includes(id) ? null : id);
   const hasBye = n % 2 === 1;
   if (hasBye) players.push(null);
   
@@ -45,7 +45,7 @@ export function generateRoundRobinPairings(participantIds, rounds = 1) {
           away = players[(idx2 - round + totalPlayers - 1) % (totalPlayers - 1) + 1];
         }
         
-        // Skip BYE matches
+        // Skip BYE matches (null = banned or bye)
         if (home !== null && away !== null) {
           pairings.push([home, away]);
         }

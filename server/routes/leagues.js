@@ -637,7 +637,7 @@ router.post('/:id/matches/:matchId/cancel', requireAuth, requireAdmin, async (re
   }
 });
 
-// POST /api/leagues/:id/ban-participants — ban players and regenerate schedule
+// POST /api/leagues/:id/ban-participants — ban players and regenerate schedule for remaining weeks
 router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res) => {
   try {
     const { participantIds } = req.body; // Array of participant IDs to ban
@@ -653,10 +653,10 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
     }
 
     // Add to banned list
-    const newBanned = [...new Set([...league.bannedParticipantIds, ...participantIds])];
+    const newBanned = [...new Set([...(league.bannedParticipantIds || []), ...participantIds])];
     league.bannedParticipantIds = newBanned;
 
-    // Get active participants (not banned)
+    // Get active participants (not banned) — keep original order to preserve pairings
     const activeParticipants = league.participantIds.filter(pid => !newBanned.includes(pid));
 
     if (activeParticipants.length < 2) {
@@ -671,24 +671,35 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
       m.status === 'completed' || m.status === 'no_show'
     );
     const futureMatches = leagueMatchList.filter(m => 
-      m.status === 'scheduled' || m.status === 'pending_review'
+      m.status === 'scheduled' || m.status === 'pending_review' || m.status === 'reported'
     );
 
-    // Delete all future matches (we'll regenerate)
+    // Track which pairings have already been played
+    const playedPairings = new Set();
+    for (const m of completedMatches) {
+      const pairKey = [m.participant1Id, m.participant2Id].sort().join('-');
+      playedPairings.add(pairKey);
+    }
+
+    // Delete all future matches (we'll regenerate only remaining ones)
     for (const match of futureMatches) {
       await leagueMatches.remove(match.id);
     }
 
-    // Regenerate schedule with active participants only
-    const pairings = generateRoundRobinPairings(activeParticipants, league.roundsPerOpponent);
+    // Regenerate schedule with original order, skipping banned participants
+    const pairings = generateRoundRobinPairings(league.participantIds, league.roundsPerOpponent, newBanned);
     const weekDistribution = distributeIntoWeeks(pairings, league.matchesPerPlayerPerPeriod, activeParticipants.length);
 
-    // Recalculate week start dates
+    // Recalculate week start dates starting from current week
     const start = new Date(league.startDate);
+    const currentWeek = league.currentWeek || 1;
     const weekStartDates = {};
     const newMatches = [];
 
     for (const { week, rounds } of weekDistribution) {
+      // Skip weeks that have already passed (all their matches are completed)
+      if (week < currentWeek) continue;
+
       const weekStart = new Date(start.getTime() + (week - 1) * league.periodDays * 24 * 60 * 60 * 1000);
       weekStartDates[week] = weekStart.toISOString();
 
@@ -697,6 +708,9 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
         if (!roundData) continue;
 
         for (const [p1, p2] of roundData.pairings) {
+          const pairKey = [p1, p2].sort().join('-');
+          if (playedPairings.has(pairKey)) continue; // Skip already played matches
+
           const deadline = new Date(weekStart.getTime() + (league.periodDays + (league.gracePeriodDays || 30)) * 24 * 60 * 60 * 1000);
           newMatches.push({
             id: generateId('lmatch'),
@@ -720,7 +734,7 @@ router.post('/:id/ban-participants', requireAuth, requireAdmin, async (req, res)
     }
 
     // Update league
-    league.weekStartDates = weekStartDates;
+    league.weekStartDates = { ...league.weekStartDates, ...weekStartDates };
     league.updatedAt = new Date().toISOString();
     await leagues.upsert(league);
 
@@ -760,7 +774,7 @@ router.get('/:id/eligible-for-ban', requireAuth, async (req, res) => {
 
     const eligible = [];
     for (const [pid, count] of Object.entries(noShowCounts)) {
-      if (count >= league.maxNoShowsBeforeKick && !league.bannedParticipantIds.includes(pid)) {
+      if (count >= league.maxNoShowsBeforeKick && !(league.bannedParticipantIds || []).includes(pid)) {
         const p = await participants.findById(pid);
         eligible.push({
           participantId: pid,
@@ -977,7 +991,7 @@ router.post('/:id/regenerate-schedule', requireAuth, requireAdmin, async (req, r
     }
 
     // Get active participants (not banned)
-    const activeParticipants = league.participantIds.filter(pid => !league.bannedParticipantIds.includes(pid));
+    const activeParticipants = league.participantIds.filter(pid => !(league.bannedParticipantIds || []).includes(pid));
 
     if (activeParticipants.length < 2) {
       return res.status(400).json({ error: 'League needs at least 2 active participants' });
@@ -994,13 +1008,20 @@ router.post('/:id/regenerate-schedule', requireAuth, requireAdmin, async (req, r
       m.status === 'scheduled' || m.status === 'pending_review' || m.status === 'reported'
     );
 
+    // Track which pairings have already been played (completed matches)
+    const playedPairings = new Set();
+    for (const m of completedMatches) {
+      const pairKey = [m.participant1Id, m.participant2Id].sort().join('-');
+      playedPairings.add(pairKey);
+    }
+
     // Delete all future matches (we'll regenerate)
     for (const match of futureMatches) {
       await leagueMatches.remove(match.id);
     }
 
-    // Regenerate schedule with active participants
-    const pairings = generateRoundRobinPairings(activeParticipants, league.roundsPerOpponent);
+    // Regenerate schedule with original order, skipping banned participants
+    const pairings = generateRoundRobinPairings(league.participantIds, league.roundsPerOpponent, league.bannedParticipantIds || []);
     const weekDistribution = distributeIntoWeeks(pairings, league.matchesPerPlayerPerPeriod, activeParticipants.length);
 
     // Recalculate week start dates
@@ -1017,6 +1038,9 @@ router.post('/:id/regenerate-schedule', requireAuth, requireAdmin, async (req, r
         if (!roundData) continue;
 
         for (const [p1, p2] of roundData.pairings) {
+          const pairKey = [p1, p2].sort().join('-');
+          if (playedPairings.has(pairKey)) continue; // Skip already played matches
+
           const deadline = new Date(weekStart.getTime() + (league.periodDays + (league.gracePeriodDays || 30)) * 24 * 60 * 60 * 1000);
           newMatches.push({
             id: generateId('lmatch'),

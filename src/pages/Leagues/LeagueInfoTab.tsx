@@ -52,7 +52,7 @@ function LeagueInfoTab({ league }: LeagueInfoTabProps) {
             <li><strong>{t('league.info.gameLabel')}</strong> <span style={{ color: getGame(league.gameId)?.color, fontWeight: 700 }}>{gameName}</span></li>
             <li><strong>{t('league.info.bestOfLabel')}</strong> {league.gamesPerMatch} {t('common.game')}s</li>
             <li><strong>{t('league.info.roundsPerOpponentLabel')}</strong> {league.roundsPerOpponent}</li>
-            <li><strong>{t('league.info.playersLabel')}</strong> {league.participantIds.length}</li>
+            <li><strong>{t('league.info.playersLabel')}</strong> {league.participantIds.filter(pid => !(league.bannedParticipantIds || []).includes(pid)).length}</li>
           </ul>
           <p className="info-text">
             {t('league.info.winByPrefix')} <strong>{winByGames}</strong> {t('league.info.winBySuffix')}

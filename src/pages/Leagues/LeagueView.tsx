@@ -229,7 +229,7 @@ function LeagueView() {
           <LeagueStandingsTab
             leagueId={league.id}
             gameId={league.gameId}
-            standings={standings}
+            standings={standings.filter((s) => !(league.bannedParticipantIds || []).includes(s.participantId))}
             participants={participants}
             playoffsEnabled={league.playoffsEnabled}
             onRefresh={loadData}
