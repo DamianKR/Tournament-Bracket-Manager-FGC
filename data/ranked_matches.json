@@ -2180,5 +2180,205 @@
     "playerBPointsAfter": 1493,
     "playerAPointsBefore": 1556,
     "playerBPointsBefore": 1493
+  },
+  {
+    "id": "m_1789156394872_ho4qpr9",
+    "playerAId": "gp_1786387087046_wnwtadb",
+    "playerBId": "gp_1786387234567_aoe1z95",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "loserId": "gp_1786387234567_aoe1z95",
+    "type": "duel",
+    "gameId": "ssbu",
+    "playerAPointsBefore": 1625,
+    "playerBPointsBefore": 1629,
+    "playerAPointsAfter": 1625,
+    "playerBPointsAfter": 1629,
+    "playerADelta": 10,
+    "playerBDelta": -10,
+    "playerARankBefore": "Vanquisher",
+    "playerBRankBefore": "Vanquisher",
+    "playerARankAfter": "Vanquisher",
+    "playerBRankAfter": "Vanquisher",
+    "player1Score": 3,
+    "player2Score": 0,
+    "player1Characters": [
+      "samus",
+      "roy"
+    ],
+    "player2Characters": [
+      "captain_falcon"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T19:53:14.872Z"
+  },
+  {
+    "id": "m_1789156460261_h0zdl4t",
+    "playerAId": "gp_1786387087046_wnwtadb",
+    "playerBId": "gp_1786408686972_s4nl3vz",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "loserId": "gp_1786408686972_s4nl3vz",
+    "type": "duel",
+    "gameId": "ssbu",
+    "playerAPointsBefore": 1632,
+    "playerBPointsBefore": 1559,
+    "playerAPointsAfter": 1632,
+    "playerBPointsAfter": 1559,
+    "playerADelta": 7,
+    "playerBDelta": -7,
+    "playerARankBefore": "Vanquisher",
+    "playerBRankBefore": "Diamante",
+    "playerARankAfter": "Vanquisher",
+    "playerBRankAfter": "Diamante",
+    "player1Score": 3,
+    "player2Score": 1,
+    "player1Characters": [
+      "dark_samus",
+      "ganondorf"
+    ],
+    "player2Characters": [
+      "sonic"
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-11T19:54:20.261Z"
+  },
+  {
+    "id": "m_1789245083259_61kxnmh",
+    "playerAId": "gp_1786387234567_aoe1z95",
+    "playerBId": "gp_1786387087046_wnwtadb",
+    "winnerId": "gp_1786387234567_aoe1z95",
+    "loserId": "gp_1786387087046_wnwtadb",
+    "type": "duel",
+    "gameId": "ssbu",
+    "playerAPointsBefore": 1675,
+    "playerBPointsBefore": 1676,
+    "playerAPointsAfter": 1675,
+    "playerBPointsAfter": 1676,
+    "playerADelta": 10,
+    "playerBDelta": -10,
+    "playerARankBefore": "Vanquisher",
+    "playerBRankBefore": "Vanquisher",
+    "playerARankAfter": "Vanquisher",
+    "playerBRankAfter": "Vanquisher",
+    "player1Score": 2,
+    "player2Score": 0,
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-12T20:31:23.259Z"
+  },
+  {
+    "id": "m_1789245965950_ofc6nbr",
+    "playerAId": "gp_1786420928315_91m6kmr",
+    "playerBId": "gp_1786387087046_wnwtadb",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "loserId": "gp_1786420928315_91m6kmr",
+    "type": "duel",
+    "gameId": "ssbu",
+    "playerAPointsBefore": 1488,
+    "playerBPointsBefore": 1681,
+    "playerAPointsAfter": 1488,
+    "playerBPointsAfter": 1681,
+    "playerADelta": -5,
+    "playerBDelta": 5,
+    "playerARankBefore": "Platino",
+    "playerBRankBefore": "Vanquisher",
+    "playerARankAfter": "Platino",
+    "playerBRankAfter": "Vanquisher",
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "captain_falcon",
+        "player2Character": "samus"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "captain_falcon",
+        "player2Character": "roy"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-12T20:46:05.950Z"
+  },
+  {
+    "id": "m_1789247960640_63v6uzi",
+    "playerAId": "gp_1786387243524_6er0c9u",
+    "playerBId": "gp_1786387087046_wnwtadb",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "loserId": "gp_1786387243524_6er0c9u",
+    "type": "duel",
+    "gameId": "ssbu",
+    "playerAPointsBefore": 1624,
+    "playerBPointsBefore": 1694,
+    "playerAPointsAfter": 1624,
+    "playerBPointsAfter": 1694,
+    "playerADelta": -8,
+    "playerBDelta": 8,
+    "playerARankBefore": "Vanquisher",
+    "playerBRankBefore": "Vanquisher",
+    "playerARankAfter": "Vanquisher",
+    "playerBRankAfter": "Vanquisher",
+    "player1Score": 1,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387243524_6er0c9u",
+        "player1Character": "mario",
+        "player2Character": "dark_samus"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "mario",
+        "player2Character": "samus"
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "mario",
+        "player2Character": "samus"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-12T21:19:20.640Z"
+  },
+  {
+    "id": "m_1789250382370_t5hv54c",
+    "playerAId": "gp_1786399934148_stq7jpb",
+    "playerBId": "gp_1786387087046_wnwtadb",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "loserId": "gp_1786399934148_stq7jpb",
+    "type": "duel",
+    "gameId": "ssbu",
+    "playerAPointsBefore": 1467,
+    "playerBPointsBefore": 1702,
+    "playerAPointsAfter": 1467,
+    "playerBPointsAfter": 1702,
+    "playerADelta": -4,
+    "playerBDelta": 4,
+    "playerARankBefore": "Platino",
+    "playerBRankBefore": "Master",
+    "playerARankAfter": "Platino",
+    "playerBRankAfter": "Master",
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "bayonetta",
+        "player2Character": "samus"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "bayonetta",
+        "player2Character": "samus"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-12T21:59:42.370Z"
   }
 ]

@@ -5,6 +5,7 @@
  */
 
 import { League, LeagueMatch, LeagueStanding } from '@/models/league';
+import type { MatchGame } from '@/models/rankedMatch';
 import { SERVER_URL } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
 import { isDateInTimeZonePassed } from '@/utils/timeZone';
@@ -165,6 +166,7 @@ export async function reportMatchResult(
     isNoShow: boolean;
     noShowParticipantId?: string;
     evidence?: string;
+    games?: MatchGame[];
   }
 ): Promise<{ match: LeagueMatch; eloChanges: Record<string, number> | null } | null> {
   try {
@@ -192,6 +194,7 @@ export async function resolveLeagueMatch(
     score: string;
     isNoShow: boolean;
     noShowParticipantId?: string;
+    games?: MatchGame[];
   }
 ): Promise<{ match: LeagueMatch; eloChanges: Record<string, number> } | null> {
   try {

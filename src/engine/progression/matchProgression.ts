@@ -1,4 +1,5 @@
 import { Match, Participant, Bracket, Tournament } from '@/models/types';
+import type { MatchGame } from '@/models/rankedMatch';
 
 /**
  * Record match result and advance participants
@@ -10,7 +11,8 @@ export function recordMatchResult(
   participant1Score?: number,
   participant2Score?: number,
   participant1Characters?: string[],
-  participant2Characters?: string[]
+  participant2Characters?: string[],
+  games?: MatchGame[]
 ): Tournament {
   if (!tournament.bracket) {
     throw new Error('Tournament bracket not initialized');
@@ -48,6 +50,7 @@ export function recordMatchResult(
   if (participant2Score !== undefined) match.participant2Score = participant2Score;
   if (participant1Characters && participant1Characters.length > 0) match.participant1Characters = participant1Characters;
   if (participant2Characters && participant2Characters.length > 0) match.participant2Characters = participant2Characters;
+  if (games && games.length > 0) match.games = games;
 
   // Update participant loss counts
   const loser = tournament.participants.find((p: Participant) => p.id === loserId);

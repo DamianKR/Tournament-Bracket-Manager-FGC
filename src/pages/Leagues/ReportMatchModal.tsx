@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
+import type { MatchGame } from '@/models/rankedMatch';
+import GameLogEditor from '@/components/GameLogEditor/GameLogEditor';
+import { getGame } from '@/data/games';
 
 import { useCommunity } from '@/contexts/CommunityContext';
 import { reportMatchResult, resolveLeagueMatch } from '@/services/leagues/leagueService';
@@ -21,9 +24,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
   const { t } = useTranslation();
   const { canAdminGame } = useCommunity();
   const canAdminLeague = canAdminGame(league.gameId);
-  const [winnerId, setWinnerId] = useState(match.participant1Id);
-  const [score1, setScore1] = useState(2);
-  const [score2, setScore2] = useState(0);
+  const [games, setGames] = useState<MatchGame[]>([]);
   const [isNoShow, setIsNoShow] = useState(false);
   const [noShowParticipantId, setNoShowParticipantId] = useState(match.participant1Id);
   const [evidence, setEvidence] = useState<string | null>(null);
@@ -36,6 +37,9 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
   const p1Name = p1 ? (p1.alias?.trim() || p1.name) : t('tournament.bracket.unknown');
   const p2Name = p2 ? (p2.alias?.trim() || p2.name) : t('tournament.bracket.unknown');
 
+  const score1 = games.filter(g => g.winnerId === match.participant1Id).length;
+  const score2 = games.filter(g => g.winnerId === match.participant2Id).length;
+  const winnerId = score1 > score2 ? match.participant1Id : score2 > score1 ? match.participant2Id : '';
   const winScore = Math.ceil(league.gamesPerMatch / 2);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -57,16 +61,16 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     }
 
     if (!isNoShow) {
-      if (score1 < winScore && score2 < winScore) {
-        setError(t('league.reportMatch.errors.winThreshold', { count: winScore, total: league.gamesPerMatch }));
+      if (games.length === 0) {
+        setError(t('league.reportMatch.errors.noGames', { defaultValue: 'Debes registrar al menos un game.' }));
         return;
       }
-      // Score consistency: the declared winner must be the one with the higher score
-      const scoreWinnerId = score1 > score2 ? match.participant1Id : match.participant2Id;
-      if (winnerId !== scoreWinnerId) {
-        setError(t('league.reportMatch.errors.scoreMismatch', {
-          defaultValue: 'El ganador seleccionado no coincide con el score ingresado.',
-        }));
+      if (!winnerId) {
+        setError(t('league.reportMatch.errors.noWinner', { defaultValue: 'Debe haber un ganador.' }));
+        return;
+      }
+      if (score1 < winScore && score2 < winScore) {
+        setError(t('league.reportMatch.errors.winThreshold', { count: winScore, total: league.gamesPerMatch }));
         return;
       }
     }
@@ -80,6 +84,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
       score: `${score1}-${score2}`,
       isNoShow,
       noShowParticipantId: isNoShow ? noShowParticipantId : undefined,
+      games: games.length > 0 ? games : undefined,
     };
 
     let result = null;
@@ -108,39 +113,6 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     }
 
     onSuccess();
-  }
-
-  /** Al elegir ganador manualmente, ajusta el score para que sea consistente. */
-  function handleWinnerSelect(pid: string) {
-    setWinnerId(pid);
-    if (pid === match.participant1Id && score1 <= score2) {
-      setScore1(winScore);
-      setScore2(Math.min(score2, winScore - 1));
-    } else if (pid === match.participant2Id && score2 <= score1) {
-      setScore2(winScore);
-      setScore1(Math.min(score1, winScore - 1));
-    }
-  }
-
-  function handleScoreChange(player: 1 | 2, value: number) {
-    if (player === 1) {
-      setScore1(value);
-      if (value === winScore) {
-        setScore2(Math.min(score2, winScore - 1));
-        setWinnerId(match.participant1Id);
-      } else if (score2 === winScore && value > score2) {
-        // If p2 was already at winning score, p1 can't pass it
-        setScore1(Math.min(value, score2 - 1));
-      }
-    } else {
-      setScore2(value);
-      if (value === winScore) {
-        setScore1(Math.min(score1, winScore - 1));
-        setWinnerId(match.participant2Id);
-      } else if (score1 === winScore && value > score1) {
-        setScore2(Math.min(value, score1 - 1));
-      }
-    }
   }
 
   return (
@@ -220,52 +192,16 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
               </p>
             </div>
           ) : (
-            <>
-              <div className="form-section">
-                <label>{t('league.reportMatch.winner')}</label>
-                <div className="radio-group">
-                  <label>
-                    <input
-                      type="radio"
-                      checked={winnerId === match.participant1Id}
-                      onChange={() => handleWinnerSelect(match.participant1Id)}
-                    />
-                    {p1Name}
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      checked={winnerId === match.participant2Id}
-                      onChange={() => handleWinnerSelect(match.participant2Id)}
-                    />
-                    {p2Name}
-                  </label>
-                </div>
-              </div>
-
-              <div className="form-section">
-                <label>{t('league.reportMatch.scoreLabel', { count: league.gamesPerMatch })}</label>
-                <div className="score-inputs">
-                  <div className="score-input-group">
-                    <span className="score-player-name">{p1Name}</span>
-                    <select value={score1} onChange={(e) => handleScoreChange(1, Number(e.target.value))}>
-                      {Array.from({ length: winScore + 1 }, (_, i) => (
-                        <option key={i} value={i}>{i}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <span className="score-separator">-</span>
-                  <div className="score-input-group">
-                    <span className="score-player-name">{p2Name}</span>
-                    <select value={score2} onChange={(e) => handleScoreChange(2, Number(e.target.value))}>
-                      {Array.from({ length: winScore + 1 }, (_, i) => (
-                        <option key={i} value={i}>{i}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </>
+            <GameLogEditor
+              games={games}
+              onChange={setGames}
+              playerAId={match.participant1Id}
+              playerBId={match.participant2Id}
+              playerAName={p1Name}
+              playerBName={p2Name}
+              gameId={league.gameId}
+              characters={getGame(league.gameId)?.characters || []}
+            />
           )}
 
           {!(canAdminLeague && (match.status === 'pending_review' || match.status === 'reported')) && (

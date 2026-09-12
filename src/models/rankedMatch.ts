@@ -8,6 +8,13 @@
 
 export type RankedMatchType = 'duel' | 'matchmaking';
 
+export interface MatchGame {
+  gameNumber: number;
+  winnerId: string;
+  player1Character?: string;
+  player2Character?: string;
+}
+
 export interface RankedMatch {
   id: string;
   type: RankedMatchType;
@@ -26,6 +33,9 @@ export interface RankedMatch {
   // Characters used
   player1Characters?: string[]; // Array of character IDs
   player2Characters?: string[];
+
+  // Game log
+  games?: MatchGame[];
   
   // ELO changes
   player1EloBefore: number;

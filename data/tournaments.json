@@ -3344,5 +3344,206 @@
       }
     ],
     "bracketSeeded": true
+  },
+  {
+    "id": "1789250438061-pv4kx7aqh",
+    "name": "Tournament CCharacters",
+    "mode": "single_elimination",
+    "type": "singles",
+    "status": "in_progress",
+    "gameId": "ssbu",
+    "givesPoints": true,
+    "seedingMode": "none",
+    "participants": [
+      {
+        "id": "1789250442863-2a7z83qxq",
+        "name": "Damiam",
+        "alias": "KruX",
+        "seed": 1,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786387087046_wnwtadb"
+      },
+      {
+        "id": "1789250444690-0bynhz3st",
+        "name": "Pal",
+        "seed": 2,
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1786399934148_stq7jpb",
+        "finalPosition": 5
+      },
+      {
+        "id": "1789250447063-qioi2wshq",
+        "name": "Ale",
+        "alias": "TQMandreFN",
+        "seed": 3,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786387243524_6er0c9u"
+      },
+      {
+        "id": "1789250448875-kfdelqseh",
+        "name": "Adam",
+        "alias": "Rhadam",
+        "seed": 4,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1787409902362_3u9f0qr"
+      },
+      {
+        "id": "1789250450009-u2w1b7yxc",
+        "name": "Alexs",
+        "seed": 5,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1787409813244_ymqkq1e"
+      },
+      {
+        "id": "1789250451232-lq5xlh0f2",
+        "name": "Alexis",
+        "alias": "Adecty",
+        "seed": 6,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786387250178_ac5thmv"
+      },
+      {
+        "id": "1789250455124-uiia4l4v2",
+        "name": "Dianger",
+        "alias": "Daysuke",
+        "seed": 7,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786396304199_u7v6gsb"
+      },
+      {
+        "id": "1789250458229-r5dlz7c8h",
+        "name": "Brian",
+        "seed": 8,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786388790209_sr4ldku"
+      }
+    ],
+    "bracket": {
+      "winnerBracket": [
+        {
+          "id": "winner-r1-m1",
+          "roundNumber": 1,
+          "matchNumber": 1,
+          "bracketType": "winner",
+          "participant1Id": "1789250442863-2a7z83qxq",
+          "participant2Id": "1789250444690-0bynhz3st",
+          "winnerId": "1789250442863-2a7z83qxq",
+          "loserId": "1789250444690-0bynhz3st",
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m1",
+          "nextLoserMatchId": null,
+          "participant1Score": 2,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1789250442863-2a7z83qxq",
+              "player1Character": "samus",
+              "player2Character": "bayonetta"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1789250442863-2a7z83qxq",
+              "player1Character": "samus",
+              "player2Character": "bayonetta"
+            }
+          ]
+        },
+        {
+          "id": "winner-r1-m2",
+          "roundNumber": 1,
+          "matchNumber": 2,
+          "bracketType": "winner",
+          "participant1Id": "1789250447063-qioi2wshq",
+          "participant2Id": "1789250448875-kfdelqseh",
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "winner-r2-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "winner-r1-m3",
+          "roundNumber": 1,
+          "matchNumber": 3,
+          "bracketType": "winner",
+          "participant1Id": "1789250450009-u2w1b7yxc",
+          "participant2Id": "1789250451232-lq5xlh0f2",
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "winner-r2-m2",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "winner-r1-m4",
+          "roundNumber": 1,
+          "matchNumber": 4,
+          "bracketType": "winner",
+          "participant1Id": "1789250455124-uiia4l4v2",
+          "participant2Id": "1789250458229-r5dlz7c8h",
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "winner-r2-m2",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "winner-r2-m1",
+          "roundNumber": 2,
+          "matchNumber": 1,
+          "bracketType": "winner",
+          "participant1Id": "1789250442863-2a7z83qxq",
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "winner-r3-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "winner-r2-m2",
+          "roundNumber": 2,
+          "matchNumber": 2,
+          "bracketType": "winner",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "winner-r3-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "winner-r3-m1",
+          "roundNumber": 3,
+          "matchNumber": 1,
+          "bracketType": "winner",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": null,
+          "nextLoserMatchId": null
+        }
+      ],
+      "loserBracket": [],
+      "grandFinal": null,
+      "grandFinalReset": null
+    },
+    "championId": null,
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-12T22:00:38.061Z",
+    "updatedAt": "2026-09-12T22:01:38.570Z",
+    "registrationDeadline": "2026-09-12T18:00"
   }
 ]

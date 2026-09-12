@@ -9,7 +9,7 @@
  * All functions throw on network error; callers should handle gracefully.
  */
 
-import type { MatchRecord, GlobalParticipant } from '../../models/types';
+import type { MatchRecord, GlobalParticipant, MatchGame } from '../../models/types';
 import { SERVER_URL } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
 
@@ -150,23 +150,21 @@ export async function recordMatch(
   communityId?: string,
   scoreA?: number,
   scoreB?: number,
-  charactersA?: string[],
-  charactersB?: string[]
+  games?: MatchGame[]
 ): Promise<MatchResult> {
   const res = await fetch(`${API_BASE}/match`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ 
-      playerAId, 
-      playerBId, 
-      winnerId, 
-      gameId, 
-      matchType, 
+    body: JSON.stringify({
+      playerAId,
+      playerBId,
+      winnerId,
+      gameId,
+      matchType,
       communityId,
       player1Score: scoreA,
       player2Score: scoreB,
-      player1Characters: charactersA,
-      player2Characters: charactersB,
+      games,
     }),
   });
   if (!res.ok) {

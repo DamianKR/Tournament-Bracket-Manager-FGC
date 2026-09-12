@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Match } from '@/models/types';
+import type { MatchGame } from '@/models/rankedMatch';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import MatchResultModal from './MatchResultModal';
 import './MatchCard.css';
@@ -11,6 +12,7 @@ interface MatchCardProps {
   participant2Name: string;
   gameId?: string;
   onSelectWinner?: (matchId: string, winnerId: string, score1?: number, score2?: number, chars1?: string[], chars2?: string[]) => void;
+  onSelectGames?: (matchId: string, winnerId: string, games: MatchGame[]) => void;
   onRevertMatch?: (matchId: string) => void;
   readOnly?: boolean;
   isGrandFinal?: boolean;
@@ -23,6 +25,7 @@ function MatchCard({
   participant2Name,
   gameId,
   onSelectWinner,
+  onSelectGames,
   onRevertMatch,
   readOnly = false,
   isGrandFinal = false,
@@ -46,6 +49,12 @@ function MatchCard({
     setShowDetailModal(false);
   };
 
+  const handleDetailedConfirmGames = (winnerId: string, games: MatchGame[]) => {
+    if (!onSelectGames) return;
+    onSelectGames(match.id, winnerId, games);
+    setShowDetailModal(false);
+  };
+
   const isWinner   = (id: string | null) => match.winnerId === id;
   const isLoser    = (id: string | null) => match.loserId === id;
 
@@ -53,8 +62,16 @@ function MatchCard({
     !match.participant1Id && !match.participant2Id && !match.winnerId;
 
   const hasScore = match.participant1Score !== undefined || match.participant2Score !== undefined;
-  const hasCharacters = (match.participant1Characters && match.participant1Characters.length > 0) || 
+  const hasCharacters = (match.participant1Characters && match.participant1Characters.length > 0) ||
                         (match.participant2Characters && match.participant2Characters.length > 0);
+  const hasGames = match.games && match.games.length > 0;
+
+  const p1GameChars = hasGames
+    ? [...new Set(match.games?.filter(g => g.player1Character).map(g => g.player1Character!))]
+    : (match.participant1Characters ?? []);
+  const p2GameChars = hasGames
+    ? [...new Set(match.games?.filter(g => g.player2Character).map(g => g.player2Character!))]
+    : (match.participant2Characters ?? []);
 
   return (
     <div className={`match-card ${isGrandFinal ? 'grand-final-match' : ''} ${isGhostMatch ? 'ghost-match' : ''}`}>
@@ -85,9 +102,9 @@ function MatchCard({
             onClick={() => handleClickParticipant(match.participant1Id)}
           >
             <div className="participant-left">
-              {match.participant1Characters && match.participant1Characters.length > 0 && gameId && (
+              {p1GameChars.length > 0 && gameId && (
                 <div className="character-icons">
-                  {match.participant1Characters.slice(0, 3).map((charId, idx) => (
+                  {p1GameChars.slice(0, 3).map((charId, idx) => (
                     <img 
                       key={idx}
                       src={getCharacterImageUrl(gameId, charId) ?? ''} 
@@ -96,8 +113,8 @@ function MatchCard({
                       title={charId}
                     />
                   ))}
-                  {match.participant1Characters.length > 3 && (
-                    <span className="more-characters">+{match.participant1Characters.length - 3}</span>
+                  {p1GameChars.length > 3 && (
+                    <span className="more-characters">+{p1GameChars.length - 3}</span>
                   )}
                 </div>
               )}
@@ -120,9 +137,9 @@ function MatchCard({
             onClick={() => handleClickParticipant(match.participant2Id)}
           >
             <div className="participant-left">
-              {match.participant2Characters && match.participant2Characters.length > 0 && gameId && (
+              {p2GameChars.length > 0 && gameId && (
                 <div className="character-icons">
-                  {match.participant2Characters.slice(0, 3).map((charId, idx) => (
+                  {p2GameChars.slice(0, 3).map((charId, idx) => (
                     <img 
                       key={idx}
                       src={getCharacterImageUrl(gameId, charId) ?? ''} 
@@ -131,8 +148,8 @@ function MatchCard({
                       title={charId}
                     />
                   ))}
-                  {match.participant2Characters.length > 3 && (
-                    <span className="more-characters">+{match.participant2Characters.length - 3}</span>
+                  {p2GameChars.length > 3 && (
+                    <span className="more-characters">+{p2GameChars.length - 3}</span>
                   )}
                 </div>
               )}
@@ -162,6 +179,7 @@ function MatchCard({
           participant2Name={participant2Name}
           gameId={gameId}
           onConfirm={handleDetailedConfirm}
+          onConfirmGames={onSelectGames ? handleDetailedConfirmGames : undefined}
           onCancel={() => setShowDetailModal(false)}
           onRevert={!readOnly && reversible && onRevertMatch ? () => {
             onRevertMatch(match.id);

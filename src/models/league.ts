@@ -1,3 +1,5 @@
+import type { MatchGame } from './rankedMatch';
+
 /**
  * League System Types
  * 
@@ -66,13 +68,16 @@ export interface LeagueMatch {
   winnerId?: string;
   score?: string; // "2-1", "2-0", etc.
   noShowParticipantId?: string;
-  
+
+  // Game log
+  games?: MatchGame[];
+
   // ELO changes (copiados del ranking engine después de procesar)
   participant1EloBefore?: number;
   participant2EloBefore?: number;
   participant1EloChange?: number;
   participant2EloChange?: number;
-  
+
   // Fechas
   scheduledDate?: string;
   completedDate?: string;
@@ -86,6 +91,7 @@ export interface LeagueMatchReport {
   isNoShow: boolean;
   noShowParticipantId?: string;
   evidence?: string;
+  games?: MatchGame[];
   reportedAt: string;
 }
 

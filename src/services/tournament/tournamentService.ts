@@ -1,4 +1,5 @@
 import { Tournament, Participant, TournamentMode, TournamentType, TeamSize, SeedingMode, PartialSeedCount } from '@/models/types';
+import type { MatchGame } from '@/models/rankedMatch';
 import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progression/matchProgression';
@@ -437,20 +438,22 @@ export async function setMatchWinner(
   participant1Score?: number,
   participant2Score?: number,
   participant1Characters?: string[],
-  participant2Characters?: string[]
+  participant2Characters?: string[],
+  games?: MatchGame[]
 ): Promise<Tournament> {
   const tournament = loadTournament(tournamentId);
   if (!tournament) throw new Error('Tournament not found');
   if (tournament.status !== 'in_progress') throw new Error('Tournament is not in progress');
 
   const updatedTournament = recordMatchResult(
-    tournament, 
-    matchId, 
-    winnerId, 
-    participant1Score, 
-    participant2Score, 
-    participant1Characters, 
-    participant2Characters
+    tournament,
+    matchId,
+    winnerId,
+    participant1Score,
+    participant2Score,
+    participant1Characters,
+    participant2Characters,
+    games
   );
 
   // Save tournament match record for history (singles only, no ELO)
@@ -479,8 +482,7 @@ export async function setMatchWinner(
         // Detailed match data
         player1Score: match.participant1Score ?? null,
         player2Score: match.participant2Score ?? null,
-        player1Characters: match.participant1Characters ?? null,
-        player2Characters: match.participant2Characters ?? null,
+        games: match.games ?? null,
         communityId: updatedTournament.communityId,
         createdAt: new Date().toISOString(),
       };
@@ -581,6 +583,9 @@ export interface TournamentMatchRecord {
   matchNumber: number;
   communityId?: string;
   createdAt: string;
+
+  // Game log
+  games?: MatchGame[];
 }
 
 export function getAllTournamentMatches(communityId?: string): TournamentMatchRecord[] {

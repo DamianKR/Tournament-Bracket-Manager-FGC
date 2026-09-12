@@ -6,6 +6,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GAMES } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
+import type { MatchGame } from '@/models/rankedMatch';
+import CharacterDropdown from '@/components/CharacterDropdown/CharacterDropdown';
 import './MatchResultModal.css';
 
 export interface MatchDetailData {
@@ -15,6 +17,7 @@ export interface MatchDetailData {
   participant2Score?: number;
   participant1Characters?: string[];
   participant2Characters?: string[];
+  games?: MatchGame[];
   winnerId?: string | null;
 }
 
@@ -25,6 +28,7 @@ interface MatchDetailModalProps {
   data: MatchDetailData;
   gameId?: string;
   onConfirm?: (winnerId: string, score1: number, score2: number, chars1?: string[], chars2?: string[]) => void;
+  onConfirmGames?: (winnerId: string, games: MatchGame[]) => void;
   onCancel: () => void;
   onRevert?: () => void;
   readOnly?: boolean;
@@ -38,6 +42,7 @@ function MatchDetailModal({
   data,
   gameId,
   onConfirm,
+  onConfirmGames,
   onCancel,
   onRevert,
   readOnly = false,
@@ -49,29 +54,40 @@ function MatchDetailModal({
   const [score2, setScore2] = useState(data.participant2Score ?? 0);
   const [chars1, setChars1] = useState<string[]>(data.participant1Characters ?? []);
   const [chars2, setChars2] = useState<string[]>(data.participant2Characters ?? []);
+  const [games, setGames] = useState<MatchGame[]>(data.games ?? []);
   const [showChar1Picker, setShowChar1Picker] = useState(false);
   const [showChar2Picker, setShowChar2Picker] = useState(false);
   const [charFilter1, setCharFilter1] = useState('');
   const [charFilter2, setCharFilter2] = useState('');
 
+  const useGameLog = !!onConfirmGames;
   const game = gameId ? GAMES.find(g => g.id === gameId) : undefined;
   const characters = game?.characters ?? [];
 
-  const winnerId = score1 > score2 ? participant1Id : 
-                   score2 > score1 ? participant2Id : null;
+  const winnerId = useGameLog
+    ? (score1 > score2 ? participant1Id : score2 > score1 ? participant2Id : null)
+    : (score1 > score2 ? participant1Id : score2 > score1 ? participant2Id : null);
 
-  const canSubmit = !hideScores ? (winnerId !== null && (score1 > 0 || score2 > 0)) : true;
+  const canSubmit = useGameLog
+    ? (winnerId !== null && games.length > 0)
+    : (!hideScores ? (winnerId !== null && (score1 > 0 || score2 > 0)) : true);
 
   const handleSubmit = () => {
-    if (!canSubmit || !onConfirm) return;
-    const finalWinnerId = winnerId ?? participant1Id; // Fallback si no hay scores
-    onConfirm(
-      finalWinnerId, 
-      score1, 
-      score2, 
-      chars1.length > 0 ? chars1 : undefined, 
-      chars2.length > 0 ? chars2 : undefined
-    );
+    if (!canSubmit) return;
+    const finalWinnerId = winnerId ?? participant1Id;
+    if (useGameLog && onConfirmGames) {
+      onConfirmGames(finalWinnerId, games);
+      return;
+    }
+    if (onConfirm) {
+      onConfirm(
+        finalWinnerId,
+        score1,
+        score2,
+        chars1.length > 0 ? chars1 : undefined,
+        chars2.length > 0 ? chars2 : undefined
+      );
+    }
   };
 
   const handleScoreChange = (player: 1 | 2, value: string) => {
@@ -88,6 +104,34 @@ function MatchDetailModal({
   const decrementScore = (player: 1 | 2) => {
     if (player === 1) setScore1(s => Math.max(0, s - 1));
     else setScore2(s => Math.max(0, s - 1));
+  };
+
+  const addGame = () => {
+    setGames(prev => [
+      ...prev,
+      { gameNumber: prev.length + 1, winnerId: participant1Id, player1Character: undefined, player2Character: undefined },
+    ]);
+  };
+
+  const recalcScores = (next: MatchGame[]) => {
+    setScore1(next.filter(g => g.winnerId === participant1Id).length);
+    setScore2(next.filter(g => g.winnerId === participant2Id).length);
+  };
+
+  const removeGame = (idx: number) => {
+    setGames(prev => {
+      const next = prev.filter((_, i) => i !== idx).map((g, i) => ({ ...g, gameNumber: i + 1 }));
+      recalcScores(next);
+      return next;
+    });
+  };
+
+  const updateGame = (idx: number, patch: Partial<MatchGame>) => {
+    setGames(prev => {
+      const next = prev.map((g, i) => i === idx ? { ...g, ...patch } : g);
+      recalcScores(next);
+      return next;
+    });
   };
 
   const toggleCharacter = (player: 1 | 2, charId: string) => {
@@ -136,11 +180,26 @@ function MatchDetailModal({
         </div>
 
         <div className="modal-body">
+          {/* Matchup header */}
+          {!useGameLog && !hideScores && (
+            <div className="game-log-score-display">
+              <span className="score-pill">{score1} - {score2}</span>
+            </div>
+          )}
+
+          {useGameLog && (
+            <div className="matchup-header">
+              <span className={`matchup-player matchup-p1 ${winnerId === participant1Id ? 'winner' : ''}`}>{data.participant1Name}</span>
+              <span className="matchup-score">{score1} - {score2}</span>
+              <span className={`matchup-player matchup-p2 ${winnerId === participant2Id ? 'winner' : ''}`}>{data.participant2Name}</span>
+            </div>
+          )}
+
           {/* Participant 1 */}
-          <div className={`result-participant ${winnerId === participant1Id ? 'winner' : ''}`}>
+          <div className={`result-participant ${winnerId === participant1Id ? 'winner' : ''} ${useGameLog ? 'hidden' : ''}`}>
             <div className="participant-info">
               <span className="participant-label">{data.participant1Name}</span>
-              {chars1.length > 0 && gameId && (
+              {chars1.length > 0 && gameId && !useGameLog && (
                 <div className="character-badges">
                   {chars1.map((charId, idx) => (
                     <div key={idx} className="character-badge">
@@ -163,7 +222,7 @@ function MatchDetailModal({
                   ))}
                 </div>
               )}
-              {!readOnly && characters.length > 0 && (
+              {!readOnly && characters.length > 0 && !useGameLog && (
                 <button 
                   className="add-character-btn"
                   onClick={openChar1Picker}
@@ -173,7 +232,7 @@ function MatchDetailModal({
               )}
             </div>
 
-            {!hideScores && (
+            {!hideScores && !useGameLog && (
               <div className="score-controls">
                 {!readOnly && (
                   <button 
@@ -206,13 +265,13 @@ function MatchDetailModal({
             )}
           </div>
 
-          <div className="vs-divider">{t('tournament.matchCard.vs')}</div>
+          <div className={`vs-divider ${useGameLog ? 'hidden' : ''}`}>{t('tournament.matchCard.vs')}</div>
 
           {/* Participant 2 */}
-          <div className={`result-participant ${winnerId === participant2Id ? 'winner' : ''}`}>
+          <div className={`result-participant ${winnerId === participant2Id ? 'winner' : ''} ${useGameLog ? 'hidden' : ''}`}>
             <div className="participant-info">
               <span className="participant-label">{data.participant2Name}</span>
-              {chars2.length > 0 && gameId && (
+              {chars2.length > 0 && gameId && !useGameLog && (
                 <div className="character-badges">
                   {chars2.map((charId, idx) => (
                     <div key={idx} className="character-badge">
@@ -235,7 +294,7 @@ function MatchDetailModal({
                   ))}
                 </div>
               )}
-              {!readOnly && characters.length > 0 && (
+              {!readOnly && characters.length > 0 && !useGameLog && (
                 <button 
                   className="add-character-btn"
                   onClick={openChar2Picker}
@@ -245,7 +304,7 @@ function MatchDetailModal({
               )}
             </div>
 
-            {!hideScores && (
+            {!hideScores && !useGameLog && (
               <div className="score-controls">
                 {!readOnly && (
                   <button 
@@ -370,6 +429,56 @@ function MatchDetailModal({
               </div>
             </div>
           )}
+
+          {/* Game Log */}
+          {useGameLog && !readOnly && (
+            <div className="game-log-section">
+              <h4>{t('tournament.matchResult.gameLog')}</h4>
+              {games.map((g, idx) => (
+                <div key={idx} className="game-log-row">
+                  {gameId && characters.length > 0 && (
+                    <div className="game-log-char game-log-p1">
+                      <CharacterDropdown
+                        gameId={gameId}
+                        characters={characters}
+                        value={g.player1Character ?? null}
+                        onChange={(charId) => updateGame(idx, { player1Character: charId ?? undefined })}
+                      />
+                    </div>
+                  )}
+
+                  <div className="game-log-center">
+                    <span className="game-log-number">{t('tournament.matchResult.game')} {g.gameNumber}</span>
+                    <select
+                      className="game-log-select game-log-winner-select"
+                      value={g.winnerId}
+                      onChange={(e) => updateGame(idx, { winnerId: e.target.value })}
+                    >
+                      <option value={participant1Id}>{data.participant1Name}</option>
+                      <option value={participant2Id}>{data.participant2Name}</option>
+                    </select>
+                    <button className="remove-game-btn" onClick={() => removeGame(idx)} title={t('common.remove')}>
+                      <i className="fas fa-trash" />
+                    </button>
+                  </div>
+
+                  {gameId && characters.length > 0 && (
+                    <div className="game-log-char game-log-p2">
+                      <CharacterDropdown
+                        gameId={gameId}
+                        characters={characters}
+                        value={g.player2Character ?? null}
+                        onChange={(charId) => updateGame(idx, { player2Character: charId ?? undefined })}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+              <button className="add-game-btn" onClick={addGame}>
+                <i className="fas fa-plus" /> {t('tournament.matchResult.addGame')}
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="modal-footer">
@@ -382,9 +491,9 @@ function MatchDetailModal({
             <button className="btn-outline" onClick={onCancel}>
               {readOnly ? t('common.close') : t('common.cancel')}
             </button>
-            {!readOnly && onConfirm && (
-              <button 
-                className="btn-primary" 
+            {!readOnly && (onConfirm || onConfirmGames) && (
+              <button
+                className="btn-primary"
                 onClick={handleSubmit}
                 disabled={!canSubmit}
               >

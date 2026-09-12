@@ -3,6 +3,7 @@
  * Wrapper del componente genérico MatchDetailModal
  */
 import { Match } from '@/models/types';
+import type { MatchGame } from '@/models/rankedMatch';
 import MatchDetailModal, { MatchDetailData } from './MatchDetailModal';
 
 interface MatchResultModalProps {
@@ -10,7 +11,8 @@ interface MatchResultModalProps {
   participant1Name: string;
   participant2Name: string;
   gameId?: string;
-  onConfirm: (winnerId: string, score1: number, score2: number, chars1?: string[], chars2?: string[]) => void;
+  onConfirm?: (winnerId: string, score1: number, score2: number, chars1?: string[], chars2?: string[]) => void;
+  onConfirmGames?: (winnerId: string, games: MatchGame[]) => void;
   onCancel: () => void;
   onRevert?: () => void;
   readOnly?: boolean;
@@ -22,6 +24,7 @@ function MatchResultModal({
   participant2Name,
   gameId,
   onConfirm,
+  onConfirmGames,
   onCancel,
   onRevert,
   readOnly = false,
@@ -43,6 +46,7 @@ function MatchResultModal({
       data={data}
       gameId={gameId}
       onConfirm={onConfirm}
+      onConfirmGames={onConfirmGames}
       onCancel={onCancel}
       onRevert={onRevert}
       readOnly={readOnly}

@@ -7745,5 +7745,347 @@
       "duelId": "duel_1788664315841_te4cw5xq1",
       "expiresAt": "2026-09-17T23:25:12.173Z"
     }
+  },
+  {
+    "id": "notif_1789156364367_xl0ktmtvm",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "duel_challenge",
+    "title": "New Duel Challenge!",
+    "message": "KruX has challenged you to a duel. Accept or decline in the Events section.",
+    "read": false,
+    "createdAt": "2026-09-11T19:52:44.367Z",
+    "scheduledAt": "2026-09-11T19:52:44.367Z",
+    "data": {
+      "duelId": "duel_1789156364350_fx9y6qi0v",
+      "challengerId": "gp_1786387087046_wnwtadb",
+      "type": "normal"
+    }
+  },
+  {
+    "id": "notif_1789156366074_2ulh1mnwk",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_accepted",
+    "title": "Duel Accepted!",
+    "message": "Gino accepted your duel challenge. Play and record the result before it expires.",
+    "read": false,
+    "createdAt": "2026-09-11T19:52:46.074Z",
+    "scheduledAt": "2026-09-11T19:52:46.074Z",
+    "data": {
+      "duelId": "duel_1789156364350_fx9y6qi0v",
+      "challengedId": "gp_1786387234567_aoe1z95"
+    }
+  },
+  {
+    "id": "notif_1789156366078_fmrph2a0s",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-11T19:52:46.078Z",
+    "scheduledAt": "2026-09-15T19:52:46.070Z",
+    "data": {
+      "duelId": "duel_1789156364350_fx9y6qi0v",
+      "expiresAt": "2026-09-18T19:52:46.070Z"
+    }
+  },
+  {
+    "id": "notif_1789156366081_qwkvwa8dh",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-11T19:52:46.081Z",
+    "scheduledAt": "2026-09-15T19:52:46.070Z",
+    "data": {
+      "duelId": "duel_1789156364350_fx9y6qi0v",
+      "expiresAt": "2026-09-18T19:52:46.070Z"
+    }
+  },
+  {
+    "id": "notif_1789156411492_iizl05cnj",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "duel_challenge",
+    "title": "New Duel Challenge!",
+    "message": "KruX has challenged you to a duel. Accept or decline in the Events section.",
+    "read": false,
+    "createdAt": "2026-09-11T19:53:31.492Z",
+    "scheduledAt": "2026-09-11T19:53:31.492Z",
+    "data": {
+      "duelId": "duel_1789156411488_dfpp6mz56",
+      "challengerId": "gp_1786387087046_wnwtadb",
+      "type": "normal"
+    }
+  },
+  {
+    "id": "notif_1789156413868_nboegf3ln",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_accepted",
+    "title": "Duel Accepted!",
+    "message": "Ismael accepted your duel challenge. Play and record the result before it expires.",
+    "read": false,
+    "createdAt": "2026-09-11T19:53:33.868Z",
+    "scheduledAt": "2026-09-11T19:53:33.868Z",
+    "data": {
+      "duelId": "duel_1789156411488_dfpp6mz56",
+      "challengedId": "gp_1786408686972_s4nl3vz"
+    }
+  },
+  {
+    "id": "notif_1789156413871_3bvl6lug6",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-11T19:53:33.871Z",
+    "scheduledAt": "2026-09-15T19:53:33.864Z",
+    "data": {
+      "duelId": "duel_1789156411488_dfpp6mz56",
+      "expiresAt": "2026-09-18T19:53:33.864Z"
+    }
+  },
+  {
+    "id": "notif_1789156413875_p1ch2o1m4",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-11T19:53:33.875Z",
+    "scheduledAt": "2026-09-15T19:53:33.864Z",
+    "data": {
+      "duelId": "duel_1789156411488_dfpp6mz56",
+      "expiresAt": "2026-09-18T19:53:33.864Z"
+    }
+  },
+  {
+    "id": "notif_1789195433158_s1kmma4bw",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_challenge",
+    "title": "New Duel Challenge!",
+    "message": "Gino has challenged you to a duel. Accept or decline in the Events section.",
+    "read": false,
+    "createdAt": "2026-09-12T06:43:53.158Z",
+    "scheduledAt": "2026-09-12T06:43:53.158Z",
+    "data": {
+      "duelId": "duel_1789195433154_4n5wrr1ll",
+      "challengerId": "gp_1786387234567_aoe1z95",
+      "type": "normal"
+    }
+  },
+  {
+    "id": "notif_1789195434831_4k1v2kz8z",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "duel_accepted",
+    "title": "Duel Accepted!",
+    "message": "KruX accepted your duel challenge. Play and record the result before it expires.",
+    "read": false,
+    "createdAt": "2026-09-12T06:43:54.831Z",
+    "scheduledAt": "2026-09-12T06:43:54.831Z",
+    "data": {
+      "duelId": "duel_1789195433154_4n5wrr1ll",
+      "challengedId": "gp_1786387087046_wnwtadb"
+    }
+  },
+  {
+    "id": "notif_1789195434835_9jvb0dfxc",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-12T06:43:54.835Z",
+    "scheduledAt": "2026-09-16T06:43:54.827Z",
+    "data": {
+      "duelId": "duel_1789195433154_4n5wrr1ll",
+      "expiresAt": "2026-09-19T06:43:54.827Z"
+    }
+  },
+  {
+    "id": "notif_1789195434838_b4kdsxlgb",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-12T06:43:54.838Z",
+    "scheduledAt": "2026-09-16T06:43:54.827Z",
+    "data": {
+      "duelId": "duel_1789195433154_4n5wrr1ll",
+      "expiresAt": "2026-09-19T06:43:54.827Z"
+    }
+  },
+  {
+    "id": "notif_1789245913533_jq8fbtket",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_challenge",
+    "title": "New Duel Challenge!",
+    "message": "ERNE has challenged you to a duel. Accept or decline in the Events section.",
+    "read": false,
+    "createdAt": "2026-09-12T20:45:13.533Z",
+    "scheduledAt": "2026-09-12T20:45:13.533Z",
+    "data": {
+      "duelId": "duel_1789245913524_ae4vr2oz3",
+      "challengerId": "gp_1786420928315_91m6kmr",
+      "type": "normal"
+    }
+  },
+  {
+    "id": "notif_1789245916014_vhobulaah",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "duel_accepted",
+    "title": "Duel Accepted!",
+    "message": "KruX accepted your duel challenge. Play and record the result before it expires.",
+    "read": false,
+    "createdAt": "2026-09-12T20:45:16.014Z",
+    "scheduledAt": "2026-09-12T20:45:16.014Z",
+    "data": {
+      "duelId": "duel_1789245913524_ae4vr2oz3",
+      "challengedId": "gp_1786387087046_wnwtadb"
+    }
+  },
+  {
+    "id": "notif_1789245916018_s98lu2fgz",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-12T20:45:16.018Z",
+    "scheduledAt": "2026-09-16T20:45:16.011Z",
+    "data": {
+      "duelId": "duel_1789245913524_ae4vr2oz3",
+      "expiresAt": "2026-09-19T20:45:16.011Z"
+    }
+  },
+  {
+    "id": "notif_1789245916022_xinna8p45",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-12T20:45:16.022Z",
+    "scheduledAt": "2026-09-16T20:45:16.011Z",
+    "data": {
+      "duelId": "duel_1789245913524_ae4vr2oz3",
+      "expiresAt": "2026-09-19T20:45:16.011Z"
+    }
+  },
+  {
+    "id": "notif_1789247922480_e4a6y3rxe",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_challenge",
+    "title": "New Duel Challenge!",
+    "message": "TQMandreFN has challenged you to a duel. Accept or decline in the Events section.",
+    "read": false,
+    "createdAt": "2026-09-12T21:18:42.480Z",
+    "scheduledAt": "2026-09-12T21:18:42.480Z",
+    "data": {
+      "duelId": "duel_1789247922474_u34x1f3h6",
+      "challengerId": "gp_1786387243524_6er0c9u",
+      "type": "normal"
+    }
+  },
+  {
+    "id": "notif_1789247924210_pq89sx67x",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "duel_accepted",
+    "title": "Duel Accepted!",
+    "message": "KruX accepted your duel challenge. Play and record the result before it expires.",
+    "read": false,
+    "createdAt": "2026-09-12T21:18:44.210Z",
+    "scheduledAt": "2026-09-12T21:18:44.210Z",
+    "data": {
+      "duelId": "duel_1789247922474_u34x1f3h6",
+      "challengedId": "gp_1786387087046_wnwtadb"
+    }
+  },
+  {
+    "id": "notif_1789247924214_puczn5m6z",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-12T21:18:44.214Z",
+    "scheduledAt": "2026-09-16T21:18:44.207Z",
+    "data": {
+      "duelId": "duel_1789247922474_u34x1f3h6",
+      "expiresAt": "2026-09-19T21:18:44.207Z"
+    }
+  },
+  {
+    "id": "notif_1789247924218_rl7ryjwwn",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-12T21:18:44.218Z",
+    "scheduledAt": "2026-09-16T21:18:44.207Z",
+    "data": {
+      "duelId": "duel_1789247922474_u34x1f3h6",
+      "expiresAt": "2026-09-19T21:18:44.207Z"
+    }
+  },
+  {
+    "id": "notif_1789250315839_c0i6i3yic",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_challenge",
+    "title": "New Duel Challenge!",
+    "message": "Pal has challenged you to a duel. Accept or decline in the Events section.",
+    "read": false,
+    "createdAt": "2026-09-12T21:58:35.839Z",
+    "scheduledAt": "2026-09-12T21:58:35.839Z",
+    "data": {
+      "duelId": "duel_1789250315829_pu2d6hhoj",
+      "challengerId": "gp_1786399934148_stq7jpb",
+      "type": "normal"
+    }
+  },
+  {
+    "id": "notif_1789250317376_9u9gco5e5",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "duel_accepted",
+    "title": "Duel Accepted!",
+    "message": "KruX accepted your duel challenge. Play and record the result before it expires.",
+    "read": false,
+    "createdAt": "2026-09-12T21:58:37.376Z",
+    "scheduledAt": "2026-09-12T21:58:37.376Z",
+    "data": {
+      "duelId": "duel_1789250315829_pu2d6hhoj",
+      "challengedId": "gp_1786387087046_wnwtadb"
+    }
+  },
+  {
+    "id": "notif_1789250317380_lazcujnyk",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-12T21:58:37.380Z",
+    "scheduledAt": "2026-09-16T21:58:37.372Z",
+    "data": {
+      "duelId": "duel_1789250315829_pu2d6hhoj",
+      "expiresAt": "2026-09-19T21:58:37.372Z"
+    }
+  },
+  {
+    "id": "notif_1789250317384_7yzg8yun8",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-12T21:58:37.384Z",
+    "scheduledAt": "2026-09-16T21:58:37.372Z",
+    "data": {
+      "duelId": "duel_1789250315829_pu2d6hhoj",
+      "expiresAt": "2026-09-19T21:58:37.372Z"
+    }
   }
 ]

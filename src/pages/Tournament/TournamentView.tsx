@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
+import type { MatchGame } from '@/models/rankedMatch';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { Tournament } from '@/models/types';
@@ -42,17 +43,46 @@ function TournamentView() {
   };
 
   const handleMatchResult = async (
-    matchId: string, 
-    winnerId: string, 
-    score1?: number, 
-    score2?: number, 
-    chars1?: string[], 
+    matchId: string,
+    winnerId: string,
+    score1?: number,
+    score2?: number,
+    chars1?: string[],
     chars2?: string[]
   ) => {
     if (!id) return;
 
     try {
       const updatedTournament = await setMatchWinner(id, matchId, winnerId, score1, score2, chars1, chars2);
+      setTournament(updatedTournament);
+      setError('');
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleMatchGames = async (matchId: string, winnerId: string, games: MatchGame[]) => {
+    if (!id) return;
+
+    const allMatches = tournament?.bracket
+      ? [
+          ...tournament.bracket.winnerBracket,
+          ...tournament.bracket.loserBracket,
+          ...(tournament.bracket.grandFinal ? [tournament.bracket.grandFinal] : []),
+          ...(tournament.bracket.grandFinalReset ? [tournament.bracket.grandFinalReset] : []),
+        ]
+      : [];
+    const match = allMatches.find((m) => m.id === matchId);
+
+    const p1Id = match?.participant1Id;
+    const p2Id = match?.participant2Id;
+    if (!p1Id || !p2Id) return;
+
+    const score1 = games.filter(g => g.winnerId === p1Id).length;
+    const score2 = games.filter(g => g.winnerId === p2Id).length;
+
+    try {
+      const updatedTournament = await setMatchWinner(id, matchId, winnerId, score1, score2, undefined, undefined, games);
       setTournament(updatedTournament);
       setError('');
     } catch (err: any) {
@@ -233,6 +263,7 @@ function TournamentView() {
                 participants={tournament.participants}
                 gameId={tournament.gameId ?? undefined}
                 onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
+                onMatchGames={canAdminGame(tournament.gameId) ? handleMatchGames : undefined}
                 onRevertMatch={canAdminGame(tournament.gameId) && tournament.status !== 'completed' ? handleRevertMatch : undefined}
                 readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
               />

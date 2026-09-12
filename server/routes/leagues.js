@@ -465,7 +465,7 @@ router.get('/:id/standings', async (req, res) => {
 // POST /api/leagues/:id/matches/:matchId/result — report match result
 router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
   try {
-    const { winnerId, score, isNoShow, noShowParticipantId } = req.body;
+    const { winnerId, score, isNoShow, noShowParticipantId, games } = req.body;
     
     const match = await leagueMatches.findById(req.params.matchId);
     if (!match) return res.status(404).json({ error: 'Match not found' });
@@ -496,6 +496,7 @@ router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
       if (scoreError) return res.status(400).json({ error: scoreError });
       match.winnerId = winnerId;
       match.score = score;
+      if (games) match.games = games;
     }
 
     const eloChanges = await applyLeagueMatchElo(match);
@@ -807,7 +808,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
 // POST /api/leagues/:id/matches/:matchId/report — participant reports their version of the result
 router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
   try {
-    const { winnerId, score, isNoShow, noShowParticipantId, evidence } = req.body;
+    const { winnerId, score, isNoShow, noShowParticipantId, evidence, games } = req.body;
 
     // Re-fetch match to avoid race conditions
     const match = await leagueMatches.findById(req.params.matchId);
@@ -853,6 +854,7 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
       isNoShow: !!isNoShow,
       noShowParticipantId: isNoShow ? noShowParticipantId : undefined,
       evidence: evidence || undefined,
+      games: games || undefined,
       reportedAt: new Date().toISOString(),
     };
     if (existing >= 0) match.reportedResults[existing] = report;
@@ -862,6 +864,7 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
       match.winnerId = winnerId;
       match.score = score;
       match.noShowParticipantId = isNoShow ? noShowParticipantId : undefined;
+      if (games) match.games = games;
       const eloChanges = await applyLeagueMatchElo(match);
       return res.json({ match, eloChanges });
     }
@@ -874,6 +877,7 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
         match.winnerId = winnerId;
         match.score = score;
         match.noShowParticipantId = isNoShow ? noShowParticipantId : undefined;
+        if (games) match.games = games;
         try {
           const eloChanges = await applyLeagueMatchElo(match);
           console.log(`[Leagues] Match ${req.params.matchId}: ELO applied successfully, status=${match.status}`);
@@ -904,7 +908,7 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
 // POST /api/leagues/:id/matches/:matchId/resolve — admin resolves a dispute
 router.post('/:id/matches/:matchId/resolve', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const { winnerId, score, isNoShow, noShowParticipantId } = req.body;
+    const { winnerId, score, isNoShow, noShowParticipantId, games } = req.body;
 
     const match = await leagueMatches.findById(req.params.matchId);
     if (!match) return res.status(404).json({ error: 'Match not found' });
@@ -931,7 +935,8 @@ router.post('/:id/matches/:matchId/resolve', requireAuth, requireAdmin, async (r
     match.winnerId = winnerId;
     match.score = score;
     match.noShowParticipantId = isNoShow ? noShowParticipantId : undefined;
-    
+    if (games) match.games = games;
+
     const eloChanges = await applyLeagueMatchElo(match);
     res.json({ match, eloChanges });
   } catch (err) {

@@ -34,6 +34,28 @@ function getMostUsedCharacters(participantId: string, bracket: Bracket | null | 
   for (const match of allMatches) {
     if (match.status !== 'completed') continue;
 
+    // Characters from per-game log
+    if (match.games) {
+      if (match.participant1Id === participantId) {
+        for (const g of match.games) {
+          if (g.player1Character) {
+            counts.set(g.player1Character, (counts.get(g.player1Character) ?? 0) + 1);
+            if (!firstSeen.has(g.player1Character)) firstSeen.set(g.player1Character, order++);
+          }
+        }
+      }
+      if (match.participant2Id === participantId) {
+        for (const g of match.games) {
+          if (g.player2Character) {
+            counts.set(g.player2Character, (counts.get(g.player2Character) ?? 0) + 1);
+            if (!firstSeen.has(g.player2Character)) firstSeen.set(g.player2Character, order++);
+          }
+        }
+      }
+      continue;
+    }
+
+    // Fallback to match-level characters
     if (match.participant1Id === participantId && match.participant1Characters) {
       for (const charId of match.participant1Characters) {
         counts.set(charId, (counts.get(charId) ?? 0) + 1);

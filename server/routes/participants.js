@@ -15,7 +15,7 @@
  */
 
 import { Router } from 'express';
-import { participants, tournaments, leagues, leagueMatches, communities, users, membershipRequests } from '../db/collections.js';
+import { participants, tournaments, tournamentMatches, rankedMatches, leagues, leagueMatches, communities, users, membershipRequests } from '../db/collections.js';
 import { validateParticipant } from '../models/participant.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
 import {
@@ -37,6 +37,7 @@ import {
   setParticipantGameList,
   getEffectiveElo,
 } from '../utils/participantGames.js';
+import { getRankName, getRankColor } from '../utils/eloEngine.js';
 
 const router = Router();
 
@@ -912,6 +913,353 @@ router.get('/:id/league-matches', async (req, res) => {
   } catch (err) {
     console.error('[Participants] GET /:id/league-matches error:', err);
     res.status(500).json({ error: 'Failed to read league matches' });
+  }
+});
+
+// GET /api/participants/:id/stats — comprehensive player statistics
+router.get('/:id/stats', async (req, res) => {
+  try {
+    const p = await participants.findById(req.params.id);
+    if (!p) return res.status(404).json({ error: 'Participant not found' });
+
+    const participantId = p.id;
+
+    // Main characters by game (chosen by the user, not computed from usage)
+    const mainCharactersByGame = {};
+    for (const [gameId, profile] of Object.entries(p.games || {})) {
+      if (profile.mainCharacterId) {
+        mainCharactersByGame[gameId] = { id: profile.mainCharacterId };
+      }
+    }
+
+    const [p1T, p2T, p1R, p2R, p1L, p2L, allTournaments, allLeagues] = await Promise.all([
+      tournamentMatches.getByField('player1GlobalId', participantId),
+      tournamentMatches.getByField('player2GlobalId', participantId),
+      rankedMatches.getByField('playerAId', participantId),
+      rankedMatches.getByField('playerBId', participantId),
+      leagueMatches.getByField('participant1Id', participantId),
+      leagueMatches.getByField('participant2Id', participantId),
+      tournaments.getAll(),
+      leagues.getAll(),
+    ]);
+
+    const tournamentGameMap = new Map(allTournaments.map((t) => [t.id, t.gameId]));
+    const leagueGameMap = new Map(allLeagues.map((l) => [l.id, l.gameId]));
+
+    const tMatches = [...p1T, ...p2T];
+    const rMatches = [...p1R, ...p2R];
+    const lMatches = [...p1L, ...p2L];
+
+    const stats = {
+      characterUsage: new Map(),
+      opponentCharacterUsage: new Map(),
+      characterMatchups: new Map(),
+      peakEloByGame: new Map(),
+      headToHeadPlayers: new Map(),
+      headToHeadPlayersByType: new Map(),
+      monthlyActivity: new Map(),
+      topPlacements: { top1: 0, top3: 0, top8: 0, top16: 0 },
+      allMatchWins: 0,
+      allMatchLosses: 0,
+      recordByGame: new Map(),
+      recordByType: new Map(),
+    };
+
+    const monthKey = (date) => (date ?? '').slice(0, 7);
+
+    const recordMatch = (date, won, gameId, myChars, oppChars, oppId, myEloAfter, matchType, games, isP1, myId = participantId) => {
+      const mk = monthKey(date);
+      if (mk) {
+        const ma = stats.monthlyActivity.get(mk) || { month: mk, matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } } };
+        ma.matches++;
+        if (matchType && ma.byType[matchType]) {
+          ma.byType[matchType].matches++;
+        }
+        stats.monthlyActivity.set(mk, ma);
+      }
+
+      // Character stats: per game if available, otherwise per match
+      const gameLog = games && games.length > 0 ? games : null;
+      const matchGameWon = won;
+
+      if (gameLog && gameId) {
+        for (const g of gameLog) {
+          const gameWon = g.winnerId === myId;
+          const myChar = isP1 ? g.player1Character : g.player2Character;
+          const oppChar = isP1 ? g.player2Character : g.player1Character;
+
+          if (myChar) {
+            const key = `${gameId}:${myChar}`;
+            const cu = stats.characterUsage.get(key) || { gameId, characterId: myChar, count: 0, wins: 0, losses: 0 };
+            cu.count++;
+            gameWon ? cu.wins++ : cu.losses++;
+            stats.characterUsage.set(key, cu);
+          }
+
+          if (oppChar) {
+            const key = `${gameId}:${oppChar}`;
+            const ocu = stats.opponentCharacterUsage.get(key) || { gameId, characterId: oppChar, count: 0, wins: 0, losses: 0 };
+            ocu.count++;
+            gameWon ? ocu.wins++ : ocu.losses++;
+            stats.opponentCharacterUsage.set(key, ocu);
+          }
+
+          if (myChar && oppChar) {
+            const cm = stats.characterMatchups.get(`${gameId}:${myChar}`) || new Map();
+            const rec = cm.get(`${gameId}:${oppChar}`) || {
+              wins: 0, losses: 0,
+              byType: { tournament: { wins: 0, losses: 0 }, ranked: { wins: 0, losses: 0 }, league: { wins: 0, losses: 0 } }
+            };
+            gameWon ? rec.wins++ : rec.losses++;
+            if (matchType) {
+              gameWon ? rec.byType[matchType].wins++ : rec.byType[matchType].losses++;
+            }
+            cm.set(`${gameId}:${oppChar}`, rec);
+            stats.characterMatchups.set(`${gameId}:${myChar}`, cm);
+          }
+        }
+      } else if (myChars && myChars.length > 0 && gameId) {
+        for (const c of myChars) {
+          const key = `${gameId}:${c}`;
+          const cu = stats.characterUsage.get(key) || { gameId, characterId: c, count: 0, wins: 0, losses: 0 };
+          cu.count++;
+          matchGameWon ? cu.wins++ : cu.losses++;
+          stats.characterUsage.set(key, cu);
+        }
+
+        if (oppChars && oppChars.length > 0) {
+          for (const myC of myChars) {
+            const cm = stats.characterMatchups.get(`${gameId}:${myC}`) || new Map();
+            for (const oppC of oppChars) {
+              const rec = cm.get(`${gameId}:${oppC}`) || {
+                wins: 0, losses: 0,
+                byType: { tournament: { wins: 0, losses: 0 }, ranked: { wins: 0, losses: 0 }, league: { wins: 0, losses: 0 } }
+              };
+              matchGameWon ? rec.wins++ : rec.losses++;
+              if (matchType) {
+                matchGameWon ? rec.byType[matchType].wins++ : rec.byType[matchType].losses++;
+              }
+              cm.set(`${gameId}:${oppC}`, rec);
+            }
+            stats.characterMatchups.set(`${gameId}:${myC}`, cm);
+          }
+        }
+
+        if (oppChars && oppChars.length > 0) {
+          for (const oppC of oppChars) {
+            const key = `${gameId}:${oppC}`;
+            const ocu = stats.opponentCharacterUsage.get(key) || { gameId, characterId: oppC, count: 0, wins: 0, losses: 0 };
+            ocu.count++;
+            matchGameWon ? ocu.wins++ : ocu.losses++;
+            stats.opponentCharacterUsage.set(key, ocu);
+          }
+        }
+      }
+
+      if (myEloAfter != null && gameId) {
+        const current = stats.peakEloByGame.get(gameId);
+        if (!current || myEloAfter > current.points) {
+          stats.peakEloByGame.set(gameId, {
+            points: myEloAfter,
+            rank: getRankName(myEloAfter),
+            color: getRankColor(getRankName(myEloAfter)),
+          });
+        }
+      }
+
+      if (oppId) {
+        const h2h = stats.headToHeadPlayers.get(oppId) || { wins: 0, losses: 0 };
+        won ? h2h.wins++ : h2h.losses++;
+        stats.headToHeadPlayers.set(oppId, h2h);
+
+        if (matchType) {
+          const byType = stats.headToHeadPlayersByType.get(matchType) || new Map();
+          const h2hT = byType.get(oppId) || { wins: 0, losses: 0 };
+          won ? h2hT.wins++ : h2hT.losses++;
+          byType.set(oppId, h2hT);
+          stats.headToHeadPlayersByType.set(matchType, byType);
+        }
+      }
+
+      won ? stats.allMatchWins++ : stats.allMatchLosses++;
+
+      if (gameId) {
+        const rg = stats.recordByGame.get(gameId) || { wins: 0, losses: 0 };
+        won ? rg.wins++ : rg.losses++;
+        stats.recordByGame.set(gameId, rg);
+      }
+
+      if (matchType) {
+        const rt = stats.recordByType.get(matchType) || { wins: 0, losses: 0 };
+        won ? rt.wins++ : rt.losses++;
+        stats.recordByType.set(matchType, rt);
+      }
+    };
+
+    // Tournament match records from tournament_matches collection
+    for (const m of tMatches) {
+      const isP1 = m.player1GlobalId === participantId;
+      const isP2 = m.player2GlobalId === participantId;
+      if (!isP1 && !isP2) continue;
+      const won = m.winnerGlobalId === participantId;
+      const oppId = isP1 ? m.player2GlobalId : m.player1GlobalId;
+      const myId = isP1 ? m.player1Id : m.player2Id;
+      recordMatch(m.createdAt, won, m.gameId, null, null, oppId, null, 'tournament', m.games, isP1, myId);
+    }
+
+    // Ranked/duel matches
+    for (const m of rMatches) {
+      const isP1 = m.playerAId === participantId;
+      const isP2 = m.playerBId === participantId;
+      if (!isP1 && !isP2) continue;
+      const won = m.winnerId === participantId;
+      const myChars = isP1 ? m.player1Characters : m.player2Characters;
+      const oppChars = isP1 ? m.player2Characters : m.player1Characters;
+      const oppId = isP1 ? m.playerBId : m.playerAId;
+      const myEloAfter = isP1 ? m.player1EloAfter : m.player2EloAfter;
+      recordMatch(m.createdAt, won, m.gameId, myChars, oppChars, oppId, myEloAfter, 'ranked', m.games, isP1);
+    }
+
+    // League matches
+    for (const m of lMatches) {
+      const isP1 = m.participant1Id === participantId;
+      const isP2 = m.participant2Id === participantId;
+      if (!isP1 && !isP2) continue;
+      if (m.status !== 'completed' && m.status !== 'no_show') continue;
+      const noShowLoss = m.status === 'no_show' && m.noShowParticipantId === participantId;
+      const won = !noShowLoss && m.winnerId === participantId;
+      const oppId = isP1 ? m.participant2Id : m.participant1Id;
+      const myEloBefore = isP1 ? (m.participant1EloBefore ?? 0) : (m.participant2EloBefore ?? 0);
+      const myEloChange = isP1 ? (m.participant1EloChange ?? 0) : (m.participant2EloChange ?? 0);
+      const lGameId = m.gameId || leagueGameMap.get(m.leagueId);
+      const myEloAfter = myEloBefore + myEloChange;
+      recordMatch(m.completedDate ?? m.scheduledDate, won, lGameId, null, null, oppId, myEloAfter, 'league', m.games, isP1);
+    }
+
+    // Tournament top placements and monthly tournament count
+    for (const t of allTournaments) {
+      const tp = t.participants.find((x) => x.globalParticipantId === participantId);
+      if (!tp || !tp.finalPosition) continue;
+      if (tp.finalPosition === 1) stats.topPlacements.top1++;
+      if (tp.finalPosition <= 3) stats.topPlacements.top3++;
+      if (tp.finalPosition <= 8) stats.topPlacements.top8++;
+      if (tp.finalPosition <= 16) stats.topPlacements.top16++;
+
+      const mk = monthKey(t.updatedAt);
+      if (mk) {
+        const ma = stats.monthlyActivity.get(mk) || { month: mk, matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } } };
+        ma.tournaments++;
+        stats.monthlyActivity.set(mk, ma);
+      }
+    }
+
+    // Resolve opponent names
+    const opponentIds = new Set(Array.from(stats.headToHeadPlayers.keys()));
+    for (const byType of stats.headToHeadPlayersByType.values()) {
+      for (const oid of byType.keys()) opponentIds.add(oid);
+    }
+    const opponentMap = new Map();
+    for (const oid of opponentIds) {
+      const op = await participants.findById(oid);
+      opponentMap.set(oid, op
+        ? { id: op.id, name: op.name, alias: op.alias || null }
+        : { id: oid, name: 'Unknown', alias: null }
+      );
+    }
+
+    const formatUsage = (entry) => ({
+      gameId: entry.gameId,
+      characterId: entry.characterId,
+      count: entry.count,
+      wins: entry.wins,
+      losses: entry.losses,
+      winRate: entry.count > 0 ? Math.round((entry.wins / entry.count) * 100) : 0,
+    });
+
+    const characterUsage = Array.from(stats.characterUsage.entries())
+      .map(([_, v]) => formatUsage(v))
+      .sort((a, b) => b.count - a.count);
+
+    const opponentCharacterUsage = Array.from(stats.opponentCharacterUsage.entries())
+      .map(([_, v]) => formatUsage(v))
+      .sort((a, b) => b.count - a.count);
+
+    const matchupWinRates = [];
+    for (const [myCharKey, oppMap] of stats.characterMatchups.entries()) {
+      const [myGameId, myChar] = myCharKey.split(':');
+      for (const [oppCharKey, rec] of oppMap.entries()) {
+        const [, oppChar] = oppCharKey.split(':');
+        matchupWinRates.push({
+          gameId: myGameId,
+          characterId: myChar,
+          opponentCharacterId: oppChar,
+          wins: rec.wins,
+          losses: rec.losses,
+          byType: rec.byType,
+          winRate: rec.wins + rec.losses > 0 ? Math.round((rec.wins / (rec.wins + rec.losses)) * 100) : 0,
+        });
+      }
+    }
+    matchupWinRates.sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+
+    const headToHead = Array.from(stats.headToHeadPlayers.entries())
+      .map(([opponentId, rec]) => ({
+        ...opponentMap.get(opponentId),
+        ...rec,
+        winRate: rec.wins + rec.losses > 0 ? Math.round((rec.wins / (rec.wins + rec.losses)) * 100) : 0,
+      }))
+      .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+
+    const headToHeadByType = {};
+    for (const [type, byType] of stats.headToHeadPlayersByType.entries()) {
+      headToHeadByType[type] = Array.from(byType.entries())
+        .map(([opponentId, rec]) => ({
+          ...opponentMap.get(opponentId),
+          ...rec,
+          winRate: rec.wins + rec.losses > 0 ? Math.round((rec.wins / (rec.wins + rec.losses)) * 100) : 0,
+        }))
+        .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+    }
+
+    const monthlyActivity = Array.from(stats.monthlyActivity.values())
+      .sort((a, b) => b.month.localeCompare(a.month));
+
+    const formatRecord = (rec) => ({
+      ...rec,
+      winRate: rec.wins + rec.losses > 0 ? Math.round((rec.wins / (rec.wins + rec.losses)) * 100) : 0,
+    });
+
+    const recordByGame = Array.from(stats.recordByGame.entries())
+      .map(([gameId, rec]) => ({ gameId, ...formatRecord(rec) }))
+      .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+
+    const recordByType = Array.from(stats.recordByType.entries())
+      .map(([type, rec]) => ({ type, ...formatRecord(rec) }))
+      .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+
+    res.json({
+      mainCharactersByGame,
+      characterUsage,
+      peakEloByGame: Array.from(stats.peakEloByGame.entries())
+        .map(([gameId, v]) => ({ gameId, ...v }))
+        .sort((a, b) => b.points - a.points),
+      matchupWinRates,
+      opponentCharacterUsage,
+      topPlacements: stats.topPlacements,
+      headToHead,
+      headToHeadByType,
+      monthlyActivity,
+      recordByGame,
+      recordByType,
+      allMatchWins: stats.allMatchWins,
+      allMatchLosses: stats.allMatchLosses,
+      allMatchWinRate: stats.allMatchWins + stats.allMatchLosses > 0
+        ? Math.round((stats.allMatchWins / (stats.allMatchWins + stats.allMatchLosses)) * 100)
+        : 0,
+    });
+  } catch (err) {
+    console.error('[Participants] GET /:id/stats error:', err);
+    res.status(500).json({ error: 'Failed to read participant stats' });
   }
 });
 

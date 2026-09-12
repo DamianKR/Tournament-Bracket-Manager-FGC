@@ -13,7 +13,9 @@ import {
 import { getParticipantElo, getParticipantRank } from '@/utils/participantGames';
 import { getDuelChallenge, reportDuelResult, resolveConflict, completeDuelChallenge } from '@/services/duels/duelService';
 import { DuelChallenge } from '@/models/duel';
-import CharacterSelector from '@/components/CharacterSelector/CharacterSelector';
+import type { MatchGame } from '@/models/rankedMatch';
+import { getGame } from '@/data/games';
+import GameLogEditor from '@/components/GameLogEditor/GameLogEditor';
 import './RecordMatchTab.css';
 
 const MAX_EVIDENCE_SIZE_MB = 4;
@@ -43,17 +45,17 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
   // Record match
   const [playerAId, setPlayerAId] = useState('');
   const [playerBId, setPlayerBId] = useState('');
-  const [winnerId, setWinnerId] = useState('');
   const [evidence, setEvidence] = useState('');
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordError, setRecordError] = useState('');
   const [lastResult, setLastResult] = useState<MatchResult | null>(null);
   const [evidenceError, setEvidenceError] = useState('');
-  const [scoreA, setScoreA] = useState(0);
-  const [scoreB, setScoreB] = useState(0);
-  const [charactersA, setCharactersA] = useState<string[]>([]);
-  const [charactersB, setCharactersB] = useState<string[]>([]);
+  const [games, setGames] = useState<MatchGame[]>([]);
+
+  const scoreA = games.filter(g => g.winnerId === playerAId).length;
+  const scoreB = games.filter(g => g.winnerId === playerBId).length;
+  const winnerId = scoreA > scoreB ? playerAId : scoreB > scoreA ? playerBId : '';
 
   // Participant name lookup
   const participantMap = new Map(allParticipants.map((p) => [p.id, p]));
@@ -74,7 +76,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
           setChallenge(ch);
           setPlayerAId(ch.challengerId);
           setPlayerBId(ch.challengedId);
-          setWinnerId('');
+
           setLastResult(null);
           setEvidence('');
           setEvidenceFile(null);
@@ -115,17 +117,18 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
         // If status is now 'completed', both results matched - record the match
         if (updated.status === 'completed') {
+          const derivedScoreA = games.filter(g => g.winnerId === playerAId).length;
+          const derivedScoreB = games.filter(g => g.winnerId === playerBId).length;
           const result = await recordMatch(
-            playerAId, 
-            playerBId, 
-            winnerId, 
-            challenge.gameId, 
-            'duel', 
+            playerAId,
+            playerBId,
+            winnerId,
+            challenge.gameId,
+            'duel',
             communityId,
-            scoreA,
-            scoreB,
-            charactersA.length > 0 ? charactersA : undefined,
-            charactersB.length > 0 ? charactersB : undefined
+            derivedScoreA,
+            derivedScoreB,
+            games
           );
           setLastResult(result);
 
@@ -174,17 +177,18 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
       const updated = await resolveConflict(challenge.id, winnerId);
       if (updated) {
         // Record the match with admin's decision
+        const derivedScoreA = games.filter(g => g.winnerId === playerAId).length;
+        const derivedScoreB = games.filter(g => g.winnerId === playerBId).length;
         const result = await recordMatch(
-          playerAId, 
-          playerBId, 
-          winnerId, 
-          challenge.gameId, 
-          'duel', 
+          playerAId,
+          playerBId,
+          winnerId,
+          challenge.gameId,
+          'duel',
           communityId,
-          scoreA,
-          scoreB,
-          charactersA.length > 0 ? charactersA : undefined,
-          charactersB.length > 0 ? charactersB : undefined
+          derivedScoreA,
+          derivedScoreB,
+          games
         );
         setLastResult(result);
         
@@ -264,7 +268,6 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
             <div className="rk-matchup">
               {/* Player A */}
               <div className="rk-player-slot">
-                <label className="rk-slot-label">{t('ranked.duelInfo.record.player1')}</label>
                 <div className="rk-player-locked">
                   {pName(playerAId)}
                 </div>
@@ -273,7 +276,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                     participant={participantMap.get(playerAId)!}
                     gameId={challenge?.gameId ?? GAMES[0]?.id ?? 'ssbu'}
                     isWinner={winnerId === playerAId}
-                    onSetWinner={() => setWinnerId(playerAId)}
+
                   />
                 )}
               </div>
@@ -282,7 +285,6 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
               {/* Player B */}
               <div className="rk-player-slot">
-                <label className="rk-slot-label">{t('ranked.duelInfo.record.player2')}</label>
                 <div className="rk-player-locked">
                   {pName(playerBId)}
                 </div>
@@ -291,7 +293,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                     participant={participantMap.get(playerBId)!}
                     gameId={challenge?.gameId ?? GAMES[0]?.id ?? 'ssbu'}
                     isWinner={winnerId === playerBId}
-                    onSetWinner={() => setWinnerId(playerBId)}
+
                   />
                 )}
               </div>
@@ -299,98 +301,39 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
             {playerAId && playerBId && (
               <>
-                {/* Score inputs */}
+                {/* Score */}
                 <div className="rk-score-section">
-                  <h4>{t('ranked.duelInfo.record.scoreLabel', { defaultValue: 'Score' })}</h4>
                   <div className="rk-score-inputs">
                     <div className="rk-score-player">
-                      <label>{pName(playerAId)}</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="99"
-                        value={scoreA}
-                        onChange={(e) => {
-                          const val = Math.max(0, Math.min(99, parseInt(e.target.value) || 0));
-                          setScoreA(val);
-                          if (val > scoreB) setWinnerId(playerAId);
-                        }}
-                        className="rk-score-input"
-                      />
+                      {/* <label>{pName(playerAId)}</label> */} 
+                      <span className="rk-score-display">{scoreA}</span>
                     </div>
                     <span className="rk-score-separator">-</span>
                     <div className="rk-score-player">
-                      <label>{pName(playerBId)}</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="99"
-                        value={scoreB}
-                        onChange={(e) => {
-                          const val = Math.max(0, Math.min(99, parseInt(e.target.value) || 0));
-                          setScoreB(val);
-                          if (val > scoreA) setWinnerId(playerBId);
-                        }}
-                        className="rk-score-input"
-                      />
+                      {/* <label>{pName(playerBId)}</label> */}
+                      <span className="rk-score-display">{scoreB}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Character selection */}
+                {/* Game log */}
                 {challenge?.gameId && (
                   <div className="rk-characters-section">
-                    <h4>{t('tournament.matchResult.characters', { defaultValue: 'Characters Used' })}</h4>
-                    <div className="rk-characters-grid">
-                      <div className="rk-character-player">
-                        <label>{pName(playerAId)}</label>
-                        <CharacterSelector
-                          gameId={challenge.gameId}
-                          selectedCharacters={charactersA}
-                          onToggle={(charId) => {
-                            setCharactersA(prev =>
-                              prev.includes(charId)
-                                ? prev.filter(id => id !== charId)
-                                : [...prev, charId]
-                            );
-                          }}
-                        />
-                      </div>
-                      <div className="rk-character-player">
-                        <label>{pName(playerBId)}</label>
-                        <CharacterSelector
-                          gameId={challenge.gameId}
-                          selectedCharacters={charactersB}
-                          onToggle={(charId) => {
-                            setCharactersB(prev =>
-                              prev.includes(charId)
-                                ? prev.filter(id => id !== charId)
-                                : [...prev, charId]
-                            );
-                          }}
-                        />
-                      </div>
-                    </div>
+                    <h4>{t('tournament.matchResult.gameLog')}</h4>
+                    <GameLogEditor
+                      games={games}
+                      onChange={setGames}
+                      playerAId={playerAId}
+                      playerBId={playerBId}
+                      playerAName={pName(playerAId)}
+                      playerBName={pName(playerBId)}
+                      gameId={challenge.gameId}
+                      characters={getGame(challenge.gameId)?.characters ?? []}
+                    />
                   </div>
                 )}
 
-                <div className="rk-winner-prompt">
-                  <p>{t('ranked.duelInfo.record.whoWon')}</p>
-                  <div className="rk-winner-btns">
-                    <button
-                      className={`rk-winner-btn ${winnerId === playerAId ? 'selected' : ''}`}
-                      onClick={() => setWinnerId(playerAId)}
-                    >
-                      <i className="fas fa-crown" /> {pName(playerAId)}
-                    </button>
-                    <button
-                      className={`rk-winner-btn ${winnerId === playerBId ? 'selected' : ''}`}
-                      onClick={() => setWinnerId(playerBId)}
-                    >
-                      <i className="fas fa-crown" /> {pName(playerBId)}
-                    </button>
-                  </div>
-                </div>
+
               </>
             )}
 
@@ -473,7 +416,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                 <button
                   className="btn btn-primary"
                   onClick={handleAdminResolve}
-                  disabled={recording || !winnerId}
+                  disabled={recording || !winnerId || games.length === 0}
                 >
                   {recording ? t('ranked.duelInfo.record.resolving') : t('ranked.duelInfo.record.confirmWinner')}
                 </button>
@@ -483,7 +426,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                 <button
                   className="btn btn-primary"
                   onClick={handleReportResult}
-                  disabled={recording || !winnerId}
+                  disabled={recording || !winnerId || games.length === 0}
                 >
                   {recording ? t('ranked.duelInfo.record.recording') : t('ranked.duelInfo.record.confirmRecord')}
                 </button>
@@ -493,7 +436,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                 <button
                   className="btn btn-primary"
                   onClick={handleReportResult}
-                  disabled={recording || !winnerId}
+                  disabled={recording || !winnerId || games.length === 0}
                 >
                   {recording ? t('ranked.duelInfo.record.reporting') : t('ranked.duelInfo.record.reportResult')}
                 </button>
@@ -531,15 +474,15 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
   const adminGames = GAMES.filter(g => canAdminGame(g.id));
   const [playerAId, setPlayerAId] = useState('');
   const [playerBId, setPlayerBId] = useState('');
-  const [winnerId, setWinnerId] = useState('');
   const [gameId, setGameId] = useState<string>(adminGames[0]?.id ?? GAMES[0]?.id ?? 'ssbu');
   const [recording, setRecording] = useState(false);
   const [recordError, setRecordError] = useState('');
   const [lastResult, setLastResult] = useState<MatchResult | null>(null);
-  const [scoreA, setScoreA] = useState(0);
-  const [scoreB, setScoreB] = useState(0);
-  const [charactersA, setCharactersA] = useState<string[]>([]);
-  const [charactersB, setCharactersB] = useState<string[]>([]);
+  const [games, setGames] = useState<MatchGame[]>([]);
+
+  const scoreA = games.filter(g => g.winnerId === playerAId).length;
+  const scoreB = games.filter(g => g.winnerId === playerBId).length;
+  const winnerId = scoreA > scoreB ? playerAId : scoreB > scoreA ? playerBId : '';
 
   const participantMap = new Map(allParticipants.map((p) => [p.id, p]));
 
@@ -553,28 +496,26 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
     setRecordError('');
     setLastResult(null);
     try {
+      const derivedScoreA = games.filter(g => g.winnerId === playerAId).length;
+      const derivedScoreB = games.filter(g => g.winnerId === playerBId).length;
       const result = await recordMatch(
-        playerAId, 
-        playerBId, 
-        winnerId, 
-        gameId, 
-        'free', 
+        playerAId,
+        playerBId,
+        winnerId,
+        gameId,
+        'free',
         communityId,
-        scoreA,
-        scoreB,
-        charactersA.length > 0 ? charactersA : undefined,
-        charactersB.length > 0 ? charactersB : undefined
+        derivedScoreA,
+        derivedScoreB,
+        games
       );
       setLastResult(result);
 
       // Reset form
       setPlayerAId('');
       setPlayerBId('');
-      setWinnerId('');
-      setScoreA(0);
-      setScoreB(0);
-      setCharactersA([]);
-      setCharactersB([]);
+
+      setGames([]);
     } catch (err: unknown) {
       setRecordError(err instanceof Error ? err.message : t('ranked.duelInfo.record.errorFreeMatch'));
     } finally {
@@ -596,9 +537,20 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
       <div className="card rk-record-card">
         <div className="rk-record-header">
           <span className="rk-record-icon"><i className="fas fa-gamepad" /></span>
-          <div>
+          <div className="rk-record-header-text">
             <h2>{t('ranked.duelInfo.record.adminTitle')}</h2>
             <p>{t('ranked.duelInfo.record.reportDesc')}</p>
+          </div>
+          <div className="rk-record-game-filter">
+            <select
+              className="rk-select rk-game-filter"
+              value={gameId}
+              onChange={(e) => { setGameId(e.target.value); setLastResult(null); }}
+            >
+              {adminGames.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -610,27 +562,13 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
 
         {allParticipants.length >= 2 && (
           <>
-            <div className="form-group rk-game-select">
-              <label>{t('ranked.duelInfo.record.gameLabel')}</label>
-              <select
-                className="rk-select"
-                value={gameId}
-                onChange={(e) => { setGameId(e.target.value); setWinnerId(''); setLastResult(null); }}
-              >
-                {adminGames.map((g) => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
-                ))}
-              </select>
-            </div>
-
             <div className="rk-matchup">
               {/* Player A */}
               <div className="rk-player-slot">
-                <label className="rk-slot-label">{t('ranked.duelInfo.record.player1')}</label>
                 <select
                   className="rk-select"
                   value={playerAId}
-                  onChange={(e) => { setPlayerAId(e.target.value); setWinnerId(''); setLastResult(null); }}
+                  onChange={(e) => { setPlayerAId(e.target.value); setLastResult(null); }}
                 >
                   <option value="">{t('ranked.duelInfo.record.selectPlayer')}</option>
                   {allParticipants
@@ -647,7 +585,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
                     participant={participantMap.get(playerAId)!}
                     gameId={gameId}
                     isWinner={winnerId === playerAId}
-                    onSetWinner={() => setWinnerId(playerAId)}
+
                   />
                 )}
               </div>
@@ -656,11 +594,10 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
 
               {/* Player B */}
               <div className="rk-player-slot">
-                <label className="rk-slot-label">{t('ranked.duelInfo.record.player2')}</label>
                 <select
                   className="rk-select"
                   value={playerBId}
-                  onChange={(e) => { setPlayerBId(e.target.value); setWinnerId(''); setLastResult(null); }}
+                  onChange={(e) => { setPlayerBId(e.target.value); setLastResult(null); }}
                 >
                   <option value="">{t('ranked.duelInfo.record.selectPlayer')}</option>
                   {allParticipants
@@ -677,7 +614,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
                     participant={participantMap.get(playerBId)!}
                     gameId={gameId}
                     isWinner={winnerId === playerBId}
-                    onSetWinner={() => setWinnerId(playerBId)}
+
                   />
                 )}
               </div>
@@ -685,96 +622,39 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
 
             {playerAId && playerBId && (
               <>
-                {/* Score inputs */}
+                {/* Score */}
                 <div className="rk-score-section">
-                  <h4>{t('ranked.duelInfo.record.scoreLabel', { defaultValue: 'Score' })}</h4>
                   <div className="rk-score-inputs">
                     <div className="rk-score-player">
-                      <label>{pName(playerAId)}</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="99"
-                        value={scoreA}
-                        onChange={(e) => {
-                          const val = Math.max(0, Math.min(99, parseInt(e.target.value) || 0));
-                          setScoreA(val);
-                          if (val > scoreB) setWinnerId(playerAId);
-                        }}
-                        className="rk-score-input"
-                      />
+                      {/* <label>{pName(playerAId)}</label> */}
+                      <span className="rk-score-display">{scoreA}</span>
                     </div>
                     <span className="rk-score-separator">-</span>
                     <div className="rk-score-player">
-                      <label>{pName(playerBId)}</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="99"
-                        value={scoreB}
-                        onChange={(e) => {
-                          const val = Math.max(0, Math.min(99, parseInt(e.target.value) || 0));
-                          setScoreB(val);
-                          if (val > scoreA) setWinnerId(playerBId);
-                        }}
-                        className="rk-score-input"
-                      />
+                      {/* <label>{pName(playerBId)}</label> */}
+                      <span className="rk-score-display">{scoreB}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Character selection */}
-                <div className="rk-characters-section">
-                  <h4>{t('tournament.matchResult.characters', { defaultValue: 'Characters Used' })}</h4>
-                  <div className="rk-characters-grid">
-                    <div className="rk-character-player">
-                      <label>{pName(playerAId)}</label>
-                      <CharacterSelector
-                        gameId={gameId}
-                        selectedCharacters={charactersA}
-                        onToggle={(charId) => {
-                          setCharactersA(prev =>
-                            prev.includes(charId)
-                              ? prev.filter(id => id !== charId)
-                              : [...prev, charId]
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="rk-character-player">
-                      <label>{pName(playerBId)}</label>
-                      <CharacterSelector
-                        gameId={gameId}
-                        selectedCharacters={charactersB}
-                        onToggle={(charId) => {
-                          setCharactersB(prev =>
-                            prev.includes(charId)
-                              ? prev.filter(id => id !== charId)
-                              : [...prev, charId]
-                          );
-                        }}
-                      />
-                    </div>
+                {/* Game log */}
+                {gameId && (
+                  <div className="rk-characters-section">
+                    <h4>{t('tournament.matchResult.gameLog')}</h4>
+                    <GameLogEditor
+                      games={games}
+                      onChange={setGames}
+                      playerAId={playerAId}
+                      playerBId={playerBId}
+                      playerAName={pName(playerAId)}
+                      playerBName={pName(playerBId)}
+                      gameId={gameId}
+                      characters={getGame(gameId)?.characters ?? []}
+                    />
                   </div>
-                </div>
+                )}
 
-                <div className="rk-winner-prompt">
-                  <p>{t('ranked.duelInfo.record.whoWon')}</p>
-                  <div className="rk-winner-btns">
-                    <button
-                      className={`rk-winner-btn ${winnerId === playerAId ? 'selected' : ''}`}
-                      onClick={() => setWinnerId(playerAId)}
-                    >
-                      <i className="fas fa-crown" /> {pName(playerAId)}
-                    </button>
-                    <button
-                      className={`rk-winner-btn ${winnerId === playerBId ? 'selected' : ''}`}
-                      onClick={() => setWinnerId(playerBId)}
-                    >
-                      <i className="fas fa-crown" /> {pName(playerBId)}
-                    </button>
-                  </div>
-                </div>
+
               </>
             )}
 
@@ -784,7 +664,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
               <button
                 className="btn btn-primary"
                 onClick={handleRecord}
-                disabled={recording || !playerAId || !playerBId || !winnerId}
+                disabled={recording || !playerAId || !playerBId || !winnerId || games.length === 0}
               >
                 {recording ? t('ranked.duelInfo.record.calculating') : t('ranked.duelInfo.record.confirmResult')}
               </button>
@@ -814,18 +694,16 @@ function EloPreview({
   participant,
   gameId,
   isWinner,
-  onSetWinner,
 }: {
   participant: GlobalParticipant;
   gameId: string;
   isWinner: boolean;
-  onSetWinner: () => void;
 }) {
   const { t } = useTranslation();
   const pts = getParticipantElo(participant, gameId);
   const rank = getParticipantRank(participant, gameId);
   return (
-    <div className={`rk-elo-preview ${isWinner ? 'winner-preview' : ''}`} onClick={onSetWinner}>
+    <div className={`rk-elo-preview ${isWinner ? 'winner-preview' : ''}`}>
       <span className="rk-elo-rank-icon"><i className={getRankIcon(rank)} /></span>
       <div>
         <span className="rk-elo-rank-name" style={{ color: getRankColor(rank) }}>{rank}</span>

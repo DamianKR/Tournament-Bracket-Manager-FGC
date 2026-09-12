@@ -344,6 +344,51 @@ export async function getParticipantLeagueMatches(participantId: string): Promis
   }
 }
 
+// ── Comprehensive stats ──────────────────────────────────────────────────
+
+export interface ParticipantStatsSummary {
+  mainCharactersByGame: Record<string, { id: string }>;
+  characterUsage: { gameId: string; characterId: string; count: number; wins: number; losses: number; winRate: number }[];
+  opponentCharacterUsage: { gameId: string; characterId: string; count: number; wins: number; losses: number; winRate: number }[];
+  peakEloByGame: { gameId: string; points: number; rank: string; color: string }[];
+  matchupWinRates: { gameId: string; characterId: string; opponentCharacterId: string; wins: number; losses: number; winRate: number; byType: Record<'tournament' | 'ranked' | 'league', { wins: number; losses: number }> }[];
+  topPlacements: { top1: number; top3: number; top8: number; top16: number };
+  headToHead: { id: string; name: string; alias: string | null; wins: number; losses: number; winRate: number }[];
+  headToHeadByType: Record<'tournament' | 'ranked' | 'league', { id: string; name: string; alias: string | null; wins: number; losses: number; winRate: number }[]>;
+  monthlyActivity: { month: string; matches: number; tournaments: number; byType?: { tournament: { matches: number }; ranked: { matches: number }; league: { matches: number } } }[];
+  recordByGame: { gameId: string; wins: number; losses: number; winRate: number }[];
+  recordByType: { type: 'tournament' | 'ranked' | 'league'; wins: number; losses: number; winRate: number }[];
+  allMatchWins: number;
+  allMatchLosses: number;
+  allMatchWinRate: number;
+}
+
+export async function getParticipantStats(participantId: string): Promise<ParticipantStatsSummary> {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/stats`);
+    if (!res.ok) throw new Error('Failed to fetch participant stats');
+    return await res.json();
+  } catch (err) {
+    console.error('[ParticipantService] getParticipantStats error:', err);
+    return {
+      mainCharactersByGame: {},
+      characterUsage: [],
+      opponentCharacterUsage: [],
+      peakEloByGame: [],
+      matchupWinRates: [],
+      topPlacements: { top1: 0, top3: 0, top8: 0, top16: 0 },
+      headToHead: [],
+      headToHeadByType: { tournament: [], ranked: [], league: [] },
+      monthlyActivity: [],
+      recordByGame: [],
+      recordByType: [],
+      allMatchWins: 0,
+      allMatchLosses: 0,
+      allMatchWinRate: 0,
+    };
+  }
+}
+
 // ── Multi-community membership ───────────────────────────────────────────
 
 export interface MembershipRequest {

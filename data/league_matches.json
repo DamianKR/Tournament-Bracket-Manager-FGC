@@ -12713,12 +12713,56 @@
     "week": 1,
     "participant1Id": "gp_1786387087046_wnwtadb",
     "participant2Id": "gp_1786758755895_bgdf2b9",
-    "status": "scheduled",
+    "status": "completed",
     "scheduledDate": "2026-09-01T20:22:00.000Z",
     "deadline": "2026-10-08T20:22:00.000Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-04T18:48:41.546Z",
-    "gameId": "ssbu"
+    "gameId": "ssbu",
+    "reportedResults": [
+      {
+        "participantId": null,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "score": "2-0",
+        "isNoShow": false,
+        "games": [
+          {
+            "gameNumber": 1,
+            "winnerId": "gp_1786387087046_wnwtadb",
+            "player1Character": "dark_samus",
+            "player2Character": "kirby"
+          },
+          {
+            "gameNumber": 2,
+            "winnerId": "gp_1786387087046_wnwtadb",
+            "player1Character": "dark_samus",
+            "player2Character": "kirby"
+          }
+        ],
+        "reportedAt": "2026-09-12T21:07:02.805Z"
+      }
+    ],
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "score": "2-0",
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "dark_samus",
+        "player2Character": "kirby"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "dark_samus",
+        "player2Character": "kirby"
+      }
+    ],
+    "participant1EloBefore": 1681,
+    "participant2EloBefore": 1521,
+    "participant1EloChange": 5,
+    "participant2EloChange": -5,
+    "completedDate": "2026-09-12T21:07:02.811Z"
   },
   {
     "id": "lmatch_1788293958931_qrl5ahm",
@@ -50391,12 +50435,56 @@
     "week": 2,
     "participant1Id": "gp_1786387087046_wnwtadb",
     "participant2Id": "gp_1786399934148_stq7jpb",
-    "status": "scheduled",
+    "status": "completed",
     "scheduledDate": "2026-09-09T21:45:00.000Z",
     "deadline": "2026-10-16T21:45:00.000Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-04T18:57:22.891Z",
-    "gameId": "ssbu"
+    "gameId": "ssbu",
+    "reportedResults": [
+      {
+        "participantId": null,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "score": "2-0",
+        "isNoShow": false,
+        "games": [
+          {
+            "gameNumber": 1,
+            "winnerId": "gp_1786387087046_wnwtadb",
+            "player1Character": "samus",
+            "player2Character": "bayonetta"
+          },
+          {
+            "gameNumber": 2,
+            "winnerId": "gp_1786387087046_wnwtadb",
+            "player1Character": "samus",
+            "player2Character": "bayonetta"
+          }
+        ],
+        "reportedAt": "2026-09-12T21:57:09.202Z"
+      }
+    ],
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "score": "2-0",
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "samus",
+        "player2Character": "bayonetta"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "samus",
+        "player2Character": "bayonetta"
+      }
+    ],
+    "participant1EloBefore": 1694,
+    "participant2EloBefore": 1475,
+    "participant1EloChange": 4,
+    "participant2EloChange": -4,
+    "completedDate": "2026-09-12T21:57:09.206Z"
   },
   {
     "id": "lmatch_1788385465838_abtdcvr",

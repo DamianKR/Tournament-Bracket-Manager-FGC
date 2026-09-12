@@ -10,6 +10,8 @@ import {
   removeParticipant,
   getParticipantLeagueStats,
   getParticipantLeagueMatches,
+  getParticipantStats,
+  type ParticipantStatsSummary,
   getAllParticipantsAsync,
   inviteToCommunity,
   getParticipantAccountSummary,
@@ -32,6 +34,7 @@ import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccount } fro
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import './ParticipantProfile.css';
+import ParticipantStatsOverview from './ParticipantStatsOverview';
 
 type Tab = 'overview' | 'results' | 'matches' | 'edit';
 type MatchTypeFilter = 'all' | 'tournament' | 'league' | 'duel';
@@ -75,6 +78,7 @@ function ParticipantProfile() {
   const [participant, setParticipant] = useState<GlobalParticipant | null>(null);
   const [stats, setStats] = useState<ComputedStats | null>(null);
   const [leagueStats, setLeagueStats] = useState<LeagueStatsSummary | null>(null);
+  const [statsSummary, setStatsSummary] = useState<ParticipantStatsSummary | null>(null);
   const [tab, setTab] = useState<Tab>(initialTab === 'edit' && (canAdminCurrentCommunity || isOwnProfile) ? 'edit' : 'overview');
   const [resultsSubTab, setResultsSubTab] = useState<'tournaments' | 'leagues'>('tournaments');
   const [notFound, setNotFound] = useState(false);
@@ -99,9 +103,6 @@ function ParticipantProfile() {
   const [matchGameFilter, setMatchGameFilter] = useState<string>('all');
 
   const completedLeagues = leagueStats?.leagues.filter((l) => l.status === 'completed') ?? [];
-  const leagueFirstPlaces = completedLeagues.filter((l) => l.rank === 1).length;
-  const leagueTop5 = completedLeagues.filter((l) => l.rank <= 5).length;
-  const leaguesWithMatches = leagueStats?.leagues.filter((l) => l.matchesPlayed > 0).length ?? 0;
 
   // Edit state
   const [editName, setEditName] = useState('');
@@ -187,14 +188,16 @@ function ParticipantProfile() {
         const all = await getAllParticipantsAsync(communityId);
         const p = all.find((x) => x.id === id) ?? getParticipant(id, communityId);
         if (!p) { setNotFound(true); return; }
-        const [tournaments, ls] = await Promise.all([
+        const [tournaments, ls, ps] = await Promise.all([
           loadTournamentsForParticipantAsync(id),
           getParticipantLeagueStats(id),
+          getParticipantStats(id),
         ]);
         loadedParticipant = p;
         setParticipant(p);
         setStats(computeStats(p, tournaments));
         setLeagueStats(ls);
+        setStatsSummary(ps);
         setEditName(p.name);
         setEditAlias(p.alias ?? '');
         const games = Object.keys(p.games || {});
@@ -728,7 +731,10 @@ function ParticipantProfile() {
                 {inviteError && <div className="error-message">{inviteError}</div>}
               </div>
             )}
-                      {/* Per-game ELO profiles */}
+
+            <ParticipantStatsOverview stats={statsSummary} participant={participant} leagueStats={leagueStats} duelStats={duelStats} />
+
+            {/* Per-game ELO profiles */}
             {participant && (
               <div className="card profile-games-card">
                 <h3><i className="fas fa-gamepad" /> {t('participantProfile.gameProfiles')}</h3>
@@ -754,93 +760,8 @@ function ParticipantProfile() {
                 </div>
               </div>
             )}
-            {/* Big stat cards */}
-            <div className="profile-stat-grid">
-              <div className="profile-stat-card profile-stat-card--highlight">
-                <span className="psc-value">{stats.wins}</span>
-                <span className="psc-label"><i className="fas fa-trophy" /> {t('participantProfile.tournamentStats.wins')}</span>
-              </div>
-              <div className="profile-stat-card">
-                <span className="psc-value">{stats.tournamentsPlayed}</span>
-                <span className="psc-label">{t('participantProfile.tournamentStats.played')}</span>
-              </div>
-              <div className="profile-stat-card">
-                <span className="psc-value">{stats.top3}</span>
-                <span className="psc-label">{t('participantProfile.tournamentStats.top3')}</span>
-              </div>
-              <div className="profile-stat-card">
-                <span className="psc-value">{stats.winRate > 0 ? `${stats.winRate}%` : '—'}</span>
-                <span className="psc-label">{t('participantProfile.tournamentStats.winRate')}</span>
-              </div>
-              <div className="profile-stat-card">
-                <span className="psc-value">{stats.matchWins}</span>
-                <span className="psc-label">{t('participantProfile.tournamentStats.matchWins')}</span>
-              </div>
-              <div className="profile-stat-card">
-                <span className="psc-value">{stats.matchLosses}</span>
-                <span className="psc-label">{t('participantProfile.tournamentStats.matchLosses')}</span>
-              </div>
-            </div>
 
-
-
-            {/* Tournament Match Record */}
-            {(stats.matchWins + stats.matchLosses) > 0 && (
-              <div className="card profile-winrate-card">
-                <div className="profile-winrate-header">
-                  <span><i className="fas fa-trophy" /> {t('participantProfile.tournamentRecord')}</span>
-                  <span>{t('common.record', { wins: stats.matchWins, losses: stats.matchLosses })}</span>
-                </div>
-                <div className="profile-winrate-bar">
-                  <div className="profile-winrate-fill" style={{ width: `${stats.winRate}%` }} />
-                </div>
-              </div>
-            )}
-
-            {/* League Stats */}
-            {leagueStats && (
-              <div className="profile-stat-grid">
-                <div className="profile-stat-card profile-stat-card--highlight">
-                  <span className="psc-value">{leagueFirstPlaces}</span>
-                  <span className="psc-label"><i className="fas fa-trophy" /> {t('participantProfile.leagueStats.wins')}</span>
-                </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{leaguesWithMatches}</span>
-                  <span className="psc-label">{t('participantProfile.leagueStats.played')}</span>
-                </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{leagueTop5}</span>
-                  <span className="psc-label">{t('participantProfile.leagueStats.top5')}</span>
-                </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{leagueStats.winRate > 0 ? `${leagueStats.winRate}%` : '—'}</span>
-                  <span className="psc-label">{t('participantProfile.leagueStats.winRate')}</span>
-                </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{leagueStats.totalWins}</span>
-                  <span className="psc-label">{t('participantProfile.leagueStats.matchWins')}</span>
-                </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{leagueStats.totalLosses}</span>
-                  <span className="psc-label">{t('participantProfile.leagueStats.matchLosses')}</span>
-                </div>
-              </div>
-            )}
-
-            {/* League Match Record */}
-            {leagueStats && (
-              <div className="card profile-winrate-card profile-winrate-card--league">
-                <div className="profile-winrate-header">
-                  <span><i className="fas fa-trophy" /> {t('participantProfile.leagueRecord')}</span>
-                  <span>{t('common.record', { wins: leagueStats.totalWins, losses: leagueStats.totalLosses })}</span>
-                </div>
-                <div className="profile-winrate-bar">
-                  <div className="profile-winrate-fill" style={{ width: `${leagueStats.winRate}%` }} />
-                </div>
-              </div>
-            )}
-
-            {/* Ranked Duels Stats */}
+            {/* Ranked Duels — challenge info only (stats are in overview dashboard) */}
             <div className="card profile-duels-card">
               <div className="profile-duels-header">
                 <h3><i className="fas fa-swords" /> {t('participantProfile.rankedDuels.title')}</h3>
@@ -851,53 +772,21 @@ function ParticipantProfile() {
                   {t('participantProfile.rankedDuels.challengePlayers')}
                 </button>
               </div>
-              <div className="profile-stat-grid">
-                <div className="profile-stat-card profile-stat-card--duel">
-                  <span className="psc-value">
-                    {duelStats.maxChallengesPerWeek - duelStats.challengesThisWeek}
-                  </span>
-                  <span className="psc-label">
-                    <i className="fas fa-fire" /> {t('participantProfile.rankedDuels.availableThisWeek')}
-                  </span>
-                  <span className="psc-sublabel">
-                    {t('participantProfile.rankedDuels.used', { used: duelStats.challengesThisWeek, total: duelStats.maxChallengesPerWeek })}
-                    {nextResetText && <span className="reset-timer">{t('participantProfile.rankedDuels.resetsIn', { time: nextResetText })}</span>}
-                  </span>
+              <div className="profile-duels-summary">
+                <div className="profile-duel-stat">
+                  <span className="profile-duel-value">{duelStats.maxChallengesPerWeek - duelStats.challengesThisWeek}</span>
+                  <span className="profile-duel-label">{t('participantProfile.rankedDuels.availableThisWeek')}</span>
+                  {nextResetText && <span className="profile-duel-reset">{t('participantProfile.rankedDuels.resetsIn', { time: nextResetText })}</span>}
                 </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{duelStats.duelWinRate > 0 ? `${duelStats.duelWinRate}%` : '—'}</span>
-                  <span className="psc-label">{t('participantProfile.rankedDuels.winRate')}</span>
+                <div className="profile-duel-stat">
+                  <span className="profile-duel-value">{duelStats.pendingChallenges}</span>
+                  <span className="profile-duel-label">{t('participantProfile.rankedDuels.pendingChallenges')}</span>
                 </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{duelStats.duelWins}</span>
-                  <span className="psc-label">{t('participantProfile.rankedDuels.wins')}</span>
-                </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{duelStats.duelLosses}</span>
-                  <span className="psc-label">{t('participantProfile.rankedDuels.losses')}</span>
-                </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{duelStats.pendingChallenges}</span>
-                  <span className="psc-label">{t('participantProfile.rankedDuels.pendingChallenges')}</span>
-                </div>
-                <div className="profile-stat-card">
-                  <span className="psc-value">{duelStats.completedThisWeek}</span>
-                  <span className="psc-label">{t('participantProfile.rankedDuels.thisWeek')}</span>
+                <div className="profile-duel-stat">
+                  <span className="profile-duel-value">{duelStats.completedThisWeek}</span>
+                  <span className="profile-duel-label">{t('participantProfile.rankedDuels.thisWeek')}</span>
                 </div>
               </div>
-
-              {/* Duel Match Record */}
-              {duelStats.totalDuels > 0 && (
-                <div className="card profile-winrate-card profile-winrate-card--duel">
-                  <div className="profile-winrate-header">
-                    <span><i className="fas fa-swords" /> {t('participantProfile.rankedDuels.matchRecord')}</span>
-                    <span>{t('common.record', { wins: duelStats.duelWins, losses: duelStats.duelLosses })}</span>
-                  </div>
-                  <div className="profile-winrate-bar">
-                    <div className="profile-winrate-fill" style={{ width: `${duelStats.duelWinRate}%` }} />
-                  </div>
-                </div>
-              )}
             </div>
           </>
         )}

@@ -1,10 +1,11 @@
 // Core data models for the tournament system
+import type { MatchGame } from './rankedMatch';
 
 // Re-export league types
 export type { League, LeagueMatch, LeagueStanding, LeagueStats } from './league';
 
 // Re-export ranked match types
-export type { RankedMatch, RankedMatchType, RankedMatchResult } from './rankedMatch';
+export type { RankedMatch, RankedMatchType, RankedMatchResult, MatchGame as MatchGame } from './rankedMatch';
 
 // Re-export duel types
 export type { 
@@ -71,6 +72,7 @@ export interface Match {
   participant2Score?: number;
   participant1Characters?: string[]; // Characters used in this specific match (can switch mid-set)
   participant2Characters?: string[];
+  games?: MatchGame[];
 }
 
 export interface Bracket {
@@ -186,6 +188,9 @@ export interface MatchRecord {
   playerBRankBefore: string;
   playerARankAfter: string;
   playerBRankAfter: string;
+  player1Score?: number;
+  player2Score?: number;
+  games?: MatchGame[];
   communityId?: string;
   createdAt: string;
 }

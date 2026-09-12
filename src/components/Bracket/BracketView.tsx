@@ -1,6 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bracket, Participant, Match } from '@/models/types';
+import type { MatchGame } from '@/models/rankedMatch';
 import MatchCard from '@/components/Match/MatchCard';
 import { canRevertMatch } from '@/engine/progression/matchProgression';
 import { loadGlobalParticipants } from '@/services/storage/localStorage';
@@ -11,11 +12,12 @@ interface BracketViewProps {
   participants: Participant[];
   gameId?: string;
   onMatchResult?: (matchId: string, winnerId: string, score1?: number, score2?: number, chars1?: string[], chars2?: string[]) => void;
+  onMatchGames?: (matchId: string, winnerId: string, games: MatchGame[]) => void;
   onRevertMatch?: (matchId: string) => void;
   readOnly?: boolean;
 }
 
-function BracketView({ bracket, participants, gameId, onMatchResult, onRevertMatch, readOnly = false }: BracketViewProps) {
+function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGames, onRevertMatch, readOnly = false }: BracketViewProps) {
   const { t } = useTranslation();
 
   // Refs to sync horizontal scroll between header row and matches
@@ -126,6 +128,7 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onRevertMat
                       participant2Name={getParticipantName(match.participant2Id)}
                       gameId={gameId}
                       onSelectWinner={onMatchResult}
+                      onSelectGames={onMatchGames}
                       onRevertMatch={onRevertMatch}
                       readOnly={readOnly}
                       reversible={onRevertMatch ? canRevertMatch(bracket, match.id) : false}
@@ -167,6 +170,7 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onRevertMat
               participant2Name={getParticipantName(bracket.grandFinal.participant2Id)}
               gameId={gameId}
               onSelectWinner={onMatchResult}
+              onSelectGames={onMatchGames}
               onRevertMatch={onRevertMatch}
               readOnly={readOnly}
               isGrandFinal={true}
@@ -181,6 +185,7 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onRevertMat
                   participant2Name={getParticipantName(bracket.grandFinalReset.participant2Id)}
                   gameId={gameId}
                   onSelectWinner={onMatchResult}
+                  onSelectGames={onMatchGames}
                   onRevertMatch={onRevertMatch}
                   readOnly={readOnly}
                   isGrandFinal={true}
