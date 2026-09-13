@@ -349,10 +349,14 @@ export async function deleteGlobalParticipant(id: string): Promise<void> {
   const filtered = lsReadParticipants().filter((p) => p.id !== id);
   lsWriteParticipants(filtered);
   if (await isServerAvailable()) {
-    fetch(`${SERVER_URL}/api/participants/${encodeURIComponent(id)}`, {
+    const res = await fetch(`${SERVER_URL}/api/participants/${encodeURIComponent(id)}`, {
       method: 'DELETE',
       headers: getAuthHeader(),
-    }).catch((err) => { console.warn('[Storage] Local server participant delete failed:', err); resetServerCache(); });
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || 'Failed to delete participant on server');
+    }
   }
   if (hasSupabase()) {
     _supabaseSyncParticipants(filtered).catch((err) =>

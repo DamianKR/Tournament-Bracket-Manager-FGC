@@ -185,15 +185,25 @@ function ParticipantsPage() {
     try {
       const p = await createParticipant(newName, newAlias, newGameIds, newPrimaryGameId, newGameMainChars, communityId);
       const username = newUsername.trim() || generateUsernameFromName();
-      const u = await createUserAccount(p.id, username, newPassword.trim(), newRole as AuthUser['role'], communityId);
-      const next = [...participants, p];
-      setParticipants(next); refreshStats(next);
-      const nextUsers = new Map(usersMap);
-      nextUsers.set(p.id, u);
-      setUsersMap(nextUsers);
-      setNewName(''); setNewAlias(''); setNewGameIds([]); setNewGameMainChars({}); setNewPrimaryGameId(null);
-      setNewUsername(''); setNewPassword(''); setNewRole('user');
-      setShowCreateForm(false);
+      try {
+        const u = await createUserAccount(p.id, username, newPassword.trim(), newRole as AuthUser['role'], communityId);
+        const next = [...participants, p];
+        setParticipants(next); refreshStats(next);
+        const nextUsers = new Map(usersMap);
+        nextUsers.set(p.id, u);
+        setUsersMap(nextUsers);
+        setNewName(''); setNewAlias(''); setNewGameIds([]); setNewGameMainChars({}); setNewPrimaryGameId(null);
+        setNewUsername(''); setNewPassword(''); setNewRole('user');
+        setShowCreateForm(false);
+      } catch (userErr: any) {
+        // Rollback: delete the participant if user creation failed
+        try {
+          await removeParticipant(p.id);
+        } catch (deleteErr) {
+          console.error('[Participants] Failed to rollback participant:', deleteErr);
+        }
+        throw userErr;
+      }
     } catch (err: any) { setError(err.message); }
     finally { setCreating(false); }
   }

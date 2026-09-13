@@ -48,6 +48,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
   const completedMatches = myMatches.filter(m => m.status === 'completed' || m.status === 'no_show');
   const remainingOpponents = league.participantIds.filter(pid => {
     if (pid === selectedParticipantId) return false;
+    if ((league.bannedParticipantIds || []).includes(pid)) return false;
     return !myMatches.some(m => 
       (m.participant1Id === pid || m.participant2Id === pid) && 
       (m.status === 'completed' || m.status === 'no_show')
@@ -120,6 +121,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
           >
             <option value="">{t('league.myMatches.choosePlayer')}</option>
             {league.participantIds
+              .filter((pid) => !(league.bannedParticipantIds || []).includes(pid))
               .map((pid) => ({ id: pid, name: getSelectParticipantName(pid) }))
               .sort((a, b) => a.name.localeCompare(b.name))
               .map(({ id, name }) => (
