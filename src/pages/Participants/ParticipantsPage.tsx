@@ -112,6 +112,7 @@ function ParticipantsPage() {
       ]);
 
       const scoped = serverData;
+      console.log('[ParticipantsPage] communityId:', communityId, 'serverData:', serverData.map(p => ({ id: p.id, name: p.name, communityId: p.communityId })));
 
       if (scoped.length === 0 && cached.length > 0) {
         saveGlobalParticipants(cached);
@@ -182,6 +183,7 @@ function ParticipantsPage() {
     if (!newPassword.trim()) { setError(t('participants.errors.passwordRequired')); return; }
     if (newPassword.trim().length < 6) { setError(t('participants.errors.passwordTooShort')); return; }
     setCreating(true); setError('');
+    console.log('[ParticipantsPage] Creating participant with communityId:', communityId);
     try {
       const p = await createParticipant(newName, newAlias, newGameIds, newPrimaryGameId, newGameMainChars, communityId);
       const username = newUsername.trim() || generateUsernameFromName();

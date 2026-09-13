@@ -32,6 +32,28 @@ import {
 import { getAuthHeader } from '@/services/auth/authService';
 import { migrateParticipantGames } from '@/utils/participantGames';
 
+// ── Auth expiry helper ──────────────────────────────────────────────────
+// Si un write autenticado recibe 401, notificamos al contexto de auth para
+// que muestre el banner de "sesión expirada" sin bloquear el flujo.
+function dispatchAuthExpired(): void {
+  try { window.dispatchEvent(new Event('auth:expired')); } catch {}
+}
+
+async function authedFetch(url: string, options: RequestInit): Promise<void> {
+  try {
+    const res = await fetch(url, options);
+    if (res.status === 401) {
+      console.warn('[Storage] Write rejected with 401 — session expired:', url);
+      dispatchAuthExpired();
+    } else if (!res.ok) {
+      console.warn('[Storage] Write failed:', res.status, url);
+    }
+  } catch (err) {
+    console.warn('[Storage] Write network error:', url, err);
+    resetServerCache();
+  }
+}
+
 // ── Supabase helpers específicos de esta colección ───────────────────────
 // Los stubs genéricos viven en apiClient; aquí solo wrapeamos con los tipos.
 
@@ -108,11 +130,11 @@ async function readAllTournaments(communityId?: string): Promise<Tournament[]> {
 async function writeAllTournaments(data: Tournament[]): Promise<void> {
   lsWriteTournaments(data);
   if (await isServerAvailable()) {
-    fetch(`${SERVER_URL}/api/tournaments`, {
+    authedFetch(`${SERVER_URL}/api/tournaments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(data),
-    }).catch((err) => { console.warn('[Storage] Local server tournaments write failed:', err); resetServerCache(); });
+    });
   }
   if (hasSupabase()) {
     _supabaseSyncTournaments(data).catch((err) =>
@@ -124,11 +146,11 @@ async function writeAllTournaments(data: Tournament[]): Promise<void> {
 // Write a single tournament via PUT (more efficient than bulk POST).
 async function writeOneTournament(tournament: Tournament): Promise<void> {
   if (await isServerAvailable()) {
-    fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournament.id)}`, {
+    authedFetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournament.id)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(tournament),
-    }).catch((err) => { console.warn('[Storage] Local server tournament write failed:', err); resetServerCache(); });
+    });
   }
   if (hasSupabase()) {
     _supabaseSyncTournaments([tournament]).catch((err) =>
@@ -291,11 +313,11 @@ async function readAllParticipants(communityId?: string): Promise<GlobalParticip
 async function writeAllParticipants(data: GlobalParticipant[]): Promise<void> {
   lsWriteParticipants(data);
   if (await isServerAvailable()) {
-    fetch(`${SERVER_URL}/api/participants`, {
+    authedFetch(`${SERVER_URL}/api/participants`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(data),
-    }).catch((err) => { console.warn('[Storage] Local server participants write failed:', err); resetServerCache(); });
+    });
   }
   if (hasSupabase()) {
     _supabaseSyncParticipants(data).catch((err) =>
@@ -331,11 +353,11 @@ export async function saveGlobalParticipant(p: GlobalParticipant): Promise<void>
   lsWriteParticipants(all);
 
   if (await isServerAvailable()) {
-    fetch(`${SERVER_URL}/api/participants/${p.id}`, {
+    authedFetch(`${SERVER_URL}/api/participants/${p.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(p),
-    }).catch((err) => { console.warn('[Storage] Local server participant write failed:', err); resetServerCache(); });
+    });
   }
 
   if (hasSupabase()) {

@@ -27,7 +27,7 @@ function storeToken(token: string): void {
   try { localStorage.setItem(TOKEN_KEY, token); } catch {}
 }
 
-function clearToken(): void {
+export function clearToken(): void {
   try { localStorage.removeItem(TOKEN_KEY); } catch {}
 }
 
@@ -35,6 +35,31 @@ function clearToken(): void {
 export function getAuthHeader(): Record<string, string> {
   const token = getStoredToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+/**
+ * Parsea el campo `exp` del JWT sin verificar firma (solo para UX client-side).
+ * Retorna el timestamp Unix de expiración, o null si no se puede parsear.
+ */
+export function getTokenExpiryTs(token: string): number | null {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return typeof payload.exp === 'number' ? payload.exp : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Retorna true si el token almacenado expira en menos de `thresholdSeconds` segundos.
+ * Si no hay token o no se puede parsear, retorna false.
+ */
+export function isTokenExpiringSoon(thresholdSeconds = 86400 /* 1 día */): boolean {
+  const token = getStoredToken();
+  if (!token) return false;
+  const exp = getTokenExpiryTs(token);
+  if (!exp) return false;
+  return exp - Date.now() / 1000 < thresholdSeconds;
 }
 
 // ── Auth calls ───────────────────────────────────────────────────────────
@@ -72,6 +97,29 @@ export async function getMe(): Promise<SessionUser | null> {
     });
     if (!res.ok) { clearToken(); return null; }
     return await res.json() as SessionUser;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Pide un token fresco al servidor sin re-login.
+ * Llama a POST /api/auth/refresh con el token actual.
+ * Guarda el nuevo token si tiene éxito.
+ * Retorna el usuario actualizado, o null si falla.
+ */
+export async function refreshToken(): Promise<SessionUser | null> {
+  const token = getStoredToken();
+  if (!token) return null;
+  try {
+    const res = await fetch(`${SERVER_URL}/api/auth/refresh`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) { clearToken(); return null; }
+    const data = await res.json() as { token: string; user: SessionUser };
+    storeToken(data.token);
+    return data.user;
   } catch {
     return null;
   }

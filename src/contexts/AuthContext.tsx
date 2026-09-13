@@ -12,6 +12,8 @@ import {
   login as authLogin,
   logout as authLogout,
   getMe,
+  refreshToken,
+  isTokenExpiringSoon,
 } from '@/services/auth/authService';
 
 interface AuthContextType {
@@ -44,6 +46,10 @@ interface AuthContextType {
   logout: () => void;
   /** Actualiza el usuario en contexto (por ejemplo tras un cambio de username). */
   refreshUser: () => Promise<void>;
+  /** true si la sesión expiró en background (token inválido detectado en un write). */
+  sessionExpired: boolean;
+  /** Llama esto después de mostrar el banner de sesión expirada para limpiarlo. */
+  clearSessionExpired: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -52,12 +58,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loginNotifications, setLoginNotifications] = useState<AppNotification[] | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
-  // Restaurar sesión al montar
+  // Restaurar sesión al montar + auto-refresh si el token está por expirar
   useEffect(() => {
-    getMe()
-      .then(setUser)
-      .finally(() => setIsLoading(false));
+    async function restoreSession() {
+      try {
+        // Si el token expira en menos de 1 día, intentar refrescarlo silenciosamente
+        if (isTokenExpiringSoon(86400)) {
+          const refreshed = await refreshToken();
+          if (refreshed) { setUser(refreshed); return; }
+        }
+        const me = await getMe();
+        setUser(me);
+      } catch {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    restoreSession();
+  }, []);
+
+  // Escuchar el evento global de sesión expirada (disparado por writes autenticados con 401)
+  useEffect(() => {
+    function handleExpired() {
+      authLogout();
+      setUser(null);
+      setSessionExpired(true);
+    }
+    window.addEventListener('auth:expired', handleExpired);
+    return () => window.removeEventListener('auth:expired', handleExpired);
   }, []);
 
   const login = useCallback(async (username: string, password: string) => {
@@ -101,6 +132,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (m) => m.isActive !== false && (m.role === 'admin' || m.role === 'community_admin')
     );
 
+  const clearSessionExpired = useCallback(() => setSessionExpired(false), []);
+
   const value: AuthContextType = {
     user,
     isLoading,
@@ -112,6 +145,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     login,
     logout,
     refreshUser,
+    sessionExpired,
+    clearSessionExpired,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

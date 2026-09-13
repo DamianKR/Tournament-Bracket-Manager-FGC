@@ -74,6 +74,7 @@ export async function createParticipant(
   };
 
   setParticipantGameList(participant, gameIds, primaryGameId, gameMainCharacters);
+  console.log('[Participants] createParticipant:', { id: participant.id, name: participant.name, communityId: participant.communityId });
 
   await saveGlobalParticipant(participant);
   return participant;

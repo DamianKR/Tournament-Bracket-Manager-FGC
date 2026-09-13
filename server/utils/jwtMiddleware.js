@@ -18,7 +18,7 @@ import { users } from '../db/collections.js';
 
 export const JWT_SECRET =
   process.env.JWT_SECRET || 'bracket-local-dev-secret-change-for-production';
-export const JWT_EXPIRY = '24h';
+export const JWT_EXPIRY = '7d';
 
 function extractToken(req) {
   const auth = req.headers.authorization;

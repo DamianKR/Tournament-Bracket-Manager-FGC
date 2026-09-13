@@ -246,6 +246,19 @@ router.get('/me', requireAuth, async (req, res) => {
   });
 });
 
+// ── POST /api/auth/refresh ────────────────────────────────────────────────
+// Renueva el JWT del usuario autenticado sin necesidad de re-login.
+// Solo requiere que el token actual sea válido (no necesariamente que no expire pronto).
+
+router.post('/refresh', requireAuth, async (req, res) => {
+  const user = await users.findById(req.user.userId);
+  if (!user || !user.isActive) {
+    return res.status(401).json({ error: 'User not found or disabled' });
+  }
+  const token = signToken(user);
+  res.json({ token, user: { ...safeUser(user), communityIds: getUserCommunityIds(user), participantByCommunity: getParticipantByCommunity(user) } });
+});
+
 // ── PUT /api/auth/me/password ─────────────────────────────────────────────
 // Cualquier usuario autenticado puede cambiar su propia contraseña.
 

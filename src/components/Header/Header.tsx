@@ -10,7 +10,7 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, sessionExpired, clearSessionExpired } = useAuth();
   const { currentCommunity, allCommunities, myParticipantId, canAdminCurrentCommunity, communityRole } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -43,6 +43,22 @@ function Header() {
 
   return (
     <header className="app-header">
+      {sessionExpired && (
+        <div className="session-expired-banner" role="alert">
+          <span>
+            <i className="fas fa-exclamation-triangle" /> {t('auth.sessionExpired', 'Tu sesión expiró. Por favor inicia sesión de nuevo.')}
+          </span>
+          <button
+            className="session-expired-login"
+            onClick={() => { clearSessionExpired(); handleLogout(); navigate('/login'); }}
+          >
+            {t('auth.login', 'Iniciar sesión')}
+          </button>
+          <button className="session-expired-dismiss" onClick={clearSessionExpired} aria-label="Cerrar">
+            <i className="fas fa-times" />
+          </button>
+        </div>
+      )}
       <div className="header-inner">
         <div className="header-logo" onClick={() => { setMenuOpen(false); navigate('/'); }}>
           <span className="header-logo-icon"><i className="fas fa-trophy" aria-hidden="true" /></span>
