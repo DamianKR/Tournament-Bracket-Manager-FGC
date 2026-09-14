@@ -23,6 +23,7 @@ import { useCommunity } from '@/contexts/CommunityContext';
 import { outranksOf, isCommunityAdminOf, communityRoleOf } from '@/utils/membershipRole';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
+import PasswordInput from '@/components/PasswordInput/PasswordInput';
 import './ParticipantsPage.css';
 
 type SortKey = 'name' | 'wins' | 'tournamentsPlayed' | 'winRate';
@@ -376,7 +377,7 @@ function ParticipantsPage() {
                 </div>
                 <div className="form-group">
                   <label>{t('participants.password')} *</label>
-                  <input type="password" value={newPassword}
+                  <PasswordInput value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setShowCreateForm(false); setNewName(''); setNewAlias(''); setNewGameIds([]); setNewGameMainChars({}); setNewPrimaryGameId(null); setNewUsername(''); setNewPassword(''); setNewRole('user'); setError(''); }}}
                     placeholder={t('participants.passwordPlaceholder')} />

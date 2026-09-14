@@ -33,6 +33,7 @@ import { communityRoleOf, gameAdminForOf, outranksOf } from '@/utils/membershipR
 import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccount } from '@/services/auth/authService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
+import PasswordInput from '@/components/PasswordInput/PasswordInput';
 import './ParticipantProfile.css';
 import ParticipantStatsOverview from './ParticipantStatsOverview';
 
@@ -1147,19 +1148,19 @@ function ParticipantProfile() {
                 <div className="profile-edit-grid">
                   <div className="form-group">
                     <label>{t('participantProfile.edit.currentPassword')}</label>
-                    <input type="password" value={pwCurrent}
+                    <PasswordInput value={pwCurrent}
                       onChange={(e) => setPwCurrent(e.target.value)}
                       placeholder={t('participantProfile.edit.currentPasswordPlaceholder')} autoComplete="current-password" />
                   </div>
                   <div className="form-group">
                     <label>{t('participantProfile.edit.newPassword')}</label>
-                    <input type="password" value={pwNew}
+                    <PasswordInput value={pwNew}
                       onChange={(e) => setPwNew(e.target.value)}
                       placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
                   </div>
                   <div className="form-group">
                     <label>{t('participantProfile.edit.confirmPassword')}</label>
-                    <input type="password" value={pwConfirm}
+                    <PasswordInput value={pwConfirm}
                       onChange={(e) => setPwConfirm(e.target.value)}
                       placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
                   </div>
@@ -1193,14 +1194,14 @@ function ParticipantProfile() {
                           </div>
                           <div className="form-group">
                             <label>{t('participantProfile.edit.newPasswordAdminLabel')}</label>
-                            <input type="password" value={admPassword}
+                            <PasswordInput value={admPassword}
                               onChange={(e) => setAdmPassword(e.target.value)}
                               placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
                           </div>
                           {admPassword && (
                             <div className="form-group">
                               <label>{t('participantProfile.edit.confirmNewPasswordLabel')}</label>
-                              <input type="password" value={admConfirm}
+                              <PasswordInput value={admConfirm}
                                 onChange={(e) => setAdmConfirm(e.target.value)}
                                 placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
                             </div>

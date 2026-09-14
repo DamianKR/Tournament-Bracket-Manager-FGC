@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAuthStatus, setupAdmin } from '@/services/auth/authService';
 import type { SessionUser } from '@/models/auth';
+import PasswordInput from '@/components/PasswordInput/PasswordInput';
 import './LoginPage.css';
 
 function LoginPage() {
@@ -124,9 +125,8 @@ function LoginPage() {
               </div>
               <div className="form-group">
                 <label htmlFor="setup-password">{t('login.password')}</label>
-                <input
+                <PasswordInput
                   id="setup-password"
-                  type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder={t('login.placeholderAtLeast6')}
@@ -135,9 +135,8 @@ function LoginPage() {
               </div>
               <div className="form-group">
                 <label htmlFor="setup-confirm">{t('login.confirmPassword')}</label>
-                <input
+                <PasswordInput
                   id="setup-confirm"
-                  type="password"
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   placeholder={t('login.placeholderConfirmPassword')}
@@ -175,10 +174,9 @@ function LoginPage() {
               </div>
               <div className="form-group">
                 <label htmlFor="login-password">{t('login.password')}</label>
-                <input
+                <PasswordInput
                   id="login-password"
                   className="login-input"
-                  type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder={t('login.placeholderPassword')}

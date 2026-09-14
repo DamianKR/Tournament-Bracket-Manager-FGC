@@ -25,11 +25,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { localizedNotification } from '@/utils/notificationText';
 
+export type ToastVariant = 'success' | 'error' | 'warning' | 'info' | 'notification';
+
 export interface Toast {
   id: string;           // notif id or unique id for grouped
   title: string;
   message: string;
-  type: string;
+  type: string;         // notification type (for icon resolution)
+  variant?: ToastVariant; // UI feedback variant (overrides color/icon when set)
+  duration?: number;    // ms, default TOAST_DURATION_MS; 0 = persistent
 }
 
 interface NotificationContextValue {
@@ -42,6 +46,8 @@ interface NotificationContextValue {
   markAllRead: () => Promise<void>;
   deleteNotification: (id: string) => Promise<void>;
   dismissToast: (id: string) => void;
+  /** Muestra un toast de UI (success/error/warning/info) sin necesitar una AppNotification. */
+  showToast: (variant: ToastVariant, message: string, title?: string, duration?: number) => void;
 }
 
 const NotificationContext = createContext<NotificationContextValue | null>(null);
@@ -75,14 +81,23 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addToast = useCallback((toast: Toast) => {
+    const duration = toast.duration !== undefined ? toast.duration : TOAST_DURATION_MS;
     setToasts(prev => {
-      // Avoid duplicate toasts
+      // Avoid duplicate toasts by id
       if (prev.some(t => t.id === toast.id)) return prev;
-      return [...prev, toast];
+      // Cap at 5 simultaneous toasts (drop oldest)
+      const capped = prev.length >= 5 ? prev.slice(1) : prev;
+      return [...capped, toast];
     });
-    // Auto-dismiss after 10s
-    setTimeout(() => dismissToast(toast.id), TOAST_DURATION_MS);
+    if (duration > 0) {
+      setTimeout(() => dismissToast(toast.id), duration);
+    }
   }, [dismissToast]);
+
+  const showToast = useCallback((variant: ToastVariant, message: string, title?: string, duration?: number) => {
+    const id = `ui-toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    addToast({ id, title: title ?? '', message, type: 'ui', variant, duration });
+  }, [addToast]);
 
   const refresh = useCallback(async () => {
     if (!isAuthenticated || !user?.participantId) return;
@@ -127,6 +142,20 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
   }, [isAuthenticated, user, addToast, t, notifToast]);
+
+  // Escuchar el evento global auth:expired disparado cuando un write
+  // autenticado recibe 401 (token expirado silenciosamente).
+  useEffect(() => {
+    function handleAuthExpired() {
+      showToast('error',
+        t('auth.sessionExpiredMessage', 'Tu sesión expiró. Por favor inicia sesión de nuevo.'),
+        t('auth.sessionExpiredTitle', 'Sesión expirada'),
+        0 // persistent — el user debe hacer acción
+      );
+    }
+    window.addEventListener('auth:expired', handleAuthExpired);
+    return () => window.removeEventListener('auth:expired', handleAuthExpired);
+  }, [showToast, t]);
 
   // Load on auth change, poll every 5 minutes
   useEffect(() => {
@@ -196,6 +225,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       markAllRead,
       deleteNotification,
       dismissToast,
+      showToast,
     }}>
       {children}
     </NotificationContext.Provider>
@@ -206,4 +236,26 @@ export function useNotifications() {
   const ctx = useContext(NotificationContext);
   if (!ctx) throw new Error('useNotifications must be used inside NotificationProvider');
   return ctx;
+}
+
+/**
+ * Hook de conveniencia para disparar toasts de UI (success/error/warning/info)
+ * desde cualquier componente dentro de NotificationProvider.
+ *
+ * Usage:
+ *   const toast = useToast();
+ *   toast.success('Guardado');
+ *   toast.error('Error al conectar');
+ *   toast.warning('Algo no está bien');
+ *   toast.info('Información');
+ */
+export function useToast() {
+  const { showToast } = useNotifications();
+  return {
+    success: (message: string, title?: string) => showToast('success', message, title),
+    error:   (message: string, title?: string) => showToast('error',   message, title),
+    warning: (message: string, title?: string) => showToast('warning', message, title),
+    info:    (message: string, title?: string) => showToast('info',    message, title),
+    show:    showToast,
+  };
 }

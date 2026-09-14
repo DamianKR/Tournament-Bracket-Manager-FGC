@@ -46,10 +46,6 @@ interface AuthContextType {
   logout: () => void;
   /** Actualiza el usuario en contexto (por ejemplo tras un cambio de username). */
   refreshUser: () => Promise<void>;
-  /** true si la sesión expiró en background (token inválido detectado en un write). */
-  sessionExpired: boolean;
-  /** Llama esto después de mostrar el banner de sesión expirada para limpiarlo. */
-  clearSessionExpired: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -58,7 +54,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loginNotifications, setLoginNotifications] = useState<AppNotification[] | null>(null);
-  const [sessionExpired, setSessionExpired] = useState(false);
 
   // Restaurar sesión al montar + auto-refresh si el token está por expirar
   useEffect(() => {
@@ -81,11 +76,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Escuchar el evento global de sesión expirada (disparado por writes autenticados con 401)
+  // El toast de UI lo maneja NotificationContext; aquí solo limpiamos el estado de auth.
   useEffect(() => {
     function handleExpired() {
       authLogout();
       setUser(null);
-      setSessionExpired(true);
     }
     window.addEventListener('auth:expired', handleExpired);
     return () => window.removeEventListener('auth:expired', handleExpired);
@@ -132,8 +127,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (m) => m.isActive !== false && (m.role === 'admin' || m.role === 'community_admin')
     );
 
-  const clearSessionExpired = useCallback(() => setSessionExpired(false), []);
-
   const value: AuthContextType = {
     user,
     isLoading,
@@ -145,8 +138,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     login,
     logout,
     refreshUser,
-    sessionExpired,
-    clearSessionExpired,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
