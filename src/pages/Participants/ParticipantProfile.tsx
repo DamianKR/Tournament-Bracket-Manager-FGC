@@ -969,7 +969,6 @@ function ParticipantProfile() {
             onMatchTypeChange={setH2hMatchType}
             timeFilter={h2hTimeFilter}
             onTimeFilterChange={setH2hTimeFilter}
-            gameId={profileGame}
             loading={loadingH2h}
             onNavigateParticipant={(pid) => navigate(getPath(`participants/${pid}`))}
           />

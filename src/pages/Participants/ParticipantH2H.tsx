@@ -14,7 +14,6 @@ interface Props {
   onMatchTypeChange: (type: H2HMatchType) => void;
   timeFilter: H2HTimeFilter;
   onTimeFilterChange: (months: H2HTimeFilter) => void;
-  gameId?: string;
   loading: boolean;
   onNavigateParticipant: (id: string) => void;
 }
@@ -215,7 +214,6 @@ export default function ParticipantH2H({
   onMatchTypeChange,
   timeFilter,
   onTimeFilterChange,
-  gameId = '',
   loading,
   onNavigateParticipant,
 }: Props) {
@@ -223,8 +221,6 @@ export default function ParticipantH2H({
   const [subTab, setSubTab] = useState<H2HSubTab>('participants');
   const [myCharFilter, setMyCharFilter] = useState<string>('');
   const [oppCharFilter, setOppCharFilter] = useState<string>('');
-  const game = getGame(gameId);
-  const accent = game?.color || 'var(--primary-color)';
 
   // Reset character filters when game changes (entries array reference changes)
   useEffect(() => {
@@ -257,7 +253,7 @@ export default function ParticipantH2H({
   }
 
   return (
-    <div className="h2h-panel" style={{ '--h2h-accent': accent } as React.CSSProperties}>
+    <div className="h2h-panel">
       <div className="h2h-controls">
         <div className="h2h-controls-row h2h-controls-row--top">
           <h3>{t('participantProfile.h2h.title', 'Head to Head')}</h3>
@@ -293,21 +289,6 @@ export default function ParticipantH2H({
                   {st === 'participants'
                     ? t('participantProfile.h2h.participants', 'Participants')
                     : t('participantProfile.h2h.characters', 'Characters')}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="h2h-filter-block h2h-filter-block--time">
-            <span className="h2h-filter-label">{t('participantProfile.h2h.time', 'Time')}</span>
-            <div className="h2h-time-tabs">
-              {(['all', '6'] as H2HTimeFilter[]).map((m) => (
-                <button
-                  key={m}
-                  className={`h2h-time-tab ${timeFilter === m ? 'active' : ''}`}
-                  onClick={() => onTimeFilterChange(m)}
-                >
-                  {m === 'all' ? t('participantProfile.h2h.timeAll', 'All') : t('participantProfile.h2h.time6m', '6 months')}
                 </button>
               ))}
             </div>
@@ -387,6 +368,20 @@ export default function ParticipantH2H({
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="h2h-mu-filter-block h2h-mu-filter-block--time">
+                <div className="h2h-time-tabs">
+                  {(['all', '6'] as H2HTimeFilter[]).map((m) => (
+                    <button
+                      key={m}
+                      className={`h2h-time-tab ${timeFilter === m ? 'active' : ''}`}
+                      onClick={() => onTimeFilterChange(m)}
+                    >
+                      {m === 'all' ? t('participantProfile.h2h.timeAll', 'All') : t('participantProfile.h2h.time6m', '6 months')}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
