@@ -46,7 +46,7 @@ function Header() {
       <div className="header-inner">
         <div className="header-logo" onClick={() => { setMenuOpen(false); navigate('/'); }}>
           <span className="header-logo-text">Rank</span>
-          <img src="/logo-white.svg" className="header-logo-mark" alt="N" />
+          <img src={`${import.meta.env.BASE_URL}logo-white.svg`} className="header-logo-mark" alt="N" />
           <span className="header-logo-text">exus</span>
         </div>
 
