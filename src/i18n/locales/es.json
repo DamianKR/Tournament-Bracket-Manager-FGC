@@ -1,5 +1,5 @@
 {
-  "appName": "Bracket Manager",
+  "appName": "RankNexus",
   "header": {
     "events": "Eventos",
     "ranking": "Ranking",
@@ -51,7 +51,7 @@
     "login": "Iniciar sesión"
   },
   "login": {
-    "appName": "Bracket Manager",
+    "appName": "RankNexus",
     "firstTimeSetup": "Configuración inicial",
     "setupDescription": "Crea tu cuenta de admin para comenzar",
     "signIn": "Iniciar sesión",
@@ -1380,3 +1380,4 @@
     "inviteText": "Te invitaron a {{name}}"
   }
 }
+
