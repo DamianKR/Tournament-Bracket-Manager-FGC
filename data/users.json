@@ -7,7 +7,7 @@
     "role": "superadmin",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.682Z",
-    "lastLoginAt": "2026-09-12T06:05:11.191Z",
+    "lastLoginAt": "2026-09-14T01:29:44.375Z",
     "communityId": null,
     "updatedAt": "2026-09-02T15:00:00.000Z",
     "memberships": []
@@ -16,13 +16,13 @@
     "id": "user_1787803682684_psoq3qr",
     "participantId": "gp_1786387087046_wnwtadb",
     "username": "krux",
-    "passwordHash": "$2b$12$k7DwymZuSP/jcE17.d0pxOZ29W5bFuOPY9leheB6hbMZDbUzOF1M6",
+    "passwordHash": "$2b$12$XNK1pHbAor2QKoWoD5m0I.vhDXdSBUVBH6suuUAr6an8JYGtx3bze",
     "role": null,
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.892Z",
     "lastLoginAt": "2026-09-06T14:19:27.753Z",
     "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-04T21:52:40.687Z",
+    "updatedAt": "2026-09-14T01:56:22.857Z",
     "memberships": [
       {
         "participantId": "gp_1786387087046_wnwtadb",

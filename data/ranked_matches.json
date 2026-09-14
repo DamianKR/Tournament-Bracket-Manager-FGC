@@ -2380,5 +2380,42 @@
     ],
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-09-12T21:59:42.370Z"
+  },
+  {
+    "id": "m_1789349483918_fducy9o",
+    "playerAId": "gp_1786387087046_wnwtadb",
+    "playerBId": "gp_1786387250178_ac5thmv",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "loserId": "gp_1786387250178_ac5thmv",
+    "type": "duel",
+    "gameId": "mk11",
+    "playerAPointsBefore": 1511,
+    "playerBPointsBefore": 1489,
+    "playerAPointsAfter": 1511,
+    "playerBPointsAfter": 1489,
+    "playerADelta": 11,
+    "playerBDelta": -11,
+    "playerARankBefore": "Diamante",
+    "playerBRankBefore": "Platino",
+    "playerARankAfter": "Diamante",
+    "playerBRankAfter": "Platino",
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "sub_zero",
+        "player2Character": "scorpion"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "sub_zero",
+        "player2Character": "scorpion"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-14T01:31:23.918Z"
   }
 ]

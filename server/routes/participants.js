@@ -1116,7 +1116,7 @@ router.get('/:id/stats', async (req, res) => {
       const myChars = isP1 ? m.player1Characters : m.player2Characters;
       const oppChars = isP1 ? m.player2Characters : m.player1Characters;
       const oppId = isP1 ? m.playerBId : m.playerAId;
-      const myEloAfter = isP1 ? m.player1EloAfter : m.player2EloAfter;
+      const myEloAfter = isP1 ? m.playerAPointsAfter : m.playerBPointsAfter;
       recordMatch(m.createdAt, won, m.gameId, myChars, oppChars, oppId, myEloAfter, 'ranked', m.games, isP1);
     }
 

@@ -4,7 +4,8 @@ import { ParticipantStatsSummary } from '@/services/participants/participantServ
 import { GlobalParticipant } from '@/models/types';
 import { getCharacter, getGame, GAMES } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
-import { gameBadgeStyle } from '@/utils/gameColor';
+import { gameBadgeStyle, gameAccent } from '@/utils/gameColor';
+import { getRankIcon, RANK_TIERS } from '@/utils/rank';
 import './ParticipantStatsOverview.css';
 
 interface ParticipantStatsOverviewProps {
@@ -16,7 +17,7 @@ interface ParticipantStatsOverviewProps {
 
 type H2HTab = 'players' | 'characters';
 type H2HType = 'all' | 'tournament' | 'ranked' | 'league';
-type RecordTab = 'total' | 'game' | 'type';
+type RecordTab = 'total' | 'type';
 
 function RecordBar({ label, wins, losses, winRate, color }: { label: string; wins: number; losses: number; winRate: number; color?: string }) {
   return (
@@ -41,10 +42,14 @@ function StatCard({ label, children, className = '', style }: { label: string; c
   );
 }
 
-function GameBadge({ gameId }: { gameId: string }) {
+function GameBadge({ gameId, inverted }: { gameId: string; inverted?: boolean }) {
   const game = getGame(gameId);
+  const accent = gameAccent(gameId);
+  const style = inverted && accent
+    ? { background: '#ffffff', color: accent, borderColor: 'transparent' }
+    : gameBadgeStyle(gameId);
   return (
-    <span className="game-badge" style={gameBadgeStyle(gameId)}>
+    <span className="game-badge" style={style}>
       {game?.id?.toUpperCase() || gameId}
     </span>
   );
@@ -117,19 +122,54 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
   const [h2hMyCharFilter, setH2hMyCharFilter] = useState<string>('');
   const [h2hOppCharFilter, setH2hOppCharFilter] = useState<string>('');
   const [recordTab, setRecordTab] = useState<RecordTab>('total');
-  const [usageGameFilter, setUsageGameFilter] = useState<string>('');
   const [activityType, setActivityType] = useState<string>('all');
+
+  // ── Global game selector ────────────────────────────────────────────────────
+  const usageByGame = useMemo(() => groupBy(stats?.characterUsage ?? [], 'gameId'), [stats]);
+
+  // Build the list of games this participant actually has data for
+  const availableGames = useMemo(() => {
+    if (!stats) return GAMES;
+    const ids = new Set<string>();
+    stats.peakEloByGame.forEach((e) => ids.add(e.gameId));
+    stats.recordByGame?.forEach((r) => ids.add(r.gameId));
+    stats.characterUsage.forEach((c) => ids.add(c.gameId));
+    if (ids.size === 0) GAMES.forEach((g) => ids.add(g.id));
+    return GAMES.filter((g) => ids.has(g.id));
+  }, [stats]);
+
+  const primaryGameId = useMemo(() => {
+    if (!participant || !stats) return availableGames[0]?.id ?? GAMES[0]?.id ?? '';
+    // Use participant's declared primary game if it's in availableGames
+    const declared = (participant as GlobalParticipant & { primaryGameId?: string; gameId?: string }).primaryGameId
+      || (participant as GlobalParticipant & { primaryGameId?: string; gameId?: string }).gameId
+      || '';
+    if (declared && availableGames.some((g) => g.id === declared)) return declared;
+    // Otherwise fall back to the game with the highest ELO
+    return stats.peakEloByGame[0]?.gameId || availableGames[0]?.id || GAMES[0]?.id || '';
+  }, [participant, stats, availableGames]);
+
+  const [selectedGame, setSelectedGame] = useState<string>('');
+  const effectiveGame = selectedGame || primaryGameId;
 
   if (!stats || !participant) return null;
 
-  const peakElo = stats.peakEloByGame[0];
-  const totalGames = stats.peakEloByGame.length;
-  const usageByGame = useMemo(() => groupBy(stats.characterUsage, 'gameId'), [stats.characterUsage]);
-  const gamesWithUsage = Object.keys(usageByGame);
-  const hasCharacterData = stats.characterUsage.length > 0;
-  const selectedUsageGame = usageGameFilter || gamesWithUsage[0] || GAMES[0]?.id || '';
-  const selectedUsageChars = selectedUsageGame ? (usageByGame[selectedUsageGame] ?? []) : [];
+  // ── Derived data filtered by effectiveGame ──────────────────────────────────
+  const gameElo = stats.peakEloByGame.find((e) => e.gameId === effectiveGame) ?? stats.peakEloByGame[0] ?? null;
+
+  // Progress within current tier toward next rank
+  const eloTier = gameElo ? RANK_TIERS.find((t) => t.name === gameElo.rank) : null;
+  const nextTier = gameElo ? RANK_TIERS.find((t) => t.minPoints > (eloTier?.minPoints ?? 0)) : null;
+  const eloProgress = gameElo && eloTier && eloTier.maxPoints != null
+    ? Math.round(((gameElo.points - eloTier.minPoints) / (eloTier.maxPoints - eloTier.minPoints + 1)) * 100)
+    : gameElo ? 100 : 0;
+  const gameRecord = stats.recordByGame?.find((g) => g.gameId === effectiveGame) ?? null;
+
+  const selectedUsageChars = usageByGame[effectiveGame] ?? [];
   const selectedUsageTotal = selectedUsageChars.reduce((sum, c) => sum + c.count, 0);
+  const hasCharacterData = stats.characterUsage.length > 0;
+
+  const gameMains = stats.mainCharactersByGame[effectiveGame] ?? null;
 
   const currentH2HPlayers = useMemo(() => {
     let list = h2hType === 'all' ? stats.headToHead : (stats.headToHeadByType[h2hType] ?? []);
@@ -140,7 +180,8 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
   }, [stats.headToHead, stats.headToHeadByType, h2hType, h2hPlayerFilter]);
 
   const currentMatchups = useMemo(() => {
-    let list = stats.matchupWinRates;
+    // Filter matchups to selected game first, then apply char filters / type
+    let list = stats.matchupWinRates.filter((m) => m.gameId === effectiveGame);
     if (h2hMyCharFilter) {
       list = list.filter((m) => m.characterId === h2hMyCharFilter);
     }
@@ -149,34 +190,70 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
     }
     if (h2hType !== 'all') {
       list = list.map((m) => {
-        const t = m.byType[h2hType];
-        return { ...m, wins: t.wins, losses: t.losses, winRate: t.wins + t.losses > 0 ? Math.round((t.wins / (t.wins + t.losses)) * 100) : 0 };
+        const ty = m.byType[h2hType];
+        return { ...m, wins: ty.wins, losses: ty.losses, winRate: ty.wins + ty.losses > 0 ? Math.round((ty.wins / (ty.wins + ty.losses)) * 100) : 0 };
       }).filter((m) => m.wins + m.losses > 0);
     }
     return list;
-  }, [stats.matchupWinRates, h2hMyCharFilter, h2hOppCharFilter, h2hType]);
+  }, [stats.matchupWinRates, effectiveGame, h2hMyCharFilter, h2hOppCharFilter, h2hType]);
 
   return (
     <div className="participant-stats-overview">
+
+      {/* ── Global game selector ─────────────────────────────────────────────── */}
+      {availableGames.length > 1 && (
+        <div className="overview-game-selector">
+          <div className="overview-game-tabs">
+            {availableGames.map((g) => {
+              const accent = gameAccent(g.id);
+              const isActive = effectiveGame === g.id;
+              return (
+                <button
+                  key={g.id}
+                  className={`overview-game-tab ${isActive ? 'active' : ''}`}
+                  style={accent ? { '--tab-accent': accent } as React.CSSProperties : {}}
+                  onClick={() => setSelectedGame(g.id)}
+                >
+                  <GameBadge gameId={g.id} inverted={isActive} />
+                  <span className="overview-game-tab-name">{g.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Performance */}
       <div className="stats-overview-grid">
-        <StatCard label={t('participantProfile.stats.peakElo')} className="peak-elo-card" style={{ '--rank-color': peakElo?.color } as React.CSSProperties}>
-          {peakElo ? (
+        <StatCard
+          label={t('participantProfile.stats.peakElo')}
+          className="peak-elo-card"
+          style={{ '--rank-color': gameElo?.color ?? '#94a3b8' } as React.CSSProperties}
+        >
+          {gameElo ? (
             <div className="peak-elo-content">
-              <div className="peak-elo-main">
-                <span className="peak-elo-rank" style={{ color: peakElo.color }}>{peakElo.rank}</span>
-                <span className="peak-elo-points">{peakElo.points} pts</span>
+              <div className="peak-elo-icon" style={{ color: gameElo.color }}>
+                <i className={getRankIcon(gameElo.rank)} />
               </div>
-              <div className="peak-elo-game"><GameBadge gameId={peakElo.gameId} /></div>
-              {totalGames > 1 && (
-                <div className="peak-elo-others">
-                  {stats.peakEloByGame.slice(1).map((g) => (
-                    <span key={g.gameId} className="peak-elo-other">
-                      <GameBadge gameId={g.gameId} /> {g.rank} ({g.points})
-                    </span>
-                  ))}
+              <div className="peak-elo-info">
+                <div className="peak-elo-main">
+                  <span className="peak-elo-rank" style={{ color: gameElo.color }}>{gameElo.rank}</span>
+                  <span className="peak-elo-points">{gameElo.points} pts</span>
                 </div>
-              )}
+                {nextTier && (
+                  <div className="peak-elo-progress">
+                    <div className="peak-elo-progress-track">
+                      <div
+                        className="peak-elo-progress-fill"
+                        style={{ width: `${eloProgress}%`, background: gameElo.color }}
+                      />
+                    </div>
+                    <span className="peak-elo-progress-label">
+                      {nextTier.name} → {(nextTier.minPoints - gameElo.points)} pts
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <span className="stat-empty">{t('participantProfile.stats.noData')}</span>
@@ -211,9 +288,6 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
             <button className={`record-tab ${recordTab === 'total' ? 'active' : ''}`} onClick={() => setRecordTab('total')}>
               {t('participantProfile.stats.total')}
             </button>
-            <button className={`record-tab ${recordTab === 'game' ? 'active' : ''}`} onClick={() => setRecordTab('game')}>
-              {t('participantProfile.stats.byGame')}
-            </button>
             <button className={`record-tab ${recordTab === 'type' ? 'active' : ''}`} onClick={() => setRecordTab('type')}>
               {t('participantProfile.stats.byType')}
             </button>
@@ -221,15 +295,24 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
           <div className="record-content">
             {recordTab === 'total' && (
               <>
-                <RecordBar
-                  label={t('participantProfile.stats.total')}
-                  wins={stats.allMatchWins}
-                  losses={stats.allMatchLosses}
-                  winRate={stats.allMatchWinRate}
-                />
+                {gameRecord ? (
+                  <RecordBar
+                    label={getGame(effectiveGame)?.name || effectiveGame}
+                    wins={gameRecord.wins}
+                    losses={gameRecord.losses}
+                    winRate={gameRecord.winRate}
+                  />
+                ) : (
+                  <RecordBar
+                    label={t('participantProfile.stats.total')}
+                    wins={stats.allMatchWins}
+                    losses={stats.allMatchLosses}
+                    winRate={stats.allMatchWinRate}
+                  />
+                )}
                 <div className="record-extra-stats">
                   <div className="record-extra-stat">
-                    <span className="record-extra-value">{stats.allMatchWins + stats.allMatchLosses}</span>
+                    <span className="record-extra-value">{gameRecord ? gameRecord.wins + gameRecord.losses : stats.allMatchWins + stats.allMatchLosses}</span>
                     <span className="record-extra-label">{t('participantProfile.stats.matchesPlayed')}</span>
                   </div>
                   <div className="record-extra-stat">
@@ -246,23 +329,6 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
                   </div>
                 </div>
               </>
-            )}
-            {recordTab === 'game' && (
-              <div className="record-list">
-                {(stats.recordByGame ?? []).length > 0 ? (
-                  stats.recordByGame.map((g) => (
-                    <RecordBar
-                      key={g.gameId}
-                      label={getGame(g.gameId)?.name || g.gameId}
-                      wins={g.wins}
-                      losses={g.losses}
-                      winRate={g.winRate}
-                    />
-                  ))
-                ) : (
-                  <span className="stat-empty">{t('participantProfile.stats.noData')}</span>
-                )}
-              </div>
             )}
             {recordTab === 'type' && (
               <div className="record-list">
@@ -315,22 +381,18 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
           <div className="mains-card">
             <div className="mains-label">{t('participantProfile.stats.mains')}</div>
             <div className="mains-list">
-              {Object.entries(stats.mainCharactersByGame).map(([gameId, char]) => {
-                const ch = getCharacter(gameId, char.id);
-                return (
-                  <div key={gameId} className="main-char-row">
-                    <img
-                      src={getCharacterImageUrl(gameId, char.id) ?? undefined}
-                      alt={ch?.name || char.id}
-                      className="main-char-row-icon"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                    />
-                    <span className="main-char-row-name">{ch?.name || char.id}</span>
-                    <GameBadge gameId={gameId} />
-                  </div>
-                );
-              })}
-              {Object.keys(stats.mainCharactersByGame).length === 0 && (
+              {gameMains ? (
+                <div className="main-char-row">
+                  <img
+                    src={getCharacterImageUrl(effectiveGame, gameMains.id) ?? undefined}
+                    alt={getCharacter(effectiveGame, gameMains.id)?.name || gameMains.id}
+                    className="main-char-row-icon"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                  <span className="main-char-row-name">{getCharacter(effectiveGame, gameMains.id)?.name || gameMains.id}</span>
+                  <GameBadge gameId={effectiveGame} />
+                </div>
+              ) : (
                 <span className="stat-empty">{t('participantProfile.stats.noData')}</span>
               )}
             </div>
@@ -339,22 +401,9 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
           <div className="usage-card">
             <div className="usage-header">
               <div className="mains-label">{t('participantProfile.stats.characterUsage')}</div>
-              <select
-                className="usage-game-select"
-                value={selectedUsageGame}
-                onChange={(e) => setUsageGameFilter(e.target.value)}
-              >
-                {GAMES.map((g) => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
-                ))}
-              </select>
             </div>
             {hasCharacterData ? (
               <div className="character-usage-game">
-                <h4 className="character-usage-game-title">
-                  <GameBadge gameId={selectedUsageGame} />
-                  <span>{getGame(selectedUsageGame)?.name || selectedUsageGame}</span>
-                </h4>
                 {selectedUsageChars.length > 0 ? (
                   <div className="character-usage-list">
                     {selectedUsageChars.map((c) => (
@@ -456,9 +505,8 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
                   onChange={(e) => setH2hMyCharFilter(e.target.value)}
                 >
                   <option value="">{t('participantProfile.stats.myCharacter')}</option>
-                  {Array.from(new Set(stats.matchupWinRates.map((m) => m.characterId))).map((charId) => {
-                    const m = stats.matchupWinRates.find((x) => x.characterId === charId);
-                    const ch = getCharacter(m?.gameId || '', charId);
+                  {Array.from(new Set(stats.matchupWinRates.filter((m) => m.gameId === effectiveGame).map((m) => m.characterId))).map((charId) => {
+                    const ch = getCharacter(effectiveGame, charId);
                     return <option key={charId} value={charId}>{ch?.name || charId}</option>;
                   })}
                 </select>
@@ -468,9 +516,8 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
                   onChange={(e) => setH2hOppCharFilter(e.target.value)}
                 >
                   <option value="">{t('participantProfile.stats.opponentCharacter')}</option>
-                  {Array.from(new Set(stats.matchupWinRates.map((m) => m.opponentCharacterId))).map((charId) => {
-                    const m = stats.matchupWinRates.find((x) => x.opponentCharacterId === charId);
-                    const ch = getCharacter(m?.gameId || '', charId);
+                  {Array.from(new Set(stats.matchupWinRates.filter((m) => m.gameId === effectiveGame).map((m) => m.opponentCharacterId))).map((charId) => {
+                    const ch = getCharacter(effectiveGame, charId);
                     return <option key={charId} value={charId}>{ch?.name || charId}</option>;
                   })}
                 </select>

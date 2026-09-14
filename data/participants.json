@@ -24,8 +24,8 @@
       },
       "mk11": {
         "gameId": "mk11",
-        "eloRank": "Sin puntos",
-        "eloPoints": null,
+        "eloRank": "Diamante",
+        "eloPoints": 1511,
         "mainCharacterId": "sub_zero"
       },
       "ssbu": {
@@ -38,7 +38,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-09-12T22:00:42.872Z",
+    "updatedAt": "2026-09-14T01:56:27.787Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -159,8 +159,8 @@
     "games": {
       "mk11": {
         "gameId": "mk11",
-        "eloRank": "Sin puntos",
-        "eloPoints": null,
+        "eloRank": "Platino",
+        "eloPoints": 1489,
         "mainCharacterId": "johnny_cage"
       },
       "ssbu": {
@@ -173,7 +173,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-09-12T22:00:51.246Z",
+    "updatedAt": "2026-09-14T01:31:23.918Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
