@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="lineW" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,1)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer hexagon: white stroke, subtle fill -->
+  <polygon points="32,3 59,17.5 59,46.5 32,61 5,46.5 5,17.5"
+    fill="rgba(255,255,255,0.08)" stroke="white" stroke-width="2.5"/>
+
+  <!-- Inner hexagon border detail -->
+  <polygon points="32,8.5 52.5,19.8 52.5,44.2 32,55.5 11.5,44.2 11.5,19.8"
+    fill="none" stroke="white" stroke-width="0.8" opacity="0.3"/>
+
+  <!-- Rising zigzag -->
+  <polyline
+    points="14,44 24,25 30,40 42,22"
+    stroke="url(#lineW)"
+    stroke-width="4.5"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"/>
+
+  <!-- Start dot -->
+  <circle cx="14" cy="44" r="3" fill="white" opacity="0.9"/>
+
+  <!-- Arrowhead -->
+  <polygon points="48,12 40,22 54,26" fill="white"/>
+</svg>
