@@ -1,11 +1,13 @@
 .profile-page {
   min-height: 100vh;
-  background-color: var(--bg-secondary);
+  /* background-color: var(--bg-secondary); */
+  background:
+    color-mix(in srgb, var(--primary-night) 3%, var(--primary-light) 2%);
 }
 
 .profile-password-sep {
   border: 0;
-  border-top: 1px solid var(--border-color, rgba(255,255,255,0.08));
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
   margin: 1.5rem 0;
 }
 
@@ -86,8 +88,8 @@
   max-width: 45%;
   pointer-events: none;
   z-index: 0;
-  mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.6) 20%, black 100%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.6) 20%, black 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.6) 20%, black 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.6) 20%, black 100%);
 }
 
 .profile-character-render img {
@@ -109,18 +111,14 @@
     opacity: 0.20;
     filter: blur(1px);
     z-index: 0;
-    mask-image: linear-gradient(
-      to bottom,
-      black 0%,
-      black 60%,
-      transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      black 0%,
-      black 60%,
-      transparent 100%
-    );
+    mask-image: linear-gradient(to bottom,
+        black 0%,
+        black 60%,
+        transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom,
+        black 0%,
+        black 60%,
+        transparent 100%);
     pointer-events: none;
   }
 
@@ -162,16 +160,16 @@
   backdrop-filter: blur(10px);
   transition: transform 0.18s, box-shadow 0.18s;
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.06),
-    0 8px 32px rgba(0,0,0,0.4);
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 8px 32px rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
 }
 
 .profile-elo-widget:hover {
   transform: translateY(-4px) scale(1.02);
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.08),
-    0 12px 40px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 12px 40px rgba(0, 0, 0, 0.5),
     0 0 32px color-mix(in srgb, var(--elo-color) 25%, transparent);
 }
 
@@ -210,10 +208,10 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: #6ee7b7;
-  text-shadow: 
+  text-shadow:
     0 0 16px rgba(110, 231, 183, 0.9),
     0 0 32px rgba(16, 185, 129, 0.5),
-    0 1px 2px rgba(0,0,0,0.8);
+    0 1px 2px rgba(0, 0, 0, 0.8);
   animation: legendBannerPulse 2s ease-in-out infinite;
   z-index: 2;
 }
@@ -225,13 +223,16 @@
 }
 
 @keyframes legendBannerPulse {
-  0%, 100% {
-    box-shadow: 
+
+  0%,
+  100% {
+    box-shadow:
       0 0 16px rgba(16, 185, 129, 0.5),
       0 0 32px rgba(110, 231, 183, 0.3);
   }
+
   50% {
-    box-shadow: 
+    box-shadow:
       0 0 24px rgba(16, 185, 129, 0.7),
       0 0 48px rgba(110, 231, 183, 0.5);
   }
@@ -246,7 +247,7 @@
   color: #fff;
   text-shadow:
     0 0 12px color-mix(in srgb, var(--elo-color) 80%, transparent),
-    0 1px 2px rgba(0,0,0,0.6);
+    0 1px 2px rgba(0, 0, 0, 0.6);
   padding: 0.25rem 0.65rem;
   border-radius: 4px;
   background: color-mix(in srgb, var(--elo-color) 18%, transparent);
@@ -266,8 +267,7 @@
   font-size: 3.5rem;
   line-height: 1;
   filter:
-    drop-shadow(0 0 10px color-mix(in srgb, var(--elo-color) 60%, transparent))
-    drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    drop-shadow(0 0 10px color-mix(in srgb, var(--elo-color) 60%, transparent)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 
@@ -279,7 +279,7 @@
   line-height: 1;
   text-shadow:
     0 0 16px color-mix(in srgb, var(--elo-color) 50%, transparent),
-    0 1px 3px rgba(0,0,0,0.5);
+    0 1px 3px rgba(0, 0, 0, 0.5);
   letter-spacing: 0.02em;
 }
 
@@ -321,11 +321,11 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .profile-back-btn {
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   border: 1px solid color-mix(in srgb, var(--avatar-color, #6366f1) 50%, transparent);
   color: #fff;
   font-size: 0.8rem;
@@ -337,11 +337,11 @@
   border-radius: 4px;
   width: fit-content;
   transition: all 0.15s;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
 }
 
 .profile-back-btn:hover {
-  background: color-mix(in srgb, var(--avatar-color, #6366f1) 30%, rgba(0,0,0,0.6));
+  background: color-mix(in srgb, var(--avatar-color, #6366f1) 30%, rgba(0, 0, 0, 0.6));
   border-color: color-mix(in srgb, var(--avatar-color, #6366f1) 80%, #fff);
 }
 
@@ -365,11 +365,11 @@
   flex-shrink: 0;
   overflow: hidden;
   position: relative;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
   box-shadow:
-    0 0 0 4px rgba(255,255,255,0.14),
+    0 0 0 4px rgba(255, 255, 255, 0.14),
     0 0 0 8px color-mix(in srgb, var(--avatar-color, #6366f1) 35%, transparent),
-    0 12px 36px rgba(0,0,0,0.35);
+    0 12px 36px rgba(0, 0, 0, 0.35);
 }
 
 .profile-avatar::before {
@@ -377,12 +377,10 @@
   position: absolute;
   inset: -6px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    color-mix(in srgb, var(--avatar-color, #6366f1) 60%, transparent),
-    rgba(255,255,255,0.45),
-    color-mix(in srgb, var(--avatar-color, #6366f1) 60%, transparent)
-  );
+  background: conic-gradient(from 0deg,
+      color-mix(in srgb, var(--avatar-color, #6366f1) 60%, transparent),
+      rgba(255, 255, 255, 0.45),
+      color-mix(in srgb, var(--avatar-color, #6366f1) 60%, transparent));
   opacity: 0.35;
   z-index: -1;
 }
@@ -411,7 +409,7 @@
   letter-spacing: 0.02em;
   text-shadow:
     0 0 20px color-mix(in srgb, var(--avatar-color, #6366f1) 60%, transparent),
-    0 2px 4px rgba(0,0,0,0.45);
+    0 2px 4px rgba(0, 0, 0, 0.45);
 }
 
 /* Alias as a glowing tag */
@@ -422,7 +420,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   padding-left: 0.15rem;
 }
 
@@ -460,22 +458,22 @@
 }
 
 .profile-character-game {
-  color: rgba(255,255,255,0.9);
-  background: rgba(0,0,0,0.35);
-  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .profile-character-name {
-  color: rgba(255,255,255,0.95);
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.22);
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .profile-since {
   font-family: var(--font-body);
   font-size: 0.8rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 0.35rem;
   letter-spacing: 0.02em;
 }
@@ -516,12 +514,14 @@
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
-  top: 56px; /* height of main header */
+  top: 56px;
+  /* height of main header */
   z-index: 10;
 }
 
 .profile-tabs {
   display: flex;
+  padding: 1rem 0;
   gap: 0;
 }
 
@@ -539,12 +539,157 @@
   font-weight: 500;
 }
 
-.profile-tab:hover { color: var(--text-primary); }
+.profile-tab:hover {
+  color: var(--text-primary);
+}
 
 .profile-tab.active {
   color: var(--primary-color);
   border-bottom-color: var(--primary-color);
   font-weight: 600;
+}
+
+/* ── Game selector (sticking out below tabs) ─────────────────────────── */
+
+.profile-game-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.55rem;
+  padding: 0;
+  position: relative;
+  z-index: 11;
+}
+
+.profile-game-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-color);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.profile-game-pill .game-badge {
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.25rem;
+  border: none;
+  text-transform: uppercase;
+}
+
+.profile-game-pill .profile-game-pill-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 12rem;
+}
+
+.profile-game-pill .profile-game-chevron {
+  font-size: 0.65rem;
+  transition: transform 0.15s;
+}
+
+.profile-game-pill .profile-game-chevron.up {
+  transform: rotate(180deg);
+}
+
+.profile-game-pill:hover {
+  border-color: var(--game-accent, var(--primary-color));
+  color: var(--game-accent, var(--primary-color));
+}
+
+.profile-game-pill.active {
+  background: var(--game-accent, var(--primary-color));
+  border-color: var(--game-accent, var(--primary-color));
+  color: #fff;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--game-accent, var(--primary-color)) 30%, transparent);
+}
+
+.profile-game-pill.active .game-badge {
+  background: #fff !important;
+  color: var(--game-accent, var(--primary-color)) !important;
+}
+
+.profile-game-pill.active .profile-game-chevron {
+  color: #fff;
+}
+
+.profile-game-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  min-width: 16rem;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-color);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0.35rem;
+}
+
+.profile-game-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: background 0.1s;
+}
+
+.profile-game-option:hover {
+  background: var(--bg-tertiary);
+}
+
+.profile-game-option.active {
+  background: var(--game-accent, var(--primary-color));
+  color: #fff;
+}
+
+.profile-game-option .game-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.25rem;
+  border: none;
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .profile-game-pill {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.72rem;
+  }
+
+  .profile-game-pill .profile-game-pill-name {
+    max-width: 8rem;
+  }
+
+  .profile-game-menu {
+    right: 0.5rem;
+    min-width: 14rem;
+  }
 }
 
 /* ── Content ─────────────────────────────────────────────────────────── */
@@ -554,6 +699,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  /* background: color-mix(in srgb, var(--primary-color) 25%, var(--bg-primary)); */
 }
 
 /* ── Stat grid ───────────────────────────────────────────────────────── */
@@ -565,7 +711,9 @@
 }
 
 @media (max-width: 640px) {
-  .profile-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .profile-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .profile-stat-card {
@@ -643,7 +791,7 @@
 }
 
 .profile-winrate-card--duel .profile-winrate-fill {
-  
+
   background: linear-gradient(90deg, #f59e0b, #fbbf24);
 }
 
@@ -654,6 +802,23 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.results-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.results-subtab-bar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.results-panel {
+  padding: 0;
+  overflow: hidden;
 }
 
 .results-subtabs {
@@ -694,7 +859,9 @@
   margin-bottom: 1rem;
 }
 
-.profile-section-header h3 { margin: 0; }
+.profile-section-header h3 {
+  margin: 0;
+}
 
 .btn-link {
   background: none;
@@ -705,7 +872,9 @@
   padding: 0;
 }
 
-.btn-link:hover { text-decoration: underline; }
+.btn-link:hover {
+  text-decoration: underline;
+}
 
 .profile-results-list {
   display: flex;
@@ -726,10 +895,18 @@
   padding-right: 0.5rem;
 }
 
-.profile-result-row:last-child { border-bottom: none; }
-.profile-result-row:hover { background-color: var(--bg-tertiary); }
+.profile-result-row:last-child {
+  border-bottom: none;
+}
 
-.prr-medal { font-size: 1.5rem; flex-shrink: 0; }
+.profile-result-row:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.prr-medal {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
 
 .prr-rank {
   width: 32px;
@@ -743,9 +920,20 @@
   font-weight: 800;
 }
 
-.prr-rank.rank-1 { background-color: rgba(240, 192, 64, 0.15); color: #f0c040; }
-.prr-rank.rank-2 { background-color: rgba(192, 200, 208, 0.15); color: #c0c8d0; }
-.prr-rank.rank-3 { background-color: rgba(205, 127, 50, 0.15); color: #cd7f32; }
+.prr-rank.rank-1 {
+  background-color: rgba(240, 192, 64, 0.15);
+  color: #f0c040;
+}
+
+.prr-rank.rank-2 {
+  background-color: rgba(192, 200, 208, 0.15);
+  color: #c0c8d0;
+}
+
+.prr-rank.rank-3 {
+  background-color: rgba(205, 127, 50, 0.15);
+  color: #cd7f32;
+}
 
 .prr-info {
   flex: 1;
@@ -762,7 +950,9 @@
   text-overflow: ellipsis;
 }
 
-.prr-meta { margin-top: 0.125rem; }
+.prr-meta {
+  margin-top: 0.125rem;
+}
 
 .prr-placement {
   font-size: 1rem;
@@ -771,8 +961,13 @@
   flex-shrink: 0;
 }
 
-.prr-placement.gold { color: #f59e0b; }
-.prr-placement.podium { color: var(--primary-color); }
+.prr-placement.gold {
+  color: #f59e0b;
+}
+
+.prr-placement.podium {
+  color: var(--primary-color);
+}
 
 /* ── No results ──────────────────────────────────────────────────────── */
 
@@ -1025,6 +1220,7 @@
     align-items: flex-start;
     gap: 0.35rem;
   }
+
   .profile-game-pts {
     text-align: left;
   }
@@ -1087,6 +1283,7 @@
     align-items: flex-start;
     gap: 0.5rem;
   }
+
   .profile-game-row select {
     max-width: 100%;
     width: 100%;
@@ -1268,7 +1465,9 @@
 }
 
 @media (max-width: 768px) {
-  .profile-content { padding: 1rem; }
+  .profile-content {
+    padding: 1rem;
+  }
 
   .profile-banner-body {
     flex-direction: column;
@@ -1284,11 +1483,23 @@
     gap: 1rem;
   }
 
-  .profile-name { font-size: 1.5rem; }
-  .profile-alias { font-size: 0.9rem; }
-  .profile-avatar { width: 50px; height: 50px; font-size: 1.25rem; }
+  .profile-name {
+    font-size: 1.5rem;
+  }
 
-  .profile-character { justify-content: center; }
+  .profile-alias {
+    font-size: 0.9rem;
+  }
+
+  .profile-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .profile-character {
+    justify-content: center;
+  }
 
   .profile-elo-widget {
     width: 100%;
@@ -1337,19 +1548,41 @@
     grid-template-columns: 1fr !important;
   }
 
-  .prr-rank { width: 28px; height: 28px; font-size: 0.75rem; }
+  .prr-rank {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .profile-name { font-size: 1.25rem; }
-  .profile-elo-widget { padding: 1rem; }
-    .profile-elo-widget--legend {
+  .profile-name {
+    font-size: 1.25rem;
+  }
+
+  .profile-elo-widget {
+    padding: 1rem;
+  }
+
+  .profile-elo-widget--legend {
     padding-top: 2.5rem;
   }
-  .pew-icon { font-size: 2.5rem; }
-  .pew-rank { font-size: 1.25rem; }
-  .profile-stat-grid { grid-template-columns: 1fr !important; }
-  .profile-edit-form { padding: 1rem; }
+
+  .pew-icon {
+    font-size: 2.5rem;
+  }
+
+  .pew-rank {
+    font-size: 1.25rem;
+  }
+
+  .profile-stat-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-edit-form {
+    padding: 1rem;
+  }
 }
 
 .match-item-body {
@@ -1443,7 +1676,7 @@
 }
 
 /* Títulos de sección: color del tema + barra de acento */
-.profile-page .card > h3,
+.profile-page .card>h3,
 .profile-page .profile-section-header h3,
 .profile-page .profile-edit-form h3,
 .profile-page .profile-games-card h3,
@@ -1474,20 +1707,27 @@
 .results-subtab {
   color: var(--primary-color);
 }
+
 .results-subtab:hover {
   background-color: rgba(124, 58, 237, 0.08);
 }
 
 /* Filas de resultados: acento en el nombre del torneo/liga */
-.prr-name { color: var(--primary-dark); font-weight: 600; }
-.profile-result-row:hover .prr-name { color: var(--primary-color); }
+.prr-name {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.profile-result-row:hover .prr-name {
+  color: var(--primary-color);
+}
 
 /* Chips de selección de juegos administrables (game_admin) */
 .game-admin-scope {
   grid-column: 1 / -1;
 }
 
-.game-admin-scope > label {
+.game-admin-scope>label {
   display: block;
   margin-bottom: 0.5rem;
 }
@@ -1550,4 +1790,7 @@
 /* Nombre del juego: el color de marca se aplica inline (Game.color);
    fallback al acento del tema si el juego no tiene color definido. */
 .profile-game-item .profile-game-name,
-.profile-game-checkbox span { font-weight: 600; color: var(--primary-color); }
+.profile-game-checkbox span {
+  font-weight: 600;
+  color: var(--primary-color);
+}

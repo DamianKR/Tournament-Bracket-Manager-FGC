@@ -4770,13 +4770,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-05T03:26:01.377Z",
     "scheduledAt": "2026-09-09T03:26:01.370Z",
     "data": {
       "duelId": "duel_1788578759610_n3ysc9tgf",
       "expiresAt": "2026-09-12T03:26:01.370Z"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.541Z"
   },
   {
     "id": "notif_1788664315846_lpi4a3xzh",
@@ -5090,7 +5091,7 @@
     "type": "league_week_start",
     "title": "League Week 2 started",
     "message": "Week 2 of Testing smash has started. Your opponents this week: Tails, Sementino, Pokred.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-09T16:50:05.784Z",
     "scheduledAt": "2026-09-09T16:50:05.784Z",
     "data": {
@@ -5101,7 +5102,8 @@
         "gp_1786393670067_xild06i",
         "gp_1787202786652_4bme4ih"
       ]
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.544Z"
   },
   {
     "id": "notif_1788972605788_nsuz8ldnk",
@@ -5936,7 +5938,7 @@
     "type": "league_week_start",
     "title": "League Week 2 started",
     "message": "Week 2 of Timing League Creation has started. Your opponents this week: Tails, Sementino.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-09T16:50:05.908Z",
     "scheduledAt": "2026-09-09T16:50:05.908Z",
     "data": {
@@ -5946,7 +5948,8 @@
         "gp_1786391783115_87zwx03",
         "gp_1786393670067_xild06i"
       ]
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.548Z"
   },
   {
     "id": "notif_1788972605911_qpji6pu6i",
@@ -6858,7 +6861,7 @@
     "type": "league_week_start",
     "title": "League Week 2 started",
     "message": "Week 2 of Smash new at last has started. Your opponents this week: Sementino, Pokred, Pal.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-10T00:10:44.758Z",
     "scheduledAt": "2026-09-10T00:10:44.758Z",
     "data": {
@@ -6869,7 +6872,8 @@
         "gp_1787202786652_4bme4ih",
         "gp_1786399934148_stq7jpb"
       ]
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.551Z"
   },
   {
     "id": "notif_1788999044761_6h0ipv259",
@@ -7767,13 +7771,14 @@
     "type": "duel_accepted",
     "title": "Duel Accepted!",
     "message": "Gino accepted your duel challenge. Play and record the result before it expires.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-11T19:52:46.074Z",
     "scheduledAt": "2026-09-11T19:52:46.074Z",
     "data": {
       "duelId": "duel_1789156364350_fx9y6qi0v",
       "challengedId": "gp_1786387234567_aoe1z95"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.554Z"
   },
   {
     "id": "notif_1789156366078_fmrph2a0s",
@@ -7781,13 +7786,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-11T19:52:46.078Z",
     "scheduledAt": "2026-09-15T19:52:46.070Z",
     "data": {
       "duelId": "duel_1789156364350_fx9y6qi0v",
       "expiresAt": "2026-09-18T19:52:46.070Z"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.557Z"
   },
   {
     "id": "notif_1789156366081_qwkvwa8dh",
@@ -7824,13 +7830,14 @@
     "type": "duel_accepted",
     "title": "Duel Accepted!",
     "message": "Ismael accepted your duel challenge. Play and record the result before it expires.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-11T19:53:33.868Z",
     "scheduledAt": "2026-09-11T19:53:33.868Z",
     "data": {
       "duelId": "duel_1789156411488_dfpp6mz56",
       "challengedId": "gp_1786408686972_s4nl3vz"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.561Z"
   },
   {
     "id": "notif_1789156413871_3bvl6lug6",
@@ -7838,13 +7845,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-11T19:53:33.871Z",
     "scheduledAt": "2026-09-15T19:53:33.864Z",
     "data": {
       "duelId": "duel_1789156411488_dfpp6mz56",
       "expiresAt": "2026-09-18T19:53:33.864Z"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.563Z"
   },
   {
     "id": "notif_1789156413875_p1ch2o1m4",
@@ -7866,14 +7874,15 @@
     "type": "duel_challenge",
     "title": "New Duel Challenge!",
     "message": "Gino has challenged you to a duel. Accept or decline in the Events section.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T06:43:53.158Z",
     "scheduledAt": "2026-09-12T06:43:53.158Z",
     "data": {
       "duelId": "duel_1789195433154_4n5wrr1ll",
       "challengerId": "gp_1786387234567_aoe1z95",
       "type": "normal"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.567Z"
   },
   {
     "id": "notif_1789195434831_4k1v2kz8z",
@@ -7909,13 +7918,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T06:43:54.838Z",
     "scheduledAt": "2026-09-16T06:43:54.827Z",
     "data": {
       "duelId": "duel_1789195433154_4n5wrr1ll",
       "expiresAt": "2026-09-19T06:43:54.827Z"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.570Z"
   },
   {
     "id": "notif_1789245913533_jq8fbtket",
@@ -7923,14 +7933,15 @@
     "type": "duel_challenge",
     "title": "New Duel Challenge!",
     "message": "ERNE has challenged you to a duel. Accept or decline in the Events section.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T20:45:13.533Z",
     "scheduledAt": "2026-09-12T20:45:13.533Z",
     "data": {
       "duelId": "duel_1789245913524_ae4vr2oz3",
       "challengerId": "gp_1786420928315_91m6kmr",
       "type": "normal"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.573Z"
   },
   {
     "id": "notif_1789245916014_vhobulaah",
@@ -7966,13 +7977,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T20:45:16.022Z",
     "scheduledAt": "2026-09-16T20:45:16.011Z",
     "data": {
       "duelId": "duel_1789245913524_ae4vr2oz3",
       "expiresAt": "2026-09-19T20:45:16.011Z"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.576Z"
   },
   {
     "id": "notif_1789247922480_e4a6y3rxe",
@@ -7980,14 +7992,15 @@
     "type": "duel_challenge",
     "title": "New Duel Challenge!",
     "message": "TQMandreFN has challenged you to a duel. Accept or decline in the Events section.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T21:18:42.480Z",
     "scheduledAt": "2026-09-12T21:18:42.480Z",
     "data": {
       "duelId": "duel_1789247922474_u34x1f3h6",
       "challengerId": "gp_1786387243524_6er0c9u",
       "type": "normal"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.579Z"
   },
   {
     "id": "notif_1789247924210_pq89sx67x",
@@ -8023,13 +8036,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T21:18:44.218Z",
     "scheduledAt": "2026-09-16T21:18:44.207Z",
     "data": {
       "duelId": "duel_1789247922474_u34x1f3h6",
       "expiresAt": "2026-09-19T21:18:44.207Z"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.583Z"
   },
   {
     "id": "notif_1789250315839_c0i6i3yic",
@@ -8037,14 +8051,15 @@
     "type": "duel_challenge",
     "title": "New Duel Challenge!",
     "message": "Pal has challenged you to a duel. Accept or decline in the Events section.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T21:58:35.839Z",
     "scheduledAt": "2026-09-12T21:58:35.839Z",
     "data": {
       "duelId": "duel_1789250315829_pu2d6hhoj",
       "challengerId": "gp_1786399934148_stq7jpb",
       "type": "normal"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.585Z"
   },
   {
     "id": "notif_1789250317376_9u9gco5e5",
@@ -8080,13 +8095,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T21:58:37.384Z",
     "scheduledAt": "2026-09-16T21:58:37.372Z",
     "data": {
       "duelId": "duel_1789250315829_pu2d6hhoj",
       "expiresAt": "2026-09-19T21:58:37.372Z"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.588Z"
   },
   {
     "id": "notif_1789349458526_m4npfsyms",
@@ -8109,13 +8125,14 @@
     "type": "duel_accepted",
     "title": "Duel Accepted!",
     "message": "Adecty accepted your duel challenge. Play and record the result before it expires.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-14T01:31:00.107Z",
     "scheduledAt": "2026-09-14T01:31:00.107Z",
     "data": {
       "duelId": "duel_1789349458521_1mcc0iixe",
       "challengedId": "gp_1786387250178_ac5thmv"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.592Z"
   },
   {
     "id": "notif_1789349460112_9gnmi81sz",
@@ -8123,13 +8140,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-14T01:31:00.112Z",
     "scheduledAt": "2026-09-18T01:31:00.103Z",
     "data": {
       "duelId": "duel_1789349458521_1mcc0iixe",
       "expiresAt": "2026-09-21T01:31:00.103Z"
-    }
+    },
+    "readAt": "2026-09-14T15:47:03.595Z"
   },
   {
     "id": "notif_1789349460116_g911htcys",

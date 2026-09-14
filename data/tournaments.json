@@ -3350,7 +3350,7 @@
     "name": "Tournament CCharacters",
     "mode": "single_elimination",
     "type": "singles",
-    "status": "in_progress",
+    "status": "completed",
     "gameId": "ssbu",
     "givesPoints": true,
     "seedingMode": "none",
@@ -3362,7 +3362,8 @@
         "seed": 1,
         "eliminated": false,
         "lossCount": 0,
-        "globalParticipantId": "gp_1786387087046_wnwtadb"
+        "globalParticipantId": "gp_1786387087046_wnwtadb",
+        "finalPosition": 1
       },
       {
         "id": "1789250444690-0bynhz3st",
@@ -3378,52 +3379,58 @@
         "name": "Ale",
         "alias": "TQMandreFN",
         "seed": 3,
-        "eliminated": false,
-        "lossCount": 0,
-        "globalParticipantId": "gp_1786387243524_6er0c9u"
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1786387243524_6er0c9u",
+        "finalPosition": 3
       },
       {
         "id": "1789250448875-kfdelqseh",
         "name": "Adam",
         "alias": "Rhadam",
         "seed": 4,
-        "eliminated": false,
-        "lossCount": 0,
-        "globalParticipantId": "gp_1787409902362_3u9f0qr"
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1787409902362_3u9f0qr",
+        "finalPosition": 5
       },
       {
         "id": "1789250450009-u2w1b7yxc",
         "name": "Alexs",
         "seed": 5,
-        "eliminated": false,
-        "lossCount": 0,
-        "globalParticipantId": "gp_1787409813244_ymqkq1e"
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1787409813244_ymqkq1e",
+        "finalPosition": 2
       },
       {
         "id": "1789250451232-lq5xlh0f2",
         "name": "Alexis",
         "alias": "Adecty",
         "seed": 6,
-        "eliminated": false,
-        "lossCount": 0,
-        "globalParticipantId": "gp_1786387250178_ac5thmv"
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1786387250178_ac5thmv",
+        "finalPosition": 5
       },
       {
         "id": "1789250455124-uiia4l4v2",
         "name": "Dianger",
         "alias": "Daysuke",
         "seed": 7,
-        "eliminated": false,
-        "lossCount": 0,
-        "globalParticipantId": "gp_1786396304199_u7v6gsb"
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1786396304199_u7v6gsb",
+        "finalPosition": 5
       },
       {
         "id": "1789250458229-r5dlz7c8h",
         "name": "Brian",
         "seed": 8,
-        "eliminated": false,
-        "lossCount": 0,
-        "globalParticipantId": "gp_1786388790209_sr4ldku"
+        "eliminated": true,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1786388790209_sr4ldku",
+        "finalPosition": 3
       }
     ],
     "bracket": {
@@ -3464,11 +3471,27 @@
           "bracketType": "winner",
           "participant1Id": "1789250447063-qioi2wshq",
           "participant2Id": "1789250448875-kfdelqseh",
-          "winnerId": null,
-          "loserId": null,
-          "status": "pending",
+          "winnerId": "1789250447063-qioi2wshq",
+          "loserId": "1789250448875-kfdelqseh",
+          "status": "completed",
           "nextWinnerMatchId": "winner-r2-m1",
-          "nextLoserMatchId": null
+          "nextLoserMatchId": null,
+          "participant1Score": 2,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1789250447063-qioi2wshq",
+              "player1Character": "mario",
+              "player2Character": "byleth"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1789250447063-qioi2wshq",
+              "player1Character": "mario",
+              "player2Character": "captain_falcon"
+            }
+          ]
         },
         {
           "id": "winner-r1-m3",
@@ -3477,11 +3500,25 @@
           "bracketType": "winner",
           "participant1Id": "1789250450009-u2w1b7yxc",
           "participant2Id": "1789250451232-lq5xlh0f2",
-          "winnerId": null,
-          "loserId": null,
-          "status": "pending",
+          "winnerId": "1789250450009-u2w1b7yxc",
+          "loserId": "1789250451232-lq5xlh0f2",
+          "status": "completed",
           "nextWinnerMatchId": "winner-r2-m2",
-          "nextLoserMatchId": null
+          "nextLoserMatchId": null,
+          "participant1Score": 2,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1789250450009-u2w1b7yxc",
+              "player1Character": "bayonetta",
+              "player2Character": "bowser"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1789250450009-u2w1b7yxc"
+            }
+          ]
         },
         {
           "id": "winner-r1-m4",
@@ -3490,11 +3527,25 @@
           "bracketType": "winner",
           "participant1Id": "1789250455124-uiia4l4v2",
           "participant2Id": "1789250458229-r5dlz7c8h",
-          "winnerId": null,
-          "loserId": null,
-          "status": "pending",
+          "winnerId": "1789250458229-r5dlz7c8h",
+          "loserId": "1789250455124-uiia4l4v2",
+          "status": "completed",
           "nextWinnerMatchId": "winner-r2-m2",
-          "nextLoserMatchId": null
+          "nextLoserMatchId": null,
+          "participant1Score": 0,
+          "participant2Score": 2,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1789250458229-r5dlz7c8h",
+              "player1Character": "captain_falcon",
+              "player2Character": "terry"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1789250458229-r5dlz7c8h"
+            }
+          ]
         },
         {
           "id": "winner-r2-m1",
@@ -3502,48 +3553,409 @@
           "matchNumber": 1,
           "bracketType": "winner",
           "participant1Id": "1789250442863-2a7z83qxq",
-          "participant2Id": null,
-          "winnerId": null,
-          "loserId": null,
-          "status": "pending",
+          "participant2Id": "1789250447063-qioi2wshq",
+          "winnerId": "1789250442863-2a7z83qxq",
+          "loserId": "1789250447063-qioi2wshq",
+          "status": "completed",
           "nextWinnerMatchId": "winner-r3-m1",
-          "nextLoserMatchId": null
+          "nextLoserMatchId": null,
+          "participant1Score": 3,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1789250442863-2a7z83qxq",
+              "player1Character": "samus",
+              "player2Character": "mario"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1789250442863-2a7z83qxq",
+              "player1Character": "ganondorf",
+              "player2Character": "mario"
+            },
+            {
+              "gameNumber": 3,
+              "winnerId": "1789250442863-2a7z83qxq",
+              "player1Character": "ganondorf"
+            }
+          ]
         },
         {
           "id": "winner-r2-m2",
           "roundNumber": 2,
           "matchNumber": 2,
           "bracketType": "winner",
-          "participant1Id": null,
-          "participant2Id": null,
-          "winnerId": null,
-          "loserId": null,
-          "status": "pending",
+          "participant1Id": "1789250450009-u2w1b7yxc",
+          "participant2Id": "1789250458229-r5dlz7c8h",
+          "winnerId": "1789250450009-u2w1b7yxc",
+          "loserId": "1789250458229-r5dlz7c8h",
+          "status": "completed",
           "nextWinnerMatchId": "winner-r3-m1",
-          "nextLoserMatchId": null
+          "nextLoserMatchId": null,
+          "participant1Score": 2,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1789250450009-u2w1b7yxc",
+              "player1Character": "bayonetta",
+              "player2Character": "bowser"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1789250450009-u2w1b7yxc",
+              "player1Character": "byleth",
+              "player2Character": "bowser"
+            }
+          ]
         },
         {
           "id": "winner-r3-m1",
           "roundNumber": 3,
           "matchNumber": 1,
           "bracketType": "winner",
-          "participant1Id": null,
-          "participant2Id": null,
-          "winnerId": null,
-          "loserId": null,
-          "status": "pending",
+          "participant1Id": "1789250442863-2a7z83qxq",
+          "participant2Id": "1789250450009-u2w1b7yxc",
+          "winnerId": "1789250442863-2a7z83qxq",
+          "loserId": "1789250450009-u2w1b7yxc",
+          "status": "completed",
           "nextWinnerMatchId": null,
-          "nextLoserMatchId": null
+          "nextLoserMatchId": null,
+          "participant1Score": 2,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1789250442863-2a7z83qxq",
+              "player1Character": "roy",
+              "player2Character": "captain_falcon"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1789250442863-2a7z83qxq"
+            }
+          ]
         }
       ],
       "loserBracket": [],
       "grandFinal": null,
       "grandFinalReset": null
     },
-    "championId": null,
+    "championId": "1789250442863-2a7z83qxq",
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-09-12T22:00:38.061Z",
-    "updatedAt": "2026-09-12T22:01:38.570Z",
-    "registrationDeadline": "2026-09-12T18:00"
+    "updatedAt": "2026-09-14T18:42:46.523Z",
+    "registrationDeadline": "2026-09-12T18:00",
+    "totalParticipants": 8,
+    "eloApplied": true,
+    "eloUpdates": [
+      {
+        "id": "gp_1786387087046_wnwtadb",
+        "name": "Damiam",
+        "alias": "KruX",
+        "games": {
+          "sc6": {
+            "gameId": "sc6",
+            "eloRank": "Sin puntos",
+            "eloPoints": null,
+            "mainCharacterId": "raphael"
+          },
+          "sf6": {
+            "gameId": "sf6",
+            "eloRank": "Sin puntos",
+            "eloPoints": null,
+            "mainCharacterId": "mbison"
+          },
+          "ggst": {
+            "gameId": "ggst",
+            "eloRank": "Sin puntos",
+            "eloPoints": null,
+            "mainCharacterId": "zato"
+          },
+          "mk11": {
+            "gameId": "mk11",
+            "eloRank": "Diamante",
+            "eloPoints": 1511,
+            "mainCharacterId": "sub_zero"
+          },
+          "ssbu": {
+            "gameId": "ssbu",
+            "eloRank": "Master",
+            "eloPoints": 1744,
+            "mainCharacterId": "samus"
+          }
+        },
+        "gameId": "ssbu",
+        "avatarUrl": null,
+        "createdAt": "2026-08-10T18:38:07.046Z",
+        "updatedAt": "2026-09-14T18:42:46.536Z",
+        "communityId": "community_fgc_santa_clara",
+        "tournamentIds": [
+          "1786387227586-8u2hb04zk",
+          "1786387486477-i7xydjcqb",
+          "1786387909894-3uu33ulz0",
+          "1786388372329-y5rm3kzqo",
+          "1786388606781-jyh9v2prl",
+          "1786388748055-8yrbvigzm",
+          "1786389730065-my9udy77t",
+          "1786390635324-f1ht0g9nm",
+          "1786394988044-sb88chetv",
+          "1786645309882-n8iemn0fx",
+          "1786646770004-achuyyt34",
+          "1786756153973-4tu0cxfut",
+          "1786759219748-qzufrr9ky",
+          "1786763010204-fwzepsyo7",
+          "1786802844864-5bjdz2hif",
+          "1786977122065-rrypq1js6",
+          "1787009908365-98h5rq54m",
+          "1787069005182-knkndcjgv",
+          "1786158558338-ey6twflzq",
+          "1787926772254-rfmvzuacg",
+          "1787926905258-q0tw79fm2"
+        ],
+        "mainCharacterId": "samus",
+        "_pointsBefore": 1702,
+        "_pointsEarned": 42,
+        "_position": 1
+      },
+      {
+        "id": "gp_1786399934148_stq7jpb",
+        "name": "Pal",
+        "alias": "",
+        "games": {
+          "ssbu": {
+            "gameId": "ssbu",
+            "eloRank": "Platino",
+            "eloPoints": 1484,
+            "mainCharacterId": "bayonetta"
+          }
+        },
+        "gameId": "ssbu",
+        "avatarUrl": null,
+        "createdAt": "2026-08-10T22:12:14.148Z",
+        "updatedAt": "2026-09-14T18:42:46.537Z",
+        "communityId": "community_fgc_santa_clara",
+        "tournamentIds": [
+          "1786759219748-qzufrr9ky",
+          "1786802844864-5bjdz2hif",
+          "1787069005182-knkndcjgv"
+        ],
+        "mainCharacterId": "bayonetta",
+        "_pointsBefore": 1467,
+        "_pointsEarned": 17,
+        "_position": 5
+      },
+      {
+        "id": "gp_1786387243524_6er0c9u",
+        "name": "Ale",
+        "alias": "TQMandreFN",
+        "games": {
+          "mk11": {
+            "gameId": "mk11",
+            "eloRank": "Sin puntos",
+            "eloPoints": null,
+            "mainCharacterId": "scorpion"
+          },
+          "ssbu": {
+            "gameId": "ssbu",
+            "eloRank": "Vanquisher",
+            "eloPoints": 1651,
+            "mainCharacterId": "mario"
+          }
+        },
+        "gameId": "ssbu",
+        "avatarUrl": null,
+        "createdAt": "2026-08-10T18:40:43.524Z",
+        "updatedAt": "2026-09-14T18:42:46.539Z",
+        "communityId": "community_fgc_santa_clara",
+        "tournamentIds": [
+          "1786387227586-8u2hb04zk",
+          "1786387486477-i7xydjcqb",
+          "1786388372329-y5rm3kzqo",
+          "1786388606781-jyh9v2prl",
+          "1786388748055-8yrbvigzm",
+          "1786389730065-my9udy77t",
+          "1786390635324-f1ht0g9nm",
+          "1786394988044-sb88chetv",
+          "1786645309882-n8iemn0fx",
+          "1786646770004-achuyyt34",
+          "1786756153973-4tu0cxfut",
+          "1786759219748-qzufrr9ky",
+          "1786763010204-fwzepsyo7",
+          "1786802844864-5bjdz2hif",
+          "1786977122065-rrypq1js6",
+          "1787009908365-98h5rq54m",
+          "1787069005182-knkndcjgv",
+          "1786158558338-ey6twflzq",
+          "1787926772254-rfmvzuacg",
+          "1787926905258-q0tw79fm2"
+        ],
+        "mainCharacterId": "mario",
+        "_pointsBefore": 1624,
+        "_pointsEarned": 27,
+        "_position": 3
+      },
+      {
+        "id": "gp_1787409902362_3u9f0qr",
+        "name": "Adam",
+        "alias": "Rhadam",
+        "games": {
+          "ssbu": {
+            "gameId": "ssbu",
+            "eloRank": "Diamante",
+            "eloPoints": 1535,
+            "mainCharacterId": "snake"
+          }
+        },
+        "gameId": "ssbu",
+        "avatarUrl": null,
+        "createdAt": "2026-08-22T14:45:02.362Z",
+        "updatedAt": "2026-09-14T18:42:46.540Z",
+        "communityId": "community_fgc_santa_clara",
+        "tournamentIds": [
+          "1787069005182-knkndcjgv"
+        ],
+        "mainCharacterId": "snake",
+        "_pointsBefore": 1522,
+        "_pointsEarned": 13,
+        "_position": 5
+      },
+      {
+        "id": "gp_1787409813244_ymqkq1e",
+        "name": "Alexs",
+        "alias": "",
+        "games": {
+          "ssbu": {
+            "gameId": "ssbu",
+            "eloRank": "Diamante",
+            "eloPoints": 1544,
+            "mainCharacterId": "steve"
+          }
+        },
+        "gameId": "ssbu",
+        "avatarUrl": null,
+        "createdAt": "2026-08-22T14:43:33.244Z",
+        "updatedAt": "2026-09-14T18:42:46.541Z",
+        "communityId": "community_fgc_santa_clara",
+        "tournamentIds": [
+          "1787069005182-knkndcjgv"
+        ],
+        "mainCharacterId": "steve",
+        "_pointsBefore": 1500,
+        "_pointsEarned": 44,
+        "_position": 2
+      },
+      {
+        "id": "gp_1786387250178_ac5thmv",
+        "name": "Alexis",
+        "alias": "Adecty",
+        "games": {
+          "mk11": {
+            "gameId": "mk11",
+            "eloRank": "Platino",
+            "eloPoints": 1489,
+            "mainCharacterId": "johnny_cage"
+          },
+          "ssbu": {
+            "gameId": "ssbu",
+            "eloRank": "Vanquisher",
+            "eloPoints": 1606,
+            "mainCharacterId": "luigi"
+          }
+        },
+        "gameId": "ssbu",
+        "avatarUrl": null,
+        "createdAt": "2026-08-10T18:40:50.178Z",
+        "updatedAt": "2026-09-14T18:42:46.542Z",
+        "communityId": "community_fgc_santa_clara",
+        "tournamentIds": [
+          "1786387227586-8u2hb04zk",
+          "1786387486477-i7xydjcqb",
+          "1786387909894-3uu33ulz0",
+          "1786388372329-y5rm3kzqo",
+          "1786388606781-jyh9v2prl",
+          "1786388748055-8yrbvigzm",
+          "1786389730065-my9udy77t",
+          "1786390635324-f1ht0g9nm",
+          "1786394988044-sb88chetv",
+          "1786645309882-n8iemn0fx",
+          "1786646770004-achuyyt34",
+          "1786756153973-4tu0cxfut",
+          "1786759219748-qzufrr9ky",
+          "1786763010204-fwzepsyo7",
+          "1786802844864-5bjdz2hif",
+          "1786977122065-rrypq1js6",
+          "1787009908365-98h5rq54m",
+          "1787069005182-knkndcjgv",
+          "1786158558338-ey6twflzq",
+          "1787926772254-rfmvzuacg",
+          "1787926905258-q0tw79fm2"
+        ],
+        "mainCharacterId": "luigi",
+        "_pointsBefore": 1593,
+        "_pointsEarned": 13,
+        "_position": 5
+      },
+      {
+        "id": "gp_1786396304199_u7v6gsb",
+        "name": "Dianger",
+        "alias": "Daysuke",
+        "games": {
+          "ssbu": {
+            "gameId": "ssbu",
+            "eloRank": "Diamante",
+            "eloPoints": 1546,
+            "mainCharacterId": "cloud"
+          }
+        },
+        "gameId": "ssbu",
+        "avatarUrl": null,
+        "createdAt": "2026-08-10T21:11:44.199Z",
+        "updatedAt": "2026-09-14T18:42:46.544Z",
+        "communityId": "community_fgc_santa_clara",
+        "tournamentIds": [
+          "1786645309882-n8iemn0fx",
+          "1786759219748-qzufrr9ky",
+          "1786763010204-fwzepsyo7",
+          "1786802844864-5bjdz2hif",
+          "1786977122065-rrypq1js6",
+          "1787069005182-knkndcjgv"
+        ],
+        "mainCharacterId": "cloud",
+        "_pointsBefore": 1533,
+        "_pointsEarned": 13,
+        "_position": 5
+      },
+      {
+        "id": "gp_1786388790209_sr4ldku",
+        "name": "Brian",
+        "alias": "",
+        "games": {
+          "ssbu": {
+            "gameId": "ssbu",
+            "eloRank": "Diamante",
+            "eloPoints": 1546,
+            "mainCharacterId": "terry"
+          }
+        },
+        "gameId": "ssbu",
+        "avatarUrl": null,
+        "createdAt": "2026-08-10T19:06:30.209Z",
+        "updatedAt": "2026-09-14T18:42:46.545Z",
+        "communityId": "community_fgc_santa_clara",
+        "tournamentIds": [
+          "1786388748055-8yrbvigzm",
+          "1786394988044-sb88chetv",
+          "1786645309882-n8iemn0fx",
+          "1786763010204-fwzepsyo7",
+          "1786158558338-ey6twflzq"
+        ],
+        "mainCharacterId": "terry",
+        "_pointsBefore": 1513,
+        "_pointsEarned": 33,
+        "_position": 3
+      }
+    ]
   }
 ]

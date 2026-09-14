@@ -217,13 +217,16 @@ export interface PlacementEntry {
 export interface LeagueResultEntry {
   leagueId: string;
   leagueName: string;
+  gameId?: string | null;
   status: string;
   rank: number;
+  totalParticipants: number;
   matchesPlayed: number;
   wins: number;
   losses: number;
   noShows: number;
   eloChange: number;
+  winRate: number;
   gamesPerMatch: number;
   date: string;
 }

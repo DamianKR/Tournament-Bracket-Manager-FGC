@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { GlobalParticipant, ComputedStats, LeagueResultEntry, MatchRecord, LeagueMatch } from '@/models/types';
+import { GlobalParticipant, ComputedStats, MatchRecord, LeagueMatch } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
 import {
   getParticipant,
@@ -11,7 +11,13 @@ import {
   getParticipantLeagueStats,
   getParticipantLeagueMatches,
   getParticipantStats,
+  getTournamentResults,
+  getHeadToHead,
+  type H2HMatchType,
+  type H2HTimeFilter,
+  type HeadToHeadEntry,
   type ParticipantStatsSummary,
+  type TournamentResult,
   getAllParticipantsAsync,
   inviteToCommunity,
   getParticipantAccountSummary,
@@ -36,18 +42,15 @@ import Loading from '@/components/Loading/Loading';
 import PasswordInput from '@/components/PasswordInput/PasswordInput';
 import './ParticipantProfile.css';
 import ParticipantStatsOverview from './ParticipantStatsOverview';
+import ParticipantTournamentResults from './ParticipantTournamentResults';
+import ParticipantLeagueResults from './ParticipantLeagueResults';
+import ParticipantH2H from './ParticipantH2H';
 
-type Tab = 'overview' | 'results' | 'matches' | 'edit';
+type Tab = 'overview' | 'results' | 'h2h' | 'matches' | 'edit';
 type MatchTypeFilter = 'all' | 'tournament' | 'league' | 'duel';
 type MatchResultFilter = 'all' | 'wins' | 'losses';
 
-const PLACEMENT_MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
-function ordinal(n: number): string {
-  const s = ['th', 'st', 'nd', 'rd'];
-  const v = n % 100;
-  return n + (s[(v - 20) % 10] || s[v] || s[0]);
-}
 
 function ParticipantProfile() {
   const { t } = useTranslation();
@@ -82,6 +85,32 @@ function ParticipantProfile() {
   const [statsSummary, setStatsSummary] = useState<ParticipantStatsSummary | null>(null);
   const [tab, setTab] = useState<Tab>(initialTab === 'edit' && (canAdminCurrentCommunity || isOwnProfile) ? 'edit' : 'overview');
   const [resultsSubTab, setResultsSubTab] = useState<'tournaments' | 'leagues'>('tournaments');
+  const [tournamentResults, setTournamentResults] = useState<TournamentResult[]>([]);
+  const [loadingTournamentResults, setLoadingTournamentResults] = useState(false);
+  // Shared game selector across all non-edit tabs
+  const [profileGame, setProfileGame] = useState<string>('');
+  const [gameDropdownOpen, setGameDropdownOpen] = useState(false);
+  const gameDropdownRef = useRef<HTMLDivElement>(null);
+
+  const primaryGameId = useMemo(() => {
+    const ids = new Set<string>();
+    statsSummary?.peakEloByGame.forEach((e) => ids.add(e.gameId));
+    statsSummary?.recordByGame?.forEach((r) => ids.add(r.gameId));
+    statsSummary?.characterUsage.forEach((c) => ids.add(c.gameId));
+    if (ids.size === 0) GAMES.forEach((g) => ids.add(g.id));
+    const availableGames = GAMES.filter((g) => ids.has(g.id));
+    if (!participant || !statsSummary) return availableGames[0]?.id ?? GAMES[0]?.id ?? '';
+    const declared = (participant as GlobalParticipant & { primaryGameId?: string; gameId?: string }).primaryGameId
+      || (participant as GlobalParticipant & { primaryGameId?: string; gameId?: string }).gameId
+      || '';
+    if (declared && availableGames.some((g) => g.id === declared)) return declared;
+    return statsSummary.peakEloByGame[0]?.gameId || availableGames[0]?.id || GAMES[0]?.id || '';
+  }, [participant, statsSummary]);
+
+  const [h2hData, setH2hData] = useState<HeadToHeadEntry[]>([]);
+  const [loadingH2h, setLoadingH2h] = useState(false);
+  const [h2hMatchType, setH2hMatchType] = useState<H2HMatchType>('all');
+  const [h2hTimeFilter, setH2hTimeFilter] = useState<H2HTimeFilter>('all');
   const [notFound, setNotFound] = useState(false);
   const [rankEntry, setRankEntry] = useState<LeaderboardEntry | null>(null);
   const [duelStats, setDuelStats] = useState({
@@ -101,7 +130,6 @@ function ParticipantProfile() {
   const [loadingMatches, setLoadingMatches] = useState(false);
   const [matchTypeFilter, setMatchTypeFilter] = useState<MatchTypeFilter>('all');
   const [matchResultFilter, setMatchResultFilter] = useState<MatchResultFilter>('all');
-  const [matchGameFilter, setMatchGameFilter] = useState<string>('all');
 
   const completedLeagues = leagueStats?.leagues.filter((l) => l.status === 'completed') ?? [];
 
@@ -246,6 +274,28 @@ function ParticipantProfile() {
     }
   }, [tab, id, communityId]);
 
+  // Load tournament results when Results tab is opened
+  useEffect(() => {
+    if (tab === 'results' && id && tournamentResults.length === 0 && !loadingTournamentResults) {
+      setLoadingTournamentResults(true);
+      getTournamentResults(id).then((data) => {
+        setTournamentResults(data);
+        setLoadingTournamentResults(false);
+      });
+    }
+  }, [tab, id]);
+
+  // Load head-to-head data when H2H tab is opened or filter changes
+  useEffect(() => {
+    if (tab === 'h2h' && id && !loadingH2h) {
+      setLoadingH2h(true);
+      getHeadToHead(id, h2hMatchType, profileGame, h2hTimeFilter).then((data) => {
+        setH2hData(data);
+        setLoadingH2h(false);
+      });
+    }
+  }, [tab, id, h2hMatchType, profileGame, h2hTimeFilter]);
+
   // Load linked user account (admin only)
   useEffect(() => {
     if (!id || !isAdmin) return;
@@ -259,6 +309,24 @@ function ParticipantProfile() {
     if (!id || adminCommunityIds.length === 0) { setAccountSummary(null); return; }
     getParticipantAccountSummary(id).then(setAccountSummary).catch(() => setAccountSummary(null));
   }, [id, isSuperAdmin, user?.memberships]);
+
+  // Default game filter to primary game once data loads
+  useEffect(() => {
+    if (primaryGameId && !profileGame) setProfileGame(primaryGameId);
+  }, [primaryGameId, profileGame]);
+
+  // Close game dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (gameDropdownRef.current && !gameDropdownRef.current.contains(e.target as Node)) {
+        setGameDropdownOpen(false);
+      }
+    }
+    if (gameDropdownOpen) {
+      document.addEventListener('mousedown', handleClick);
+      return () => document.removeEventListener('mousedown', handleClick);
+    }
+  }, [gameDropdownOpen]);
 
   async function loadLinkedUser() {
     if (!id) return;
@@ -684,19 +752,75 @@ function ParticipantProfile() {
       {/* ── Tabs ── */}
       <div className="profile-tabs-bar">
         <div className="container profile-tabs">
-          {(['overview', 'results', 'matches', 'edit'] as Tab[])
+          {(['overview', 'results', 'h2h', 'matches', 'edit'] as Tab[])
             .filter((tabItem) => tabItem !== 'edit' || canEdit)
             .map((tabItem) => (
               <button key={tabItem} className={`profile-tab ${tab === tabItem ? 'active' : ''}`}
                 onClick={() => setTab(tabItem)}>
                 {tabItem === 'overview' ? t('participantProfile.tabs.overview')
                   : tabItem === 'results' ? t('participantProfile.tabs.results')
+                  : tabItem === 'h2h' ? t('participantProfile.tabs.h2h', 'H2H')
                   : tabItem === 'matches' ? t('participantProfile.tabs.matches')
                   : t('participantProfile.tabs.edit')}
               </button>
             ))}
         </div>
       </div>
+
+      {/* ── Per-tab game selector (same as Overview, only when relevant) ── */}
+      {tab !== 'edit' && (() => {
+        if (!statsSummary) return null;
+        const ids = new Set<string>();
+        statsSummary.peakEloByGame.forEach((e) => ids.add(e.gameId));
+        statsSummary.recordByGame?.forEach((r) => ids.add(r.gameId));
+        statsSummary.characterUsage.forEach((c) => ids.add(c.gameId));
+        if (ids.size === 0) GAMES.forEach((g) => ids.add(g.id));
+        const availableGames = GAMES.filter((g) => ids.has(g.id));
+        if (availableGames.length <= 1) return null;
+
+        const selectedGame = availableGames.find((g) => g.id === profileGame) || availableGames[0];
+        if (!selectedGame) return null;
+        const accent = selectedGame.color;
+
+        return (
+          <div ref={gameDropdownRef} className="container profile-game-bar">
+            <div
+              className="profile-game-pill active"
+              style={{ '--game-accent': accent } as React.CSSProperties}
+              onClick={() => setGameDropdownOpen((v) => !v)}
+            >
+              <span className="game-badge" style={{ background: '#fff', color: accent }}>
+                {selectedGame.id.toUpperCase()}
+              </span>
+              <span className="profile-game-pill-name">{selectedGame.name}</span>
+              <i className={`fas fa-chevron-down profile-game-chevron ${gameDropdownOpen ? 'up' : ''}`} />
+            </div>
+
+            {gameDropdownOpen && (
+              <div className="profile-game-menu">
+                {availableGames.map((g) => {
+                  const isActive = profileGame === g.id;
+                  return (
+                    <button
+                      key={g.id}
+                      className={`profile-game-option ${isActive ? 'active' : ''}`}
+                      style={g.color ? { '--game-accent': g.color } as React.CSSProperties : {}}
+                      onClick={() => { setProfileGame(g.id); setGameDropdownOpen(false); }}
+                    >
+                      <span className="game-badge" style={isActive
+                        ? { background: '#fff', color: g.color, border: 'none' }
+                        : { background: g.color, color: '#fff', border: 'none' }}>
+                        {g.id.toUpperCase()}
+                      </span>
+                      <span>{g.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       <div className="container profile-content">
 
@@ -733,7 +857,7 @@ function ParticipantProfile() {
               </div>
             )}
 
-            <ParticipantStatsOverview stats={statsSummary} participant={participant} leagueStats={leagueStats} duelStats={duelStats} />
+            <ParticipantStatsOverview stats={statsSummary} participant={participant} gameFilter={profileGame} />
 
             {/* Per-game ELO profiles */}
             {participant && (
@@ -794,83 +918,61 @@ function ParticipantProfile() {
 
         {/* ── Results tab ── */}
         {tab === 'results' && (
-          <div className="card results-tab">
-            <div className="results-subtabs">
+          <div className="results-tab">
+            {/* Sub-tabs */}
+            <div className="card results-subtab-bar">
               <button
                 className={`results-subtab ${resultsSubTab === 'tournaments' ? 'active' : ''}`}
                 onClick={() => setResultsSubTab('tournaments')}
               >
-                <i className="fas fa-trophy" /> {t('participantProfile.results.tournamentsTab', { count: stats.placements.length })}
+                <i className="fas fa-trophy" /> {t('participantProfile.results.tournamentsTab', { count: tournamentResults.length })}
               </button>
               <button
                 className={`results-subtab ${resultsSubTab === 'leagues' ? 'active' : ''}`}
                 onClick={() => setResultsSubTab('leagues')}
               >
-                <i className="fas fa-trophy" /> {t('participantProfile.results.leaguesTab', { count: completedLeagues.length })}
+                <i className="fas fa-shield-alt" /> {t('participantProfile.results.leaguesTab', { count: completedLeagues.length })}
               </button>
             </div>
 
             {resultsSubTab === 'tournaments' && (
-              <>
-                <h3 className="mb-3">{t('participantProfile.results.tournamentTitle')}</h3>
-                {stats.placements.length === 0 ? (
-                  <p className="text-secondary">{t('participantProfile.results.noTournamentResults')}</p>
-                ) : (
-                  <div className="profile-results-list">
-                    {stats.placements.map((pl) => (
-                      <div key={pl.tournamentId} className="profile-result-row"
-                        onClick={() => navigate(getPath(`events/tournaments/${pl.tournamentId}`))}>
-                        <span className="prr-medal">{PLACEMENT_MEDAL[pl.position] ?? <i className="fas fa-gamepad" />}</span>
-                        <div className="prr-info">
-                          <span className="prr-name">{pl.tournamentName}</span>
-                          <span className="prr-meta text-secondary text-sm">
-                            {t('participantProfile.results.playersCount', { count: pl.totalParticipants })} · {new Date(pl.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <span className={`prr-placement ${pl.position === 1 ? 'gold' : pl.position <= 3 ? 'podium' : ''}`}>
-                          {ordinal(pl.position)}
-                        </span>
-                      </div>
-                    ))}
+              <div className="card results-panel">
+                {loadingTournamentResults ? (
+                  <div className="tr-empty">
+                    <i className="fas fa-spinner fa-spin" /> {t('common.loading', 'Loading...')}
                   </div>
+                ) : (
+                  <ParticipantTournamentResults
+                    results={profileGame ? tournamentResults.filter((r) => r.gameId === profileGame) : tournamentResults}
+                    onNavigate={(tId) => navigate(getPath(`events/tournaments/${tId}`))}
+                  />
                 )}
-              </>
+              </div>
             )}
 
             {resultsSubTab === 'leagues' && (
-              <>
-                <h3 className="mb-3">{t('participantProfile.results.leagueTitle')}</h3>
-                {completedLeagues.length === 0 ? (
-                  <p className="text-secondary">{t('participantProfile.results.noLeagueResults')}</p>
-                ) : (
-                  <div className="profile-results-list">
-                    {completedLeagues.map((pl: LeagueResultEntry) => (
-                      <div key={pl.leagueId} className="profile-result-row"
-                        onClick={() => navigate(getPath(`events/leagues/${pl.leagueId}`))}>
-                        <span className={`prr-medal prr-rank rank-${pl.rank}`}>
-                          {pl.rank <= 3 ? PLACEMENT_MEDAL[pl.rank] : pl.rank}
-                        </span>
-                        <div className="prr-info">
-                          <span className="prr-name">{pl.leagueName}</span>
-                          <span className="prr-meta text-secondary text-sm">
-                            {t('participantProfile.results.recordMatches', {
-                              wins: pl.wins,
-                              losses: pl.losses,
-                              matches: pl.matchesPlayed,
-                              eloChange: `${pl.eloChange >= 0 ? '+' : ''}${pl.eloChange}`
-                            })}
-                          </span>
-                        </div>
-                        <span className={`prr-placement ${pl.rank === 1 ? 'gold' : pl.rank <= 3 ? 'podium' : ''}`}>
-                          {ordinal(pl.rank)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
+              <div className="card results-panel">
+                <ParticipantLeagueResults
+                  results={profileGame ? completedLeagues.filter((l) => !l.gameId || l.gameId === profileGame) : completedLeagues}
+                  onNavigate={(id) => navigate(getPath(`events/leagues/${id}`))}
+                />
+              </div>
             )}
           </div>
+        )}
+
+        {/* ── H2H tab ── */}
+        {tab === 'h2h' && (
+          <ParticipantH2H
+            entries={h2hData}
+            matchType={h2hMatchType}
+            onMatchTypeChange={setH2hMatchType}
+            timeFilter={h2hTimeFilter}
+            onTimeFilterChange={setH2hTimeFilter}
+            gameId={profileGame}
+            loading={loadingH2h}
+            onNavigateParticipant={(pid) => navigate(getPath(`participants/${pid}`))}
+          />
         )}
 
         {/* ── Matches tab ── */}
@@ -933,19 +1035,7 @@ function ParticipantProfile() {
                 </div>
               </div>
 
-              <div className="matches-filter-group">
-                <label>{t('participantProfile.matches.gameLabel')}</label>
-                <select
-                  className="matches-game-filter"
-                  value={matchGameFilter}
-                  onChange={(e) => setMatchGameFilter(e.target.value)}
-                >
-                  <option value="all">{t('participantProfile.matches.all')}</option>
-                  {GAMES.map((g) => (
-                    <option key={g.id} value={g.id}>{g.id.toUpperCase()}</option>
-                  ))}
-                </select>
-              </div>
+              {/* game filter handled by global selector above tabs */}
             </div>
 
             {loadingMatches && <Loading message={t('participantProfile.matches.loading')} />}
@@ -956,7 +1046,7 @@ function ParticipantProfile() {
                 const resultMatch = matchResultFilter === 'all' 
                   || (matchResultFilter === 'wins' && m.winnerId === id)
                   || (matchResultFilter === 'losses' && m.winnerId !== id);
-                const gameMatch = matchGameFilter === 'all' || m.gameId === matchGameFilter;
+                const gameMatch = !profileGame || m.gameId === profileGame;
                 return typeMatch && resultMatch && gameMatch;
               });
 

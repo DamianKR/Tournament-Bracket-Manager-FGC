@@ -347,21 +347,44 @@ export async function getParticipantLeagueMatches(participantId: string): Promis
 
 // ── Comprehensive stats ──────────────────────────────────────────────────
 
+export interface CharacterUsageEntry {
+  gameId: string;
+  characterId: string;
+  count: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+}
+
+export interface RecordEntry {
+  wins: number;
+  losses: number;
+  winRate: number;
+}
+
 export interface ParticipantStatsSummary {
   mainCharactersByGame: Record<string, { id: string }>;
-  characterUsage: { gameId: string; characterId: string; count: number; wins: number; losses: number; winRate: number }[];
-  opponentCharacterUsage: { gameId: string; characterId: string; count: number; wins: number; losses: number; winRate: number }[];
+  characterUsage: CharacterUsageEntry[];
+  characterUsageLast6Months: CharacterUsageEntry[];
+  characterUsageByType: Record<'tournament' | 'ranked' | 'league', CharacterUsageEntry[]>;
+  characterUsageLast6MonthsByType: Record<'tournament' | 'ranked' | 'league', CharacterUsageEntry[]>;
+  opponentCharacterUsage: CharacterUsageEntry[];
   peakEloByGame: { gameId: string; points: number; rank: string; color: string }[];
   matchupWinRates: { gameId: string; characterId: string; opponentCharacterId: string; wins: number; losses: number; winRate: number; byType: Record<'tournament' | 'ranked' | 'league', { wins: number; losses: number }> }[];
   topPlacements: { top1: number; top3: number; top8: number; top16: number };
   headToHead: { id: string; name: string; alias: string | null; wins: number; losses: number; winRate: number }[];
   headToHeadByType: Record<'tournament' | 'ranked' | 'league', { id: string; name: string; alias: string | null; wins: number; losses: number; winRate: number }[]>;
   monthlyActivity: { month: string; matches: number; tournaments: number; byType?: { tournament: { matches: number }; ranked: { matches: number }; league: { matches: number } } }[];
-  recordByGame: { gameId: string; wins: number; losses: number; winRate: number }[];
+  recordByGame: { gameId: string; wins: number; losses: number; winRate: number; byType: Record<'tournament' | 'ranked' | 'league', RecordEntry> }[];
   recordByType: { type: 'tournament' | 'ranked' | 'league'; wins: number; losses: number; winRate: number }[];
+  recordByTypeLast6Months: { type: 'tournament' | 'ranked' | 'league'; wins: number; losses: number; winRate: number }[];
+  tournamentHighlights: { tournamentId: string; name: string; gameId: string; placement: number; entrants: number; date: string }[];
   allMatchWins: number;
   allMatchLosses: number;
   allMatchWinRate: number;
+  allMatchWinsLast6Months: number;
+  allMatchLossesLast6Months: number;
+  allMatchWinRateLast6Months: number;
 }
 
 export async function getParticipantStats(participantId: string): Promise<ParticipantStatsSummary> {
@@ -374,6 +397,9 @@ export async function getParticipantStats(participantId: string): Promise<Partic
     return {
       mainCharactersByGame: {},
       characterUsage: [],
+      characterUsageLast6Months: [],
+      characterUsageByType: { tournament: [], ranked: [], league: [] },
+      characterUsageLast6MonthsByType: { tournament: [], ranked: [], league: [] },
       opponentCharacterUsage: [],
       peakEloByGame: [],
       matchupWinRates: [],
@@ -383,9 +409,14 @@ export async function getParticipantStats(participantId: string): Promise<Partic
       monthlyActivity: [],
       recordByGame: [],
       recordByType: [],
+      recordByTypeLast6Months: [],
+      tournamentHighlights: [],
       allMatchWins: 0,
       allMatchLosses: 0,
       allMatchWinRate: 0,
+      allMatchWinsLast6Months: 0,
+      allMatchLossesLast6Months: 0,
+      allMatchWinRateLast6Months: 0,
     };
   }
 }
@@ -430,6 +461,99 @@ export async function requestJoinCommunity(participantId: string, communityId: s
 }
 
 /** Info mínima de la cuenta vinculada a un participant (para saber si es invitable). */
+export interface TournamentResultMatch {
+  matchId: string;
+  phase: 'winner' | 'loser' | 'grand_final' | 'grand_final_reset';
+  label: string;
+  round: number;
+  result: 'win' | 'loss';
+  playerScore: number | null;
+  opponentScore: number | null;
+  playerName: string;
+  playerSeed: number | null;
+  playerCharacterIds: string[];
+  opponentCharacterIds: string[];
+  opponentName: string;
+  opponentSeed: number | null;
+}
+
+export interface TournamentResult {
+  tournamentId: string;
+  name: string;
+  gameId: string;
+  date: string;
+  totalParticipants: number;
+  placement: number | null;
+  seed: number | null;
+  matches: TournamentResultMatch[];
+}
+
+export async function getTournamentResults(participantId: string): Promise<TournamentResult[]> {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/tournament-results`);
+    if (!res.ok) throw new Error('Failed to fetch tournament results');
+    return await res.json();
+  } catch (err) {
+    console.error('[ParticipantService] getTournamentResults error:', err);
+    return [];
+  }
+}
+
+export interface HeadToHeadGame {
+  myChar: string | null;
+  oppChar: string | null;
+  won: boolean;
+}
+
+export interface HeadToHeadSet {
+  matchId: string;
+  date: string;
+  type: 'tournament' | 'ranked' | 'league' | 'duel';
+  contextName: string | null;
+  gameId: string | null;
+  won: boolean;
+  myScore: number | null;
+  oppScore: number | null;
+  myChars: string[];
+  oppChars: string[];
+  games: HeadToHeadGame[];
+}
+
+export interface HeadToHeadEntry {
+  opponentId: string;
+  opponentName: string;
+  opponentAlias: string | null;
+  setsWon: number;
+  setsLost: number;
+  setWinRate: number;
+  gamesWon: number;
+  gamesLost: number;
+  gameWinRate: number;
+  losersWon: number;
+  losersLost: number;
+  lastFive: ('W' | 'L')[];
+  streakType: 'win' | 'loss' | null;
+  streakCount: number;
+  setsWithGameData: number;
+  totalSets: number;
+  sets: HeadToHeadSet[];
+}
+
+export type H2HMatchType = 'all' | 'tournament' | 'league' | 'duel';
+export type H2HTimeFilter = 'all' | '6';
+
+export async function getHeadToHead(participantId: string, type: H2HMatchType = 'all', gameId: string = 'all', months: H2HTimeFilter = 'all'): Promise<HeadToHeadEntry[]> {
+  try {
+    const params = new URLSearchParams({ type, gameId, months });
+    const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/head-to-head?${params.toString()}`);
+    if (!res.ok) throw new Error('Failed to fetch head-to-head');
+    return await res.json();
+  } catch (err) {
+    console.error('[ParticipantService] getHeadToHead error:', err);
+    return [];
+  }
+}
+
 export async function getParticipantAccountSummary(participantId: string): Promise<{ hasAccount: boolean; communityIds: string[] }> {
   const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/account-summary`, {
     headers: getAuthHeader(),

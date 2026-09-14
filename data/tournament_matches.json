@@ -2337,5 +2337,208 @@
     ],
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-09-12T22:01:38.570Z"
+  },
+  {
+    "id": "tm_1789411248752_b01xxio65",
+    "tournamentId": "1789250438061-pv4kx7aqh",
+    "tournamentName": "Tournament CCharacters",
+    "gameId": "ssbu",
+    "player1Id": "1789250447063-qioi2wshq",
+    "player2Id": "1789250448875-kfdelqseh",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1787409902362_3u9f0qr",
+    "player1Name": "Ale",
+    "player2Name": "Adam",
+    "winnerId": "1789250447063-qioi2wshq",
+    "winnerGlobalId": "gp_1786387243524_6er0c9u",
+    "round": 1,
+    "matchNumber": 2,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789250447063-qioi2wshq",
+        "player1Character": "mario",
+        "player2Character": "byleth"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789250447063-qioi2wshq",
+        "player1Character": "mario",
+        "player2Character": "captain_falcon"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-14T18:40:48.752Z"
+  },
+  {
+    "id": "tm_1789411263519_0xwrtfufu",
+    "tournamentId": "1789250438061-pv4kx7aqh",
+    "tournamentName": "Tournament CCharacters",
+    "gameId": "ssbu",
+    "player1Id": "1789250450009-u2w1b7yxc",
+    "player2Id": "1789250451232-lq5xlh0f2",
+    "player1GlobalId": "gp_1787409813244_ymqkq1e",
+    "player2GlobalId": "gp_1786387250178_ac5thmv",
+    "player1Name": "Alexs",
+    "player2Name": "Alexis",
+    "winnerId": "1789250450009-u2w1b7yxc",
+    "winnerGlobalId": "gp_1787409813244_ymqkq1e",
+    "round": 1,
+    "matchNumber": 3,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789250450009-u2w1b7yxc",
+        "player1Character": "bayonetta",
+        "player2Character": "bowser"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789250450009-u2w1b7yxc"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-14T18:41:03.519Z"
+  },
+  {
+    "id": "tm_1789411294260_m9jbsq1dl",
+    "tournamentId": "1789250438061-pv4kx7aqh",
+    "tournamentName": "Tournament CCharacters",
+    "gameId": "ssbu",
+    "player1Id": "1789250455124-uiia4l4v2",
+    "player2Id": "1789250458229-r5dlz7c8h",
+    "player1GlobalId": "gp_1786396304199_u7v6gsb",
+    "player2GlobalId": "gp_1786388790209_sr4ldku",
+    "player1Name": "Dianger",
+    "player2Name": "Brian",
+    "winnerId": "1789250458229-r5dlz7c8h",
+    "winnerGlobalId": "gp_1786388790209_sr4ldku",
+    "round": 1,
+    "matchNumber": 4,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789250458229-r5dlz7c8h",
+        "player1Character": "captain_falcon",
+        "player2Character": "terry"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789250458229-r5dlz7c8h"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-14T18:41:34.260Z"
+  },
+  {
+    "id": "tm_1789411326423_ubw28wq14",
+    "tournamentId": "1789250438061-pv4kx7aqh",
+    "tournamentName": "Tournament CCharacters",
+    "gameId": "ssbu",
+    "player1Id": "1789250442863-2a7z83qxq",
+    "player2Id": "1789250447063-qioi2wshq",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786387243524_6er0c9u",
+    "player1Name": "Damiam",
+    "player2Name": "Ale",
+    "winnerId": "1789250442863-2a7z83qxq",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 3,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789250442863-2a7z83qxq",
+        "player1Character": "samus",
+        "player2Character": "mario"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789250442863-2a7z83qxq",
+        "player1Character": "ganondorf",
+        "player2Character": "mario"
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "1789250442863-2a7z83qxq",
+        "player1Character": "ganondorf"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-14T18:42:06.423Z"
+  },
+  {
+    "id": "tm_1789411344648_6x7huvj7d",
+    "tournamentId": "1789250438061-pv4kx7aqh",
+    "tournamentName": "Tournament CCharacters",
+    "gameId": "ssbu",
+    "player1Id": "1789250450009-u2w1b7yxc",
+    "player2Id": "1789250458229-r5dlz7c8h",
+    "player1GlobalId": "gp_1787409813244_ymqkq1e",
+    "player2GlobalId": "gp_1786388790209_sr4ldku",
+    "player1Name": "Alexs",
+    "player2Name": "Brian",
+    "winnerId": "1789250450009-u2w1b7yxc",
+    "winnerGlobalId": "gp_1787409813244_ymqkq1e",
+    "round": 2,
+    "matchNumber": 2,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789250450009-u2w1b7yxc",
+        "player1Character": "bayonetta",
+        "player2Character": "bowser"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789250450009-u2w1b7yxc",
+        "player1Character": "byleth",
+        "player2Character": "bowser"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-14T18:42:24.648Z"
+  },
+  {
+    "id": "tm_1789411366523_cllp3bllq",
+    "tournamentId": "1789250438061-pv4kx7aqh",
+    "tournamentName": "Tournament CCharacters",
+    "gameId": "ssbu",
+    "player1Id": "1789250442863-2a7z83qxq",
+    "player2Id": "1789250450009-u2w1b7yxc",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1787409813244_ymqkq1e",
+    "player1Name": "Damiam",
+    "player2Name": "Alexs",
+    "winnerId": "1789250442863-2a7z83qxq",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 3,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789250442863-2a7z83qxq",
+        "player1Character": "roy",
+        "player2Character": "captain_falcon"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789250442863-2a7z83qxq"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-14T18:42:46.523Z"
   }
 ]

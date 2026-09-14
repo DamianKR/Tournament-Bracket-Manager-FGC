@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ParticipantStatsSummary } from '@/services/participants/participantService';
 import { GlobalParticipant } from '@/models/types';
@@ -6,18 +6,17 @@ import { getCharacter, getGame, GAMES } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { gameBadgeStyle, gameAccent } from '@/utils/gameColor';
 import { getRankIcon, RANK_TIERS } from '@/utils/rank';
+import SectionTabs from '@/components/SectionTabs';
 import './ParticipantStatsOverview.css';
 
 interface ParticipantStatsOverviewProps {
   stats: ParticipantStatsSummary | null;
   participant: GlobalParticipant | null;
-  leagueStats?: { leagues: { status: string; rank: number }[] } | null;
-  duelStats?: { pendingChallenges: number; completedThisWeek: number } | null;
+  gameFilter?: string;
 }
 
 type H2HTab = 'players' | 'characters';
-type H2HType = 'all' | 'tournament' | 'ranked' | 'league';
-type RecordTab = 'total' | 'type';
+type MatchType = 'all' | 'tournament' | 'ranked' | 'league';
 
 function RecordBar({ label, wins, losses, winRate, color }: { label: string; wins: number; losses: number; winRate: number; color?: string }) {
   return (
@@ -33,10 +32,15 @@ function RecordBar({ label, wins, losses, winRate, color }: { label: string; win
   );
 }
 
-function StatCard({ label, children, className = '', style }: { label: string; children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
+function StatCard({ label, right, children, className = '', style }: { label?: string; right?: React.ReactNode; children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
   return (
     <div className={`stat-card ${className}`} style={style}>
-      <div className="stat-card-label">{label}</div>
+      {label || right ? (
+        <div className="stat-card-header">
+          {label && <div className="stat-card-label">{label}</div>}
+          {right}
+        </div>
+      ) : null}
       {children}
     </div>
   );
@@ -55,22 +59,29 @@ function GameBadge({ gameId, inverted }: { gameId: string; inverted?: boolean })
   );
 }
 
-function CharacterRow({ gameId, characterId, label, wins, losses, winRate, count, total }: {
+function ordinal(n: number) {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function CharacterRow({ gameId, characterId, label, winRate, count, totalPicks, totalMatches, isMain }: {
   gameId: string;
   characterId: string;
   label?: string;
-  wins: number;
-  losses: number;
   winRate: number;
   count: number;
-  total: number;
+  totalPicks: number;
+  totalMatches: number;
+  isMain?: boolean;
 }) {
   const ch = getCharacter(gameId, characterId);
-  const usagePercent = total > 0 ? Math.round((count / total) * 100) : 0;
+  const usagePercent = totalMatches > 0 ? Math.round((count / totalMatches) * 100) : 0;
+  const barPercent = totalPicks > 0 ? Math.round((count / totalPicks) * 100) : 0;
   const displayName = ch?.name || label || characterId;
 
   return (
-    <div className="character-row">
+    <div className={`character-row ${isMain ? 'main' : ''}`}>
       <img
         src={getCharacterImageUrl(gameId, characterId) ?? undefined}
         alt={displayName}
@@ -78,22 +89,34 @@ function CharacterRow({ gameId, characterId, label, wins, losses, winRate, count
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
       />
       <div className="character-row-info">
-        <div className="character-row-header">
+        <div className="character-row-top">
           <span className="character-row-name">{displayName}</span>
-          <span className="character-row-meta">{count} {usagePercent > 0 ? `(${usagePercent}%)` : ''} · {wins}W / {losses}L · {winRate}% WR</span>
+          <span className="character-row-stats">
+            <span className="character-row-stat usage"><span>{usagePercent}%</span> <small>usage</small></span>
+            <span className="character-row-stat games">{count} games</span>
+            <span className="character-row-stat wr">{winRate}% winrate</span>
+          </span>
         </div>
         <div className="character-row-bar">
-          <div className="character-row-fill" style={{ width: `${usagePercent}%` }} />
+          <div className="character-row-fill" style={{ width: `${barPercent}%` }} />
         </div>
       </div>
     </div>
   );
 }
 
-function H2HRow({ name, sub, wins, losses, winRate }: { name: string; sub?: string; wins: number; losses: number; winRate: number }) {
+function H2HRow({ name, sub, wins, losses, winRate, image }: { name: string; sub?: string; wins: number; losses: number; winRate: number; image?: string }) {
   return (
     <div className="h2h-row">
       <div className="h2h-info">
+        {image && (
+          <img
+            src={image}
+            alt={name}
+            className="h2h-char-icon"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        )}
         <span className="h2h-name">{name}</span>
         {sub && <span className="h2h-sub">{sub}</span>}
       </div>
@@ -105,27 +128,47 @@ function H2HRow({ name, sub, wins, losses, winRate }: { name: string; sub?: stri
   );
 }
 
-function groupBy<T extends object, K extends keyof T>(arr: T[], key: K): Record<string, T[]> {
-  return arr.reduce((acc, item) => {
-    const k = String(item[key]);
-    acc[k] = acc[k] || [];
-    acc[k].push(item);
-    return acc;
-  }, {} as Record<string, T[]>);
-}
 
-function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }: ParticipantStatsOverviewProps) {
+
+function ParticipantStatsOverview({ stats, participant, gameFilter }: ParticipantStatsOverviewProps) {
   const { t } = useTranslation();
   const [h2hTab, setH2hTab] = useState<H2HTab>('players');
-  const [h2hType, setH2hType] = useState<H2HType>('all');
   const [h2hPlayerFilter, setH2hPlayerFilter] = useState<string>('');
-  const [h2hMyCharFilter, setH2hMyCharFilter] = useState<string>('');
-  const [h2hOppCharFilter, setH2hOppCharFilter] = useState<string>('');
-  const [recordTab, setRecordTab] = useState<RecordTab>('total');
-  const [activityType, setActivityType] = useState<string>('all');
+  const [charTimeRange, setCharTimeRange] = useState<'allTime' | 'last6Months'>('allTime');
+  const [summaryMatchType, setSummaryMatchType] = useState<MatchType>('all');
+
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const placeholderRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [summaryStuck, setSummaryStuck] = useState(false);
+  const [summaryHeight, setSummaryHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    const update = () => {
+      setSummaryHeight(summaryRef.current?.offsetHeight ?? 0);
+    };
+    update();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null;
+    if (ro && summaryRef.current) ro.observe(summaryRef.current);
+    window.addEventListener('resize', update);
+    return () => {
+      if (ro && summaryRef.current) ro.unobserve(summaryRef.current);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const s = sentinelRef.current;
+      if (!s) return;
+      setSummaryStuck(s.getBoundingClientRect().top <= 0);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // ── Global game selector ────────────────────────────────────────────────────
-  const usageByGame = useMemo(() => groupBy(stats?.characterUsage ?? [], 'gameId'), [stats]);
 
   // Build the list of games this participant actually has data for
   const availableGames = useMemo(() => {
@@ -149,8 +192,7 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
     return stats.peakEloByGame[0]?.gameId || availableGames[0]?.id || GAMES[0]?.id || '';
   }, [participant, stats, availableGames]);
 
-  const [selectedGame, setSelectedGame] = useState<string>('');
-  const effectiveGame = selectedGame || primaryGameId;
+  const effectiveGame = gameFilter || primaryGameId;
 
   if (!stats || !participant) return null;
 
@@ -165,63 +207,75 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
     : gameElo ? 100 : 0;
   const gameRecord = stats.recordByGame?.find((g) => g.gameId === effectiveGame) ?? null;
 
-  const selectedUsageChars = usageByGame[effectiveGame] ?? [];
-  const selectedUsageTotal = selectedUsageChars.reduce((sum, c) => sum + c.count, 0);
-  const hasCharacterData = stats.characterUsage.length > 0;
+  const charSource = useMemo(() => {
+    let base;
+    if (summaryMatchType === 'all') {
+      base = charTimeRange === 'last6Months' ? stats.characterUsageLast6Months : stats.characterUsage;
+    } else {
+      base = charTimeRange === 'last6Months'
+        ? stats.characterUsageLast6MonthsByType[summaryMatchType]
+        : stats.characterUsageByType[summaryMatchType];
+    }
+    return base.filter((c) => c.gameId === effectiveGame);
+  }, [charTimeRange, summaryMatchType, stats, effectiveGame]);
+
+  const selectedUsageTotal = charSource.reduce((sum, c) => sum + c.count, 0);
+  const gameTotalMatches = useMemo(() => {
+    if (!gameRecord) return 0;
+    if (summaryMatchType === 'all') return gameRecord.wins + gameRecord.losses;
+    return gameRecord.byType?.[summaryMatchType]
+      ? gameRecord.byType[summaryMatchType].wins + gameRecord.byType[summaryMatchType].losses
+      : 0;
+  }, [gameRecord, summaryMatchType]);
+  const hasCharacterData = charSource.length > 0;
 
   const gameMains = stats.mainCharactersByGame[effectiveGame] ?? null;
 
+  const summaryRecords = useMemo(() => {
+    const allTime = (() => {
+      if (summaryMatchType === 'all') {
+        return { label: t('participantProfile.stats.total'), wins: stats.allMatchWins, losses: stats.allMatchLosses, winRate: stats.allMatchWinRate };
+      }
+      const rt = stats.recordByType?.find((r) => r.type === summaryMatchType);
+      if (!rt) return { label: t(`participantProfile.stats.${summaryMatchType}`), wins: 0, losses: 0, winRate: 0 };
+      return { label: t(`participantProfile.stats.${summaryMatchType}`), ...rt };
+    })();
+    const last6 = (() => {
+      if (summaryMatchType === 'all') {
+        return { label: t('participantProfile.stats.total'), wins: stats.allMatchWinsLast6Months, losses: stats.allMatchLossesLast6Months, winRate: stats.allMatchWinRateLast6Months };
+      }
+      const rt = stats.recordByTypeLast6Months?.find((r) => r.type === summaryMatchType);
+      if (!rt) return { label: t(`participantProfile.stats.${summaryMatchType}`), wins: 0, losses: 0, winRate: 0 };
+      return { label: t(`participantProfile.stats.${summaryMatchType}`), ...rt };
+    })();
+    return { allTime, last6Months: last6 };
+  }, [summaryMatchType, stats.allMatchWins, stats.allMatchLosses, stats.allMatchWinRate, stats.allMatchWinsLast6Months, stats.allMatchLossesLast6Months, stats.allMatchWinRateLast6Months, stats.recordByType, stats.recordByTypeLast6Months, t]);
+
   const currentH2HPlayers = useMemo(() => {
-    let list = h2hType === 'all' ? stats.headToHead : (stats.headToHeadByType[h2hType] ?? []);
+    let list = summaryMatchType === 'all' ? stats.headToHead : (stats.headToHeadByType[summaryMatchType] ?? []);
     if (h2hPlayerFilter) {
       list = list.filter((h) => h.id === h2hPlayerFilter);
     }
     return list;
-  }, [stats.headToHead, stats.headToHeadByType, h2hType, h2hPlayerFilter]);
+  }, [stats.headToHead, stats.headToHeadByType, summaryMatchType, h2hPlayerFilter]);
 
-  const currentMatchups = useMemo(() => {
-    // Filter matchups to selected game first, then apply char filters / type
-    let list = stats.matchupWinRates.filter((m) => m.gameId === effectiveGame);
-    if (h2hMyCharFilter) {
-      list = list.filter((m) => m.characterId === h2hMyCharFilter);
+  const opponentCharacterH2H = useMemo(() => {
+    const map = new Map<string, { gameId: string; characterId: string; wins: number; losses: number }>();
+    for (const m of stats.matchupWinRates.filter((m) => m.gameId === effectiveGame)) {
+      const rec = summaryMatchType === 'all' ? m : { wins: m.byType[summaryMatchType].wins, losses: m.byType[summaryMatchType].losses };
+      if (rec.wins + rec.losses === 0) continue;
+      const existing = map.get(m.opponentCharacterId) || { gameId: m.gameId, characterId: m.opponentCharacterId, wins: 0, losses: 0 };
+      existing.wins += rec.wins;
+      existing.losses += rec.losses;
+      map.set(m.opponentCharacterId, existing);
     }
-    if (h2hOppCharFilter) {
-      list = list.filter((m) => m.opponentCharacterId === h2hOppCharFilter);
-    }
-    if (h2hType !== 'all') {
-      list = list.map((m) => {
-        const ty = m.byType[h2hType];
-        return { ...m, wins: ty.wins, losses: ty.losses, winRate: ty.wins + ty.losses > 0 ? Math.round((ty.wins / (ty.wins + ty.losses)) * 100) : 0 };
-      }).filter((m) => m.wins + m.losses > 0);
-    }
-    return list;
-  }, [stats.matchupWinRates, effectiveGame, h2hMyCharFilter, h2hOppCharFilter, h2hType]);
+    return Array.from(map.values())
+      .map((x) => ({ ...x, winRate: x.wins + x.losses > 0 ? Math.round((x.wins / (x.wins + x.losses)) * 100) : 0 }))
+      .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+  }, [stats.matchupWinRates, effectiveGame, summaryMatchType]);
 
   return (
     <div className="participant-stats-overview">
-
-      {/* ── Global game selector ─────────────────────────────────────────────── */}
-      {availableGames.length > 1 && (
-        <div className="overview-game-selector">
-          <div className="overview-game-tabs">
-            {availableGames.map((g) => {
-              const accent = gameAccent(g.id);
-              const isActive = effectiveGame === g.id;
-              return (
-                <button
-                  key={g.id}
-                  className={`overview-game-tab ${isActive ? 'active' : ''}`}
-                  style={accent ? { '--tab-accent': accent } as React.CSSProperties : {}}
-                  onClick={() => setSelectedGame(g.id)}
-                >
-                  <GameBadge gameId={g.id} inverted={isActive} />
-                  <span className="overview-game-tab-name">{g.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {/* Performance */}
       <div className="stats-overview-grid">
@@ -282,92 +336,81 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
             </div>
           </div>
         </StatCard>
+      </div>
 
-        <StatCard label={t('participantProfile.stats.matchRecord')} className="record-card record-card--full">
-          <div className="record-tabs">
-            <button className={`record-tab ${recordTab === 'total' ? 'active' : ''}`} onClick={() => setRecordTab('total')}>
-              {t('participantProfile.stats.total')}
-            </button>
-            <button className={`record-tab ${recordTab === 'type' ? 'active' : ''}`} onClick={() => setRecordTab('type')}>
-              {t('participantProfile.stats.byType')}
-            </button>
+      {/* Highlights */}
+      {stats.tournamentHighlights.length > 0 && (
+        <div className="stats-section card highlights-section">
+          <div className="stats-section-header">
+            <h3>{t('participantProfile.stats.highlights', 'Highlights')}</h3>
+            <span className="highlights-subtitle">{t('participantProfile.stats.allTime', 'All Time')}</span>
           </div>
-          <div className="record-content">
-            {recordTab === 'total' && (
-              <>
-                {gameRecord ? (
-                  <RecordBar
-                    label={getGame(effectiveGame)?.name || effectiveGame}
-                    wins={gameRecord.wins}
-                    losses={gameRecord.losses}
-                    winRate={gameRecord.winRate}
-                  />
-                ) : (
-                  <RecordBar
-                    label={t('participantProfile.stats.total')}
-                    wins={stats.allMatchWins}
-                    losses={stats.allMatchLosses}
-                    winRate={stats.allMatchWinRate}
-                  />
-                )}
-                <div className="record-extra-stats">
-                  <div className="record-extra-stat">
-                    <span className="record-extra-value">{gameRecord ? gameRecord.wins + gameRecord.losses : stats.allMatchWins + stats.allMatchLosses}</span>
-                    <span className="record-extra-label">{t('participantProfile.stats.matchesPlayed')}</span>
+          <div className="highlights-grid">
+            {stats.tournamentHighlights.map((h, i) => {
+              const prev = stats.tournamentHighlights[i + 1];
+              const diff = prev ? prev.placement - h.placement : 0;
+              const improved = diff > 0;
+              return (
+                <div key={h.tournamentId} className="highlight-card" style={{ '--game-accent': gameAccent(h.gameId) ?? '#7c3aed' } as React.CSSProperties}>
+                  <div className="highlight-game">
+                    <GameBadge gameId={h.gameId} inverted />
                   </div>
-                  <div className="record-extra-stat">
-                    <span className="record-extra-value">{stats.topPlacements.top1}</span>
-                    <span className="record-extra-label">{t('participantProfile.stats.tournamentWins')}</span>
-                  </div>
-                  <div className="record-extra-stat">
-                    <span className="record-extra-value">{leagueStats?.leagues.filter((l) => l.rank === 1).length ?? 0}</span>
-                    <span className="record-extra-label">{t('participantProfile.stats.leagueWins')}</span>
-                  </div>
-                  <div className="record-extra-stat">
-                    <span className="record-extra-value">{stats.topPlacements.top3}</span>
-                    <span className="record-extra-label">{t('participantProfile.stats.top3')}</span>
-                  </div>
-                </div>
-              </>
-            )}
-            {recordTab === 'type' && (
-              <div className="record-list">
-                {(stats.recordByType ?? []).length > 0 ? (
-                  stats.recordByType.map((rt) => (
-                    <div key={rt.type} className="record-type-row">
-                      <RecordBar
-                        label={t(`participantProfile.stats.${rt.type}`)}
-                        wins={rt.wins}
-                        losses={rt.losses}
-                        winRate={rt.winRate}
-                      />
-                      <div className="record-type-extra">
-                        {rt.type === 'tournament' && (
-                          <>
-                            <span><strong>{stats.topPlacements.top1}</strong> {t('participantProfile.stats.tournamentWins')}</span>
-                            <span><strong>{stats.topPlacements.top3}</strong> {t('participantProfile.stats.top3')}</span>
-                          </>
-                        )}
-                        {rt.type === 'league' && (
-                          <>
-                            <span><strong>{leagueStats?.leagues.filter((l) => l.rank === 1).length ?? 0}</strong> {t('participantProfile.stats.leagueWins')}</span>
-                            <span><strong>{leagueStats?.leagues.filter((l) => l.rank <= 5).length ?? 0}</strong> {t('participantProfile.stats.top5')}</span>
-                          </>
-                        )}
-                        {rt.type === 'ranked' && (
-                          <>
-                            <span><strong>{duelStats?.pendingChallenges ?? 0}</strong> {t('participantProfile.stats.pending')}</span>
-                            <span><strong>{duelStats?.completedThisWeek ?? 0}</strong> {t('participantProfile.stats.thisWeek')}</span>
-                          </>
-                        )}
-                      </div>
+                  <div className="highlight-main">
+                    <div className="highlight-placement">
+                      {ordinal(h.placement)}
+                      <span className="highlight-entrants">/{h.entrants}</span>
                     </div>
-                  ))
-                ) : (
-                  <span className="stat-empty">{t('participantProfile.stats.noData')}</span>
-                )}
-              </div>
-            )}
+                    <span className="highlight-name">{h.name}</span>
+                    <span className="highlight-date">
+                      {new Date(h.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' })}
+                    </span>
+                  </div>
+                  {diff !== 0 && (
+                    <span className={`highlight-trend ${improved ? 'up' : 'down'}`}>
+                      {improved ? '▲' : '▼'} {Math.abs(diff)}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Summary header with global match type filter */}
+      <div ref={sentinelRef} className="summary-sentinel" aria-hidden="true" />
+      <div ref={summaryRef} className={`summary-section card ${summaryStuck ? 'is-stuck' : ''}`}>
+        <div className="summary-section-header">
+          <h2 className="summary-section-title">{t('participantProfile.stats.summary', 'Summary')}</h2>
+          <SectionTabs
+            options={[
+              { value: 'all', label: t('participantProfile.stats.all') },
+              { value: 'tournament', label: t('participantProfile.stats.tournament') },
+              { value: 'ranked', label: t('participantProfile.stats.ranked') },
+              { value: 'league', label: t('participantProfile.stats.league') },
+            ]}
+            value={summaryMatchType}
+            onChange={(v) => setSummaryMatchType(v as MatchType)}
+          />
+        </div>
+      </div>
+      <div ref={placeholderRef} className="summary-placeholder" style={{ height: summaryStuck ? summaryHeight : 0 }} />
+
+      <div className="stats-overview-grid">
+        <StatCard label={t('participantProfile.stats.matchRecord')} className="record-card record-card--full">
+          <div className="record-bars">
+            <RecordBar
+              label={t('participantProfile.stats.allTime', 'All Time')}
+              wins={summaryRecords.allTime.wins}
+              losses={summaryRecords.allTime.losses}
+              winRate={summaryRecords.allTime.winRate}
+            />
+            <RecordBar
+              label={t('participantProfile.stats.last6Months', 'Last 6 Months')}
+              wins={summaryRecords.last6Months.wins}
+              losses={summaryRecords.last6Months.losses}
+              winRate={summaryRecords.last6Months.winRate}
+            />
           </div>
         </StatCard>
       </div>
@@ -401,21 +444,29 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
           <div className="usage-card">
             <div className="usage-header">
               <div className="mains-label">{t('participantProfile.stats.characterUsage')}</div>
+              <SectionTabs
+                options={[
+                  { value: 'allTime', label: t('participantProfile.stats.allTime', 'All Time') },
+                  { value: 'last6Months', label: t('participantProfile.stats.last6Months', 'Last 6 Months') },
+                ]}
+                value={charTimeRange}
+                onChange={(v) => setCharTimeRange(v as 'allTime' | 'last6Months')}
+              />
             </div>
             {hasCharacterData ? (
               <div className="character-usage-game">
-                {selectedUsageChars.length > 0 ? (
+                {charSource.length > 0 ? (
                   <div className="character-usage-list">
-                    {selectedUsageChars.map((c) => (
+                    {charSource.map((c) => (
                       <CharacterRow
                         key={`${c.gameId}:${c.characterId}`}
                         gameId={c.gameId}
                         characterId={c.characterId}
-                        wins={c.wins}
-                        losses={c.losses}
                         winRate={c.winRate}
                         count={c.count}
-                        total={selectedUsageTotal}
+                        totalPicks={selectedUsageTotal}
+                        totalMatches={gameTotalMatches}
+                        isMain={c.characterId === gameMains?.id}
                       />
                     ))}
                   </div>
@@ -434,14 +485,14 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
       <div className="stats-section card h2h-section">
         <div className="stats-section-header">
           <h3>{t('participantProfile.stats.headToHead')}</h3>
-          <div className="h2h-tabs">
-            <button className={`h2h-tab ${h2hTab === 'players' ? 'active' : ''}`} onClick={() => setH2hTab('players')}>
-              {t('participantProfile.stats.players')}
-            </button>
-            <button className={`h2h-tab ${h2hTab === 'characters' ? 'active' : ''}`} onClick={() => setH2hTab('characters')}>
-              {t('participantProfile.stats.characters')}
-            </button>
-          </div>
+          <SectionTabs
+            options={[
+              { value: 'players', label: t('participantProfile.stats.players') },
+              { value: 'characters', label: t('participantProfile.stats.characters') },
+            ]}
+            value={h2hTab}
+            onChange={(v) => setH2hTab(v as H2HTab)}
+          />
         </div>
 
         {h2hTab === 'players' && (
@@ -455,24 +506,10 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
                   onChange={(e) => setH2hPlayerFilter(e.target.value)}
                 >
                   <option value="">{t('participantProfile.stats.allPlayers')}</option>
-                  {stats.headToHead.map((h) => (
+                  {currentH2HPlayers.map((h) => (
                     <option key={h.id} value={h.id}>{h.name}</option>
                   ))}
                 </select>
-              </div>
-              <div className="h2h-type-tabs">
-                <button className={`h2h-type-tab ${h2hType === 'all' ? 'active' : ''}`} onClick={() => setH2hType('all')}>
-                  {t('participantProfile.stats.all')}
-                </button>
-                <button className={`h2h-type-tab ${h2hType === 'tournament' ? 'active' : ''}`} onClick={() => setH2hType('tournament')}>
-                  {t('participantProfile.stats.tournament')}
-                </button>
-                <button className={`h2h-type-tab ${h2hType === 'ranked' ? 'active' : ''}`} onClick={() => setH2hType('ranked')}>
-                  {t('participantProfile.stats.ranked')}
-                </button>
-                <button className={`h2h-type-tab ${h2hType === 'league' ? 'active' : ''}`} onClick={() => setH2hType('league')}>
-                  {t('participantProfile.stats.league')}
-                </button>
               </div>
             </div>
             {currentH2HPlayers.length > 0 ? (
@@ -496,77 +533,19 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
 
         {h2hTab === 'characters' && (
           <>
-            <p className="h2h-info-note">{t('participantProfile.stats.h2hCharactersNote')}</p>
-            <div className="h2h-filters">
-              <div className="h2h-filter-row">
-                <select
-                  className="h2h-filter-select"
-                  value={h2hMyCharFilter}
-                  onChange={(e) => setH2hMyCharFilter(e.target.value)}
-                >
-                  <option value="">{t('participantProfile.stats.myCharacter')}</option>
-                  {Array.from(new Set(stats.matchupWinRates.filter((m) => m.gameId === effectiveGame).map((m) => m.characterId))).map((charId) => {
-                    const ch = getCharacter(effectiveGame, charId);
-                    return <option key={charId} value={charId}>{ch?.name || charId}</option>;
-                  })}
-                </select>
-                <select
-                  className="h2h-filter-select"
-                  value={h2hOppCharFilter}
-                  onChange={(e) => setH2hOppCharFilter(e.target.value)}
-                >
-                  <option value="">{t('participantProfile.stats.opponentCharacter')}</option>
-                  {Array.from(new Set(stats.matchupWinRates.filter((m) => m.gameId === effectiveGame).map((m) => m.opponentCharacterId))).map((charId) => {
-                    const ch = getCharacter(effectiveGame, charId);
-                    return <option key={charId} value={charId}>{ch?.name || charId}</option>;
-                  })}
-                </select>
-              </div>
-              <div className="h2h-type-tabs">
-                <button className={`h2h-type-tab ${h2hType === 'all' ? 'active' : ''}`} onClick={() => setH2hType('all')}>
-                  {t('participantProfile.stats.all')}
-                </button>
-                <button className={`h2h-type-tab ${h2hType === 'tournament' ? 'active' : ''}`} onClick={() => setH2hType('tournament')}>
-                  {t('participantProfile.stats.tournament')}
-                </button>
-                <button className={`h2h-type-tab ${h2hType === 'ranked' ? 'active' : ''}`} onClick={() => setH2hType('ranked')}>
-                  {t('participantProfile.stats.ranked')}
-                </button>
-                <button className={`h2h-type-tab ${h2hType === 'league' ? 'active' : ''}`} onClick={() => setH2hType('league')}>
-                  {t('participantProfile.stats.league')}
-                </button>
-              </div>
-            </div>
-            {currentMatchups.length > 0 ? (
+            {opponentCharacterH2H.length > 0 ? (
               <div className="h2h-list">
-                {currentMatchups.map((m) => {
-                  const myCh = getCharacter(m.gameId, m.characterId);
-                  const oppCh = getCharacter(m.gameId, m.opponentCharacterId);
+                {opponentCharacterH2H.map((c) => {
+                  const ch = getCharacter(c.gameId, c.characterId);
                   return (
-                    <div key={`${m.gameId}:${m.characterId}:${m.opponentCharacterId}`} className="h2h-row h2h-matchup">
-                      <div className="h2h-info">
-                        <img
-                          src={getCharacterImageUrl(m.gameId, m.characterId) ?? undefined}
-                          alt={myCh?.name || m.characterId}
-                          className="h2h-char-icon"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
-                        <span className="h2h-name">{myCh?.name || m.characterId}</span>
-                        <span className="h2h-vs">vs</span>
-                        <img
-                          src={getCharacterImageUrl(m.gameId, m.opponentCharacterId) ?? undefined}
-                          alt={oppCh?.name || m.opponentCharacterId}
-                          className="h2h-char-icon"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
-                        <span className="h2h-name">{oppCh?.name || m.opponentCharacterId}</span>
-                        <GameBadge gameId={m.gameId} />
-                      </div>
-                      <div className="h2h-record">
-                        <span>{m.wins} - {m.losses}</span>
-                        <span className="h2h-wr">{m.winRate}%</span>
-                      </div>
-                    </div>
+                    <H2HRow
+                      key={c.characterId}
+                      name={ch?.name || c.characterId}
+                      wins={c.wins}
+                      losses={c.losses}
+                      winRate={c.winRate}
+                      image={getCharacterImageUrl(c.gameId, c.characterId) ?? undefined}
+                    />
                   );
                 })}
               </div>
@@ -581,20 +560,6 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
       <div className="stats-section card activity-section">
         <div className="stats-section-header">
           <h3>{t('participantProfile.stats.monthlyActivity')}</h3>
-          <div className="h2h-type-tabs">
-            <button className={`h2h-type-tab ${activityType === 'all' ? 'active' : ''}`} onClick={() => setActivityType('all')}>
-              {t('participantProfile.stats.all')}
-            </button>
-            <button className={`h2h-type-tab ${activityType === 'tournament' ? 'active' : ''}`} onClick={() => setActivityType('tournament')}>
-              {t('participantProfile.stats.tournament')}
-            </button>
-            <button className={`h2h-type-tab ${activityType === 'ranked' ? 'active' : ''}`} onClick={() => setActivityType('ranked')}>
-              {t('participantProfile.stats.ranked')}
-            </button>
-            <button className={`h2h-type-tab ${activityType === 'league' ? 'active' : ''}`} onClick={() => setActivityType('league')}>
-              {t('participantProfile.stats.league')}
-            </button>
-          </div>
         </div>
         {stats.monthlyActivity.length > 0 ? (
           <div className="activity-chart">
@@ -607,10 +572,10 @@ function ParticipantStatsOverview({ stats, participant, leagueStats, duelStats }
                 const existing = stats.monthlyActivity.find((x) => x.month === mk);
                 months.push(existing ?? { month: mk, matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } } });
               }
-              const maxCount = Math.max(...months.map((x) => activityType === 'all' ? x.matches : (x.byType?.[activityType as keyof typeof x.byType]?.matches ?? 0)));
+              const maxCount = Math.max(...months.map((x) => summaryMatchType === 'all' ? x.matches : (x.byType?.[summaryMatchType as keyof typeof x.byType]?.matches ?? 0)));
               const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
               return months.map((m) => {
-                const count = activityType === 'all' ? m.matches : (m.byType?.[activityType as keyof typeof m.byType]?.matches ?? 0);
+                const count = summaryMatchType === 'all' ? m.matches : (m.byType?.[summaryMatchType as keyof typeof m.byType]?.matches ?? 0);
                 const height = maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
                 const isCurrent = m.month === currentMonth;
                 return (

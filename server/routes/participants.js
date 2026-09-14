@@ -787,6 +787,450 @@ router.get('/:id/tournaments', async (req, res) => {
   }
 });
 
+// ── helpers for tournament-results ──────────────────────────────────────────
+
+/**
+ * Given a match id like "tm_..._r1_m5_winner" or "tm_..._grand_final" derive
+ * the bracket phase string.
+ */
+function phaseFromMatchId(id = '') {
+  if (/grand.?final.?reset/i.test(id)) return 'grand_final_reset';
+  if (/grand.?final/i.test(id)) return 'grand_final';
+  if (/loser/i.test(id)) return 'loser';
+  return 'winner';
+}
+
+/**
+ * Returns the smallest power of 2 that is >= n.
+ * e.g. 26 → 32, 48 → 64, 16 → 16
+ */
+function bracketSizeFor(n) {
+  let p = 2;
+  while (p < n) p *= 2;
+  return p;
+}
+
+/**
+ * Build a short human-readable round label, always snapping to bracket-standard
+ * power-of-2 values: T64, T32, T16, T8, T4 — never T26 or T13.
+ *
+ * Winner bracket: bracketSize shrinks by half each round.
+ *   WR1 of a 32-bracket → T32, WR2 → T16, etc.
+ *
+ * Loser bracket: LR1 starts at bracketSize/2 players;
+ *   the pool roughly halves every TWO loser rounds.
+ *   LR1 → T(bracketSize/2), LR2 → T(bracketSize/2), LR3 → T(bracketSize/4), …
+ */
+function roundLabel(phase, roundNumber, totalEntrants, _maxWinnerRound, maxLoserRound) {
+  if (phase === 'grand_final_reset') return 'GF Reset';
+  if (phase === 'grand_final') return 'Grand Final';
+
+  const bracket = bracketSizeFor(Math.max(totalEntrants, 4));
+
+  if (phase === 'winner') {
+    // bracketSize >> (r-1) gives 64→32→16→8→4→2 as roundNumber increases
+    const topX = bracket >> (roundNumber - 1);
+    if (topX <= 2) return 'W. Final';
+    return `W. T${topX}`;
+  }
+
+  if (phase === 'loser') {
+    if (roundNumber >= maxLoserRound) return 'L. Final';
+    return `L. R${roundNumber}`;
+  }
+
+  return `R${roundNumber}`;
+}
+
+// GET /api/participants/:id/tournament-results
+router.get('/:id/tournament-results', async (req, res) => {
+  try {
+    const p = await participants.findById(req.params.id);
+    if (!p) return res.status(404).json({ error: 'Participant not found' });
+
+    const participantId = p.id;
+    const [myMatchesP1, myMatchesP2, allTournaments] = await Promise.all([
+      tournamentMatches.getByField('player1GlobalId', participantId),
+      tournamentMatches.getByField('player2GlobalId', participantId),
+      tournaments.getAll(),
+    ]);
+
+    // Index tournaments
+    const tournamentMap = new Map(allTournaments.map((t) => [t.id, t]));
+
+    // Group matches by tournamentId
+    const matchesByTournament = new Map();
+    for (const m of [...myMatchesP1, ...myMatchesP2]) {
+      if (!m.tournamentId) continue;
+      if (!matchesByTournament.has(m.tournamentId)) matchesByTournament.set(m.tournamentId, []);
+      matchesByTournament.get(m.tournamentId).push(m);
+    }
+
+    const results = [];
+
+    for (const t of allTournaments) {
+      const tp = t.participants?.find((p) => p.globalParticipantId === participantId);
+      if (!tp) continue;
+      if (!tp.finalPosition && t.status !== 'completed') continue;
+
+      const tMatches = matchesByTournament.get(t.id) ?? [];
+
+      // Compute max rounds for label helper
+      const allBracketMatches = [
+        ...(t.bracket?.winnerBracket ?? []),
+        ...(t.bracket?.loserBracket ?? []),
+      ];
+      const maxWinnerRound = Math.max(0, ...allBracketMatches
+        .filter((m) => m.bracketType === 'winner')
+        .map((m) => m.roundNumber));
+      const maxLoserRound = Math.max(0, ...allBracketMatches
+        .filter((m) => m.bracketType === 'loser')
+        .map((m) => m.roundNumber));
+
+      const totalEntrants = t.totalParticipants ?? t.participants?.length ?? 0;
+
+      // Build bracket ID→bracket entry map so we can grab bracketType by round/matchNumber
+      const bracketEntryById = new Map();
+      for (const m of allBracketMatches) bracketEntryById.set(m.id, m);
+      if (t.bracket?.grandFinal) bracketEntryById.set(t.bracket.grandFinal.id, t.bracket.grandFinal);
+      if (t.bracket?.grandFinalReset) bracketEntryById.set(t.bracket.grandFinalReset.id, t.bracket.grandFinalReset);
+
+      const matchRows = tMatches
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+        .map((m) => {
+          const isP1 = m.player1GlobalId === participantId;
+          const result = m.winnerId === (isP1 ? m.player1Id : m.player2Id) ? 'win' : 'loss';
+          const opponentName = isP1 ? m.player2Name : m.player1Name;
+          const opponentGlobalId = isP1 ? m.player2GlobalId : m.player1GlobalId;
+
+          // Seed of opponent in this tournament
+          const oppTp = opponentGlobalId
+            ? t.participants?.find((tp2) => tp2.globalParticipantId === opponentGlobalId)
+            : null;
+          const opponentSeed = oppTp?.seed ?? null;
+
+          // Score (set wins, e.g. 2-1)
+          const playerScore = isP1 ? (m.player1Score ?? null) : (m.player2Score ?? null);
+          const opponentScore = isP1 ? (m.player2Score ?? null) : (m.player1Score ?? null);
+          const playerName = isP1 ? m.player1Name : m.player2Name;
+
+          // Characters: all unique chars used in order of first appearance
+          const playerCharKey = isP1 ? 'player1Character' : 'player2Character';
+          const opponentCharKey = isP1 ? 'player2Character' : 'player1Character';
+          let playerCharacterIds = [];
+          let opponentCharacterIds = [];
+          if (Array.isArray(m.games) && m.games.length > 0) {
+            const uniqueOrdered = (key) => {
+              const seen = new Set();
+              const list = [];
+              for (const g of m.games) {
+                const c = g[key];
+                if (c && !seen.has(c)) { seen.add(c); list.push(c); }
+              }
+              return list;
+            };
+            playerCharacterIds = uniqueOrdered(playerCharKey);
+            opponentCharacterIds = uniqueOrdered(opponentCharKey);
+          }
+
+          // Phase from match ID
+          const phase = phaseFromMatchId(m.id);
+          const label = roundLabel(phase, m.round ?? 1, totalEntrants, maxWinnerRound, maxLoserRound);
+
+          return {
+            matchId: m.id,
+            phase,
+            label,
+            round: m.round ?? 1,
+            result,
+            playerScore,
+            opponentScore,
+            playerName,
+            playerSeed: tp.seed ?? null,
+            playerCharacterIds,
+            opponentCharacterIds,
+            opponentName,
+            opponentSeed,
+          };
+        });
+
+      results.push({
+        tournamentId: t.id,
+        name: t.name,
+        gameId: t.gameId,
+        date: t.createdAt,
+        totalParticipants: totalEntrants,
+        placement: tp.finalPosition ?? null,
+        seed: tp.seed ?? null,
+        matches: matchRows,
+      });
+    }
+
+    results.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    res.json(results);
+  } catch (err) {
+    console.error('[Participants] GET /:id/tournament-results error:', err);
+    res.status(500).json({ error: 'Failed to read tournament results' });
+  }
+});
+
+// GET /api/participants/:id/head-to-head — per-opponent set record & history
+router.get('/:id/head-to-head', async (req, res) => {
+  try {
+    const p = await participants.findById(req.params.id);
+    if (!p) return res.status(404).json({ error: 'Participant not found' });
+
+    const participantId = p.id;
+    const [p1T, p2T, p1R, p2R, p1L, p2L, allLeagues] = await Promise.all([
+      tournamentMatches.getByField('player1GlobalId', participantId),
+      tournamentMatches.getByField('player2GlobalId', participantId),
+      rankedMatches.getByField('playerAId', participantId),
+      rankedMatches.getByField('playerBId', participantId),
+      leagueMatches.getByField('participant1Id', participantId),
+      leagueMatches.getByField('participant2Id', participantId),
+      leagues.getAll(),
+    ]);
+    const leagueGameMap = new Map(allLeagues.map((l) => [l.id, l.gameId]));
+    const leagueNameMap = new Map(allLeagues.map((l) => [l.id, l.name]));
+
+    const uniqueChars = (list) => {
+      const seen = new Set();
+      const out = [];
+      for (const c of list || []) {
+        if (c && !seen.has(c)) { seen.add(c); out.push(c); }
+      }
+      return out;
+    };
+
+    // Normalized set shape
+    const sets = [];
+
+    // Helper: count games won using per-game data first, score fallback second
+    const gameCount = (games, winnerPredicate, myScoreVal, oppScoreVal) => {
+      if (games.length > 0) {
+        return {
+          me: games.filter(winnerPredicate).length,
+          opp: games.filter((g) => !winnerPredicate(g)).length,
+          hasData: true,
+        };
+      }
+      if (myScoreVal !== null && oppScoreVal !== null) {
+        return { me: myScoreVal, opp: oppScoreVal, hasData: true };
+      }
+      return { me: 0, opp: 0, hasData: false };
+    };
+
+    for (const m of [...p1T, ...p2T]) {
+      const isP1 = m.player1GlobalId === participantId;
+      const won = m.winnerGlobalId === participantId;
+      const games = Array.isArray(m.games) ? m.games : [];
+      const myScoreVal = isP1 ? (m.player1Score ?? null) : (m.player2Score ?? null);
+      const oppScoreVal = isP1 ? (m.player2Score ?? null) : (m.player1Score ?? null);
+      const gc = gameCount(
+        games,
+        (g) => g.winnerId === (isP1 ? m.player1GlobalId : m.player2GlobalId),
+        myScoreVal,
+        oppScoreVal
+      );
+      sets.push({
+        matchId: m.id,
+        date: m.createdAt || m.updatedAt,
+        type: 'tournament',
+        phase: phaseFromMatchId(m.id),
+        contextName: m.tournamentName || null,
+        gameId: m.gameId || null,
+        opponentId: isP1 ? m.player2GlobalId : m.player1GlobalId,
+        won,
+        myScore: myScoreVal,
+        oppScore: oppScoreVal,
+        myChars: uniqueChars(games.map((g) => (isP1 ? g.player1Character : g.player2Character))),
+        oppChars: uniqueChars(games.map((g) => (isP1 ? g.player2Character : g.player1Character))),
+        hasGameData: gc.hasData,
+        gamesWonByMe: gc.me,
+        gamesWonByOpp: gc.opp,
+        games: games.map((g) => ({
+          myChar: isP1 ? g.player1Character : g.player2Character,
+          oppChar: isP1 ? g.player2Character : g.player1Character,
+          won: g.winnerId === (isP1 ? m.player1GlobalId : m.player2GlobalId),
+        })),
+      });
+    }
+
+    for (const m of [...p1R, ...p2R]) {
+      const isP1 = m.playerAId === participantId;
+      const won = m.winnerId === participantId;
+      const games = Array.isArray(m.games) ? m.games : [];
+      const myScoreVal = isP1 ? (m.player1Score ?? null) : (m.player2Score ?? null);
+      const oppScoreVal = isP1 ? (m.player2Score ?? null) : (m.player1Score ?? null);
+      const gc = gameCount(
+        games,
+        (g) => g.winnerId === participantId,
+        myScoreVal,
+        oppScoreVal
+      );
+      const myChars = games.length > 0
+        ? uniqueChars(games.map((g) => (isP1 ? g.player1Character : g.player2Character)))
+        : uniqueChars(isP1 ? m.player1Characters : m.player2Characters);
+      const oppChars = games.length > 0
+        ? uniqueChars(games.map((g) => (isP1 ? g.player2Character : g.player1Character)))
+        : uniqueChars(isP1 ? m.player2Characters : m.player1Characters);
+      sets.push({
+        matchId: m.id,
+        date: m.createdAt || m.updatedAt,
+        type: m.type === 'duel' ? 'duel' : 'ranked',
+        phase: null,
+        contextName: m.type === 'duel' ? 'Duel' : 'Ranked',
+        gameId: m.gameId || null,
+        opponentId: isP1 ? m.playerBId : m.playerAId,
+        won,
+        myScore: myScoreVal,
+        oppScore: oppScoreVal,
+        myChars,
+        oppChars,
+        hasGameData: gc.hasData,
+        gamesWonByMe: gc.me,
+        gamesWonByOpp: gc.opp,
+        games: games.map((g) => ({
+          myChar: isP1 ? g.player1Character : g.player2Character,
+          oppChar: isP1 ? g.player2Character : g.player1Character,
+          won: g.winnerId === participantId,
+        })),
+      });
+    }
+
+    for (const m of [...p1L, ...p2L]) {
+      if (m.status !== 'completed' && m.status !== 'no_show') continue;
+      const isP1 = m.participant1Id === participantId;
+      const noShowLoss = m.status === 'no_show' && m.noShowParticipantId === participantId;
+      const won = !noShowLoss && m.winnerId === participantId;
+      const games = Array.isArray(m.games) ? m.games : [];
+      // score comes as "2-0" from participant1 perspective
+      let myScore = null; let oppScore = null;
+      if (typeof m.score === 'string' && m.score.includes('-')) {
+        const [a, b] = m.score.split('-').map((x) => parseInt(x, 10));
+        myScore = isP1 ? a : b;
+        oppScore = isP1 ? b : a;
+      }
+      const gc = gameCount(
+        games,
+        (g) => g.winnerId === participantId,
+        myScore,
+        oppScore
+      );
+      sets.push({
+        matchId: m.id,
+        date: m.completedDate || m.updatedAt || m.scheduledDate,
+        type: 'league',
+        phase: null,
+        contextName: leagueNameMap.get(m.leagueId) || 'League',
+        gameId: m.gameId || leagueGameMap.get(m.leagueId) || null,
+        opponentId: isP1 ? m.participant2Id : m.participant1Id,
+        won,
+        myScore,
+        oppScore,
+        myChars: uniqueChars(games.map((g) => (isP1 ? g.player1Character : g.player2Character))),
+        oppChars: uniqueChars(games.map((g) => (isP1 ? g.player2Character : g.player1Character))),
+        hasGameData: gc.hasData,
+        gamesWonByMe: gc.me,
+        gamesWonByOpp: gc.opp,
+        games: games.map((g) => ({
+          myChar: isP1 ? g.player1Character : g.player2Character,
+          oppChar: isP1 ? g.player2Character : g.player1Character,
+          won: g.winnerId === participantId,
+        })),
+      });
+    }
+
+    // Filter by type, game and time
+    const typeFilter = req.query.type;
+    const gameFilter = req.query.gameId;
+    const monthsFilter = req.query.months;
+    const monthsBack = monthsFilter && monthsFilter !== 'all' ? parseInt(monthsFilter, 10) : null;
+    const cutoffDate = monthsBack && !isNaN(monthsBack)
+      ? new Date(Date.now() - monthsBack * 30 * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+
+    const filteredSets = (!typeFilter || typeFilter === 'all'
+      ? sets
+      : sets.filter((s) => s.type === typeFilter || (typeFilter === 'duel' && (s.type === 'ranked' || s.type === 'duel'))))
+      .filter((s) => !gameFilter || gameFilter === 'all' || (s.gameId || 'ssbu') === gameFilter)
+      .filter((s) => !cutoffDate || (s.date && s.date >= cutoffDate));
+
+    // Group by opponent
+    const byOpponent = new Map();
+    for (const s of filteredSets) {
+      if (!s.opponentId) continue;
+      const entry = byOpponent.get(s.opponentId) || { opponentId: s.opponentId, sets: [] };
+      entry.sets.push(s);
+      byOpponent.set(s.opponentId, entry);
+    }
+
+    const result = [];
+    for (const entry of byOpponent.values()) {
+      const opp = await participants.findById(entry.opponentId);
+      const ordered = entry.sets
+        .filter((s) => s.date)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      const setsWon = ordered.filter((s) => s.won).length;
+      const setsLost = ordered.length - setsWon;
+      const gamesWon = ordered.reduce((a, s) => a + s.gamesWonByMe, 0);
+      const gamesLost = ordered.reduce((a, s) => a + s.gamesWonByOpp, 0);
+      const losersSets = ordered.filter((s) => s.phase === 'loser');
+      const losersWon = losersSets.filter((s) => s.won).length;
+      const losersLost = losersSets.length - losersWon;
+
+      // Current streak: consecutive same-result from most recent set
+      let streakType = null; let streakCount = 0;
+      for (const s of ordered) {
+        const r = s.won ? 'win' : 'loss';
+        if (!streakType) { streakType = r; streakCount = 1; }
+        else if (r === streakType) streakCount++;
+        else break;
+      }
+
+      result.push({
+        opponentId: entry.opponentId,
+        opponentName: opp?.name || 'Unknown',
+        opponentAlias: opp?.alias || null,
+        setsWon,
+        setsLost,
+        setWinRate: ordered.length > 0 ? Math.round((setsWon / ordered.length) * 100) : 0,
+        gamesWon,
+        gamesLost,
+        gameWinRate: gamesWon + gamesLost > 0 ? Math.round((gamesWon / (gamesWon + gamesLost)) * 100) : 0,
+        losersWon,
+        losersLost,
+        lastFive: ordered.slice(0, 5).map((s) => (s.won ? 'W' : 'L')),
+        streakType,
+        streakCount,
+        setsWithGameData: ordered.filter((s) => s.hasGameData).length,
+        totalSets: ordered.length,
+        sets: ordered.map((s) => ({
+          matchId: s.matchId,
+          date: s.date,
+          type: s.type,
+          contextName: s.contextName,
+          gameId: s.gameId,
+          won: s.won,
+          myScore: s.myScore,
+          oppScore: s.oppScore,
+          myChars: s.myChars,
+          oppChars: s.oppChars,
+          games: s.games,
+        })),
+      });
+    }
+
+    result.sort((a, b) => b.totalSets - a.totalSets);
+    res.json(result);
+  } catch (err) {
+    console.error('[Participants] GET /:id/head-to-head error:', err);
+    res.status(500).json({ error: 'Failed to read head-to-head stats' });
+  }
+});
+
 // GET /api/participants/:id/league-stats — league results and match record
 router.get('/:id/league-stats', async (req, res) => {
   try {
@@ -852,16 +1296,20 @@ router.get('/:id/league-stats', async (req, res) => {
       standings.sort((a, b) => b.currentElo - a.currentElo);
       const rank = standings.findIndex((s) => s.participantId === req.params.id) + 1;
 
+      const matchesPlayed = wins + losses;
       results.push({
         leagueId: league.id,
         leagueName: league.name,
+        gameId: league.gameId ?? null,
         status: league.status,
         rank,
-        matchesPlayed: wins + losses,
+        totalParticipants: league.participantIds?.length ?? 0,
+        matchesPlayed,
         wins,
         losses,
         noShows,
         eloChange,
+        winRate: matchesPlayed > 0 ? Math.round((wins / matchesPlayed) * 100) : 0,
         gamesPerMatch: league.gamesPerMatch,
         date: league.updatedAt,
       });
@@ -950,8 +1398,25 @@ router.get('/:id/stats', async (req, res) => {
     const rMatches = [...p1R, ...p2R];
     const lMatches = [...p1L, ...p2L];
 
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    sixMonthsAgo.setHours(0, 0, 0, 0);
+
+    const isRecent = (date) => {
+      if (!date) return false;
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return false;
+      // Treat future-dated matches as today so a bad scheduledDate still counts
+      const now = new Date();
+      const clamped = d > now ? now : d;
+      return clamped >= sixMonthsAgo;
+    };
+
     const stats = {
       characterUsage: new Map(),
+      characterUsageLast6Months: new Map(),
+      characterUsageByType: { tournament: new Map(), ranked: new Map(), league: new Map() },
+      characterUsageLast6MonthsByType: { tournament: new Map(), ranked: new Map(), league: new Map() },
       opponentCharacterUsage: new Map(),
       characterMatchups: new Map(),
       peakEloByGame: new Map(),
@@ -961,8 +1426,11 @@ router.get('/:id/stats', async (req, res) => {
       topPlacements: { top1: 0, top3: 0, top8: 0, top16: 0 },
       allMatchWins: 0,
       allMatchLosses: 0,
+      allMatchWinsLast6Months: 0,
+      allMatchLossesLast6Months: 0,
       recordByGame: new Map(),
       recordByType: new Map(),
+      recordByTypeLast6Months: new Map(),
     };
 
     const monthKey = (date) => (date ?? '').slice(0, 7);
@@ -994,6 +1462,27 @@ router.get('/:id/stats', async (req, res) => {
             cu.count++;
             gameWon ? cu.wins++ : cu.losses++;
             stats.characterUsage.set(key, cu);
+
+            if (isRecent(date)) {
+              const cu6 = stats.characterUsageLast6Months.get(key) || { gameId, characterId: myChar, count: 0, wins: 0, losses: 0 };
+              cu6.count++;
+              gameWon ? cu6.wins++ : cu6.losses++;
+              stats.characterUsageLast6Months.set(key, cu6);
+            }
+
+            if (matchType) {
+              const cuT = stats.characterUsageByType[matchType].get(key) || { gameId, characterId: myChar, count: 0, wins: 0, losses: 0 };
+              cuT.count++;
+              gameWon ? cuT.wins++ : cuT.losses++;
+              stats.characterUsageByType[matchType].set(key, cuT);
+
+              if (isRecent(date)) {
+                const cuT6 = stats.characterUsageLast6MonthsByType[matchType].get(key) || { gameId, characterId: myChar, count: 0, wins: 0, losses: 0 };
+                cuT6.count++;
+                gameWon ? cuT6.wins++ : cuT6.losses++;
+                stats.characterUsageLast6MonthsByType[matchType].set(key, cuT6);
+              }
+            }
           }
 
           if (oppChar) {
@@ -1025,6 +1514,27 @@ router.get('/:id/stats', async (req, res) => {
           cu.count++;
           matchGameWon ? cu.wins++ : cu.losses++;
           stats.characterUsage.set(key, cu);
+
+          if (isRecent(date)) {
+            const cu6 = stats.characterUsageLast6Months.get(key) || { gameId, characterId: c, count: 0, wins: 0, losses: 0 };
+            cu6.count++;
+            matchGameWon ? cu6.wins++ : cu6.losses++;
+            stats.characterUsageLast6Months.set(key, cu6);
+          }
+
+          if (matchType) {
+            const cuT = stats.characterUsageByType[matchType].get(key) || { gameId, characterId: c, count: 0, wins: 0, losses: 0 };
+            cuT.count++;
+            matchGameWon ? cuT.wins++ : cuT.losses++;
+            stats.characterUsageByType[matchType].set(key, cuT);
+
+            if (isRecent(date)) {
+              const cuT6 = stats.characterUsageLast6MonthsByType[matchType].get(key) || { gameId, characterId: c, count: 0, wins: 0, losses: 0 };
+              cuT6.count++;
+              matchGameWon ? cuT6.wins++ : cuT6.losses++;
+              stats.characterUsageLast6MonthsByType[matchType].set(key, cuT6);
+            }
+          }
         }
 
         if (oppChars && oppChars.length > 0) {
@@ -1083,9 +1593,16 @@ router.get('/:id/stats', async (req, res) => {
 
       won ? stats.allMatchWins++ : stats.allMatchLosses++;
 
+      if (isRecent(date)) {
+        won ? stats.allMatchWinsLast6Months++ : stats.allMatchLossesLast6Months++;
+      }
+
       if (gameId) {
-        const rg = stats.recordByGame.get(gameId) || { wins: 0, losses: 0 };
+        const rg = stats.recordByGame.get(gameId) || { wins: 0, losses: 0, byType: { tournament: { wins: 0, losses: 0 }, ranked: { wins: 0, losses: 0 }, league: { wins: 0, losses: 0 } } };
         won ? rg.wins++ : rg.losses++;
+        if (matchType) {
+          won ? rg.byType[matchType].wins++ : rg.byType[matchType].losses++;
+        }
         stats.recordByGame.set(gameId, rg);
       }
 
@@ -1093,6 +1610,12 @@ router.get('/:id/stats', async (req, res) => {
         const rt = stats.recordByType.get(matchType) || { wins: 0, losses: 0 };
         won ? rt.wins++ : rt.losses++;
         stats.recordByType.set(matchType, rt);
+
+        if (isRecent(date)) {
+          const rt6 = stats.recordByTypeLast6Months.get(matchType) || { wins: 0, losses: 0 };
+          won ? rt6.wins++ : rt6.losses++;
+          stats.recordByTypeLast6Months.set(matchType, rt6);
+        }
       }
     };
 
@@ -1104,7 +1627,8 @@ router.get('/:id/stats', async (req, res) => {
       const won = m.winnerGlobalId === participantId;
       const oppId = isP1 ? m.player2GlobalId : m.player1GlobalId;
       const myId = isP1 ? m.player1Id : m.player2Id;
-      recordMatch(m.createdAt, won, m.gameId, null, null, oppId, null, 'tournament', m.games, isP1, myId);
+      const tDate = m.createdAt || m.updatedAt;
+      recordMatch(tDate, won, m.gameId, null, null, oppId, null, 'tournament', m.games, isP1, myId);
     }
 
     // Ranked/duel matches
@@ -1117,7 +1641,8 @@ router.get('/:id/stats', async (req, res) => {
       const oppChars = isP1 ? m.player2Characters : m.player1Characters;
       const oppId = isP1 ? m.playerBId : m.playerAId;
       const myEloAfter = isP1 ? m.playerAPointsAfter : m.playerBPointsAfter;
-      recordMatch(m.createdAt, won, m.gameId, myChars, oppChars, oppId, myEloAfter, 'ranked', m.games, isP1);
+      const rDate = m.createdAt || m.updatedAt;
+      recordMatch(rDate, won, m.gameId, myChars, oppChars, oppId, myEloAfter, 'ranked', m.games, isP1);
     }
 
     // League matches
@@ -1133,7 +1658,8 @@ router.get('/:id/stats', async (req, res) => {
       const myEloChange = isP1 ? (m.participant1EloChange ?? 0) : (m.participant2EloChange ?? 0);
       const lGameId = m.gameId || leagueGameMap.get(m.leagueId);
       const myEloAfter = myEloBefore + myEloChange;
-      recordMatch(m.completedDate ?? m.scheduledDate, won, lGameId, null, null, oppId, myEloAfter, 'league', m.games, isP1);
+      const leagueDate = m.completedDate || (m.games && m.games[0]?.reportedAt) || m.scheduledDate || m.updatedAt;
+      recordMatch(leagueDate, won, lGameId, null, null, oppId, myEloAfter, 'league', m.games, isP1);
     }
 
     // Tournament top placements and monthly tournament count
@@ -1179,6 +1705,26 @@ router.get('/:id/stats', async (req, res) => {
     const characterUsage = Array.from(stats.characterUsage.entries())
       .map(([_, v]) => formatUsage(v))
       .sort((a, b) => b.count - a.count);
+
+    const characterUsageLast6Months = Array.from(stats.characterUsageLast6Months.entries())
+      .map(([_, v]) => formatUsage(v))
+      .sort((a, b) => b.count - a.count);
+
+    const formatUsageMap = (map) => Array.from(map.entries())
+      .map(([_, v]) => formatUsage(v))
+      .sort((a, b) => b.count - a.count);
+
+    const characterUsageByType = {
+      tournament: formatUsageMap(stats.characterUsageByType.tournament),
+      ranked: formatUsageMap(stats.characterUsageByType.ranked),
+      league: formatUsageMap(stats.characterUsageByType.league),
+    };
+
+    const characterUsageLast6MonthsByType = {
+      tournament: formatUsageMap(stats.characterUsageLast6MonthsByType.tournament),
+      ranked: formatUsageMap(stats.characterUsageLast6MonthsByType.ranked),
+      league: formatUsageMap(stats.characterUsageLast6MonthsByType.league),
+    };
 
     const opponentCharacterUsage = Array.from(stats.opponentCharacterUsage.entries())
       .map(([_, v]) => formatUsage(v))
@@ -1226,6 +1772,9 @@ router.get('/:id/stats', async (req, res) => {
 
     const formatRecord = (rec) => ({
       ...rec,
+      byType: rec.byType
+        ? Object.fromEntries(Object.entries(rec.byType).map(([type, r]) => [type, { ...r, winRate: r.wins + r.losses > 0 ? Math.round((r.wins / (r.wins + r.losses)) * 100) : 0 }]))
+        : undefined,
       winRate: rec.wins + rec.losses > 0 ? Math.round((rec.wins / (rec.wins + rec.losses)) * 100) : 0,
     });
 
@@ -1237,9 +1786,37 @@ router.get('/:id/stats', async (req, res) => {
       .map(([type, rec]) => ({ type, ...formatRecord(rec) }))
       .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
 
+    const recordByTypeLast6Months = Array.from(stats.recordByTypeLast6Months.entries())
+      .map(([type, rec]) => ({ type, ...formatRecord(rec) }))
+      .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+
+    const allMatchWinRateLast6Months = stats.allMatchWinsLast6Months + stats.allMatchLossesLast6Months > 0
+      ? Math.round((stats.allMatchWinsLast6Months / (stats.allMatchWinsLast6Months + stats.allMatchLossesLast6Months)) * 100)
+      : 0;
+
+    const tournamentHighlights = allTournaments
+      .map((t) => {
+        const tp = t.participants?.find((p) => p.globalParticipantId === participantId);
+        if (!tp || !tp.finalPosition) return null;
+        return {
+          tournamentId: t.id,
+          name: t.name,
+          gameId: t.gameId || tournamentGameMap.get(t.id),
+          placement: tp.finalPosition,
+          entrants: t.totalParticipants ?? t.participants?.length ?? 0,
+          date: t.createdAt,
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 6);
+
     res.json({
       mainCharactersByGame,
       characterUsage,
+      characterUsageLast6Months,
+      characterUsageByType,
+      characterUsageLast6MonthsByType,
       peakEloByGame: Array.from(stats.peakEloByGame.entries())
         .map(([gameId, v]) => ({ gameId, ...v }))
         .sort((a, b) => b.points - a.points),
@@ -1251,11 +1828,16 @@ router.get('/:id/stats', async (req, res) => {
       monthlyActivity,
       recordByGame,
       recordByType,
+      recordByTypeLast6Months,
       allMatchWins: stats.allMatchWins,
       allMatchLosses: stats.allMatchLosses,
       allMatchWinRate: stats.allMatchWins + stats.allMatchLosses > 0
         ? Math.round((stats.allMatchWins / (stats.allMatchWins + stats.allMatchLosses)) * 100)
         : 0,
+      allMatchWinsLast6Months: stats.allMatchWinsLast6Months,
+      allMatchLossesLast6Months: stats.allMatchLossesLast6Months,
+      allMatchWinRateLast6Months,
+      tournamentHighlights,
     });
   } catch (err) {
     console.error('[Participants] GET /:id/stats error:', err);

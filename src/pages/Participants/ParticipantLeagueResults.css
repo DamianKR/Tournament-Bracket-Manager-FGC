@@ -1,0 +1,133 @@
+/* ── ParticipantLeagueResults ─────────────────────────────────────────────── */
+
+.lr-empty {
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  color: var(--text-tertiary, #94a3b8);
+  font-size: 0.9rem;
+}
+
+.lr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.lr-card {
+  background: var(--bg-secondary, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 0.625rem;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lr-card:hover {
+  background: var(--bg-tertiary, #f1f5f9);
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+}
+
+.lr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.lr-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lr-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary, #0f172a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lr-meta {
+  font-size: 0.72rem;
+  color: var(--text-tertiary, #94a3b8);
+}
+
+.lr-rank {
+  display: flex;
+  align-items: baseline;
+  gap: 0.1rem;
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  flex-shrink: 0;
+}
+
+.lr-rank-pos {
+  font-size: 1.1rem;
+}
+
+.lr-rank-total {
+  font-size: 0.8rem;
+  color: var(--text-tertiary, #94a3b8);
+}
+
+.lr-rank.podium .lr-rank-pos {
+  color: #f59e0b;
+}
+
+.lr-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.lr-record-bar {
+  display: flex;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #ef4444;
+  overflow: hidden;
+}
+
+.lr-record-wins {
+  background: #10b981;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.lr-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #475569);
+}
+
+.lr-record-text {
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.lr-wr {
+  font-weight: 700;
+  color: var(--primary-color, #7c3aed);
+}
+
+.lr-elo {
+  font-weight: 700;
+}
+
+.lr-elo.positive {
+  color: #10b981;
+}
+
+.lr-elo.negative {
+  color: #ef4444;
+}
