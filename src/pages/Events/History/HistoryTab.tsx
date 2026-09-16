@@ -9,6 +9,9 @@ import { getAllParticipants, getAllParticipantsAsync } from '@/services/particip
 import { MatchRecord, GlobalParticipant, LeagueMatch } from '@/models/types';
 import { GAMES } from '@/data/games';
 import { gameBadgeStyle } from '@/utils/gameColor';
+import { charsFromGames, parseScoreString } from '@/utils/matchData';
+import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
+import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import Loading from '@/components/Loading/Loading';
 import './HistoryTab.css';
@@ -24,6 +27,8 @@ interface UnifiedMatch {
   winnerId: string;
   player1Name: string;
   player2Name: string;
+  player1Alias?: string | null;
+  player2Alias?: string | null;
   player1EloBefore: number;
   player2EloBefore: number;
   player1EloAfter: number;
@@ -32,6 +37,10 @@ interface UnifiedMatch {
   player2EloChange: number;
   date: string;
   context?: string; // Tournament/League name
+  player1Score: number | null;
+  player2Score: number | null;
+  player1Chars: string[];
+  player2Chars: string[];
 }
 
 function HistoryTab() {
@@ -80,8 +89,10 @@ function HistoryTab() {
           player1Id: gP1?.id ?? m.player1GlobalId ?? m.player1Id,
           player2Id: gP2?.id ?? m.player2GlobalId ?? m.player2Id,
           winnerId: gP1?.id ?? m.winnerGlobalId ?? m.winnerId,
-          player1Name: gP1 ? `${gP1.name}${gP1.alias ? ` (${gP1.alias})` : ''}` : (m.player1Name || t('tournament.bracket.unknown')),
-          player2Name: gP2 ? `${gP2.name}${gP2.alias ? ` (${gP2.alias})` : ''}` : (m.player2Name || t('tournament.bracket.unknown')),
+          player1Name: gP1?.name ?? (m.player1Name || t('tournament.bracket.unknown')),
+          player2Name: gP2?.name ?? (m.player2Name || t('tournament.bracket.unknown')),
+          player1Alias: gP1?.alias ?? null,
+          player2Alias: gP2?.alias ?? null,
           player1EloBefore: 0,
           player2EloBefore: 0,
           player1EloAfter: 0,
@@ -90,6 +101,10 @@ function HistoryTab() {
           player2EloChange: 0,
           date: m.createdAt,
           context: m.tournamentName,
+          player1Score: m.player1Score ?? m.participant1Score ?? null,
+          player2Score: m.player2Score ?? m.participant2Score ?? null,
+          player1Chars: m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1),
+          player2Chars: m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2),
         };
       });
 
@@ -103,6 +118,8 @@ function HistoryTab() {
         winnerId: m.winnerId,
         player1Name: getParticipantName(m.playerAId, participants),
         player2Name: getParticipantName(m.playerBId, participants),
+        player1Alias: participants.find(p => p.id === m.playerAId)?.alias ?? null,
+        player2Alias: participants.find(p => p.id === m.playerBId)?.alias ?? null,
         player1EloBefore: m.playerAPointsBefore,
         player2EloBefore: m.playerBPointsBefore,
         player1EloAfter: m.playerAPointsAfter,
@@ -110,27 +127,40 @@ function HistoryTab() {
         player1EloChange: m.playerADelta,
         player2EloChange: m.playerBDelta,
         date: m.createdAt,
+        player1Score: m.player1Score ?? null,
+        player2Score: m.player2Score ?? null,
+        player1Chars: m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1),
+        player2Chars: m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2),
       }));
 
       // Convert league matches
-      const unifiedLeague: UnifiedMatch[] = leagueMatches.map((m: LeagueMatch) => ({
-        id: m.id,
-        type: 'league' as const,
-        gameId: m.gameId,
-        player1Id: m.participant1Id,
-        player2Id: m.participant2Id,
-        winnerId: m.winnerId ?? '',
-        player1Name: getParticipantName(m.participant1Id, participants),
-        player2Name: getParticipantName(m.participant2Id, participants),
-        player1EloBefore: m.participant1EloBefore ?? 0,
-        player2EloBefore: m.participant2EloBefore ?? 0,
-        player1EloAfter: (m.participant1EloBefore ?? 0) + (m.participant1EloChange ?? 0),
-        player2EloAfter: (m.participant2EloBefore ?? 0) + (m.participant2EloChange ?? 0),
-        player1EloChange: m.participant1EloChange ?? 0,
-        player2EloChange: m.participant2EloChange ?? 0,
-        date: m.completedDate ?? m.scheduledDate ?? new Date(0).toISOString(),
-        context: leagueNameById.get(m.leagueId),
-      }));
+      const unifiedLeague: UnifiedMatch[] = leagueMatches.map((m: LeagueMatch) => {
+        const [s1, s2] = parseScoreString(m.score);
+        return {
+          id: m.id,
+          type: 'league' as const,
+          gameId: m.gameId,
+          player1Id: m.participant1Id,
+          player2Id: m.participant2Id,
+          winnerId: m.winnerId ?? '',
+          player1Name: getParticipantName(m.participant1Id, participants),
+          player2Name: getParticipantName(m.participant2Id, participants),
+          player1Alias: participants.find(p => p.id === m.participant1Id)?.alias ?? null,
+          player2Alias: participants.find(p => p.id === m.participant2Id)?.alias ?? null,
+          player1EloBefore: m.participant1EloBefore ?? 0,
+          player2EloBefore: m.participant2EloBefore ?? 0,
+          player1EloAfter: (m.participant1EloBefore ?? 0) + (m.participant1EloChange ?? 0),
+          player2EloAfter: (m.participant2EloBefore ?? 0) + (m.participant2EloChange ?? 0),
+          player1EloChange: m.participant1EloChange ?? 0,
+          player2EloChange: m.participant2EloChange ?? 0,
+          date: m.completedDate ?? m.scheduledDate ?? new Date(0).toISOString(),
+          context: leagueNameById.get(m.leagueId),
+          player1Score: s1,
+          player2Score: s2,
+          player1Chars: charsFromGames(m.games, 1),
+          player2Chars: charsFromGames(m.games, 2),
+        };
+      });
 
       // Combine all sources and sort by date (newest first)
       const all = [...unifiedTournament, ...unifiedRanked, ...unifiedLeague].sort(
@@ -147,7 +177,7 @@ function HistoryTab() {
 
   const getParticipantName = (id: string, participants: GlobalParticipant[]): string => {
     const p = participants.find(p => p.id === id);
-    return p ? `${p.name}${p.alias ? ` (${p.alias})` : ''}` : t('history.unknownPlayer');
+    return p ? p.name : t('history.unknownPlayer');
   };
 
   // Apply type, player and game filters
@@ -293,13 +323,16 @@ function HistoryTab() {
                 <div className={`match-player ${match.winnerId === match.player1Id ? 'winner' : 'loser'}`}>
                   <div className="player-info">
                     {match.winnerId === match.player1Id && <i className="fas fa-crown winner-icon" />}
-                    <span className="player-name">{match.player1Name}</span>
+                    <PlayerDisplay name={match.player1Name} alias={match.player1Alias} />
+                    <CharacterIcons gameId={match.gameId} characterIds={match.player1Chars} />
                   </div>
                   {match.type !== 'tournament' && (
                     <div className="player-elo">
-                      <span className="elo-before">{match.player1EloBefore}</span>
-                      <i className="fas fa-arrow-right" />
-                      <span className="elo-after">{match.player1EloAfter}</span>
+                      <span className="elo-flow">
+                        <span className="elo-before">{match.player1EloBefore}</span>
+                        <i className="fas fa-arrow-right" />
+                        <span className="elo-after">{match.player1EloAfter}</span>
+                      </span>
                       <span className={`elo-change ${match.player1EloChange >= 0 ? 'positive' : 'negative'}`}>
                         {match.player1EloChange >= 0 ? '+' : ''}{match.player1EloChange}
                       </span>
@@ -307,18 +340,29 @@ function HistoryTab() {
                   )}
                 </div>
 
-                <div className="match-vs">{t('rankingInfo.vs')}</div>
+                <div className={`match-vs ${match.player1Score !== null && match.player2Score !== null ? 'match-vs--score' : ''}`}>
+                  {match.player1Score !== null && match.player2Score !== null ? (
+                    <span className="match-score">
+                      <span className={match.player1Score > match.player2Score ? 'ms-win' : 'ms-loss'}>{match.player1Score}</span>
+                      <em>–</em>
+                      <span className={match.player2Score > match.player1Score ? 'ms-win' : 'ms-loss'}>{match.player2Score}</span>
+                    </span>
+                  ) : t('rankingInfo.vs')}
+                </div>
 
                 <div className={`match-player ${match.winnerId === match.player2Id ? 'winner' : 'loser'}`}>
                   <div className="player-info">
+                    <CharacterIcons gameId={match.gameId} characterIds={match.player2Chars} />
+                    <PlayerDisplay name={match.player2Name} alias={match.player2Alias} />
                     {match.winnerId === match.player2Id && <i className="fas fa-crown winner-icon" />}
-                    <span className="player-name">{match.player2Name}</span>
                   </div>
                   {match.type !== 'tournament' && (
                     <div className="player-elo">
-                      <span className="elo-before">{match.player2EloBefore}</span>
-                      <i className="fas fa-arrow-right" />
-                      <span className="elo-after">{match.player2EloAfter}</span>
+                      <span className="elo-flow">
+                        <span className="elo-before">{match.player2EloBefore}</span>
+                        <i className="fas fa-arrow-right" />
+                        <span className="elo-after">{match.player2EloAfter}</span>
+                      </span>
                       <span className={`elo-change ${match.player2EloChange >= 0 ? 'positive' : 'negative'}`}>
                         {match.player2EloChange >= 0 ? '+' : ''}{match.player2EloChange}
                       </span>

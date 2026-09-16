@@ -16,6 +16,9 @@ import {
   type LeaderboardEntry,
 } from '@/services/ranking/rankingService';
 import type { MatchRecord } from '@/models/types';
+import { charsFromGames } from '@/utils/matchData';
+import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
+import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 
 import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
@@ -156,9 +159,9 @@ function RankingPage() {
 
   // ── Helpers ─────────────────────────────────────────────────────────────
 
-  function pName(id: string) {
+  function pDisplay(id: string) {
     const p = participantMap.get(id);
-    return p ? (p.alias ? `${p.alias} (${p.name})` : p.name) : id;
+    return <PlayerDisplay name={p?.name ?? id} alias={p?.alias} size="sm" />;
   }
 
   function deltaLabel(delta: number) {
@@ -296,7 +299,7 @@ function RankingPage() {
                             : <div className="rk-avatar-placeholder">{(entry.alias || entry.name)[0]?.toUpperCase()}</div>
                           }
                           <div className="rk-player-info">
-                            <span className="rk-player-name">{entry.alias ? `${entry.alias} (${entry.name})` : entry.name}</span>
+                            <PlayerDisplay name={entry.name} alias={entry.alias} size="sm" />
                           </div>
                         </div>
                       </td>
@@ -386,7 +389,11 @@ function RankingPage() {
                   <div className="rk-history-players">
                     <div className={`rk-history-player ${m.winnerId === m.playerAId ? 'winner' : 'loser'}`}>
                       <span className="rk-history-pname">
-                        {m.winnerId === m.playerAId ? <i className="fas fa-crown" /> : ''} {pName(m.playerAId)}
+                        <CharacterIcons
+                          gameId={m.gameId}
+                          characterIds={m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1)}
+                        />
+                        {m.winnerId === m.playerAId ? <i className="fas fa-crown" /> : ''} {pDisplay(m.playerAId)}
                       </span>
                       <span className="rk-history-pts">
                         {m.playerAPointsBefore} → {m.playerAPointsAfter} {deltaLabel(m.playerADelta)}
@@ -397,10 +404,22 @@ function RankingPage() {
                           : m.playerARankAfter}
                       </span>
                     </div>
-                    <span className="rk-history-vs">{t('ranking.vs')}</span>
+                    <span className="rk-history-vs">
+                      {m.player1Score !== null && m.player1Score !== undefined && m.player2Score !== null && m.player2Score !== undefined ? (
+                        <span className="rk-history-score">
+                          <span className={m.player1Score > m.player2Score ? 'ms-win' : 'ms-loss'}>{m.player1Score}</span>
+                          <em>–</em>
+                          <span className={m.player2Score > m.player1Score ? 'ms-win' : 'ms-loss'}>{m.player2Score}</span>
+                        </span>
+                      ) : t('ranking.vs')}
+                    </span>
                     <div className={`rk-history-player ${m.winnerId === m.playerBId ? 'winner' : 'loser'}`}>
                       <span className="rk-history-pname">
-                        {m.winnerId === m.playerBId ? <i className="fas fa-crown" /> : ''} {pName(m.playerBId)}
+                        <CharacterIcons
+                          gameId={m.gameId}
+                          characterIds={m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2)}
+                        />
+                        {m.winnerId === m.playerBId ? <i className="fas fa-crown" /> : ''} {pDisplay(m.playerBId)}
                       </span>
                       <span className="rk-history-pts">
                         {m.playerBPointsBefore} → {m.playerBPointsAfter} {deltaLabel(m.playerBDelta)}

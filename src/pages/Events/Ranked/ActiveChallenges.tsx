@@ -6,6 +6,7 @@ import { GAMES } from '@/data/games';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
+import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import { 
   createDuelChallenge, 
   acceptDuelChallenge,
@@ -114,6 +115,13 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const getParticipantName = (id: string) => {
     const p = participants.find(p => p.id === id);
     return p ? `${p.name}${p.alias ? ` (${p.alias})` : ''}` : t('history.unknownPlayer');
+  };
+
+  const getParticipantDisplay = (id: string) => {
+    const p = participants.find(p => p.id === id);
+    return p
+      ? <PlayerDisplay name={p.name} alias={p.alias} size="sm" />
+      : t('history.unknownPlayer');
   };
 
   const getParticipantElo = (id: string, gameId: string = duelGameId) => {
@@ -227,14 +235,14 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               <div className="challenge-main">
                 <div className="challenge-players">
                   <div className="challenge-player">
-                    <span className="player-name">{getParticipantName(challenge.challengerId)}</span>
+                    <span className="player-name">{getParticipantDisplay(challenge.challengerId)}</span>
                     <span className="player-elo">{getParticipantElo(challenge.challengerId, challenge.gameId)} {t('ranked.challenges.elo')}</span>
                   </div>
                   <div className="challenge-vs">
                     <i className="fas fa-khanda" />
                   </div>
                   <div className="challenge-player">
-                    <span className="player-name">{getParticipantName(challenge.challengedId)}</span>
+                    <span className="player-name">{getParticipantDisplay(challenge.challengedId)}</span>
                     <span className="player-elo">{getParticipantElo(challenge.challengedId, challenge.gameId)} {t('ranked.challenges.elo')}</span>
                   </div>
                 </div>

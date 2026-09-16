@@ -1,0 +1,30 @@
+.pdn {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+  text-align: left;
+}
+
+.pdn-alias {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: inherit;
+  letter-spacing: 0.02em;
+}
+
+.pdn-name {
+  font-size: 0.72rem;
+  color: inherit;
+  opacity: 0.6;
+  font-weight: 500;
+}
+
+.pdn--sm .pdn-alias {
+  font-size: 0.875rem;
+}
+
+.pdn--sm .pdn-name {
+  font-size: 0.65rem;
+}

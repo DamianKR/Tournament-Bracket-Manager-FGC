@@ -6,6 +6,7 @@ import { useCommunity } from '@/contexts/CommunityContext';
 
 import { banParticipants, regenerateSchedule } from '@/services/leagues/leagueService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import './LeagueStandingsTab.css';
 
 interface LeagueStandingsTabProps {
@@ -149,7 +150,12 @@ function LeagueStandingsTab({ leagueId, gameId, standings, participants, playoff
                     </td>
                     <td className="col-player" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>
                       <div className="player-cell">
-                        <span className="player-name">{getParticipantName(s.participantId)}</span>
+                        <span className="player-name">
+                          {(() => {
+                            const p = participants.get(s.participantId);
+                            return <PlayerDisplay name={p?.name ?? getParticipantName(s.participantId)} alias={p?.alias} size="sm" />;
+                          })()}
+                        </span>
                         {s.noShows > 0 && (
                           <span className="no-show-badge" title={t('league.standings.noShowsTitle', { count: s.noShows })}>
                             <i className="fas fa-exclamation-triangle" /> {s.noShows}

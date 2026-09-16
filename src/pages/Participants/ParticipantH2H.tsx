@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { getGame, getCharacter } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { gameBadgeStyle } from '@/utils/gameColor';
+import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import type { HeadToHeadEntry, H2HMatchType, H2HTimeFilter } from '@/services/participants/participantService';
 import './ParticipantH2H.css';
 
@@ -79,7 +80,7 @@ function OpponentCard({ entry, onNavigate }: { entry: HeadToHeadEntry; onNavigat
         <div className="h2h-opp-title">
           <span className={`h2h-opp-rec ${isWinning ? 'pos' : 'neg'}`}>{record}</span>
           <span className="h2h-opp-vs">vs</span>
-          <span className="h2h-opp-name">{entry.opponentAlias || entry.opponentName}</span>
+          <span className="h2h-opp-name"><PlayerDisplay name={entry.opponentName} alias={entry.opponentAlias} /></span>
         </div>
         <i className={`fas fa-chevron-down h2h-opp-chevron ${expanded ? 'up' : ''}`} />
       </button>

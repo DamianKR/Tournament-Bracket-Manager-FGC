@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
+import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import './PlayerDropdown.css';
 
 interface PlayerDropdownProps {
@@ -130,7 +131,7 @@ function PlayerDropdown({ participants, selectedId, onSelect, placeholder, class
               >
                 <i className="fas fa-user" />
                 <div className="player-dropdown-item-info">
-                  <span className="player-dropdown-item-name">{p.alias ? `${p.alias} (${p.name})` : p.name}</span>
+                  <PlayerDisplay name={p.name} alias={p.alias} size="sm" />
                 </div>
                 {selectedId === p.id && <i className="fas fa-check player-dropdown-check" />}
               </button>

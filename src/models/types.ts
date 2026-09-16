@@ -190,6 +190,8 @@ export interface MatchRecord {
   playerBRankAfter: string;
   player1Score?: number;
   player2Score?: number;
+  player1Characters?: string[];
+  player2Characters?: string[];
   games?: MatchGame[];
   communityId?: string;
   createdAt: string;

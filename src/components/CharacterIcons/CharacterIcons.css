@@ -1,0 +1,52 @@
+.ci-wrap {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ci-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+}
+
+.ci-wrap--multi .ci-icon {
+  width: 22px;
+  height: 22px;
+  margin-left: -6px;
+  box-shadow: -1px 0 0 var(--bg-primary);
+}
+
+.ci-wrap--multi .ci-icon:first-child {
+  margin-left: 0;
+}
+
+.ci-extra {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  margin-left: 2px;
+}
+
+.ci-fallback {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  border: 1.5px solid var(--border-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-left: -6px;
+}
+
+.ci-fallback:first-child {
+  margin-left: 0;
+}

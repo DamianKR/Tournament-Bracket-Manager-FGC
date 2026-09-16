@@ -30,6 +30,9 @@ import { initials, avatarColor } from './ParticipantsPage';
 import { getCharacter, getGame, GAMES } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { gameBadgeStyle } from '@/utils/gameColor';
+import { charsFromGames, parseScoreString } from '@/utils/matchData';
+import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
+import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
 import { getParticipantElo, getParticipantRank, allGameProfiles } from '@/utils/participantGames';
 import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
@@ -393,10 +396,16 @@ function ParticipantProfile() {
               winnerId: player1IsWinner
                 ? (gP1?.id ?? m.winnerGlobalId ?? m.winnerId)
                 : (gP2?.id ?? m.winnerGlobalId ?? m.winnerId),
-              player1Name: gP1 ? `${gP1.name}${gP1.alias ? ` (${gP1.alias})` : ''}` : (m.player1Name || t('tournament.bracket.unknown')),
-              player2Name: gP2 ? `${gP2.name}${gP2.alias ? ` (${gP2.alias})` : ''}` : (m.player2Name || t('tournament.bracket.unknown')),
+              player1Name: gP1?.name ?? (m.player1Name || t('tournament.bracket.unknown')),
+              player2Name: gP2?.name ?? (m.player2Name || t('tournament.bracket.unknown')),
+              player1Alias: gP1?.alias ?? null,
+              player2Alias: gP2?.alias ?? null,
               date: m.createdAt,
               context: m.tournamentName,
+              player1Score: m.player1Score ?? null,
+              player2Score: m.player2Score ?? null,
+              player1Chars: m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1),
+              player2Chars: m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2),
             };
           }),
         ...rankedMatches
@@ -408,8 +417,10 @@ function ParticipantProfile() {
             player1Id: m.playerAId,
             player2Id: m.playerBId,
             winnerId: m.winnerId,
-            player1Name: participantMap.get(m.playerAId) ? `${participantMap.get(m.playerAId)!.name}${participantMap.get(m.playerAId)!.alias ? ` (${participantMap.get(m.playerAId)!.alias})` : ''}` : t('tournament.bracket.unknown'),
-            player2Name: participantMap.get(m.playerBId) ? `${participantMap.get(m.playerBId)!.name}${participantMap.get(m.playerBId)!.alias ? ` (${participantMap.get(m.playerBId)!.alias})` : ''}` : t('tournament.bracket.unknown'),
+            player1Name: participantMap.get(m.playerAId)?.name ?? t('tournament.bracket.unknown'),
+            player2Name: participantMap.get(m.playerBId)?.name ?? t('tournament.bracket.unknown'),
+            player1Alias: participantMap.get(m.playerAId)?.alias ?? null,
+            player2Alias: participantMap.get(m.playerBId)?.alias ?? null,
             player1EloBefore: m.playerAPointsBefore,
             player2EloBefore: m.playerBPointsBefore,
             player1EloAfter: m.playerAPointsAfter,
@@ -417,6 +428,10 @@ function ParticipantProfile() {
             player1EloChange: m.playerADelta,
             player2EloChange: m.playerBDelta,
             date: m.createdAt,
+            player1Score: m.player1Score ?? null,
+            player2Score: m.player2Score ?? null,
+            player1Chars: m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1),
+            player2Chars: m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2),
           })),
         ...leagueMatches
           .filter((m: LeagueMatch) =>
@@ -426,6 +441,7 @@ function ParticipantProfile() {
           .map((m: LeagueMatch) => {
             const p1 = participantMap.get(m.participant1Id);
             const p2 = participantMap.get(m.participant2Id);
+            const [s1, s2] = parseScoreString(m.score);
             return {
               id: m.id,
               type: 'league' as const,
@@ -433,10 +449,16 @@ function ParticipantProfile() {
               player1Id: m.participant1Id,
               player2Id: m.participant2Id,
               winnerId: m.winnerId,
-              player1Name: p1 ? `${p1.name}${p1.alias ? ` (${p1.alias})` : ''}` : t('tournament.bracket.unknown'),
-              player2Name: p2 ? `${p2.name}${p2.alias ? ` (${p2.alias})` : ''}` : t('tournament.bracket.unknown'),
+              player1Name: p1?.name ?? t('tournament.bracket.unknown'),
+              player2Name: p2?.name ?? t('tournament.bracket.unknown'),
+              player1Alias: p1?.alias ?? null,
+              player2Alias: p2?.alias ?? null,
               date: m.completedDate ?? m.scheduledDate ?? '',
               context: `League ${m.week ? `Week ${m.week}` : ''}`,
+              player1Score: s1,
+              player2Score: s2,
+              player1Chars: charsFromGames(m.games, 1),
+              player2Chars: charsFromGames(m.games, 2),
             };
           }),
       ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -637,9 +659,9 @@ function ParticipantProfile() {
                   : initials(participant.name)}
               </div>
               <div className="profile-names">
-                <h1 className="profile-name">{participant.name}</h1>
+                <h1 className="profile-name">{participant.alias || participant.name}</h1>
                 {participant.alias && (
-                  <span className="profile-alias">{participant.alias}</span>
+                  <span className="profile-alias">{participant.name}</span>
                 )}
                 {participant.phoneNumber && (
                   <a
@@ -1062,6 +1084,12 @@ function ParticipantProfile() {
                     const won = m.winnerId === id;
                     const opponentId = isPlayer1 ? m.player2Id : m.player1Id;
                     const opponentName = isPlayer1 ? m.player2Name : m.player1Name;
+                    const opponentAlias = isPlayer1 ? m.player2Alias : m.player1Alias;
+                    const myScore = isPlayer1 ? m.player1Score : m.player2Score;
+                    const oppScore = isPlayer1 ? m.player2Score : m.player1Score;
+                    const myChars = isPlayer1 ? m.player1Chars : m.player2Chars;
+                    const oppChars = isPlayer1 ? m.player2Chars : m.player1Chars;
+                    const hasScore = myScore !== null && myScore !== undefined && oppScore !== null && oppScore !== undefined;
 
                     return (
                       <div key={m.id} className={`match-item ${won ? 'win' : 'loss'}`}>
@@ -1071,6 +1099,16 @@ function ParticipantProfile() {
                               {m.gameId.toUpperCase()}
                             </span>
                           )}
+                          <span className="match-item-date">
+                            {new Date(m.date).toLocaleDateString(undefined, {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                          <span className="match-item-header-break" aria-hidden="true" />
                           <span className={`match-item-result ${won ? 'win' : 'loss'}`}>
                             {won ? <><i className="fas fa-trophy" /> {t('participantProfile.matches.win')}</> : <><i className="fas fa-times" /> {t('participantProfile.matches.loss')}</>}
                           </span>
@@ -1082,25 +1120,25 @@ function ParticipantProfile() {
                               </>
                             )}
                           </span>
-                          <span className="match-item-date">
-                            {new Date(m.date).toLocaleDateString(undefined, { 
-                              month: 'short', 
-                              day: 'numeric', 
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </span>
                         </div>
                         <div className="match-item-body">
                           <div className="match-item-opponent">
+                            <CharacterIcons gameId={m.gameId} characterIds={myChars} />
                             <span className="match-item-vs">{t('common.vs')}</span>
                             <span
                               className="match-item-opponent-name"
                               onClick={() => navigate(getPath(`participants/${opponentId}`))}
                             >
-                              {opponentName || t('tournament.bracket.unknown')}
+                              <PlayerDisplay name={opponentName || t('tournament.bracket.unknown')} alias={opponentAlias} size="sm" />
                             </span>
+                            <CharacterIcons gameId={m.gameId} characterIds={oppChars} />
+                            {hasScore && (
+                              <span className="match-item-score">
+                                <span className={won ? 'ms-win' : 'ms-loss'}>{myScore}</span>
+                                <em>–</em>
+                                <span className={!won ? 'ms-win' : 'ms-loss'}>{oppScore}</span>
+                              </span>
+                            )}
                           </div>
                           {m.context && (
                             <div className="match-item-context">

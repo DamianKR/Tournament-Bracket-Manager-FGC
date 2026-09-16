@@ -45,6 +45,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html,
+body {
+  overflow-x: clip; /* evita scroll horizontal accidental en mobile */
+}
+
 body {
   background-color: var(--bg-secondary);
   color: var(--text-primary);

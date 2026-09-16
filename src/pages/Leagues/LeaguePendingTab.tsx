@@ -54,6 +54,10 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
     return p ? (p.alias?.trim() || p.name) : t('tournament.bracket.unknown');
   }
 
+  function getParticipant(id: string) {
+    return participants.get(id);
+  }
+
   async function handleExpireMatches() {
     setExpiring(true);
     const count = await expireLeagueMatches(league.id);
@@ -237,13 +241,15 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
                   <div className="pending-match-players">
                     <ParticipantName
                       id={match.participant1Id}
-                      name={getParticipantName(match.participant1Id)}
+                      name={getParticipant(match.participant1Id)?.name ?? getParticipantName(match.participant1Id)}
+                      alias={getParticipant(match.participant1Id)?.alias}
                       className="pending-player-name"
                     />
                     <span className="pending-vs">{t('league.schedule.vs')}</span>
                     <ParticipantName
                       id={match.participant2Id}
-                      name={getParticipantName(match.participant2Id)}
+                      name={getParticipant(match.participant2Id)?.name ?? getParticipantName(match.participant2Id)}
+                      alias={getParticipant(match.participant2Id)?.alias}
                       className="pending-player-name"
                     />
                   </div>

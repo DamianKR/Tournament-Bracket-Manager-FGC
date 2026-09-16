@@ -23,6 +23,10 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
     return p ? (p.alias?.trim() || p.name) : t('tournament.bracket.unknown');
   }
 
+  function getParticipant(id: string): GlobalParticipant | undefined {
+    return participants.get(id);
+  }
+
   function getSelectParticipantName(id: string): string {
     const p = participants.get(id);
     return p ? (p.alias ? `${p.alias} (${p.name})` : p.name) : t('tournament.bracket.unknown');
@@ -66,7 +70,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
       <div key={match.id} className={`my-match-row ${isCompleted ? 'completed' : 'pending'}`}>
         <div className="my-match-opponent">
           <span className="my-match-vs">{t('league.schedule.vs')}</span>
-          <ParticipantName id={opponentId} name={getParticipantName(opponentId)} className="opponent-name" />
+          <ParticipantName id={opponentId} name={getParticipant(opponentId)?.name ?? getParticipantName(opponentId)} alias={getParticipant(opponentId)?.alias} className="opponent-name" />
         </div>
 
         {isCompleted ? (
@@ -192,7 +196,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
               <div className="remaining-opponents">
                 {remainingOpponents.map((pid) => (
                   <span key={pid} className="opponent-chip">
-                    <ParticipantName id={pid} name={getParticipantName(pid)} />
+                    <ParticipantName id={pid} name={getParticipant(pid)?.name ?? getParticipantName(pid)} alias={getParticipant(pid)?.alias} />
                   </span>
                 ))}
               </div>

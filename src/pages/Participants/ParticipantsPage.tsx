@@ -24,6 +24,7 @@ import { outranksOf, isCommunityAdminOf, communityRoleOf } from '@/utils/members
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import PasswordInput from '@/components/PasswordInput/PasswordInput';
+import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import './ParticipantsPage.css';
 
 type SortKey = 'name' | 'wins' | 'tournamentsPlayed' | 'winRate';
@@ -474,8 +475,7 @@ function ParticipantsPage() {
                     </div>
                     <div className="pp-item-name-block">
                       <div className="pp-item-name-row">
-                        <span className="pp-item-name">{p.name}</span>
-                        {p.alias && <span className="pp-item-alias">{p.alias}</span>}
+                        <PlayerDisplay name={p.name} alias={p.alias} size="sm" />
                       </div>
                       {p.gameId && p.mainCharacterId && (
                         <div className="pp-item-tags">

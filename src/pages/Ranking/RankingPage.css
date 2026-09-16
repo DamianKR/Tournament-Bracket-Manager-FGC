@@ -585,6 +585,47 @@
   font-size: 0.8rem;
 }
 
+.rk-history-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.rk-history-score em {
+  font-style: normal;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.rk-history-score .ms-win,
+.rk-history-score .ms-loss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.7rem;
+  padding: 0.1rem 0.45rem;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.05rem;
+  line-height: 1.15;
+}
+
+.rk-history-score .ms-win {
+  clip-path: polygon(0 0, 100% 0, 84% 100%, 0 100%);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.32), rgba(16, 185, 129, 0.14));
+  color: #34d399;
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+}
+
+.rk-history-score .ms-loss {
+  clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(239, 68, 68, 0.12));
+  color: #f87171;
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+
 .rk-history-player {
   flex: 1;
   padding: 0.625rem 0.875rem;
@@ -611,6 +652,10 @@
   font-weight: 600;
   font-size: 0.875rem;
   color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
 }
 
 .rk-history-pts {
@@ -673,5 +718,45 @@
 
   .rk-result-row {
     flex-direction: column;
+  }
+
+  /* History cards: players centered, char icons on top */
+  .rk-history-player {
+    align-items: center;
+    text-align: center;
+    gap: 0.3rem;
+    padding: 0.5rem 0.5rem;
+    min-width: 0;
+  }
+
+  .rk-history-pname {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .rk-history-pname .pdn {
+    align-items: center;
+    text-align: center;
+  }
+
+  .rk-history-pts,
+  .rk-history-rank {
+    text-align: center;
+  }
+
+  .rk-history-score .ms-win,
+  .rk-history-score .ms-loss {
+    min-width: 1.35rem;
+    padding: 0.05rem 0.3rem;
+    font-size: 0.85rem;
+  }
+
+  .rk-history-score em {
+    font-size: 0.7rem;
+  }
+
+  .rk-history-vs {
+    font-size: 0.7rem;
   }
 }

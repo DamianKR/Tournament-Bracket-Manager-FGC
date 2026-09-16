@@ -584,6 +584,12 @@ export interface TournamentMatchRecord {
   communityId?: string;
   createdAt: string;
 
+  // Set score & characters (optional — only when reported with detail)
+  player1Score?: number;
+  player2Score?: number;
+  player1Characters?: string[] | null;
+  player2Characters?: string[] | null;
+
   // Game log
   games?: MatchGame[];
 }
