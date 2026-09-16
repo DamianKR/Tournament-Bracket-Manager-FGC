@@ -12,6 +12,8 @@ export interface Character {
   imageIconUrl?: string;
   /** Filename inside public/images/characters/{gameId}/. */
   imageFile?: string;
+  /** Number of costume/color icon variants available (e.g. 8 for SSBU stock icons). */
+  iconColors?: number;
 }
 
 export interface Game {
@@ -27,8 +29,50 @@ const ASSET_BASE = 'https://raw.githubusercontent.com/joaorb64/StreamHelperAsset
 
 // ── Super Smash Bros. Ultimate ─────────────────────────────────────────────
 // Full roster as of Version 13.0.1 (all DLC included)
+// Stock icons: StreamHelperAssets base_files/icon (chara_2_<codename>_0N.png,
+// N = 0-7 costume color variants).
+
+const SSBU_CODENAMES: Record<string, string> = {
+  bayonetta: 'bayonetta',       banjo: 'buddy',            bowser: 'koopa',
+  bowser_jr: 'koopajr',         byleth: 'master',          captain_falcon: 'captain',
+  chrom: 'chrom',               cloud: 'cloud',            corrin: 'kamui',
+  daisy: 'daisy',               dark_pit: 'pitb',          dark_samus: 'samusd',
+  diddy_kong: 'diddy',          donkey_kong: 'donkey',     dr_mario: 'mariod',
+  duck_hunt: 'duckhunt',        falco: 'falco',            fox: 'fox',
+  ganondorf: 'ganon',           greninja: 'gekkouga',      hero: 'brave',
+  ice_climbers: 'ice_climber',  ike: 'ike',                incineroar: 'gaogaen',
+  inkling: 'inkling',           isabelle: 'shizue',        jigglypuff: 'purin',
+  joker: 'jack',                kazuya: 'demon',           ken: 'ken',
+  king_dedede: 'dedede',        king_k_rool: 'krool',      kirby: 'kirby',
+  link: 'link',                 little_mac: 'littlemac',   lucario: 'lucario',
+  lucas: 'lucas',               lucina: 'lucina',          luigi: 'luigi',
+  mario: 'mario',               marth: 'marth',            mega_man: 'rockman',
+  meta_knight: 'metaknight',    mewtwo: 'mewtwo',          mii_brawler: 'miifighter',
+  mii_gunner: 'miigunner',      mii_swordfighter: 'miiswordsman', min_min: 'tantan',
+  mr_game_and_watch: 'gamewatch', ness: 'ness',            olimar: 'pikmin',
+  pac_man: 'pacman',            palutena: 'palutena',      peach: 'peach',
+  pichu: 'pichu',               pikachu: 'pikachu',        piranha_plant: 'packun',
+  pit: 'pit',                   pokemon_trainer: 'ptrainer', pyra_mythra: 'eflame',
+  richter: 'richter',           ridley: 'ridley',          rob: 'robot',
+  robin: 'reflet',              rosalina: 'rosetta',       roy: 'roy',
+  ryu: 'ryu',                   samus: 'samus',            sephiroth: 'edge',
+  sheik: 'sheik',               shulk: 'shulk',            simon: 'simon',
+  snake: 'snake',               sonic: 'sonic',            sora: 'trail',
+  steve: 'pickel',              terry: 'dolly',            toon_link: 'toonlink',
+  villager: 'murabito',         wario: 'wario',            wii_fit_trainer: 'wiifit',
+  wolf: 'wolf',                 yoshi: 'yoshi',            young_link: 'younglink',
+  zelda: 'zelda',               zero_suit_samus: 'szerosuit',
+};
+
+export const SSBU_ICON_COLORS = 8;
+
+export const ssbuIcon = (characterId: string, color = 0): string => {
+  const c = Math.max(0, Math.min(SSBU_ICON_COLORS - 1, Math.floor(color)));
+  return `${ASSET_BASE}/ssbu/base_files/icon/chara_2_${SSBU_CODENAMES[characterId] ?? characterId}_0${c}.png`;
+};
 
 const SSBU_CHARACTERS: Character[] = [
+  { id: 'banjo',            name: 'Banjo & Kazooie' },
   { id: 'bayonetta',        name: 'Bayonetta' },
   { id: 'bowser',           name: 'Bowser' },
   { id: 'bowser_jr',        name: 'Bowser Jr.' },
@@ -114,7 +158,9 @@ const SSBU_CHARACTERS: Character[] = [
   { id: 'young_link',       name: 'Young Link' },
   { id: 'zelda',            name: 'Zelda' },
   { id: 'zero_suit_samus',  name: 'Zero Suit Samus' },
-].sort((a, b) => a.name.localeCompare(b.name));
+]
+  .map((c) => ({ ...c, imageIconUrl: ssbuIcon(c.id), iconColors: SSBU_ICON_COLORS }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 // ── Street Fighter 6 ────────────────────────────────────────────────────────
 // Base roster (18) + Year 1, 2 & 3 DLC (12) = 30 fighters as of 2026

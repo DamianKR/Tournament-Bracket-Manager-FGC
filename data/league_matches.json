@@ -1863,12 +1863,78 @@
     "week": 3,
     "participant1Id": "gp_1786387250178_ac5thmv",
     "participant2Id": "gp_1786761981144_462dv5s",
-    "status": "scheduled",
+    "status": "completed",
     "scheduledDate": "2026-09-15T18:00:00.000Z",
     "deadline": "2026-10-07T18:00:00.000Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-04T18:48:41.546Z",
-    "gameId": "ssbu"
+    "gameId": "ssbu",
+    "reportedResults": [
+      {
+        "participantId": "gp_1786387087046_wnwtadb",
+        "winnerId": "gp_1786387250178_ac5thmv",
+        "score": "2-1",
+        "isNoShow": false,
+        "games": [
+          {
+            "gameNumber": 1,
+            "winnerId": "gp_1786387250178_ac5thmv",
+            "player1Character": "bowser",
+            "player1Color": 4,
+            "player2Character": "bayonetta"
+          },
+          {
+            "gameNumber": 2,
+            "winnerId": "gp_1786761981144_462dv5s",
+            "player1Character": "chrom",
+            "player1Color": 4,
+            "player2Character": "bowser_jr",
+            "player2Color": 0
+          },
+          {
+            "gameNumber": 3,
+            "winnerId": "gp_1786387250178_ac5thmv",
+            "player1Character": "chrom",
+            "player1Color": 4,
+            "player2Character": "bowser_jr",
+            "player2Color": 0
+          }
+        ],
+        "reportedAt": "2026-09-16T08:39:11.762Z"
+      }
+    ],
+    "winnerId": "gp_1786387250178_ac5thmv",
+    "score": "2-1",
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387250178_ac5thmv",
+        "player1Character": "bowser",
+        "player1Color": 4,
+        "player2Character": "bayonetta"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786761981144_462dv5s",
+        "player1Character": "chrom",
+        "player1Color": 4,
+        "player2Character": "bowser_jr",
+        "player2Color": 0
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "gp_1786387250178_ac5thmv",
+        "player1Character": "chrom",
+        "player1Color": 4,
+        "player2Character": "bowser_jr",
+        "player2Color": 0
+      }
+    ],
+    "participant1EloBefore": 1606,
+    "participant2EloBefore": 1481,
+    "participant1EloChange": 6,
+    "participant2EloChange": -6,
+    "completedDate": "2026-09-16T08:39:11.767Z"
   },
   {
     "id": "lmatch_1788288040215_eosbwaz",

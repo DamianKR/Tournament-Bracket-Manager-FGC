@@ -2,7 +2,7 @@
  * Selector inline de personajes para duelos/matches
  */
 import { GAMES } from '@/data/games';
-import { getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl } from '@/utils/characterImage';
 import './CharacterSelector.css';
 
 interface CharacterSelectorProps {
@@ -32,7 +32,7 @@ function CharacterSelector({ gameId, selectedCharacters, onToggle }: CharacterSe
             title={char.name}
           >
             <img
-              src={getCharacterImageUrl(gameId, char.id) ?? ''}
+              src={getCharacterIconUrl(gameId, char.id) ?? ''}
               alt={char.name}
               className="char-img"
             />

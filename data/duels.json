@@ -1634,5 +1634,49 @@
       "evidence": null
     },
     "metadata": null
+  },
+  {
+    "id": "duel_1789537994468_ldxvu3yby",
+    "challengerId": "gp_1786387234567_aoe1z95",
+    "challengedId": "gp_1786387087046_wnwtadb",
+    "gameId": "ssbu",
+    "communityId": "community_fgc_santa_clara",
+    "type": "normal",
+    "status": "completed",
+    "createdAt": "2026-09-16T05:53:14.471Z",
+    "expiresAt": "2026-09-23T05:53:14.468Z",
+    "acceptedAt": "2026-09-16T05:53:16.151Z",
+    "declinedAt": null,
+    "completedAt": "2026-09-16T05:55:05.714Z",
+    "matchId": "m_1789538105704_s4iowz4",
+    "challengerResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-09-16T05:55:05.696Z",
+      "evidence": null
+    },
+    "challengedResult": {
+      "winnerId": "gp_1786387234567_aoe1z95",
+      "reportedAt": "2026-09-16T05:55:05.696Z",
+      "evidence": null
+    },
+    "metadata": null
+  },
+  {
+    "id": "duel_1789547030395_x2kdg0obu",
+    "challengerId": "gp_1786387087046_wnwtadb",
+    "challengedId": "gp_1786408686972_s4nl3vz",
+    "gameId": "ssbu",
+    "communityId": "community_fgc_santa_clara",
+    "type": "normal",
+    "status": "accepted",
+    "createdAt": "2026-09-16T08:23:50.404Z",
+    "expiresAt": "2026-09-23T08:23:50.395Z",
+    "acceptedAt": "2026-09-16T08:23:52.178Z",
+    "declinedAt": null,
+    "completedAt": null,
+    "matchId": null,
+    "challengerResult": null,
+    "challengedResult": null,
+    "metadata": null
   }
 ]

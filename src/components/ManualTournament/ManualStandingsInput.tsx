@@ -6,7 +6,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GAMES } from '@/data/games';
-import { getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl } from '@/utils/characterImage';
 import { getTournamentPlacement } from '@/utils/tournamentPlacements';
 import './ManualStandingsInput.css';
 
@@ -141,7 +141,7 @@ function ManualStandingsInput({
                     {participantChars.map((charId, idx) => (
                       <div key={idx} className="character-badge-small">
                         <img
-                          src={getCharacterImageUrl(gameId, charId) ?? ''}
+                          src={getCharacterIconUrl(gameId, charId) ?? ''}
                           alt={getCharacterName(charId)}
                           className="character-icon-small"
                         />
@@ -228,7 +228,7 @@ function ManualStandingsInput({
                       onClick={() => toggleCharacter(showCharPicker, char.id)}
                     >
                       <img
-                        src={getCharacterImageUrl(gameId, char.id) ?? ''}
+                        src={getCharacterIconUrl(gameId, char.id) ?? ''}
                         alt={char.name}
                         className="character-option-img"
                       />

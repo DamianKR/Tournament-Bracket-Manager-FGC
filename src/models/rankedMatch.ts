@@ -13,6 +13,9 @@ export interface MatchGame {
   winnerId: string;
   player1Character?: string;
   player2Character?: string;
+  /** Costume/color index (0-7) for games with stock icon variants (e.g. SSBU). */
+  player1Color?: number;
+  player2Color?: number;
 }
 
 export interface RankedMatch {

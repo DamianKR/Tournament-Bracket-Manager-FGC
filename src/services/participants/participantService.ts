@@ -502,6 +502,8 @@ export async function getTournamentResults(participantId: string): Promise<Tourn
 export interface HeadToHeadGame {
   myChar: string | null;
   oppChar: string | null;
+  myColor?: number | null;
+  oppColor?: number | null;
   won: boolean;
 }
 

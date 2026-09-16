@@ -9,7 +9,7 @@ import { getAllParticipants, getAllParticipantsAsync } from '@/services/particip
 import { MatchRecord, GlobalParticipant, LeagueMatch } from '@/models/types';
 import { GAMES } from '@/data/games';
 import { gameBadgeStyle } from '@/utils/gameColor';
-import { charsFromGames, parseScoreString } from '@/utils/matchData';
+import { charsWithColorsFromGames, parseScoreString, type ColoredChar } from '@/utils/matchData';
 import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
@@ -39,8 +39,8 @@ interface UnifiedMatch {
   context?: string; // Tournament/League name
   player1Score: number | null;
   player2Score: number | null;
-  player1Chars: string[];
-  player2Chars: string[];
+  player1Chars: (string | ColoredChar)[];
+  player2Chars: (string | ColoredChar)[];
 }
 
 function HistoryTab() {
@@ -103,8 +103,8 @@ function HistoryTab() {
           context: m.tournamentName,
           player1Score: m.player1Score ?? m.participant1Score ?? null,
           player2Score: m.player2Score ?? m.participant2Score ?? null,
-          player1Chars: m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1),
-          player2Chars: m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2),
+          player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
+          player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
         };
       });
 
@@ -129,8 +129,8 @@ function HistoryTab() {
         date: m.createdAt,
         player1Score: m.player1Score ?? null,
         player2Score: m.player2Score ?? null,
-        player1Chars: m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1),
-        player2Chars: m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2),
+        player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
+        player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
       }));
 
       // Convert league matches
@@ -157,8 +157,8 @@ function HistoryTab() {
           context: leagueNameById.get(m.leagueId),
           player1Score: s1,
           player2Score: s2,
-          player1Chars: charsFromGames(m.games, 1),
-          player2Chars: charsFromGames(m.games, 2),
+          player1Chars: charsWithColorsFromGames(m.games, 1),
+          player2Chars: charsWithColorsFromGames(m.games, 2),
         };
       });
 

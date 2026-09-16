@@ -30,7 +30,7 @@ import { initials, avatarColor } from './ParticipantsPage';
 import { getCharacter, getGame, GAMES } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { gameBadgeStyle } from '@/utils/gameColor';
-import { charsFromGames, parseScoreString } from '@/utils/matchData';
+import { charsWithColorsFromGames, parseScoreString } from '@/utils/matchData';
 import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
@@ -404,8 +404,8 @@ function ParticipantProfile() {
               context: m.tournamentName,
               player1Score: m.player1Score ?? null,
               player2Score: m.player2Score ?? null,
-              player1Chars: m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1),
-              player2Chars: m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2),
+              player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
+              player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
             };
           }),
         ...rankedMatches
@@ -430,8 +430,8 @@ function ParticipantProfile() {
             date: m.createdAt,
             player1Score: m.player1Score ?? null,
             player2Score: m.player2Score ?? null,
-            player1Chars: m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1),
-            player2Chars: m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2),
+            player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
+            player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
           })),
         ...leagueMatches
           .filter((m: LeagueMatch) =>
@@ -457,8 +457,8 @@ function ParticipantProfile() {
               context: `League ${m.week ? `Week ${m.week}` : ''}`,
               player1Score: s1,
               player2Score: s2,
-              player1Chars: charsFromGames(m.games, 1),
-              player2Chars: charsFromGames(m.games, 2),
+              player1Chars: charsWithColorsFromGames(m.games, 1),
+              player2Chars: charsWithColorsFromGames(m.games, 2),
             };
           }),
       ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -676,7 +676,7 @@ function ParticipantProfile() {
                     {participant.phoneNumber}
                   </a>
                 )}
-                {participant.gameId && participant.mainCharacterId && (
+                {/* {participant.gameId && participant.mainCharacterId && (
                   <span className="profile-character">
                     <span className="profile-character-game" style={{ color: getGame(participant.gameId)?.color }}>
                       {getGame(participant.gameId)?.shortName}
@@ -685,7 +685,7 @@ function ParticipantProfile() {
                       {getCharacter(participant.gameId, participant.mainCharacterId)?.name}
                     </span>
                   </span>
-                )}
+                )} */}
                 <span className="profile-since">
                   {t('participantProfile.memberSince', { date: new Date(participant.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) })}
                 </span>

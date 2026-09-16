@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Participant, GlobalParticipant, Bracket } from '@/models/types';
 import { loadGlobalParticipants } from '@/services/storage/localStorage';
-import { getCharacterIconUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl, getCharacterImageUrl } from '@/utils/characterImage';
 import './Top8Podium.css';
 
 interface Top8PodiumProps {
@@ -17,11 +17,12 @@ function getGlobal(p: Participant, globals: Map<string, GlobalParticipant>, name
   return names.get(p.name.toLowerCase()) ?? null;
 }
 
-function getMostUsedCharacters(participantId: string, bracket: Bracket | null | undefined): string[] {
+function getMostUsedCharacters(participantId: string, bracket: Bracket | null | undefined): { id: string; color?: number }[] {
   if (!bracket) return [];
 
   const counts = new Map<string, number>();
   const firstSeen = new Map<string, number>();
+  const colorCounts = new Map<string, Map<number, number>>();
   let order = 0;
 
   const allMatches = [
@@ -36,20 +37,22 @@ function getMostUsedCharacters(participantId: string, bracket: Bracket | null | 
 
     // Characters from per-game log
     if (match.games) {
+      const bump = (charId: string, color: number | null | undefined) => {
+        counts.set(charId, (counts.get(charId) ?? 0) + 1);
+        if (!firstSeen.has(charId)) firstSeen.set(charId, order++);
+        if (!colorCounts.has(charId)) colorCounts.set(charId, new Map());
+        const cc = colorCounts.get(charId)!;
+        cc.set(color ?? 0, (cc.get(color ?? 0) ?? 0) + 1);
+      };
+
       if (match.participant1Id === participantId) {
         for (const g of match.games) {
-          if (g.player1Character) {
-            counts.set(g.player1Character, (counts.get(g.player1Character) ?? 0) + 1);
-            if (!firstSeen.has(g.player1Character)) firstSeen.set(g.player1Character, order++);
-          }
+          if (g.player1Character) bump(g.player1Character, g.player1Color);
         }
       }
       if (match.participant2Id === participantId) {
         for (const g of match.games) {
-          if (g.player2Character) {
-            counts.set(g.player2Character, (counts.get(g.player2Character) ?? 0) + 1);
-            if (!firstSeen.has(g.player2Character)) firstSeen.set(g.player2Character, order++);
-          }
+          if (g.player2Character) bump(g.player2Character, g.player2Color);
         }
       }
       continue;
@@ -76,7 +79,13 @@ function getMostUsedCharacters(participantId: string, bracket: Bracket | null | 
       return (firstSeen.get(a[0]) ?? 0) - (firstSeen.get(b[0]) ?? 0);
     })
     .slice(0, 4)
-    .map(([charId]) => charId);
+    .map(([charId]) => {
+      const cc = colorCounts.get(charId);
+      let color: number | undefined;
+      let bestN = -1;
+      if (cc) for (const [c, n] of cc) if (n > bestN) { bestN = n; color = c; }
+      return { id: charId, color };
+    });
 }
 
 function getDisplayName(p: Participant, globals: Map<string, GlobalParticipant>, names: Map<string, GlobalParticipant>): string {
@@ -91,7 +100,7 @@ function Avatar({ global, gameId, fallbackIcon, large = false }: { global: Globa
   const effectiveGameId = gameId ?? global?.gameId;
   // Si hay gameId del torneo, buscar el personaje de ese juego en el perfil del participante
   const characterId = (gameId && global?.games?.[gameId]?.mainCharacterId) || global?.mainCharacterId || null;
-  const imgUrl = getCharacterIconUrl(effectiveGameId, characterId);
+  const imgUrl = getCharacterImageUrl(effectiveGameId, characterId);
   const icon = <i className={`fas ${fallbackIcon}`} />;
   return (
     <div className={`top8-avatar ${large ? 'champion-avatar' : ''}`}>
@@ -103,12 +112,14 @@ function Avatar({ global, gameId, fallbackIcon, large = false }: { global: Globa
 }
 
 function TournamentCharacters({ p, gameId, bracket }: { p: Participant; gameId?: string; bracket?: Bracket | null }) {
-  const characterIds = p.characters ?? getMostUsedCharacters(p.id, bracket);
+  const characterIds: (string | { id: string; color?: number })[] = p.characters ?? getMostUsedCharacters(p.id, bracket);
   if (characterIds.length === 0 || !gameId) return null;
   return (
     <div className="top8-characters">
-      {characterIds.slice(0, 4).map((charId) => {
-        const imgUrl = getCharacterIconUrl(gameId, charId);
+      {characterIds.slice(0, 4).map((item) => {
+        const charId = typeof item === 'string' ? item : item.id;
+        const color = typeof item === 'string' ? undefined : item.color;
+        const imgUrl = getCharacterIconUrl(gameId, charId, color);
         if (!imgUrl) return null;
         return (
           <img

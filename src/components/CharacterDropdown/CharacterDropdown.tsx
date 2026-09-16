@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Character } from '@/data/games';
-import { getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl } from '@/utils/characterImage';
 import './CharacterDropdown.css';
 
 interface Props {
@@ -9,11 +9,15 @@ interface Props {
   characters: Character[];
   value: string | null;
   onChange: (characterId: string | null) => void;
+  /** Selected costume color index (e.g. 0-7 for SSBU stock icons). */
+  color?: number;
+  /** When provided and the character has color variants, a color strip is shown. */
+  onColorChange?: (color: number) => void;
   placeholder?: string;
   disabled?: boolean;
 }
 
-function CharacterDropdown({ gameId, characters, value, onChange, placeholder, disabled }: Props) {
+function CharacterDropdown({ gameId, characters, value, onChange, color = 0, onColorChange, placeholder, disabled }: Props) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -21,6 +25,7 @@ function CharacterDropdown({ gameId, characters, value, onChange, placeholder, d
   const menuRef = useRef<HTMLDivElement>(null);
 
   const selected = characters.find((c) => c.id === value) ?? null;
+  const colorCount = selected?.iconColors ?? 0;
   const filtered = characters.filter((c) =>
     c.name.toLowerCase().includes(query.toLowerCase())
   );
@@ -77,7 +82,7 @@ function CharacterDropdown({ gameId, characters, value, onChange, placeholder, d
         {selected ? (
           <>
             <img
-              src={getCharacterImageUrl(gameId, selected.id) ?? ''}
+              src={getCharacterIconUrl(gameId, selected.id, color) ?? ''}
               alt={selected.name}
               className="char-dropdown-icon"
             />
@@ -112,7 +117,7 @@ function CharacterDropdown({ gameId, characters, value, onChange, placeholder, d
                 onClick={() => select(c.id)}
               >
                 <img
-                  src={getCharacterImageUrl(gameId, c.id) ?? ''}
+                  src={getCharacterIconUrl(gameId, c.id) ?? ''}
                   alt={c.name}
                   className="char-dropdown-item-icon"
                 />
@@ -123,6 +128,26 @@ function CharacterDropdown({ gameId, characters, value, onChange, placeholder, d
               <div className="char-dropdown-empty">{t('common.noResults')}</div>
             )}
           </div>
+        </div>
+      )}
+
+      {selected && onColorChange && colorCount > 1 && (
+        <div className="char-color-strip">
+          {Array.from({ length: colorCount }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`char-color-option ${color === i ? 'active' : ''}`}
+              onClick={() => onColorChange(i)}
+              title={`${selected.name} #${i + 1}`}
+            >
+              <img
+                src={getCharacterIconUrl(gameId, selected.id, i) ?? ''}
+                alt=""
+                className="char-color-icon"
+              />
+            </button>
+          ))}
         </div>
       )}
     </div>

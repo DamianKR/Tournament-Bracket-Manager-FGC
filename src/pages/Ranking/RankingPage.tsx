@@ -16,7 +16,7 @@ import {
   type LeaderboardEntry,
 } from '@/services/ranking/rankingService';
 import type { MatchRecord } from '@/models/types';
-import { charsFromGames } from '@/utils/matchData';
+import { charsWithColorsFromGames } from '@/utils/matchData';
 import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 
@@ -391,7 +391,7 @@ function RankingPage() {
                       <span className="rk-history-pname">
                         <CharacterIcons
                           gameId={m.gameId}
-                          characterIds={m.player1Characters?.length ? m.player1Characters : charsFromGames(m.games, 1)}
+                          characterIds={m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1)}
                         />
                         {m.winnerId === m.playerAId ? <i className="fas fa-crown" /> : ''} {pDisplay(m.playerAId)}
                       </span>
@@ -417,7 +417,7 @@ function RankingPage() {
                       <span className="rk-history-pname">
                         <CharacterIcons
                           gameId={m.gameId}
-                          characterIds={m.player2Characters?.length ? m.player2Characters : charsFromGames(m.games, 2)}
+                          characterIds={m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2)}
                         />
                         {m.winnerId === m.playerBId ? <i className="fas fa-crown" /> : ''} {pDisplay(m.playerBId)}
                       </span>

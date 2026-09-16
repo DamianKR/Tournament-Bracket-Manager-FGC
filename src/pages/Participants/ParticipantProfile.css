@@ -108,8 +108,8 @@
     height: 60%;
     max-width: none;
     width: auto;
-    opacity: 0.20;
-    filter: blur(1px);
+    opacity: 0.50;
+    /* filter: blur(1px); */
     z-index: 0;
     mask-image: linear-gradient(to bottom,
         black 0%,
@@ -400,7 +400,7 @@
 /* Main name — esport display style */
 .profile-name {
   font-family: var(--font-display);
-  font-size: 2.4rem;
+  font-size: 5.6rem;
   font-weight: 900;
   margin: 0;
   line-height: 1;
@@ -1563,7 +1563,7 @@
 
 @media (max-width: 480px) {
   .profile-name {
-    font-size: 1.25rem;
+    font-size: 2.25rem;
   }
 
   .profile-elo-widget {

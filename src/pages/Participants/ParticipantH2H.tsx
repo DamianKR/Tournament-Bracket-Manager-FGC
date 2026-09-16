@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getGame, getCharacter } from '@/data/games';
-import { getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl } from '@/utils/characterImage';
+import type { ColoredChar } from '@/utils/matchData';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import type { HeadToHeadEntry, H2HMatchType, H2HTimeFilter } from '@/services/participants/participantService';
@@ -19,13 +20,15 @@ interface Props {
   onNavigateParticipant: (id: string) => void;
 }
 
-function CharIcons({ gameId, characterIds }: { gameId: string; characterIds: string[] }) {
+function CharIcons({ gameId, characterIds }: { gameId: string; characterIds: (string | ColoredChar)[] }) {
   if (!characterIds || characterIds.length === 0) return null;
   return (
     <div className={`h2h-icons ${characterIds.length > 1 ? 'h2h-icons--multi' : ''}`}>
-      {characterIds.map((cid) => {
+      {characterIds.map((item) => {
+        const cid = typeof item === 'string' ? item : item.id;
+        const color = typeof item === 'string' ? undefined : item.color;
         const ch = getCharacter(gameId, cid);
-        const url = getCharacterImageUrl(gameId, cid);
+        const url = getCharacterIconUrl(gameId, cid, color);
         if (!url) return null;
         return (
           <img
@@ -145,13 +148,15 @@ function OpponentCard({ entry, onNavigate }: { entry: HeadToHeadEntry; onNavigat
 
       {expanded && (() => {
         // Aggregate character matchups for this specific opponent
-        const muMap = new Map<string, { gameId: string; myChar: string; oppChar: string; wins: number; losses: number }>();
+        const muMap = new Map<string, { gameId: string; myChar: string; oppChar: string; myColor?: number; oppColor?: number; wins: number; losses: number }>();
         for (const s of entry.sets) {
           const gId = s.gameId ?? 'ssbu';
           for (const g of s.games) {
             if (!g.myChar || !g.oppChar) continue;
             const key = `${gId}:${g.myChar}:${g.oppChar}`;
             const cur = muMap.get(key) ?? { gameId: gId, myChar: g.myChar, oppChar: g.oppChar, wins: 0, losses: 0 };
+            if (cur.myColor == null && g.myColor != null) cur.myColor = g.myColor;
+            if (cur.oppColor == null && g.oppColor != null) cur.oppColor = g.oppColor;
             if (g.won) cur.wins++; else cur.losses++;
             muMap.set(key, cur);
           }
@@ -174,10 +179,10 @@ function OpponentCard({ entry, onNavigate }: { entry: HeadToHeadEntry; onNavigat
               const wr = total > 0 ? Math.round((m.wins / total) * 100) : 0;
               return (
                 <div key={`${m.gameId}:${m.myChar}:${m.oppChar}`} className="h2h-mu-row">
-                  <CharIcons gameId={m.gameId} characterIds={[m.myChar]} />
+                  <CharIcons gameId={m.gameId} characterIds={[{ id: m.myChar, color: m.myColor }]} />
                   <span className="h2h-mu-char-name">{my?.name ?? m.myChar}</span>
                   <span className="h2h-mu-vs">vs</span>
-                  <CharIcons gameId={m.gameId} characterIds={[m.oppChar]} />
+                  <CharIcons gameId={m.gameId} characterIds={[{ id: m.oppChar, color: m.oppColor }]} />
                   <span className="h2h-mu-char-name">{opp?.name ?? m.oppChar}</span>
                   <span className="h2h-mu-rec">{m.wins}-{m.losses}</span>
                   <span className={`h2h-mu-wr ${wr >= 50 ? 'pos' : 'neg'}`}>
@@ -205,6 +210,8 @@ interface CharMatchup {
   gameId: string;
   myChar: string;
   oppChar: string;
+  myColor?: number;
+  oppColor?: number;
   wins: number;
   losses: number;
 }
@@ -241,6 +248,8 @@ export default function ParticipantH2H({
           if (!myC || !oppC) continue;
           const key = `${gId}:${myC}:${oppC}`;
           const cur = map.get(key) ?? { gameId: gId, myChar: myC, oppChar: oppC, wins: 0, losses: 0 };
+          if (cur.myColor == null && g.myColor != null) cur.myColor = g.myColor;
+          if (cur.oppColor == null && g.oppColor != null) cur.oppColor = g.oppColor;
           if (g.won) cur.wins++; else cur.losses++;
           map.set(key, cur);
         }
@@ -400,7 +409,7 @@ export default function ParticipantH2H({
                   <div key={groupKey} className="h2h-mu-group">
                     <div className="h2h-mu-group-header">
                       <span className="h2h-mu-game" style={badge}>{getGame(first.gameId)?.shortName ?? first.gameId}</span>
-                      <CharIcons gameId={first.gameId} characterIds={[first.myChar]} />
+                      <CharIcons gameId={first.gameId} characterIds={[{ id: first.myChar, color: first.myColor }]} />
                       <span className="h2h-mu-group-name">{myChar?.name ?? first.myChar}</span>
                       <span className="h2h-mu-group-rec">{groupWins}-{groupLosses}</span>
                     </div>
@@ -411,7 +420,7 @@ export default function ParticipantH2H({
                       return (
                         <div key={`${m.gameId}:${m.myChar}:${m.oppChar}`} className="h2h-mu-row">
                           <span className="h2h-mu-vs">vs</span>
-                          <CharIcons gameId={m.gameId} characterIds={[m.oppChar]} />
+                          <CharIcons gameId={m.gameId} characterIds={[{ id: m.oppChar, color: m.oppColor }]} />
                           <span className="h2h-mu-char-name">{opp?.name ?? m.oppChar}</span>
                           <span className="h2h-mu-rec">{m.wins}-{m.losses}</span>
                           <span className={`h2h-mu-wr ${wr >= 50 ? 'pos' : 'neg'}`}>

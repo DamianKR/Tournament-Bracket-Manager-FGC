@@ -16,12 +16,12 @@
     "maxChallengesPerWeek": 10,
     "eloRestriction": 300,
     "challengeExpirationDays": 7,
-    "gamesPerMatch": 3,
+    "gamesPerMatch": 5,
     "weeklyResetDay": 1,
     "weeklyResetHour": 0,
     "weeklyResetMinute": 0,
     "mandatoryDuelsEnabled": true,
     "mandatoryDuelsPerWeek": 1,
-    "updatedAt": "2026-09-16T05:25:48.760Z"
+    "updatedAt": "2026-09-16T05:52:55.177Z"
   }
 ]

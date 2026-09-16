@@ -145,3 +145,37 @@
   font-size: 0.85rem;
   text-align: center;
 }
+
+/* Costume/color variant strip (e.g. SSBU stock icons) */
+.char-color-strip {
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.char-color-option {
+  padding: 1px;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  line-height: 0;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.char-color-option:hover {
+  border-color: var(--primary-color);
+}
+
+.char-color-option.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.char-color-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  border-radius: 0.15rem;
+}

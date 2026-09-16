@@ -1,4 +1,4 @@
-import { getCharacter } from '@/data/games';
+import { getCharacter, ssbuIcon } from '@/data/games';
 
 const SSBU_IMAGE_MAP: Record<string, string> = {
   rosalina: 'rosalina_and_luma.png',
@@ -22,10 +22,19 @@ export function getCharacterImageUrl(gameId: string | null | undefined, characte
   return character.imageUrl ?? getLocalPath(gameId, characterId, character.imageFile);
 }
 
-/** Small icon for podium/thumbnail contexts where size matters. */
-export function getCharacterIconUrl(gameId: string | null | undefined, characterId: string | null | undefined): string | null {
+/** Small icon for podium/thumbnail contexts where size matters. `color` selects the costume variant when available (SSBU: 0-7). */
+export function getCharacterIconUrl(gameId: string | null | undefined, characterId: string | null | undefined, color?: number | null): string | null {
   if (!gameId || !characterId) return null;
   const character = getCharacter(gameId, characterId);
   if (!character) return null;
+  if (color != null && (character.iconColors ?? 0) > 1 && gameId === 'ssbu') {
+    return ssbuIcon(characterId, color);
+  }
   return character.imageIconUrl ?? character.imageUrl ?? getLocalPath(gameId, characterId, character.imageFile);
+}
+
+/** Whether a character has costume/color icon variants (e.g. SSBU stock icons). */
+export function characterHasColorIcons(gameId: string | null | undefined, characterId: string | null | undefined): boolean {
+  if (!gameId || !characterId) return false;
+  return (getCharacter(gameId, characterId)?.iconColors ?? 0) > 1;
 }

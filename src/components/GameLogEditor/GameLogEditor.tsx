@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { MatchGame } from '@/models/rankedMatch';
 import { isSeriesComplete, requiredWinsFor } from '@/utils/matchSeries';
+import { setSideCharPropagate, setSideColorPropagate, inheritChars } from '@/utils/matchData';
 import CharacterDropdown from '@/components/CharacterDropdown/CharacterDropdown';
 import type { Character } from '@/data/games';
 import './GameLogEditor.css';
@@ -28,6 +29,7 @@ function GameLogEditor({ games, onChange, playerAId, playerBId, playerAName, pla
     const next = [...games, {
       gameNumber: games.length + 1,
       winnerId: playerAId,
+      ...inheritChars(games[games.length - 1]),
     }];
     onChange(next);
   };
@@ -52,7 +54,9 @@ function GameLogEditor({ games, onChange, playerAId, playerBId, playerAName, pla
               gameId={gameId}
               characters={characters}
               value={g.player1Character ?? null}
-              onChange={(charId) => updateGame(idx, { player1Character: charId ?? undefined })}
+              onChange={(charId) => onChange(setSideCharPropagate(games, idx, 1, charId))}
+              color={g.player1Color ?? 0}
+              onColorChange={(color) => onChange(setSideColorPropagate(games, idx, 1, color))}
             />
           </div>
 
@@ -76,7 +80,9 @@ function GameLogEditor({ games, onChange, playerAId, playerBId, playerAName, pla
               gameId={gameId}
               characters={characters}
               value={g.player2Character ?? null}
-              onChange={(charId) => updateGame(idx, { player2Character: charId ?? undefined })}
+              onChange={(charId) => onChange(setSideCharPropagate(games, idx, 2, charId))}
+              color={g.player2Color ?? 0}
+              onColorChange={(color) => onChange(setSideColorPropagate(games, idx, 2, color))}
             />
           </div>
         </div>

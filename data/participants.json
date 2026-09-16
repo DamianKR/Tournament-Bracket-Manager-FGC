@@ -31,14 +31,14 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Master",
-        "eloPoints": 1744,
+        "eloPoints": 1733,
         "mainCharacterId": "samus"
       }
     },
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-09-14T18:42:46.536Z",
+    "updatedAt": "2026-09-16T05:55:05.704Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -73,14 +73,14 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Vanquisher",
-        "eloPoints": 1675,
+        "eloPoints": 1686,
         "mainCharacterId": "link"
       }
     },
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-09-12T20:31:23.259Z",
+    "updatedAt": "2026-09-16T05:55:05.704Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -166,14 +166,14 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Vanquisher",
-        "eloPoints": 1606,
+        "eloPoints": 1612,
         "mainCharacterId": "luigi"
       }
     },
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-09-14T18:42:46.542Z",
+    "updatedAt": "2026-09-16T08:39:11.763Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -861,14 +861,14 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Platino",
-        "eloPoints": 1481,
+        "eloPoints": 1475,
         "mainCharacterId": "sephiroth"
       }
     },
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-15T02:46:21.144Z",
-    "updatedAt": "2026-09-04T23:04:02.946Z",
+    "updatedAt": "2026-09-16T08:39:11.763Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786759219748-qzufrr9ky",

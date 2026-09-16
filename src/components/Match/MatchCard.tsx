@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Match } from '@/models/types';
 import type { MatchGame } from '@/models/rankedMatch';
-import { getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl } from '@/utils/characterImage';
+import { charsWithColorsFromGames } from '@/utils/matchData';
 import MatchResultModal from './MatchResultModal';
 import './MatchCard.css';
 
@@ -67,10 +68,10 @@ function MatchCard({
   const hasGames = match.games && match.games.length > 0;
 
   const p1GameChars = hasGames
-    ? [...new Set(match.games?.filter(g => g.player1Character).map(g => g.player1Character!))]
+    ? charsWithColorsFromGames(match.games, 1)
     : (match.participant1Characters ?? []);
   const p2GameChars = hasGames
-    ? [...new Set(match.games?.filter(g => g.player2Character).map(g => g.player2Character!))]
+    ? charsWithColorsFromGames(match.games, 2)
     : (match.participant2Characters ?? []);
 
   return (
@@ -104,15 +105,19 @@ function MatchCard({
             <div className="participant-left">
               {p1GameChars.length > 0 && gameId && (
                 <div className="character-icons">
-                  {p1GameChars.slice(0, 3).map((charId, idx) => (
-                    <img 
-                      key={idx}
-                      src={getCharacterImageUrl(gameId, charId) ?? ''} 
-                      alt=""
-                      className="participant-character-icon"
-                      title={charId}
-                    />
-                  ))}
+                  {p1GameChars.slice(0, 3).map((item, idx) => {
+                    const charId = typeof item === 'string' ? item : item.id;
+                    const color = typeof item === 'string' ? undefined : item.color;
+                    return (
+                      <img
+                        key={idx}
+                        src={getCharacterIconUrl(gameId, charId, color) ?? ''}
+                        alt=""
+                        className="participant-character-icon"
+                        title={charId}
+                      />
+                    );
+                  })}
                   {p1GameChars.length > 3 && (
                     <span className="more-characters">+{p1GameChars.length - 3}</span>
                   )}
@@ -139,15 +144,19 @@ function MatchCard({
             <div className="participant-left">
               {p2GameChars.length > 0 && gameId && (
                 <div className="character-icons">
-                  {p2GameChars.slice(0, 3).map((charId, idx) => (
-                    <img 
-                      key={idx}
-                      src={getCharacterImageUrl(gameId, charId) ?? ''} 
-                      alt=""
-                      className="participant-character-icon"
-                      title={charId}
-                    />
-                  ))}
+                  {p2GameChars.slice(0, 3).map((item, idx) => {
+                    const charId = typeof item === 'string' ? item : item.id;
+                    const color = typeof item === 'string' ? undefined : item.color;
+                    return (
+                      <img
+                        key={idx}
+                        src={getCharacterIconUrl(gameId, charId, color) ?? ''}
+                        alt=""
+                        className="participant-character-icon"
+                        title={charId}
+                      />
+                    );
+                  })}
                   {p2GameChars.length > 3 && (
                     <span className="more-characters">+{p2GameChars.length - 3}</span>
                   )}

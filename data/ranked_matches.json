@@ -2417,5 +2417,48 @@
     ],
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-09-14T01:31:23.918Z"
+  },
+  {
+    "id": "m_1789538105704_s4iowz4",
+    "playerAId": "gp_1786387234567_aoe1z95",
+    "playerBId": "gp_1786387087046_wnwtadb",
+    "winnerId": "gp_1786387234567_aoe1z95",
+    "loserId": "gp_1786387087046_wnwtadb",
+    "type": "duel",
+    "gameId": "ssbu",
+    "playerAPointsBefore": 1686,
+    "playerBPointsBefore": 1733,
+    "playerAPointsAfter": 1686,
+    "playerBPointsAfter": 1733,
+    "playerADelta": 11,
+    "playerBDelta": -11,
+    "playerARankBefore": "Vanquisher",
+    "playerBRankBefore": "Master",
+    "playerARankAfter": "Vanquisher",
+    "playerBRankAfter": "Master",
+    "player1Score": 3,
+    "player2Score": 1,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387234567_aoe1z95",
+        "player1Character": "samus",
+        "player2Character": "roy"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387234567_aoe1z95"
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "gp_1786387087046_wnwtadb"
+      },
+      {
+        "gameNumber": 4,
+        "winnerId": "gp_1786387234567_aoe1z95"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-16T05:55:05.704Z"
   }
 ]

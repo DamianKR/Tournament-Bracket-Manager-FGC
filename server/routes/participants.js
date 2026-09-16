@@ -1052,6 +1052,8 @@ router.get('/:id/head-to-head', async (req, res) => {
         games: games.map((g) => ({
           myChar: isP1 ? g.player1Character : g.player2Character,
           oppChar: isP1 ? g.player2Character : g.player1Character,
+          myColor: isP1 ? g.player1Color : g.player2Color,
+          oppColor: isP1 ? g.player2Color : g.player1Color,
           won: g.winnerId === (isP1 ? m.player1GlobalId : m.player2GlobalId),
         })),
       });
@@ -1094,6 +1096,8 @@ router.get('/:id/head-to-head', async (req, res) => {
         games: games.map((g) => ({
           myChar: isP1 ? g.player1Character : g.player2Character,
           oppChar: isP1 ? g.player2Character : g.player1Character,
+          myColor: isP1 ? g.player1Color : g.player2Color,
+          oppColor: isP1 ? g.player2Color : g.player1Color,
           won: g.winnerId === participantId,
         })),
       });
@@ -1137,6 +1141,8 @@ router.get('/:id/head-to-head', async (req, res) => {
         games: games.map((g) => ({
           myChar: isP1 ? g.player1Character : g.player2Character,
           oppChar: isP1 ? g.player2Character : g.player1Character,
+          myColor: isP1 ? g.player1Color : g.player2Color,
+          oppColor: isP1 ? g.player2Color : g.player1Color,
           won: g.winnerId === participantId,
         })),
       });

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getGame, getCharacter } from '@/data/games';
 import { gameBadgeStyle, gameAccent } from '@/utils/gameColor';
-import { getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl } from '@/utils/characterImage';
 import type { TournamentResult, TournamentResultMatch } from '@/services/participants/participantService';
 import './ParticipantTournamentResults.css';
 
@@ -34,7 +34,7 @@ interface Props {
 }
 
 function CharIcon({ gameId, characterId }: { gameId: string; characterId: string }) {
-  const url = getCharacterImageUrl(gameId, characterId);
+  const url = getCharacterIconUrl(gameId, characterId);
   const ch = getCharacter(gameId, characterId);
   if (!url) return null;
   return (

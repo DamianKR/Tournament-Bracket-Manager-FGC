@@ -5,8 +5,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GAMES } from '@/data/games';
-import { getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl } from '@/utils/characterImage';
 import type { MatchGame } from '@/models/rankedMatch';
+import { setSideCharPropagate, setSideColorPropagate, inheritChars } from '@/utils/matchData';
 import CharacterDropdown from '@/components/CharacterDropdown/CharacterDropdown';
 import './MatchResultModal.css';
 
@@ -109,7 +110,7 @@ function MatchDetailModal({
   const addGame = () => {
     setGames(prev => [
       ...prev,
-      { gameNumber: prev.length + 1, winnerId: participant1Id, player1Character: undefined, player2Character: undefined },
+      { gameNumber: prev.length + 1, winnerId: participant1Id, ...inheritChars(prev[prev.length - 1]) },
     ]);
   };
 
@@ -132,6 +133,14 @@ function MatchDetailModal({
       recalcScores(next);
       return next;
     });
+  };
+
+  const setGameChar = (idx: number, side: 1 | 2, charId: string | null) => {
+    setGames(prev => setSideCharPropagate(prev, idx, side, charId));
+  };
+
+  const setGameColor = (idx: number, side: 1 | 2, color: number) => {
+    setGames(prev => setSideColorPropagate(prev, idx, side, color));
   };
 
   const toggleCharacter = (player: 1 | 2, charId: string) => {
@@ -204,7 +213,7 @@ function MatchDetailModal({
                   {chars1.map((charId, idx) => (
                     <div key={idx} className="character-badge">
                       <img 
-                        src={getCharacterImageUrl(gameId, charId) ?? ''} 
+                        src={getCharacterIconUrl(gameId, charId) ?? ''} 
                         alt={getCharacterName(charId)}
                         className="character-icon"
                       />
@@ -276,7 +285,7 @@ function MatchDetailModal({
                   {chars2.map((charId, idx) => (
                     <div key={idx} className="character-badge">
                       <img 
-                        src={getCharacterImageUrl(gameId, charId) ?? ''} 
+                        src={getCharacterIconUrl(gameId, charId) ?? ''} 
                         alt={getCharacterName(charId)}
                         className="character-icon"
                       />
@@ -367,7 +376,7 @@ function MatchDetailModal({
                         onClick={() => toggleCharacter(1, char.id)}
                       >
                         <img 
-                          src={getCharacterImageUrl(gameId, char.id) ?? ''} 
+                          src={getCharacterIconUrl(gameId, char.id) ?? ''} 
                           alt={char.name}
                           className="character-option-img"
                         />
@@ -413,7 +422,7 @@ function MatchDetailModal({
                         onClick={() => toggleCharacter(2, char.id)}
                       >
                         <img 
-                          src={getCharacterImageUrl(gameId, char.id) ?? ''} 
+                          src={getCharacterIconUrl(gameId, char.id) ?? ''} 
                           alt={char.name}
                           className="character-option-img"
                         />
@@ -442,7 +451,9 @@ function MatchDetailModal({
                         gameId={gameId}
                         characters={characters}
                         value={g.player1Character ?? null}
-                        onChange={(charId) => updateGame(idx, { player1Character: charId ?? undefined })}
+                        onChange={(charId) => setGameChar(idx, 1, charId)}
+                        color={g.player1Color ?? 0}
+                        onColorChange={(color) => setGameColor(idx, 1, color)}
                       />
                     </div>
                   )}
@@ -468,7 +479,9 @@ function MatchDetailModal({
                         gameId={gameId}
                         characters={characters}
                         value={g.player2Character ?? null}
-                        onChange={(charId) => updateGame(idx, { player2Character: charId ?? undefined })}
+                        onChange={(charId) => setGameChar(idx, 2, charId)}
+                        color={g.player2Color ?? 0}
+                        onColorChange={(color) => setGameColor(idx, 2, color)}
                       />
                     </div>
                   )}
