@@ -955,6 +955,28 @@
   background: var(--border-color, #e2e8f0);
 }
 
+/* Opponent rank slot in player rows — fixed width keeps names aligned */
+.h2h-rank {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 4.25rem;
+  flex-shrink: 0;
+}
+
+.h2h-rank i {
+  font-size: 0.85rem;
+  width: 1rem;
+  text-align: center;
+}
+
+.h2h-rank-pts {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-tertiary, #94a3b8);
+  font-variant-numeric: tabular-nums;
+}
+
 .h2h-matchup .h2h-info {
   display: flex;
   align-items: center;

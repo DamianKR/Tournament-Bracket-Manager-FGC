@@ -1430,11 +1430,14 @@ router.get('/:id/stats', async (req, res) => {
       headToHeadPlayersByType: new Map(),
       monthlyActivity: new Map(),
       topPlacements: { top1: 0, top3: 0, top8: 0, top16: 0 },
+      topPlacementsByGame: new Map(),
+      headToHeadPlayersByGame: new Map(),
       allMatchWins: 0,
       allMatchLosses: 0,
       allMatchWinsLast6Months: 0,
       allMatchLossesLast6Months: 0,
       recordByGame: new Map(),
+      recordByGameLast6Months: new Map(),
       recordByType: new Map(),
       recordByTypeLast6Months: new Map(),
     };
@@ -1444,10 +1447,18 @@ router.get('/:id/stats', async (req, res) => {
     const recordMatch = (date, won, gameId, myChars, oppChars, oppId, myEloAfter, matchType, games, isP1, myId = participantId) => {
       const mk = monthKey(date);
       if (mk) {
-        const ma = stats.monthlyActivity.get(mk) || { month: mk, matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } } };
+        const ma = stats.monthlyActivity.get(mk) || { month: mk, matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } }, byGame: {} };
         ma.matches++;
         if (matchType && ma.byType[matchType]) {
           ma.byType[matchType].matches++;
+        }
+        if (gameId) {
+          if (!ma.byGame) ma.byGame = {};
+          const bg = ma.byGame[gameId] || (ma.byGame[gameId] = { matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } } });
+          bg.matches++;
+          if (matchType && bg.byType[matchType]) {
+            bg.byType[matchType].matches++;
+          }
         }
         stats.monthlyActivity.set(mk, ma);
       }
@@ -1572,6 +1583,28 @@ router.get('/:id/stats', async (req, res) => {
         }
       }
 
+      // Per-match usage: one set contribution per character used in this match
+      // (count stays per-game; sets lets the UI show "% of sets played with X")
+      if (gameId) {
+        const matchChars = gameLog
+          ? [...new Set(gameLog.map((g) => (isP1 ? g.player1Character : g.player2Character)).filter(Boolean))]
+          : [...new Set((myChars ?? []).filter(Boolean))];
+        for (const c of matchChars) {
+          const key = `${gameId}:${c}`;
+          const bumpSets = (map) => {
+            const cu = map.get(key) || { gameId, characterId: c, count: 0, wins: 0, losses: 0 };
+            cu.sets = (cu.sets ?? 0) + 1;
+            map.set(key, cu);
+          };
+          bumpSets(stats.characterUsage);
+          if (isRecent(date)) bumpSets(stats.characterUsageLast6Months);
+          if (matchType) {
+            bumpSets(stats.characterUsageByType[matchType]);
+            if (isRecent(date)) bumpSets(stats.characterUsageLast6MonthsByType[matchType]);
+          }
+        }
+      }
+
       if (myEloAfter != null && gameId) {
         const current = stats.peakEloByGame.get(gameId);
         if (!current || myEloAfter > current.points) {
@@ -1587,6 +1620,17 @@ router.get('/:id/stats', async (req, res) => {
         const h2h = stats.headToHeadPlayers.get(oppId) || { wins: 0, losses: 0 };
         won ? h2h.wins++ : h2h.losses++;
         stats.headToHeadPlayers.set(oppId, h2h);
+
+        if (gameId) {
+          const gMap = stats.headToHeadPlayersByGame.get(gameId) || new Map();
+          const gRec = gMap.get(oppId) || { wins: 0, losses: 0, byType: { tournament: { wins: 0, losses: 0 }, ranked: { wins: 0, losses: 0 }, league: { wins: 0, losses: 0 } } };
+          won ? gRec.wins++ : gRec.losses++;
+          if (matchType && gRec.byType[matchType]) {
+            won ? gRec.byType[matchType].wins++ : gRec.byType[matchType].losses++;
+          }
+          gMap.set(oppId, gRec);
+          stats.headToHeadPlayersByGame.set(gameId, gMap);
+        }
 
         if (matchType) {
           const byType = stats.headToHeadPlayersByType.get(matchType) || new Map();
@@ -1610,6 +1654,15 @@ router.get('/:id/stats', async (req, res) => {
           won ? rg.byType[matchType].wins++ : rg.byType[matchType].losses++;
         }
         stats.recordByGame.set(gameId, rg);
+
+        if (isRecent(date)) {
+          const rg6 = stats.recordByGameLast6Months.get(gameId) || { wins: 0, losses: 0, byType: { tournament: { wins: 0, losses: 0 }, ranked: { wins: 0, losses: 0 }, league: { wins: 0, losses: 0 } } };
+          won ? rg6.wins++ : rg6.losses++;
+          if (matchType) {
+            won ? rg6.byType[matchType].wins++ : rg6.byType[matchType].losses++;
+          }
+          stats.recordByGameLast6Months.set(gameId, rg6);
+        }
       }
 
       if (matchType) {
@@ -1677,10 +1730,25 @@ router.get('/:id/stats', async (req, res) => {
       if (tp.finalPosition <= 8) stats.topPlacements.top8++;
       if (tp.finalPosition <= 16) stats.topPlacements.top16++;
 
+      const tGameId = t.gameId || tournamentGameMap.get(t.id);
+      if (tGameId) {
+        const tpg = stats.topPlacementsByGame.get(tGameId) || { top1: 0, top3: 0, top8: 0, top16: 0 };
+        if (tp.finalPosition === 1) tpg.top1++;
+        if (tp.finalPosition <= 3) tpg.top3++;
+        if (tp.finalPosition <= 8) tpg.top8++;
+        if (tp.finalPosition <= 16) tpg.top16++;
+        stats.topPlacementsByGame.set(tGameId, tpg);
+      }
+
       const mk = monthKey(t.updatedAt);
       if (mk) {
-        const ma = stats.monthlyActivity.get(mk) || { month: mk, matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } } };
+        const ma = stats.monthlyActivity.get(mk) || { month: mk, matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } }, byGame: {} };
         ma.tournaments++;
+        if (tGameId) {
+          if (!ma.byGame) ma.byGame = {};
+          const bg = ma.byGame[tGameId] || (ma.byGame[tGameId] = { matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } } });
+          bg.tournaments++;
+        }
         stats.monthlyActivity.set(mk, ma);
       }
     }
@@ -1690,9 +1758,14 @@ router.get('/:id/stats', async (req, res) => {
     for (const byType of stats.headToHeadPlayersByType.values()) {
       for (const oid of byType.keys()) opponentIds.add(oid);
     }
+    for (const byGame of stats.headToHeadPlayersByGame.values()) {
+      for (const oid of byGame.keys()) opponentIds.add(oid);
+    }
     const opponentMap = new Map();
+    const opponentData = new Map();
     for (const oid of opponentIds) {
       const op = await participants.findById(oid);
+      if (op) opponentData.set(oid, op);
       opponentMap.set(oid, op
         ? { id: op.id, name: op.name, alias: op.alias || null }
         : { id: oid, name: 'Unknown', alias: null }
@@ -1703,6 +1776,7 @@ router.get('/:id/stats', async (req, res) => {
       gameId: entry.gameId,
       characterId: entry.characterId,
       count: entry.count,
+      sets: entry.sets ?? 0,
       wins: entry.wins,
       losses: entry.losses,
       winRate: entry.count > 0 ? Math.round((entry.wins / entry.count) * 100) : 0,
@@ -1773,6 +1847,28 @@ router.get('/:id/stats', async (req, res) => {
         .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
     }
 
+    const headToHeadByGame = {};
+    for (const [gameId, gMap] of stats.headToHeadPlayersByGame.entries()) {
+      headToHeadByGame[gameId] = Array.from(gMap.entries())
+        .map(([opponentId, rec]) => {
+          const op = opponentData.get(opponentId);
+          const gprof = op?.games?.[gameId]
+            ?? (op?.gameId === gameId && (op.eloPoints != null || op.eloRank != null)
+              ? { eloPoints: op.eloPoints ?? null, eloRank: op.eloRank ?? null }
+              : null);
+          return {
+            ...opponentMap.get(opponentId),
+            ...rec,
+            eloPoints: gprof?.eloPoints ?? null,
+            eloRank: gprof?.eloRank ?? null,
+            winRate: rec.wins + rec.losses > 0 ? Math.round((rec.wins / (rec.wins + rec.losses)) * 100) : 0,
+          };
+        })
+        .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+    }
+
+    const topPlacementsByGame = Object.fromEntries(stats.topPlacementsByGame.entries());
+
     const monthlyActivity = Array.from(stats.monthlyActivity.values())
       .sort((a, b) => b.month.localeCompare(a.month));
 
@@ -1785,6 +1881,10 @@ router.get('/:id/stats', async (req, res) => {
     });
 
     const recordByGame = Array.from(stats.recordByGame.entries())
+      .map(([gameId, rec]) => ({ gameId, ...formatRecord(rec) }))
+      .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+
+    const recordByGameLast6Months = Array.from(stats.recordByGameLast6Months.entries())
       .map(([gameId, rec]) => ({ gameId, ...formatRecord(rec) }))
       .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
 
@@ -1829,10 +1929,13 @@ router.get('/:id/stats', async (req, res) => {
       matchupWinRates,
       opponentCharacterUsage,
       topPlacements: stats.topPlacements,
+      topPlacementsByGame,
+      headToHeadByGame,
       headToHead,
       headToHeadByType,
       monthlyActivity,
       recordByGame,
+      recordByGameLast6Months,
       recordByType,
       recordByTypeLast6Months,
       allMatchWins: stats.allMatchWins,

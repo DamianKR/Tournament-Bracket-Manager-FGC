@@ -351,6 +351,8 @@ export interface CharacterUsageEntry {
   gameId: string;
   characterId: string;
   count: number;
+  /** Number of sets/matches where this character was used (count is per-game). */
+  sets?: number;
   wins: number;
   losses: number;
   winRate: number;
@@ -372,10 +374,13 @@ export interface ParticipantStatsSummary {
   peakEloByGame: { gameId: string; points: number; rank: string; color: string }[];
   matchupWinRates: { gameId: string; characterId: string; opponentCharacterId: string; wins: number; losses: number; winRate: number; byType: Record<'tournament' | 'ranked' | 'league', { wins: number; losses: number }> }[];
   topPlacements: { top1: number; top3: number; top8: number; top16: number };
+  topPlacementsByGame?: Record<string, { top1: number; top3: number; top8: number; top16: number }>;
   headToHead: { id: string; name: string; alias: string | null; wins: number; losses: number; winRate: number }[];
   headToHeadByType: Record<'tournament' | 'ranked' | 'league', { id: string; name: string; alias: string | null; wins: number; losses: number; winRate: number }[]>;
-  monthlyActivity: { month: string; matches: number; tournaments: number; byType?: { tournament: { matches: number }; ranked: { matches: number }; league: { matches: number } } }[];
+  headToHeadByGame?: Record<string, { id: string; name: string; alias: string | null; wins: number; losses: number; winRate: number; eloPoints?: number | null; eloRank?: string | null; byType: Record<'tournament' | 'ranked' | 'league', { wins: number; losses: number }> }[]>;
+  monthlyActivity: { month: string; matches: number; tournaments: number; byType?: { tournament: { matches: number }; ranked: { matches: number }; league: { matches: number } }; byGame?: Record<string, { matches: number; tournaments: number; byType?: { tournament: { matches: number }; ranked: { matches: number }; league: { matches: number } } }> }[];
   recordByGame: { gameId: string; wins: number; losses: number; winRate: number; byType: Record<'tournament' | 'ranked' | 'league', RecordEntry> }[];
+  recordByGameLast6Months?: { gameId: string; wins: number; losses: number; winRate: number; byType: Record<'tournament' | 'ranked' | 'league', RecordEntry> }[];
   recordByType: { type: 'tournament' | 'ranked' | 'league'; wins: number; losses: number; winRate: number }[];
   recordByTypeLast6Months: { type: 'tournament' | 'ranked' | 'league'; wins: number; losses: number; winRate: number }[];
   tournamentHighlights: { tournamentId: string; name: string; gameId: string; placement: number; entrants: number; date: string }[];
@@ -404,6 +409,8 @@ export async function getParticipantStats(participantId: string): Promise<Partic
       peakEloByGame: [],
       matchupWinRates: [],
       topPlacements: { top1: 0, top3: 0, top8: 0, top16: 0 },
+      topPlacementsByGame: {},
+      headToHeadByGame: {},
       headToHead: [],
       headToHeadByType: { tournament: [], ranked: [], league: [] },
       monthlyActivity: [],

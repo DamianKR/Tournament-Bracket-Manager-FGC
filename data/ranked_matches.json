@@ -2460,5 +2460,48 @@
     ],
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-09-16T05:55:05.704Z"
+  },
+  {
+    "id": "m_1789549133881_zfx19gc",
+    "playerAId": "gp_1786387087046_wnwtadb",
+    "playerBId": "gp_1786387243524_6er0c9u",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "loserId": "gp_1786387243524_6er0c9u",
+    "type": "duel",
+    "gameId": "mk11",
+    "playerAPointsBefore": 1522,
+    "playerBPointsBefore": 1489,
+    "playerAPointsAfter": 1522,
+    "playerBPointsAfter": 1489,
+    "playerADelta": 11,
+    "playerBDelta": -11,
+    "playerARankBefore": "Diamante",
+    "playerBRankBefore": "Platino",
+    "playerARankAfter": "Diamante",
+    "playerBRankAfter": "Platino",
+    "player1Score": 3,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "sub_zero",
+        "player2Character": "dvorah"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "sub_zero",
+        "player2Character": "dvorah"
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "sub_zero",
+        "player2Character": "dvorah"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-16T08:58:53.881Z"
   }
 ]

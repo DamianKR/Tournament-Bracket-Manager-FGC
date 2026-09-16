@@ -5,7 +5,7 @@ import { GlobalParticipant } from '@/models/types';
 import { getCharacter, getGame, GAMES } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { gameBadgeStyle, gameAccent } from '@/utils/gameColor';
-import { getRankIcon, RANK_TIERS } from '@/utils/rank';
+import { getRankIcon, getRankColor, RANK_TIERS } from '@/utils/rank';
 import SectionTabs from '@/components/SectionTabs';
 import './ParticipantStatsOverview.css';
 
@@ -65,18 +65,20 @@ function ordinal(n: number) {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
-function CharacterRow({ gameId, characterId, label, winRate, count, totalPicks, totalMatches, isMain }: {
+function CharacterRow({ gameId, characterId, label, winRate, count, sets, totalPicks, totalMatches, isMain }: {
   gameId: string;
   characterId: string;
   label?: string;
   winRate: number;
   count: number;
+  /** Sets where the char was used; usage% = sets / totalMatches */
+  sets?: number;
   totalPicks: number;
   totalMatches: number;
   isMain?: boolean;
 }) {
   const ch = getCharacter(gameId, characterId);
-  const usagePercent = totalMatches > 0 ? Math.round((count / totalMatches) * 100) : 0;
+  const usagePercent = totalMatches > 0 && sets != null ? Math.round((sets / totalMatches) * 100) : 0;
   const barPercent = totalPicks > 0 ? Math.round((count / totalPicks) * 100) : 0;
   const displayName = ch?.name || label || characterId;
 
@@ -105,10 +107,16 @@ function CharacterRow({ gameId, characterId, label, winRate, count, totalPicks, 
   );
 }
 
-function H2HRow({ name, sub, wins, losses, winRate, image }: { name: string; sub?: string; wins: number; losses: number; winRate: number; image?: string }) {
+function H2HRow({ name, sub, wins, losses, winRate, image, eloRank, eloPoints }: { name: string; sub?: string; wins: number; losses: number; winRate: number; image?: string; eloRank?: string | null; eloPoints?: number | null }) {
   return (
     <div className="h2h-row">
       <div className="h2h-info">
+        {eloRank !== undefined && (
+          <span className="h2h-rank" style={{ color: getRankColor(eloRank ?? 'Sin puntos') }}>
+            <i className={getRankIcon(eloRank ?? 'Sin puntos')} />
+            <span className="h2h-rank-pts">{eloPoints != null ? eloPoints.toLocaleString() : '—'}</span>
+          </span>
+        )}
         {image && (
           <img
             src={image}
@@ -221,43 +229,60 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
 
   const selectedUsageTotal = charSource.reduce((sum, c) => sum + c.count, 0);
   const gameTotalMatches = useMemo(() => {
-    if (!gameRecord) return 0;
-    if (summaryMatchType === 'all') return gameRecord.wins + gameRecord.losses;
-    return gameRecord.byType?.[summaryMatchType]
-      ? gameRecord.byType[summaryMatchType].wins + gameRecord.byType[summaryMatchType].losses
+    const rec = charTimeRange === 'last6Months'
+      ? (stats.recordByGameLast6Months ?? []).find((g) => g.gameId === effectiveGame)
+      : gameRecord;
+    if (!rec) return 0;
+    if (summaryMatchType === 'all') return rec.wins + rec.losses;
+    return rec.byType?.[summaryMatchType]
+      ? rec.byType[summaryMatchType].wins + rec.byType[summaryMatchType].losses
       : 0;
-  }, [gameRecord, summaryMatchType]);
+  }, [gameRecord, stats.recordByGameLast6Months, effectiveGame, charTimeRange, summaryMatchType]);
   const hasCharacterData = charSource.length > 0;
 
   const gameMains = stats.mainCharactersByGame[effectiveGame] ?? null;
+  const gamePlacements = stats.topPlacementsByGame?.[effectiveGame] ?? { top1: 0, top3: 0, top8: 0, top16: 0 };
+  const gameHighlights = useMemo(
+    () => stats.tournamentHighlights.filter((h) => h.gameId === effectiveGame),
+    [stats.tournamentHighlights, effectiveGame]
+  );
 
   const summaryRecords = useMemo(() => {
-    const allTime = (() => {
-      if (summaryMatchType === 'all') {
-        return { label: t('participantProfile.stats.total'), wins: stats.allMatchWins, losses: stats.allMatchLosses, winRate: stats.allMatchWinRate };
-      }
-      const rt = stats.recordByType?.find((r) => r.type === summaryMatchType);
-      if (!rt) return { label: t(`participantProfile.stats.${summaryMatchType}`), wins: 0, losses: 0, winRate: 0 };
-      return { label: t(`participantProfile.stats.${summaryMatchType}`), ...rt };
-    })();
-    const last6 = (() => {
-      if (summaryMatchType === 'all') {
-        return { label: t('participantProfile.stats.total'), wins: stats.allMatchWinsLast6Months, losses: stats.allMatchLossesLast6Months, winRate: stats.allMatchWinRateLast6Months };
-      }
-      const rt = stats.recordByTypeLast6Months?.find((r) => r.type === summaryMatchType);
-      if (!rt) return { label: t(`participantProfile.stats.${summaryMatchType}`), wins: 0, losses: 0, winRate: 0 };
-      return { label: t(`participantProfile.stats.${summaryMatchType}`), ...rt };
-    })();
-    return { allTime, last6Months: last6 };
-  }, [summaryMatchType, stats.allMatchWins, stats.allMatchLosses, stats.allMatchWinRate, stats.allMatchWinsLast6Months, stats.allMatchLossesLast6Months, stats.allMatchWinRateLast6Months, stats.recordByType, stats.recordByTypeLast6Months, t]);
+    const pick = (rec: typeof gameRecord | null) => {
+      if (!rec) return { wins: 0, losses: 0, winRate: 0 };
+      if (summaryMatchType === 'all') return { wins: rec.wins, losses: rec.losses, winRate: rec.winRate };
+      const bt = rec.byType?.[summaryMatchType];
+      const wins = bt?.wins ?? 0;
+      const losses = bt?.losses ?? 0;
+      return { wins, losses, winRate: wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : 0 };
+    };
+    const rec6 = (stats.recordByGameLast6Months ?? []).find((g) => g.gameId === effectiveGame) ?? null;
+    return {
+      allTime: { label: t('participantProfile.stats.total'), ...pick(gameRecord) },
+      last6Months: { label: t('participantProfile.stats.last6Months'), ...pick(rec6) },
+    };
+  }, [summaryMatchType, gameRecord, stats.recordByGameLast6Months, effectiveGame, t]);
 
   const currentH2HPlayers = useMemo(() => {
-    let list = summaryMatchType === 'all' ? stats.headToHead : (stats.headToHeadByType[summaryMatchType] ?? []);
+    const byGame = stats.headToHeadByGame?.[effectiveGame] ?? [];
+    let list = byGame
+      .map((h) => {
+        if (summaryMatchType === 'all') return h;
+        const bt = h.byType?.[summaryMatchType] ?? { wins: 0, losses: 0 };
+        return {
+          ...h,
+          wins: bt.wins,
+          losses: bt.losses,
+          winRate: bt.wins + bt.losses > 0 ? Math.round((bt.wins / (bt.wins + bt.losses)) * 100) : 0,
+        };
+      })
+      .filter((h) => h.wins + h.losses > 0)
+      .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
     if (h2hPlayerFilter) {
       list = list.filter((h) => h.id === h2hPlayerFilter);
     }
     return list;
-  }, [stats.headToHead, stats.headToHeadByType, summaryMatchType, h2hPlayerFilter]);
+  }, [stats.headToHeadByGame, effectiveGame, summaryMatchType, h2hPlayerFilter]);
 
   const opponentCharacterH2H = useMemo(() => {
     const map = new Map<string, { gameId: string; characterId: string; wins: number; losses: number }>();
@@ -318,20 +343,20 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
           <div className="placements-list">
             <div className="placement-pill gold">
               <span className="placement-medal">🥇</span>
-              <span className="placement-count">{stats.topPlacements.top1}</span>
+              <span className="placement-count">{gamePlacements.top1}</span>
               <small>1st</small>
             </div>
             <div className="placement-pill silver">
               <span className="placement-medal">🥉</span>
-              <span className="placement-count">{stats.topPlacements.top3}</span>
+              <span className="placement-count">{gamePlacements.top3}</span>
               <small>Top 3</small>
             </div>
             <div className="placement-pill">
-              <span className="placement-count">{stats.topPlacements.top8}</span>
+              <span className="placement-count">{gamePlacements.top8}</span>
               <small>Top 8</small>
             </div>
             <div className="placement-pill">
-              <span className="placement-count">{stats.topPlacements.top16}</span>
+              <span className="placement-count">{gamePlacements.top16}</span>
               <small>Top 16</small>
             </div>
           </div>
@@ -339,15 +364,15 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
       </div>
 
       {/* Highlights */}
-      {stats.tournamentHighlights.length > 0 && (
+      {gameHighlights.length > 0 && (
         <div className="stats-section card highlights-section">
           <div className="stats-section-header">
             <h3>{t('participantProfile.stats.highlights', 'Highlights')}</h3>
             <span className="highlights-subtitle">{t('participantProfile.stats.allTime', 'All Time')}</span>
           </div>
           <div className="highlights-grid">
-            {stats.tournamentHighlights.map((h, i) => {
-              const prev = stats.tournamentHighlights[i + 1];
+            {gameHighlights.map((h, i) => {
+              const prev = gameHighlights[i + 1];
               const diff = prev ? prev.placement - h.placement : 0;
               const improved = diff > 0;
               return (
@@ -464,6 +489,7 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
                         characterId={c.characterId}
                         winRate={c.winRate}
                         count={c.count}
+                        sets={c.sets}
                         totalPicks={selectedUsageTotal}
                         totalMatches={gameTotalMatches}
                         isMain={c.characterId === gameMains?.id}
@@ -522,6 +548,8 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
                     wins={h.wins}
                     losses={h.losses}
                     winRate={h.winRate}
+                    eloRank={h.eloRank ?? null}
+                    eloPoints={h.eloPoints ?? null}
                   />
                 ))}
               </div>
@@ -564,7 +592,7 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
         {stats.monthlyActivity.length > 0 ? (
           <div className="activity-chart">
             {(() => {
-              const months: { month: string; matches: number; tournaments: number; byType?: typeof stats.monthlyActivity[0]['byType'] }[] = [];
+              const months: typeof stats.monthlyActivity = [];
               const now = new Date();
               for (let i = 11; i >= 0; i--) {
                 const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -572,10 +600,14 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
                 const existing = stats.monthlyActivity.find((x) => x.month === mk);
                 months.push(existing ?? { month: mk, matches: 0, tournaments: 0, byType: { tournament: { matches: 0 }, ranked: { matches: 0 }, league: { matches: 0 } } });
               }
-              const maxCount = Math.max(...months.map((x) => summaryMatchType === 'all' ? x.matches : (x.byType?.[summaryMatchType as keyof typeof x.byType]?.matches ?? 0)));
+              const monthCount = (x: typeof months[0]) =>
+                summaryMatchType === 'all'
+                  ? (x.byGame?.[effectiveGame]?.matches ?? 0)
+                  : (x.byGame?.[effectiveGame]?.byType?.[summaryMatchType as 'tournament' | 'ranked' | 'league']?.matches ?? 0);
+              const maxCount = Math.max(...months.map(monthCount));
               const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
               return months.map((m) => {
-                const count = summaryMatchType === 'all' ? m.matches : (m.byType?.[summaryMatchType as keyof typeof m.byType]?.matches ?? 0);
+                const count = monthCount(m);
                 const height = maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
                 const isCurrent = m.month === currentMonth;
                 return (

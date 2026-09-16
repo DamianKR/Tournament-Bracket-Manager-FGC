@@ -34,7 +34,7 @@ import { charsWithColorsFromGames, parseScoreString } from '@/utils/matchData';
 import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
-import { getParticipantElo, getParticipantRank, allGameProfiles } from '@/utils/participantGames';
+import { getParticipantElo, getParticipantRank, allGameProfiles, getGameProfile } from '@/utils/participantGames';
 import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
@@ -61,7 +61,7 @@ function ParticipantProfile() {
   const navigate = useNavigate();
   const { currentCommunity, allCommunities, getPath, canAdminCurrentCommunity, isCommunityAdminHere, gameAdminForHere, communityRole } = useCommunity();
   const communityId = urlCommunityId || currentCommunity?.id;
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, isAdmin, isSuperAdmin } = useAuth();
   const myParticipantIds = new Set([
     user?.participantId,
@@ -90,24 +90,26 @@ function ParticipantProfile() {
   const [resultsSubTab, setResultsSubTab] = useState<'tournaments' | 'leagues'>('tournaments');
   const [tournamentResults, setTournamentResults] = useState<TournamentResult[]>([]);
   const [loadingTournamentResults, setLoadingTournamentResults] = useState(false);
-  // Shared game selector across all non-edit tabs
-  const [profileGame, setProfileGame] = useState<string>('');
+  // Shared game selector across all non-edit tabs (persisted in ?game= so F5 keeps it)
+  const [profileGame, setProfileGame] = useState<string>(() => searchParams.get('game') ?? '');
   const [gameDropdownOpen, setGameDropdownOpen] = useState(false);
   const gameDropdownRef = useRef<HTMLDivElement>(null);
 
   const primaryGameId = useMemo(() => {
+    // Don't pick a default until the participant loads (was racing to 'ssbu')
+    if (!participant) return '';
+    // The declared primary game (set in Edit) always wins — even if it has no stats yet
+    const declared = (participant as GlobalParticipant & { primaryGameId?: string; gameId?: string }).primaryGameId
+      || participant.gameId
+      || '';
+    if (declared) return declared;
     const ids = new Set<string>();
     statsSummary?.peakEloByGame.forEach((e) => ids.add(e.gameId));
     statsSummary?.recordByGame?.forEach((r) => ids.add(r.gameId));
     statsSummary?.characterUsage.forEach((c) => ids.add(c.gameId));
     if (ids.size === 0) GAMES.forEach((g) => ids.add(g.id));
     const availableGames = GAMES.filter((g) => ids.has(g.id));
-    if (!participant || !statsSummary) return availableGames[0]?.id ?? GAMES[0]?.id ?? '';
-    const declared = (participant as GlobalParticipant & { primaryGameId?: string; gameId?: string }).primaryGameId
-      || (participant as GlobalParticipant & { primaryGameId?: string; gameId?: string }).gameId
-      || '';
-    if (declared && availableGames.some((g) => g.id === declared)) return declared;
-    return statsSummary.peakEloByGame[0]?.gameId || availableGames[0]?.id || GAMES[0]?.id || '';
+    return statsSummary?.peakEloByGame[0]?.gameId || availableGames[0]?.id || GAMES[0]?.id || '';
   }, [participant, statsSummary]);
 
   const [h2hData, setH2hData] = useState<HeadToHeadEntry[]>([]);
@@ -214,7 +216,6 @@ function ParticipantProfile() {
   useEffect(() => {
     if (!id || !communityId) return;
     (async () => {
-      let loadedParticipant: GlobalParticipant | null = null;
       try {
         // Refrescar participantes del servidor; no confiar en localStorage tras nuevas membresías
         const all = await getAllParticipantsAsync(communityId);
@@ -225,7 +226,6 @@ function ParticipantProfile() {
           getParticipantLeagueStats(id),
           getParticipantStats(id),
         ]);
-        loadedParticipant = p;
         setParticipant(p);
         setStats(computeStats(p, tournaments));
         setLeagueStats(ls);
@@ -244,18 +244,12 @@ function ParticipantProfile() {
       } catch {
         const p = getParticipant(id, communityId);
         if (!p) { setNotFound(true); return; }
-        loadedParticipant = p;
         setParticipant(p);
         setStats(computeStats(p));
         setLeagueStats({ leagues: [], totalMatches: 0, totalWins: 0, totalLosses: 0, winRate: 0 });
       }
 
-      // Load ELO ranking entry for the participant's primary game
-      const targetGameId = loadedParticipant?.gameId ?? 'ssbu';
-      getLeaderboard(communityId, targetGameId).then((board) => {
-        const entry = board.find((e) => e.id === id) ?? null;
-        setRankEntry(entry);
-      }).catch(() => {});
+      // Load duel stats
 
       // Load duel stats
       getDuelStats(id, communityId).then(dStats => {
@@ -269,6 +263,15 @@ function ParticipantProfile() {
       });
     })();
   }, [id, communityId]);
+
+  // Load ELO ranking entry for the currently selected game
+  useEffect(() => {
+    if (!id || !communityId) return;
+    const gameId = profileGame || participant?.gameId || 'ssbu';
+    getLeaderboard(communityId, gameId).then((board) => {
+      setRankEntry(board.find((e) => e.id === id) ?? null);
+    }).catch(() => setRankEntry(null));
+  }, [id, communityId, profileGame, participant?.gameId]);
 
   // Load matches when Matches tab is opened
   useEffect(() => {
@@ -637,7 +640,9 @@ function ParticipantProfile() {
   const color = avatarColor(participant.name);
   const bannerBg = `radial-gradient(ellipse at 15% 0%, color-mix(in srgb, ${color} 38%, transparent) 0%, transparent 55%),
                     linear-gradient(135deg, var(--primary-void) 0%, var(--primary-night) 45%, var(--primary-void) 100%)`;
-  const characterImg = getCharacterImageUrl(participant.gameId, participant.mainCharacterId);
+  const bannerGameId = profileGame || participant.gameId || 'ssbu';
+  const bannerCharId = getGameProfile(participant, bannerGameId)?.mainCharacterId ?? null;
+  const characterImg = getCharacterImageUrl(bannerGameId, bannerCharId);
 
   return (
     <div className="profile-page">
@@ -694,7 +699,7 @@ function ParticipantProfile() {
 
             {/* ELO Rank widget — right side of banner */}
             {(() => {
-              const gameId = participant.gameId ?? 'ssbu';
+              const gameId = profileGame || participant.gameId || 'ssbu';
               const participantElo = getParticipantElo(participant, gameId);
               const participantRank = getParticipantRank(participant, gameId);
               const hasPts = (rankEntry?.eloPoints ?? participantElo) != null;
@@ -764,7 +769,7 @@ function ParticipantProfile() {
           <div className="profile-character-render" aria-hidden="true">
             <img
               src={characterImg}
-              alt={getCharacter(participant.gameId ?? '', participant.mainCharacterId ?? '')?.name ?? 'main'}
+              alt={getCharacter(bannerGameId, bannerCharId ?? '')?.name ?? 'main'}
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
             />
           </div>
@@ -827,7 +832,15 @@ function ParticipantProfile() {
                       key={g.id}
                       className={`profile-game-option ${isActive ? 'active' : ''}`}
                       style={g.color ? { '--game-accent': g.color } as React.CSSProperties : {}}
-                      onClick={() => { setProfileGame(g.id); setGameDropdownOpen(false); }}
+                      onClick={() => {
+                        setProfileGame(g.id);
+                        setGameDropdownOpen(false);
+                        setSearchParams((prev) => {
+                          const next = new URLSearchParams(prev);
+                          next.set('game', g.id);
+                          return next;
+                        }, { replace: true });
+                      }}
                     >
                       <span className="game-badge" style={isActive
                         ? { background: '#fff', color: g.color, border: 'none' }

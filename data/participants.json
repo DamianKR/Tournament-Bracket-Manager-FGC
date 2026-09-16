@@ -25,7 +25,7 @@
       "mk11": {
         "gameId": "mk11",
         "eloRank": "Diamante",
-        "eloPoints": 1511,
+        "eloPoints": 1522,
         "mainCharacterId": "sub_zero"
       },
       "ssbu": {
@@ -38,7 +38,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-09-16T05:55:05.704Z",
+    "updatedAt": "2026-09-16T09:24:51.836Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -112,8 +112,8 @@
     "games": {
       "mk11": {
         "gameId": "mk11",
-        "eloRank": "Sin puntos",
-        "eloPoints": null,
+        "eloRank": "Platino",
+        "eloPoints": 1489,
         "mainCharacterId": "scorpion"
       },
       "ssbu": {
@@ -126,7 +126,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-09-14T18:42:46.539Z",
+    "updatedAt": "2026-09-16T08:58:53.881Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
