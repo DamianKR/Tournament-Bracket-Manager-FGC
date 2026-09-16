@@ -31,6 +31,7 @@ import {
   getEffectiveElo,
   setParticipantGameElo,
 } from '../utils/participantGames.js';
+import { validateSeriesReport } from '../utils/matchSeries.js';
 
 const router = Router();
 
@@ -41,27 +42,19 @@ function generateId(prefix = 'league') {
 }
 
 /**
- * Valida que el score "N-M" sea consistente con el winnerId:
- * - Formato "N-M" con enteros no-negativos
- * - No puede ser empate
- * - participant1 tiene el primer número, participant2 el segundo;
- *   el mayor debe corresponder al winnerId declarado
- * Devuelve el mensaje de error o null si es válido.
+ * Validates a reported league match result against the league's best-of-N
+ * format (league.gamesPerMatch): game log consistency, declared winner and
+ * score. Returns an error message or null when valid.
  */
-function validateScoreConsistency(match, winnerId, score) {
-  if (!score) return null;
-  const parts = String(score).split('-').map(s => s.trim());
-  if (parts.length !== 2) return `Invalid score format "${score}" (expected "N-M")`;
-  const [p1Score, p2Score] = parts.map(Number);
-  if (isNaN(p1Score) || isNaN(p2Score) || p1Score < 0 || p2Score < 0 || !Number.isInteger(p1Score) || !Number.isInteger(p2Score)) {
-    return `Invalid score "${score}" (expected non-negative integers "N-M")`;
-  }
-  if (p1Score === p2Score) return `Score cannot be a tie (${score})`;
-  const scoreWinnerId = p1Score > p2Score ? match.participant1Id : match.participant2Id;
-  if (scoreWinnerId !== winnerId) {
-    return `Score inconsistency: score ${score} indicates Player ${p1Score > p2Score ? 1 : 2} won, but the selected winner is Player ${winnerId === match.participant1Id ? 1 : 2}`;
-  }
-  return null;
+function validateLeagueMatchReport(match, league, { winnerId, score, games }) {
+  return validateSeriesReport({
+    games,
+    participant1Id: match.participant1Id,
+    participant2Id: match.participant2Id,
+    winnerId,
+    score,
+    gamesPerMatch: league?.gamesPerMatch,
+  });
 }
 
 async function applyLeagueMatchElo(match) {
@@ -492,8 +485,8 @@ router.post('/:id/matches/:matchId/result', requireAuth, async (req, res) => {
       match.noShowParticipantId = noShowParticipantId;
       match.winnerId = noShowParticipantId === match.participant1Id ? match.participant2Id : match.participant1Id;
     } else {
-      const scoreError = validateScoreConsistency(match, winnerId, score);
-      if (scoreError) return res.status(400).json({ error: scoreError });
+      const reportError = validateLeagueMatchReport(match, league, { winnerId, score, games });
+      if (reportError) return res.status(400).json({ error: reportError });
       match.winnerId = winnerId;
       match.score = score;
       if (games) match.games = games;
@@ -848,8 +841,8 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
     }
 
     if (!isNoShow) {
-      const scoreError = validateScoreConsistency(match, winnerId, score);
-      if (scoreError) return res.status(400).json({ error: scoreError });
+      const reportError = validateLeagueMatchReport(match, league, { winnerId, score, games });
+      if (reportError) return res.status(400).json({ error: reportError });
     }
 
     const reporterId = participantIdFor(req.user, league.communityId);
@@ -942,8 +935,8 @@ router.post('/:id/matches/:matchId/resolve', requireAuth, requireAdmin, async (r
 
     // Validate BEFORE mutating the match
     if (!isNoShow) {
-      const scoreError = validateScoreConsistency(match, winnerId, score);
-      if (scoreError) return res.status(400).json({ error: scoreError });
+      const reportError = validateLeagueMatchReport(match, leagueForResolve, { winnerId, score, games });
+      if (reportError) return res.status(400).json({ error: reportError });
     }
 
     match.winnerId = winnerId;

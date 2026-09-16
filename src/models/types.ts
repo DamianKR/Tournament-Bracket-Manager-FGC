@@ -27,6 +27,7 @@ export type MatchStatus = 'pending' | 'in_progress' | 'completed';
 export type TeamSize = 1 | 2 | 3 | 4 | 5;
 export type SeedingMode = 'none' | 'full' | 'partial';
 export type PartialSeedCount = 4 | 8 | 16;
+export type PointsDepth = 8 | 16 | 32;
 
 // Representa un jugador individual dentro de un equipo
 export interface TeamMember {
@@ -94,6 +95,7 @@ export interface Tournament {
   partialSeedCount?: PartialSeedCount; // If seedingMode is 'partial', how many top seeds
   bracketSeeded?: boolean;      // True if applyBracketSeeding was applied (participants in bracket order)
   givesPoints?: boolean;        // Whether this tournament awards ranking/ELO points on completion
+  pointsDepth?: PointsDepth;    // How deep placement payouts go: 8, 16 or 32 (default 8)
   participants: Participant[];
   bracket: Bracket | null;
   championId: string | null;

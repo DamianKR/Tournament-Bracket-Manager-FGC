@@ -53,7 +53,9 @@ function settingsKey(communityId: string): string {
 function lsReadSettings(communityId: string = DEFAULT_COMMUNITY_ID): DuelSettings {
   try {
     const raw = localStorage.getItem(settingsKey(communityId));
-    return raw ? JSON.parse(raw) : { ...DEFAULT_DUEL_SETTINGS, communityId };
+    return raw
+      ? { ...DEFAULT_DUEL_SETTINGS, ...JSON.parse(raw), communityId }
+      : { ...DEFAULT_DUEL_SETTINGS, communityId };
   } catch {
     return { ...DEFAULT_DUEL_SETTINGS, communityId };
   }
@@ -85,7 +87,7 @@ export async function getDuelSettingsAsync(communityId: string = DEFAULT_COMMUNI
       const query = `?communityId=${encodeURIComponent(communityId)}`;
       const res = await fetch(`${API_BASE}/settings${query}`);
       if (res.ok) {
-        const data = await res.json();
+        const data = { ...DEFAULT_DUEL_SETTINGS, ...(await res.json()), communityId };
         lsWriteSettings(communityId, data);
         return data;
       }

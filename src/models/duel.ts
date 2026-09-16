@@ -18,6 +18,7 @@ export interface DuelSettings {
   weeklyResetMinute: number; // 0-59, default 0
   mandatoryDuelsEnabled: boolean; // Allow mandatory duel challenges
   mandatoryDuelsPerWeek: number; // Max mandatory duels per challenger per week (default 1)
+  gamesPerMatch: number; // Series length: 3 (Bo3), 5 (Bo5), 7 (Bo7) or 9 (Bo9). Default: 3
 }
 
 export const DEFAULT_DUEL_SETTINGS: DuelSettings = {
@@ -30,6 +31,7 @@ export const DEFAULT_DUEL_SETTINGS: DuelSettings = {
   weeklyResetMinute: 0,
   mandatoryDuelsEnabled: true,
   mandatoryDuelsPerWeek: 1,
+  gamesPerMatch: 3,
 };
 
 export type DuelChallengeStatus = 'pending' | 'accepted' | 'completed' | 'expired' | 'declined' | 'pending_review';

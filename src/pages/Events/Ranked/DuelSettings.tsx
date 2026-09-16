@@ -112,6 +112,25 @@ function DuelSettings({ settings, onUpdate }: DuelSettingsProps) {
               </div>
 
               <div className="form-group">
+                <label htmlFor="gamesPerMatch">{t('ranked.duelInfo.gamesPerMatch')}</label>
+                <select
+                  id="gamesPerMatch"
+                  className="form-control"
+                  value={localSettings.gamesPerMatch ?? 3}
+                  onChange={e => setLocalSettings({ ...localSettings, gamesPerMatch: parseInt(e.target.value) || 3 })}
+                >
+                  {[3, 5, 7, 9].map((n) => (
+                    <option key={n} value={n}>
+                      {t('ranked.duelInfo.bestOf', { count: n })}
+                    </option>
+                  ))}
+                </select>
+                <p className="form-help">
+                  {t('ranked.duelInfo.gamesPerMatchHelp', { wins: Math.ceil((localSettings.gamesPerMatch ?? 3) / 2) })}
+                </p>
+              </div>
+
+              <div className="form-group">
                 <div className="form-check">
                   <input
                     id="mandatoryEnabled"

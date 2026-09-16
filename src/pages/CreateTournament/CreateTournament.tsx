@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { TournamentMode, TournamentType, GlobalParticipant, TeamSize, SeedingMode, PartialSeedCount } from '@/models/types';
+import { TournamentMode, TournamentType, GlobalParticipant, TeamSize, SeedingMode, PartialSeedCount, PointsDepth } from '@/models/types';
 import { GAMES } from '@/data/games';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import {
@@ -46,6 +46,7 @@ function CreateTournament() {
   const [seedingMode, setSeedingMode] = useState<SeedingMode>('none');
   const [partialSeedCount, setPartialSeedCount] = useState<PartialSeedCount>(8);
   const [givesPoints, setGivesPoints] = useState(true);
+  const [pointsDepth, setPointsDepth] = useState<PointsDepth>(8);
   const [registrationDeadline, setRegistrationDeadline] = useState<string>('');
   const [gameId, setGameId] = useState<string>(creatableGames[0]?.id ?? GAMES[0]?.id ?? 'ssbu');
   const [viewMode, setViewMode] = useState<ViewMode>('participants');
@@ -95,6 +96,7 @@ function CreateTournament() {
       setType(tournament.type || 'singles');
       setTeamSize(tournament.teamSize || 2);
       setGivesPoints(tournament.givesPoints !== false);
+      setPointsDepth(tournament.pointsDepth ?? 8);
       setGameId(tournament.gameId ?? GAMES[0]?.id ?? 'ssbu');
       setParticipants(tournament.participants);
       setIsCreated(true);
@@ -178,7 +180,8 @@ function CreateTournament() {
         givesPoints,
         currentCommunity?.id ?? DEFAULT_COMMUNITY_ID,
         mode === 'manual' ? manualMode : undefined,
-        registrationDeadline || undefined
+        registrationDeadline || undefined,
+        pointsDepth
       );
       setTournamentId(tournament.id);
       setIsCreated(true);
@@ -463,6 +466,26 @@ function CreateTournament() {
                     ? t('tournament.create.pointsHintYes')
                     : t('tournament.create.pointsHintNo')}
                 </p>
+                {givesPoints && (
+                  <div className="mt-2">
+                    <label htmlFor="pointsDepth" className="text-sm">{t('tournament.create.pointsDepthLabel')}</label>
+                    <select
+                      id="pointsDepth"
+                      className="w-full"
+                      value={pointsDepth}
+                      onChange={(e) => setPointsDepth(Number(e.target.value) as PointsDepth)}
+                    >
+                      {[8, 16, 32].map((n) => (
+                        <option key={n} value={n}>
+                          {t('tournament.create.pointsDepthOption', { count: n })}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-secondary text-sm mt-1">
+                      {t('tournament.create.pointsDepthHint')}
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="form-group">

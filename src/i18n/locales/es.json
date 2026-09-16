@@ -371,6 +371,9 @@
       "allowMandatoryDuelsHelp": "Si se desactiva, los jugadores no pueden crear desafíos obligatorios.",
       "mandatoryPerWeek": "Duelos obligatorios por semana",
       "mandatoryPerWeekHelp": "Número de duelos obligatorios que un jugador puede crear por semana. 0 para ilimitado (no recomendado).",
+      "gamesPerMatch": "Juegos por duelo",
+      "bestOf": "Best of {{count}}",
+      "gamesPerMatchHelp": "Formato de los duelos: el primero en ganar {{wins}} juegos gana el duelo.",
       "cancel": "Cancelar",
       "saveSettings": "Guardar configuración",
       "record": {
@@ -418,6 +421,15 @@
         "vs": "vs"
       }
     }
+  },
+  "matchValidation": {
+    "formatHint": "Best of {{count}} — el primero en ganar {{wins}} juegos gana la serie.",
+    "seriesComplete": "Serie completada — el resultado ya está decidido.",
+    "empty": "Debes registrar al menos un juego.",
+    "invalidWinner": "El juego {{game}} tiene un ganador inválido.",
+    "incomplete": "Serie incompleta: el ganador debe ganar {{required}} juegos en un Best of {{bestOf}} (resultado actual: {{score}}).",
+    "tooManyWins": "Resultado inválido: en un Best of {{bestOf}} nadie puede ganar más de {{required}} juegos.",
+    "trailingGame": "La serie ya estaba decidida antes del juego {{game}} — elimina los juegos sobrantes."
   },
   "history": {
     "title": "Historial de partidas",
@@ -917,8 +929,11 @@
       "manualModeSingle": "Posiciones Simple Eliminación",
       "manualModeSingleDesc": "1, 2, 4, 4, 8, 8, 8, 8, 16, 16, 16, 16...",
       "pointsCheckbox": "Otorgar puntos de ranking al finalizar",
-      "pointsHintYes": "Los top 8 ganarán puntos ELO cuando el torneo termine",
+      "pointsHintYes": "Las mejores posiciones ganarán puntos ELO cuando el torneo termine",
       "pointsHintNo": "No se otorgarán puntos ELO; los resultados se guardan solo para el historial",
+      "pointsDepthLabel": "Reparto de puntos",
+      "pointsDepthOption": "Hasta el top {{count}}",
+      "pointsDepthHint": "Hasta qué posición se otorgan puntos ELO. El bracket solo paga las posiciones que realmente existan.",
       "seedingLabel": "Seeding",
       "seedingNone": "Manual (orden actual)",
       "seedingFull": "Seeding por ranking completo",

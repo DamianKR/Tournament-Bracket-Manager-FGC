@@ -144,34 +144,44 @@ export function calculateElo(rA, rB, winner) {
 // ── Tournament placement points ───────────────────────────────────────────
 
 /**
- * Multipliers by placement — only top 8 receive points.
+ * Multipliers by placement — how deep the payout goes is configured per
+ * tournament via `pointsDepth` (8, 16 or 32).
  * Formula: points = round(K × multiplier)
  *
- * 1st  × 3.0  — champion
- * 2nd  × 2.0  — finalist
- * 3rd  × 1.5  — 3rd place
- * 4th  × 1.0  — 4th place (equivalent to one normal match win)
- * 5-6  × 0.6  — top 6
- * 7-8  × 0.3  — top 8 (symbolic)
+ * 1st    × 3.0  — champion
+ * 2nd    × 2.2  — finalist
+ * 3rd    × 1.8  — 3rd place
+ * 4th    × 1.4  — 4th place
+ * 5-6    × 0.8  — top 6
+ * 7-8    × 0.3  — top 8
+ * 9-16   × 0.1  — top 16 (residual)
+ * 17-32  × 0.04 — top 32 (testimonial; Ultimate/Legend earn 0)
  */
 const PLACEMENT_MULTIPLIERS = [
-  { positions: [1],       multiplier: 3.0 },
-  { positions: [2],       multiplier: 2.0 },
-  { positions: [3],       multiplier: 1.5 },
-  { positions: [4],       multiplier: 1.0 },
-  { positions: [5, 6],    multiplier: 0.6 },
-  { positions: [7, 8],    multiplier: 0.3 },
+  { positions: [1],                                                     multiplier: 3.0 },
+  { positions: [2],                                                     multiplier: 2.2 },
+  { positions: [3],                                                     multiplier: 1.8 },
+  { positions: [4],                                                     multiplier: 1.4 },
+  { positions: [5, 6],                                                  multiplier: 0.8 },
+  { positions: [7, 8],                                                  multiplier: 0.3 },
+  { positions: [9, 10, 11, 12, 13, 14, 15, 16],                         multiplier: 0.1 },
+  { positions: [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], multiplier: 0.04 },
 ];
+
+/** Valid values for a tournament's payout depth. */
+export const POINTS_DEPTHS = [8, 16, 32];
 
 /**
  * Returns the ELO points earned for a tournament placement.
- * Returns 0 for positions outside top 8.
+ * Returns 0 for positions deeper than the tournament's payout depth.
  *
  * @param {number} position    - Final placement (1 = winner)
  * @param {number} eloPoints   - Player's current ELO (determines their K)
+ * @param {number} [depth]     - Payout depth: 8, 16 or 32 (default 8)
  * @returns {number}           - Points to add (always >= 0)
  */
-export function getTournamentPoints(position, eloPoints) {
+export function getTournamentPoints(position, eloPoints, depth = 8) {
+  if (position > depth) return 0;
   const entry = PLACEMENT_MULTIPLIERS.find((e) => e.positions.includes(position));
   if (!entry) return 0;
   const K = getKFactor(eloPoints);

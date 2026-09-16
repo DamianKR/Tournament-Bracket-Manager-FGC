@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
 import type { MatchGame } from '@/models/rankedMatch';
 import GameLogEditor from '@/components/GameLogEditor/GameLogEditor';
+import { validateSeriesGames } from '@/utils/matchSeries';
 import { getGame } from '@/data/games';
 
 import { useCommunity } from '@/contexts/CommunityContext';
@@ -40,7 +41,6 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
   const score1 = games.filter(g => g.winnerId === match.participant1Id).length;
   const score2 = games.filter(g => g.winnerId === match.participant2Id).length;
   const winnerId = score1 > score2 ? match.participant1Id : score2 > score1 ? match.participant2Id : '';
-  const winScore = Math.ceil(league.gamesPerMatch / 2);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -62,15 +62,16 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
 
     if (!isNoShow) {
       if (games.length === 0) {
-        setError(t('league.reportMatch.errors.noGames', { defaultValue: 'Debes registrar al menos un game.' }));
+        setError(t('matchValidation.empty'));
+        return;
+      }
+      const seriesError = validateSeriesGames(games, match.participant1Id, match.participant2Id, league.gamesPerMatch);
+      if (seriesError) {
+        setError(t(`matchValidation.${seriesError.code}`, seriesError));
         return;
       }
       if (!winnerId) {
-        setError(t('league.reportMatch.errors.noWinner', { defaultValue: 'Debe haber un ganador.' }));
-        return;
-      }
-      if (score1 < winScore && score2 < winScore) {
-        setError(t('league.reportMatch.errors.winThreshold', { count: winScore, total: league.gamesPerMatch }));
+        setError(t('matchValidation.empty'));
         return;
       }
     }
@@ -201,6 +202,7 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
               playerBName={p2Name}
               gameId={league.gameId}
               characters={getGame(league.gameId)?.characters || []}
+              gamesPerMatch={league.gamesPerMatch}
             />
           )}
 

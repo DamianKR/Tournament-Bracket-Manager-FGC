@@ -9,5 +9,19 @@
     "mandatoryDuelsEnabled": true,
     "mandatoryDuelsPerWeek": 1,
     "challengeExpirationDays": 7
+  },
+  {
+    "id": "community_fgc_santa_clara",
+    "communityId": "community_fgc_santa_clara",
+    "maxChallengesPerWeek": 10,
+    "eloRestriction": 300,
+    "challengeExpirationDays": 7,
+    "gamesPerMatch": 3,
+    "weeklyResetDay": 1,
+    "weeklyResetHour": 0,
+    "weeklyResetMinute": 0,
+    "mandatoryDuelsEnabled": true,
+    "mandatoryDuelsPerWeek": 1,
+    "updatedAt": "2026-09-16T05:25:48.760Z"
   }
 ]

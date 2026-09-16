@@ -52,10 +52,12 @@ export async function applyTournamentElo(tournament) {
 
   const applied = [];
   const gameId = tournament.gameId || 'ssbu';
+  // Payout depth is configured per tournament (8/16/32); default top 8.
+  const pointsDepth = [8, 16, 32].includes(tournament.pointsDepth) ? tournament.pointsDepth : 8;
 
   for (const tp of tournament.participants || []) {
     const position = tp.finalPosition;
-    if (!position || position > 8) continue;
+    if (!position || position > pointsDepth) continue;
 
     const teamMembers = tp.members && Array.isArray(tp.members) ? tp.members : [];
 
@@ -66,7 +68,7 @@ export async function applyTournamentElo(tournament) {
         if (!gp) continue;
 
         const ptsBefore = getParticipantEffectiveElo(gp, gameId);
-        const baseEarned = getTournamentPoints(position, ptsBefore);
+        const baseEarned = getTournamentPoints(position, ptsBefore, pointsDepth);
         if (baseEarned <= 0) continue;
 
         const earned = Math.round(baseEarned / teamMembers.length);
@@ -93,7 +95,7 @@ export async function applyTournamentElo(tournament) {
       if (!gp) continue;
 
       const ptsBefore = getParticipantEffectiveElo(gp, gameId);
-      const earned = getTournamentPoints(position, ptsBefore);
+      const earned = getTournamentPoints(position, ptsBefore, pointsDepth);
       if (earned <= 0) continue;
 
       const ptsAfter = ptsBefore + earned;

@@ -371,6 +371,9 @@
       "allowMandatoryDuelsHelp": "If disabled, players cannot create mandatory challenges.",
       "mandatoryPerWeek": "Mandatory Duels Per Week",
       "mandatoryPerWeekHelp": "Number of mandatory duels a player can create per week. Set to 0 to allow unlimited (not recommended).",
+      "gamesPerMatch": "Games per Duel",
+      "bestOf": "Best of {{count}}",
+      "gamesPerMatchHelp": "Duel format: the first player to win {{wins}} games wins the duel.",
       "cancel": "Cancel",
       "saveSettings": "Save Settings",
       "record": {
@@ -418,6 +421,15 @@
         "vs": "vs"
       }
     }
+  },
+  "matchValidation": {
+    "formatHint": "Best of {{count}} — the first player to win {{wins}} games takes the series.",
+    "seriesComplete": "Series complete — the result is already decided.",
+    "empty": "You must record at least one game.",
+    "invalidWinner": "Game {{game}} has an invalid winner.",
+    "incomplete": "Incomplete series: the winner must win {{required}} games in a Best of {{bestOf}} (current result: {{score}}).",
+    "tooManyWins": "Invalid result: in a Best of {{bestOf}} no player can win more than {{required}} games.",
+    "trailingGame": "The series was already decided before game {{game}} — remove the extra games."
   },
   "history": {
     "title": "Match History",
@@ -917,8 +929,11 @@
       "manualModeSingle": "Single Elimination Standings",
       "manualModeSingleDesc": "1, 2, 4, 4, 8, 8, 8, 8, 16, 16, 16, 16...",
       "pointsCheckbox": "Award ranking points on completion",
-      "pointsHintYes": "Top 8 placements will earn ELO points when the tournament ends",
+      "pointsHintYes": "Top placements will earn ELO points when the tournament ends",
       "pointsHintNo": "No ELO points will be awarded; results are recorded for history only",
+      "pointsDepthLabel": "Points payout",
+      "pointsDepthOption": "Up to top {{count}}",
+      "pointsDepthHint": "How deep placements earn ELO points. The bracket only pays positions that actually exist.",
       "seedingLabel": "Seeding",
       "seedingNone": "Manual (current order)",
       "seedingFull": "Full ranking seeding",

@@ -13,7 +13,9 @@
  */
 
 import { Router } from 'express';
-import { participants, rankedMatches } from '../db/collections.js';
+import { participants, rankedMatches, duelSettings } from '../db/collections.js';
+import { duelSettingsShape } from '../models/duel.js';
+import { validateSeriesReport } from '../utils/matchSeries.js';
 import { calculateElo, getRankName, applyLegendTier, RANK_TIERS } from '../utils/eloEngine.js';
 import {
   migrateParticipantGames,
@@ -158,6 +160,30 @@ router.post('/match', requireAuth, async (req, res) => {
     const isMatchPlayer = myPid === playerAId || myPid === playerBId;
     if (!isMatchPlayer && !canAdminGame(req.user, communityId, matchGameId)) {
       return res.status(403).json({ error: 'Only a match participant or an admin of this game can record the result' });
+    }
+
+    // Validate the game log against the community's duel series format
+    // (best-of-N). Only enforced when a game log is submitted — legacy
+    // score-only records stay valid.
+    if (Array.isArray(req.body.games) && req.body.games.length > 0) {
+      const allSettings = await duelSettings.getAll();
+      const settings =
+        allSettings.find(s => s.communityId === communityId) ||
+        allSettings.find(s => s.id === 'default') ||
+        duelSettingsShape(communityId);
+      const score =
+        req.body.player1Score !== undefined && req.body.player2Score !== undefined
+          ? `${req.body.player1Score}-${req.body.player2Score}`
+          : undefined;
+      const seriesError = validateSeriesReport({
+        games: req.body.games,
+        participant1Id: playerAId,
+        participant2Id: playerBId,
+        winnerId,
+        score,
+        gamesPerMatch: settings.gamesPerMatch,
+      });
+      if (seriesError) return res.status(400).json({ error: seriesError });
     }
 
     const pA = normalizeParticipant(rawA);

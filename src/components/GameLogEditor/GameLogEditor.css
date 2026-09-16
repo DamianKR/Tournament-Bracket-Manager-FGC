@@ -95,6 +95,19 @@
   color: var(--primary-color);
 }
 
+.game-log-editor .game-log-format-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.game-log-editor .game-log-complete-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
 @media (max-width: 600px) {
   .game-log-editor .game-log-row {
     flex-wrap: wrap;

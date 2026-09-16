@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { MatchGame } from '@/models/rankedMatch';
+import { isSeriesComplete, requiredWinsFor } from '@/utils/matchSeries';
 import CharacterDropdown from '@/components/CharacterDropdown/CharacterDropdown';
 import type { Character } from '@/data/games';
 import './GameLogEditor.css';
@@ -13,10 +14,15 @@ interface Props {
   playerBName: string;
   gameId: string;
   characters: Character[];
+  /** Series length (3, 5, 7, 9). When set, extra games can't be added once the series is decided. */
+  gamesPerMatch?: number;
 }
 
-function GameLogEditor({ games, onChange, playerAId, playerBId, playerAName, playerBName, gameId, characters }: Props) {
+function GameLogEditor({ games, onChange, playerAId, playerBId, playerAName, playerBName, gameId, characters, gamesPerMatch }: Props) {
   const { t } = useTranslation();
+
+  const seriesDone = gamesPerMatch != null && isSeriesComplete(games, gamesPerMatch);
+  const requiredWins = gamesPerMatch != null ? requiredWinsFor(gamesPerMatch) : null;
 
   const addGame = () => {
     const next = [...games, {
@@ -75,9 +81,21 @@ function GameLogEditor({ games, onChange, playerAId, playerBId, playerAName, pla
           </div>
         </div>
       ))}
-      <button className="add-game-btn" onClick={addGame}>
-        <i className="fas fa-plus" /> {t('tournament.matchResult.addGame')}
-      </button>
+      {requiredWins != null && (
+        <p className="game-log-format-hint">
+          {t('matchValidation.formatHint', { count: gamesPerMatch, wins: requiredWins })}
+        </p>
+      )}
+      {!seriesDone && (
+        <button className="add-game-btn" onClick={addGame}>
+          <i className="fas fa-plus" /> {t('tournament.matchResult.addGame')}
+        </button>
+      )}
+      {seriesDone && (
+        <p className="game-log-complete-hint">
+          {t('matchValidation.seriesComplete')}
+        </p>
+      )}
     </div>
   );
 }

@@ -8245,7 +8245,7 @@
     "type": "league_week_start",
     "title": "League Week 3 started",
     "message": "Week 3 of Testing smash has started. Your opponents this week: Pal, Neuthor, Virutica JR.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-16T01:40:41.754Z",
     "scheduledAt": "2026-09-16T01:40:41.754Z",
     "data": {
@@ -8256,7 +8256,8 @@
         "gp_1787069564643_5pithds",
         "gp_1787176804167_dgzm0z9"
       ]
-    }
+    },
+    "readAt": "2026-09-16T05:24:38.569Z"
   },
   {
     "id": "notif_1789522841758_7c4pd64gw",
@@ -9091,7 +9092,7 @@
     "type": "league_week_start",
     "title": "League Week 3 started",
     "message": "Week 3 of Timing League Creation has started. Your opponents this week: Pokred, Pal.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-16T01:40:41.906Z",
     "scheduledAt": "2026-09-16T01:40:41.906Z",
     "data": {
@@ -9101,7 +9102,8 @@
         "gp_1787202786652_4bme4ih",
         "gp_1786399934148_stq7jpb"
       ]
-    }
+    },
+    "readAt": "2026-09-16T05:24:38.572Z"
   },
   {
     "id": "notif_1789522841909_ydgin4at3",

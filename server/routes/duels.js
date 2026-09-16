@@ -67,6 +67,9 @@ router.put('/settings', requireAuth, requireAdmin, async (req, res) => {
       communityId,
       updatedAt: new Date().toISOString(),
     };
+    if (![3, 5, 7, 9].includes(updated.gamesPerMatch)) {
+      updated.gamesPerMatch = 3;
+    }
     await duelSettings.upsert(updated);
     res.json(updated);
   } catch (err) {

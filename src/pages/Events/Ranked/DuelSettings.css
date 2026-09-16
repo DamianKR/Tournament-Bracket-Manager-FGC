@@ -39,3 +39,7 @@
   font-size: 0.875rem;
   font-weight: 400;
 }
+
+.duel-settings-modal select.form-control {
+  cursor: pointer;
+}

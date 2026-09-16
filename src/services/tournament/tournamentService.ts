@@ -1,4 +1,4 @@
-import { Tournament, Participant, TournamentMode, TournamentType, TeamSize, SeedingMode, PartialSeedCount } from '@/models/types';
+import { Tournament, Participant, TournamentMode, TournamentType, TeamSize, SeedingMode, PartialSeedCount, PointsDepth } from '@/models/types';
 import type { MatchGame } from '@/models/rankedMatch';
 import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
@@ -27,7 +27,8 @@ export async function createTournament(
   givesPoints: boolean = true,
   communityId: string = DEFAULT_COMMUNITY_ID,
   manualMode?: 'single' | 'double',
-  registrationDeadline?: string
+  registrationDeadline?: string,
+  pointsDepth: PointsDepth = 8
 ): Promise<Tournament> {
   const tournament: Tournament = {
     id: generateId(),
@@ -37,6 +38,7 @@ export async function createTournament(
     status: 'setup',
     gameId,
     givesPoints,
+    pointsDepth,
     seedingMode: seedingMode || 'none',
     participants: [],
     bracket: null,

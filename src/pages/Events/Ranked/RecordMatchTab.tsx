@@ -11,11 +11,12 @@ import {
   type MatchResult,
 } from '@/services/ranking/rankingService';
 import { getParticipantElo, getParticipantRank } from '@/utils/participantGames';
-import { getDuelChallenge, reportDuelResult, resolveConflict, completeDuelChallenge } from '@/services/duels/duelService';
+import { getDuelChallenge, reportDuelResult, resolveConflict, completeDuelChallenge, getDuelSettingsAsync } from '@/services/duels/duelService';
 import { DuelChallenge } from '@/models/duel';
 import type { MatchGame } from '@/models/rankedMatch';
 import { getGame } from '@/data/games';
 import GameLogEditor from '@/components/GameLogEditor/GameLogEditor';
+import { validateSeriesGames } from '@/utils/matchSeries';
 import './RecordMatchTab.css';
 
 const MAX_EVIDENCE_SIZE_MB = 4;
@@ -52,6 +53,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
   const [lastResult, setLastResult] = useState<MatchResult | null>(null);
   const [evidenceError, setEvidenceError] = useState('');
   const [games, setGames] = useState<MatchGame[]>([]);
+  const [gamesPerMatch, setGamesPerMatch] = useState<number>(3);
 
   const scoreA = games.filter(g => g.winnerId === playerAId).length;
   const scoreB = games.filter(g => g.winnerId === playerBId).length;
@@ -66,7 +68,16 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
     const cached = getAllParticipants(communityId);
     if (cached.length) setAllParticipants(cached);
     getAllParticipantsAsync(communityId).then((data) => { if (data.length) setAllParticipants(data); });
+    getDuelSettingsAsync(communityId)
+      .then(s => setGamesPerMatch(s.gamesPerMatch ?? 3))
+      .catch(() => {});
   }, [communityId]);
+
+  /** Returns a translated error if the game log isn't a valid completed series. */
+  function seriesError(): string | null {
+    const err = validateSeriesGames(games, playerAId, playerBId, gamesPerMatch);
+    return err ? t(`matchValidation.${err.code}`, err) : null;
+  }
 
   // Auto-populate from selected challenge
   useEffect(() => {
@@ -100,6 +111,8 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
   async function handleReportResult() {
     if (!challenge) return;
     if (!winnerId) { setRecordError(t('ranked.duelInfo.record.selectWon')); return; }
+    const sErr = seriesError();
+    if (sErr) { setRecordError(sErr); return; }
 
     setRecording(true);
     setRecordError('');
@@ -170,6 +183,8 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
   async function handleAdminResolve() {
     if (!challenge || !isChallengeGameAdmin) return;
     if (!winnerId) { setRecordError(t('ranked.duelInfo.record.selectWon')); return; }
+    const sErr = seriesError();
+    if (sErr) { setRecordError(sErr); return; }
 
     setRecording(true);
     setRecordError('');
@@ -329,6 +344,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
                       playerBName={pName(playerBId)}
                       gameId={challenge.gameId}
                       characters={getGame(challenge.gameId)?.characters ?? []}
+                      gamesPerMatch={gamesPerMatch}
                     />
                   </div>
                 )}
@@ -479,6 +495,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
   const [recordError, setRecordError] = useState('');
   const [lastResult, setLastResult] = useState<MatchResult | null>(null);
   const [games, setGames] = useState<MatchGame[]>([]);
+  const [gamesPerMatch, setGamesPerMatch] = useState<number>(3);
 
   const scoreA = games.filter(g => g.winnerId === playerAId).length;
   const scoreB = games.filter(g => g.winnerId === playerBId).length;
@@ -486,10 +503,19 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
 
   const participantMap = new Map(allParticipants.map((p) => [p.id, p]));
 
+  useEffect(() => {
+    if (!communityId) return;
+    getDuelSettingsAsync(communityId)
+      .then(s => setGamesPerMatch(s.gamesPerMatch ?? 3))
+      .catch(() => {});
+  }, [communityId]);
+
   async function handleRecord() {
     if (!playerAId || !playerBId) { setRecordError(t('ranked.duelInfo.record.selectBoth')); return; }
     if (playerAId === playerBId) { setRecordError(t('ranked.duelInfo.record.sameParticipant')); return; }
     if (!winnerId) { setRecordError(t('ranked.duelInfo.record.selectWon')); return; }
+    const sErr = validateSeriesGames(games, playerAId, playerBId, gamesPerMatch);
+    if (sErr) { setRecordError(t(`matchValidation.${sErr.code}`, sErr)); return; }
     if (!canAdminGame(gameId)) { setRecordError(t('participantProfile.edit.gameAdminNotYourGame', { defaultValue: 'You are not admin of this game' })); return; }
 
     setRecording(true);
@@ -650,6 +676,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
                       playerBName={pName(playerBId)}
                       gameId={gameId}
                       characters={getGame(gameId)?.characters ?? []}
+                      gamesPerMatch={gamesPerMatch}
                     />
                   </div>
                 )}

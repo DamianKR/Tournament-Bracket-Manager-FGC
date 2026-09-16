@@ -63,6 +63,7 @@ export function validateDuelChallenge(obj) {
  * @property {number} maxChallengesPerWeek
  * @property {number} eloRestriction
  * @property {number} challengeExpirationDays
+ * @property {number} gamesPerMatch - series length: 3 (Bo3), 5 (Bo5), 7 (Bo7) or 9 (Bo9)
  */
 
 export function duelSettingsShape(communityId = 'community_fgc_santa_clara') {
@@ -72,6 +73,7 @@ export function duelSettingsShape(communityId = 'community_fgc_santa_clara') {
     maxChallengesPerWeek: 10,
     eloRestriction: 300,
     challengeExpirationDays: 7,
+    gamesPerMatch: 3,
     weeklyResetDay: 1,    // Monday
     weeklyResetHour: 0,   // Midnight
     weeklyResetMinute: 0,

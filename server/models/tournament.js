@@ -52,6 +52,7 @@
  * @property {string|null}      [gameId]    - Game identifier (e.g., 'ssbu')
  * @property {TeamSize}         [teamSize]  - Only for team tournaments: 2, 3, 4, or 5
  * @property {boolean}          [givesPoints] - Whether this tournament awards ranking/ELO points
+ * @property {8|16|32}          [pointsDepth] - How deep placement payouts go (default 8)
  * @property {TournamentParticipant[]} participants
  * @property {Bracket|null}     bracket
  * @property {string|null}      championId
@@ -79,6 +80,7 @@ export function tournamentShape(id, name, mode, type = 'singles', teamSize, comm
     status: 'setup',
     gameId: null,
     givesPoints: true,
+    pointsDepth: 8,
     participants: [],
     bracket: null,
     championId: null,
@@ -122,6 +124,9 @@ export function validateTournament(obj) {
   // communityId is required for new tournaments but optional for backward compatibility
   if (obj.communityId !== undefined && typeof obj.communityId !== 'string') {
     errors.push('Invalid communityId');
+  }
+  if (obj.pointsDepth !== undefined && ![8, 16, 32].includes(obj.pointsDepth)) {
+    errors.push('Invalid pointsDepth (must be 8, 16 or 32)');
   }
 
   return { valid: errors.length === 0, errors };
