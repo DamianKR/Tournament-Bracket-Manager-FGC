@@ -143,6 +143,7 @@ function ParticipantProfile() {
   const [editAlias, setEditAlias] = useState('');
   const [editGameIds, setEditGameIds] = useState<string[]>([]);
   const [editGameMainChars, setEditGameMainChars] = useState<Record<string, string | null>>({});
+  const [editGameAvailability, setEditGameAvailability] = useState<Record<string, boolean>>({});
   const [editPrimaryGameId, setEditPrimaryGameId] = useState<string | null>(null);
   const [editPhone, setEditPhone] = useState('');
   const [saving, setSaving] = useState(false);
@@ -235,10 +236,13 @@ function ParticipantProfile() {
         const games = Object.keys(p.games || {});
         setEditGameIds(games.length > 0 ? games : (p.gameId ? [p.gameId] : []));
         const mains: Record<string, string | null> = {};
+        const avail: Record<string, boolean> = {};
         for (const [g, prof] of Object.entries(p.games || {})) {
           mains[g] = prof.mainCharacterId ?? null;
+          avail[g] = prof.available !== false; // default true
         }
         setEditGameMainChars(mains);
+        setEditGameAvailability(avail);
         setEditPrimaryGameId(p.gameId ?? (games[0] ?? null));
         setEditPhone(p.phoneNumber ?? '');
       } catch {
@@ -485,6 +489,7 @@ function ParticipantProfile() {
         // Un admin scopenado no puede cambiar el default game del participante
         ...(!isScopedAdmin ? { primaryGameId: editPrimaryGameId } : {}),
         gameMainCharacters: editGameMainChars,
+        gameAvailability: editGameAvailability,
         phoneNumber: editPhone || null,
       });
       setParticipant(updated);
@@ -1234,17 +1239,33 @@ function ParticipantProfile() {
                     <span style={{ color: g.color }}>{g.shortName}</span>
                   </label>
                   {editGameIds.includes(g.id) && (
-                    <select
-                      className="form-control"
-                      value={editGameMainChars[g.id] ?? ''}
-                      disabled={outOfScope}
-                      onChange={(e) => setGameMain(g.id, e.target.value || null)}
-                    >
-                      <option value="">{t('common.noMain')}</option>
-                      {g.characters.map((c) => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                    </select>
+                    <>
+                      <select
+                        className="form-control"
+                        value={editGameMainChars[g.id] ?? ''}
+                        disabled={outOfScope}
+                        onChange={(e) => setGameMain(g.id, e.target.value || null)}
+                      >
+                        <option value="">{t('common.noMain')}</option>
+                        {g.characters.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                      <label className="availability-toggle" title={t('participantProfile.edit.availabilityTitle', { defaultValue: 'Disponible para duelos y matchmaking' })}>
+                        <input
+                          type="checkbox"
+                          checked={editGameAvailability[g.id] !== false}
+                          disabled={outOfScope}
+                          onChange={(e) => setEditGameAvailability((prev) => ({ ...prev, [g.id]: e.target.checked }))}
+                        />
+                        <span className="availability-label">
+                          <i className={`fas ${editGameAvailability[g.id] !== false ? 'fa-circle-check' : 'fa-circle-xmark'}`} />
+                          {editGameAvailability[g.id] !== false
+                            ? t('participantProfile.edit.available', { defaultValue: 'Activo' })
+                            : t('participantProfile.edit.unavailable', { defaultValue: 'Inactivo' })}
+                        </span>
+                      </label>
+                    </>
                   )}
                 </div>
                 );

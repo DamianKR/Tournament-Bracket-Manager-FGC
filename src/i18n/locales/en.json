@@ -295,6 +295,7 @@
     "title": "Ranked Matches",
     "subtitle": "Record and track competitive ranked matches",
     "duels": "Duels",
+    "matchmaking": "Matchmaking",
     "matchmakingComingSoon": "Matchmaking (Coming Soon)",
     "matchmakingTitle": "Matchmaking Coming Soon",
     "matchmakingDesc": "Automated matchmaking system is under development.",
@@ -824,7 +825,10 @@
       "inviteSectionTitle": "Invite to your community",
       "inviteSectionDesc": "The participant will receive an invitation to join the selected community.",
       "inviteToCommunity": "Invite",
-      "inviteSent": "Invitation sent"
+      "inviteSent": "Invitation sent",
+      "availabilityTitle": "Available for duels and matchmaking",
+      "available": "Active",
+      "unavailable": "Inactive"
     },
     "errors": {
       "passwordTooShort": "Password must be at least 6 characters",

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RankedMatchType } from '@/models/types';
 import { DuelSettings as DuelSettingsType, DEFAULT_DUEL_SETTINGS } from '@/models/duel';
@@ -8,6 +9,8 @@ import DuelSettings from './DuelSettings';
 import RecordMatchTab from './RecordMatchTab';
 import ActiveChallenges from './ActiveChallenges';
 import DuelInfo from './DuelInfo';
+import MatchmakingTab from './MatchmakingTab';
+import { MatchmakingAssignment } from '@/services/matchmaking/matchmakingService';
 import './RankedTab.css';
 
 type RankedSubTab = 'record' | 'challenges' | 'info';
@@ -17,10 +20,14 @@ function RankedTab() {
   const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, myParticipantId } = useCommunity();
   const isAdminHere = canAdminCurrentCommunity;
   const communityId = currentCommunity?.id;
-  const [matchType, setMatchType] = useState<RankedMatchType>('duel');
+  const [searchParams] = useSearchParams();
+  const [matchType, setMatchType] = useState<RankedMatchType>(
+    () => (searchParams.get('sub') as RankedMatchType | null) ?? 'duel'
+  );
   const [subTab, setSubTab] = useState<RankedSubTab>('challenges');
   const [settings, setSettings] = useState<DuelSettingsType>(DEFAULT_DUEL_SETTINGS);
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
+  const [mmAssignment, setMmAssignment] = useState<MatchmakingAssignment | null>(null);
 
   useEffect(() => {
     loadSettings();
@@ -60,7 +67,7 @@ function RankedTab() {
             className="match-type-select"
           >
             <option value="duel">{t('ranked.duels')}</option>
-            <option value="matchmaking" disabled>{t('ranked.matchmakingComingSoon')}</option>
+            <option value="matchmaking">{t('ranked.matchmaking')}</option>
           </select>
           {matchType === 'duel' && isAdminHere && (
             <DuelSettings settings={settings} onUpdate={handleUpdateSettings} />
@@ -112,14 +119,34 @@ function RankedTab() {
         </>
       )}
 
-      {matchType === 'matchmaking' && (
-        <div className="coming-soon card">
-          <i className="fas fa-hammer" style={{ fontSize: '3rem', color: 'var(--primary-color)', marginBottom: '1rem' }} />
-          <h2>{t('ranked.matchmakingTitle')}</h2>
-          <p className="text-secondary">
-            {t('ranked.matchmakingDesc')}
-          </p>
-        </div>
+      {matchType === 'matchmaking' && !mmAssignment && (
+        <MatchmakingTab
+          onReportAssignment={(a) => {
+            setMmAssignment(a);
+            setSubTab('record');
+            setMatchType('matchmaking' as any);
+          }}
+        />
+      )}
+
+      {matchType === 'matchmaking' && mmAssignment && subTab === 'record' && (
+        <>
+          <div className="ranked-tabs">
+            <button className="ranked-tab-btn" onClick={() => { setMmAssignment(null); setSubTab('challenges'); }}>
+              <i className="fas fa-arrow-left" /> Volver a Matchmaking
+            </button>
+          </div>
+          <div className="ranked-content">
+            <RecordMatchTab
+              matchType="matchmaking"
+              mmAssignment={mmAssignment}
+              onMatchRecorded={() => {
+                setMmAssignment(null);
+                setSubTab('challenges');
+              }}
+            />
+          </div>
+        </>
       )}
     </div>
   );

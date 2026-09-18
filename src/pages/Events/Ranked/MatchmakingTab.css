@@ -1,0 +1,709 @@
+/* ── Matchmaking Tab ─────────────────────────────────────────────── */
+
+.mm-root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.mm-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.mm-header h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.4rem;
+}
+
+.mm-header-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── Info banner ─────────────────────────────────────────────────── */
+
+.mm-info-banner {
+  position: relative;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--primary-color) 9%, var(--bg-primary)) 0%,
+    color-mix(in srgb, var(--primary-color) 4%, var(--bg-primary)) 100%);
+  border: 1px solid color-mix(in srgb, var(--primary-color) 30%, var(--border-color));
+  border-radius: 0.6rem;
+  padding: 1rem 2.6rem 1rem 1.1rem;
+}
+
+.mm-info-close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 0.3rem;
+  transition: all 0.15s;
+}
+
+.mm-info-close:hover {
+  color: var(--danger-color);
+  background: color-mix(in srgb, var(--danger-color) 8%, transparent);
+}
+
+.mm-info-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+}
+
+.mm-info-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.mm-info-step-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--primary-color) 14%, var(--bg-primary));
+  border: 1px solid color-mix(in srgb, var(--primary-color) 35%, transparent);
+  color: var(--primary-color);
+  font-size: 0.85rem;
+}
+
+.mm-info-step div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.mm-info-step strong {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.mm-info-step span {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+@media (max-width: 720px) {
+  .mm-info-steps { grid-template-columns: 1fr; gap: 0.8rem; }
+}
+
+/* ── Season list ─────────────────────────────────────────────────── */
+
+.mm-season-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.mm-season-card {
+  cursor: pointer;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.mm-season-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--primary-color) 50%, var(--border-color));
+}
+
+.mm-season-card--active  { border-left-color: #22c55e; }
+.mm-season-card--draft   { border-left-color: #94a3b8; }
+.mm-season-card--closed  { border-left-color: #6366f1; }
+
+.mm-season-card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.mm-season-card-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.mm-season-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.mm-season-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.mm-season-card-meta i {
+  color: var(--primary-color);
+  font-size: 0.68rem;
+  margin-right: 0.15rem;
+}
+
+.mm-season-period-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+  color: var(--primary-color);
+  font-weight: 700;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+}
+
+.mm-season-period-chip i {
+  font-size: 0.6rem;
+  color: inherit;
+}
+
+.mm-season-arrow {
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  transition: transform 0.15s, color 0.15s;
+}
+
+.mm-season-card:hover .mm-season-arrow {
+  transform: translateX(3px);
+  color: var(--primary-color);
+}
+
+/* ── Season badges ───────────────────────────────────────────────── */
+
+.mm-season-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mm-season-badge--draft  { background: color-mix(in srgb, #888 15%, transparent); color: #888; border: 1px solid #888; }
+.mm-season-badge--active { background: color-mix(in srgb, #22c55e 15%, transparent); color: #22c55e; border: 1px solid #22c55e; }
+.mm-season-badge--closed { background: color-mix(in srgb, #6366f1 15%, transparent); color: #8b8cf8; border: 1px solid #6366f1; }
+
+.mm-game-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* ── Season detail ───────────────────────────────────────────────── */
+
+.mm-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* Hero header */
+.mm-hero {
+  background: linear-gradient(135deg, var(--primary-void) 0%, var(--primary-deep) 60%, var(--primary-night) 100%);
+  border-radius: 0.75rem;
+  padding: 1.1rem 1.4rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.mm-hero::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  right: -10%;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.35) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.mm-hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.mm-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mm-back-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.mm-hero-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mm-hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  position: relative;
+  line-height: 1.1;
+}
+
+.mm-hero-stats {
+  display: flex;
+  gap: 0;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+.mm-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 1.4rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.mm-stat:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.mm-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.mm-stat-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.15rem;
+}
+
+.mm-admin-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* ── Sections ─────────────────────────────────────────────────────── */
+
+.mm-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.mm-section h3 {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mm-section h3 i {
+  color: var(--primary-color);
+  font-size: 0.75rem;
+}
+
+/* ── Assignment row ───────────────────────────────────────────────── */
+
+.mm-assignment {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mm-assignment:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.mm-assignment--pending {
+  border-left-color: var(--warning-color);
+}
+
+.mm-assignment--completed {
+  border-left-color: var(--success-color);
+  opacity: 0.85;
+}
+
+.mm-assignment--forfeit_p1,
+.mm-assignment--forfeit_p2 {
+  border-left-color: var(--danger-color);
+  opacity: 0.8;
+}
+
+.mm-assignment--cancelled {
+  border-left-color: #94a3b8;
+  opacity: 0.6;
+}
+
+.mm-assignment--mine {
+  border-color: color-mix(in srgb, var(--primary-color) 55%, var(--border-color));
+  border-left-color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 4%, var(--bg-primary));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary-color) 25%, transparent);
+}
+
+.mm-assignment-players {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.mm-player {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.mm-rank-icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.mm-player-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.mm-elo {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.mm-vs {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 9%, var(--bg-primary));
+  border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent);
+  border-radius: 0.3rem;
+  padding: 0.15rem 0.45rem;
+  flex-shrink: 0;
+}
+
+.mm-player--winner .mm-player-name {
+  color: var(--success-color);
+}
+
+.mm-win-icon {
+  color: #f59e0b;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+.mm-assignment-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+/* Admin icon buttons */
+.mm-admin-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.mm-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.28rem 0.55rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.mm-icon-btn i {
+  font-size: 0.62rem;
+  color: var(--warning-color);
+}
+
+.mm-icon-btn:hover {
+  border-color: var(--warning-color);
+  color: var(--warning-color);
+  background: color-mix(in srgb, var(--warning-color) 8%, var(--bg-secondary));
+}
+
+.mm-icon-btn--danger {
+  padding: 0.28rem 0.5rem;
+}
+
+.mm-icon-btn--danger i {
+  color: inherit;
+  font-size: 0.72rem;
+}
+
+.mm-icon-btn--danger:hover {
+  border-color: var(--danger-color);
+  color: var(--danger-color);
+  background: color-mix(in srgb, var(--danger-color) 8%, var(--bg-secondary));
+}
+
+/* ── Status badges ────────────────────────────────────────────────── */
+
+.mm-status {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mm-status--pending    { background: color-mix(in srgb, #f59e0b 15%, transparent); color: #f59e0b; border: 1px solid #f59e0b; }
+.mm-status--completed  { background: color-mix(in srgb, #22c55e 15%, transparent); color: #22c55e; border: 1px solid #22c55e; }
+.mm-status--forfeit_p1,
+.mm-status--forfeit_p2 { background: color-mix(in srgb, #ef4444 15%, transparent); color: #ef4444; border: 1px solid #ef4444; }
+.mm-status--cancelled  { background: color-mix(in srgb, #888 15%, transparent); color: #888; border: 1px solid #888; }
+
+/* ── Period card ─────────────────────────────────────────────────── */
+
+.mm-period-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.mm-period-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.mm-period-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-primary);
+}
+
+.mm-period-card-title > i {
+  color: var(--primary-color);
+  font-size: 0.75rem;
+}
+
+.mm-period-days-left {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.mm-period-bar {
+  height: 5px;
+  background: var(--bg-tertiary);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.mm-period-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary-color), var(--primary-light));
+  transition: width 0.4s ease;
+}
+
+.mm-period-card-dates {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.mm-period-card-dates i {
+  color: var(--primary-color);
+  font-size: 0.65rem;
+  margin-right: 0.25rem;
+}
+
+.mm-period-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+}
+
+.mm-period-status-tag.active  { background: color-mix(in srgb, #22c55e 12%, transparent); color: #22c55e; }
+.mm-period-status-tag.pending { background: color-mix(in srgb, #f59e0b 12%, transparent); color: #f59e0b; }
+.mm-period-status-tag.skipped { background: color-mix(in srgb, #888 12%, transparent); color: var(--text-secondary); }
+
+.mm-period-status-tag i {
+  font-size: 0.5rem;
+}
+
+/* ── Modal parts ─────────────────────────────────────────────────── */
+
+.modal-body {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ── Empty state ─────────────────────────────────────────────────── */
+
+.mm-empty {
+  text-align: center;
+  padding: 2.5rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* ── Small buttons ────────────────────────────────────────────────── */
+
+.btn-sm {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-danger:hover { background: #dc2626; }
+.btn-danger.btn-sm { padding: 0.3rem 0.65rem; font-size: 0.8rem; }
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .mm-assignment {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mm-player-name {
+    max-width: 100px;
+  }
+
+  .mm-assignment-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

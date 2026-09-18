@@ -10071,5 +10071,3156 @@
       "duelId": "duel_1789549082968_im9tmupfu",
       "expiresAt": "2026-09-23T08:58:04.756Z"
     }
+  },
+  {
+    "id": "notif_1789620366722_upgk17e8o",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: WiikiFox, Sybau, Tails.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.722Z",
+    "scheduledAt": "2026-09-17T04:46:06.722Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787087788652_q2n124j",
+        "gp_1786808135517_vfoni2a",
+        "gp_1786391783115_87zwx03"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366726_2vahvcf74",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Grimmjo, Poke, Olimak.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.726Z",
+    "scheduledAt": "2026-09-17T04:46:06.726Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366730_sioof9acu",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Pokred, Pal, Neuthor.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.730Z",
+    "scheduledAt": "2026-09-17T04:46:06.730Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366734_vpkdajvot",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Poke, Olimak, Nelson.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.734Z",
+    "scheduledAt": "2026-09-17T04:46:06.734Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro",
+        "gp_1786399978250_n7msxo5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366737_dtk1q6ayx",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Pal, Neuthor, Virutica JR.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.737Z",
+    "scheduledAt": "2026-09-17T04:46:06.737Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds",
+        "gp_1787176804167_dgzm0z9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366740_k940cmc0l",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Olimak, Nelson, Manuel(Z).",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.740Z",
+    "scheduledAt": "2026-09-17T04:46:06.740Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786393655444_41zyrro",
+        "gp_1786399978250_n7msxo5",
+        "gp_1786410268124_ja1vgy5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366743_7sin0apb3",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Neuthor, Virutica JR, Drakonite.",
+    "read": true,
+    "createdAt": "2026-09-17T04:46:06.743Z",
+    "scheduledAt": "2026-09-17T04:46:06.743Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787069564643_5pithds",
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786802617779_nnibxrr"
+      ]
+    },
+    "readAt": "2026-09-17T04:58:14.242Z"
+  },
+  {
+    "id": "notif_1789620366746_oy5c8oi3h",
+    "recipientId": "gp_1787060569919_ov80gcy",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Nelson, Manuel(Z), Ghost.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.746Z",
+    "scheduledAt": "2026-09-17T04:46:06.746Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786399978250_n7msxo5",
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366749_9rgfo1mhw",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Virutica JR, Drakonite, Daeron.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.749Z",
+    "scheduledAt": "2026-09-17T04:46:06.749Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366753_57sk67el0",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Manuel(Z), Ghost, Shiro.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.753Z",
+    "scheduledAt": "2026-09-17T04:46:06.753Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366756_f9iey3581",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Drakonite, Daeron, Oby.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.756Z",
+    "scheduledAt": "2026-09-17T04:46:06.756Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366760_lmtjvsa6q",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Ghost, Shiro, LiokLiok18.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.760Z",
+    "scheduledAt": "2026-09-17T04:46:06.760Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366763_l2pe5l2wu",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Daeron, Oby, Nilo.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.763Z",
+    "scheduledAt": "2026-09-17T04:46:06.763Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366766_7dh6ugkvb",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Shiro, LiokLiok18, Ev.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.766Z",
+    "scheduledAt": "2026-09-17T04:46:06.766Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d",
+        "gp_1787176726649_m106rr7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366769_kkwosgjbh",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Oby, Nilo, Yoko.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.769Z",
+    "scheduledAt": "2026-09-17T04:46:06.769Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm",
+        "gp_1786758906647_1ib85c1"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366772_inqiv3wdi",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: LiokLiok18, Ev, AmorAltras.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.772Z",
+    "scheduledAt": "2026-09-17T04:46:06.772Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786393783053_ztfg99d",
+        "gp_1787176726649_m106rr7",
+        "gp_1786393834683_lievrvf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366775_g2e9k3p1u",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Nilo, Yoko, Verne.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.775Z",
+    "scheduledAt": "2026-09-17T04:46:06.775Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786409261693_7dx00bm",
+        "gp_1786758906647_1ib85c1",
+        "gp_1787060528167_2mzmy24"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366778_2hgzcss75",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Ev, AmorAltras, Ragna.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.778Z",
+    "scheduledAt": "2026-09-17T04:46:06.778Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787176726649_m106rr7",
+        "gp_1786393834683_lievrvf",
+        "gp_1787409434840_k4h4ski"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366781_v3z7bvjg1",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Yoko, Verne, Eknd3las.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.781Z",
+    "scheduledAt": "2026-09-17T04:46:06.781Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786758906647_1ib85c1",
+        "gp_1787060528167_2mzmy24",
+        "gp_1786391936937_anlwmxy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366784_9og88gpwj",
+    "recipientId": "gp_1786391936937_anlwmxy",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: AmorAltras, Ragna, Dante.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.784Z",
+    "scheduledAt": "2026-09-17T04:46:06.784Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786393834683_lievrvf",
+        "gp_1787409434840_k4h4ski",
+        "gp_1787150448285_vlvxdb2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366787_ofue4zqme",
+    "recipientId": "gp_1787409434840_k4h4ski",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Verne, Eknd3las, Soru-san.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.787Z",
+    "scheduledAt": "2026-09-17T04:46:06.787Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787060528167_2mzmy24",
+        "gp_1786391936937_anlwmxy",
+        "gp_1786756707267_xybm206"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366790_r1c67s5tc",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Ragna, Dante, Ismael.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.790Z",
+    "scheduledAt": "2026-09-17T04:46:06.790Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787409434840_k4h4ski",
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366793_9z43aa3rz",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Eknd3las, Soru-san, negroloko_54.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.793Z",
+    "scheduledAt": "2026-09-17T04:46:06.793Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786391936937_anlwmxy",
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366796_n77pfgilr",
+    "recipientId": "gp_1786758906647_1ib85c1",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Dante, Ismael, Gino.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.796Z",
+    "scheduledAt": "2026-09-17T04:46:06.796Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366799_96vam52rc",
+    "recipientId": "gp_1787176726649_m106rr7",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Soru-san, negroloko_54, Pollo.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.799Z",
+    "scheduledAt": "2026-09-17T04:46:06.799Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2",
+        "gp_1787112745370_2zahvg8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366802_q33phna7n",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Ismael, Gino, ElTarket.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.802Z",
+    "scheduledAt": "2026-09-17T04:46:06.802Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95",
+        "gp_1786648984526_6yyg6ao"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366805_ovoe2x8z0",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: negroloko_54, Pollo, ERNE.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.805Z",
+    "scheduledAt": "2026-09-17T04:46:06.805Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786420836915_wqj6gv2",
+        "gp_1787112745370_2zahvg8",
+        "gp_1786420928315_91m6kmr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366809_g93xruzws",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Gino, ElTarket, Obake.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.809Z",
+    "scheduledAt": "2026-09-17T04:46:06.809Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786387234567_aoe1z95",
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366811_y6ego80z0",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Pollo, ERNE, Daysuke.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.811Z",
+    "scheduledAt": "2026-09-17T04:46:06.811Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787112745370_2zahvg8",
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366814_chx7a33rd",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: ElTarket, Obake, Bola e'h carne.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.814Z",
+    "scheduledAt": "2026-09-17T04:46:06.814Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366817_kq0p1c61x",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: ERNE, Daysuke, DeathFrost.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.817Z",
+    "scheduledAt": "2026-09-17T04:46:06.817Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb",
+        "gp_1787060569919_ov80gcy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366820_5fbsash2q",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Obake, Bola e'h carne, KruX.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.820Z",
+    "scheduledAt": "2026-09-17T04:46:06.820Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3",
+        "gp_1786387087046_wnwtadb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366823_qail7evz3",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Daysuke, DeathFrost, Brian.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.823Z",
+    "scheduledAt": "2026-09-17T04:46:06.823Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786396304199_u7v6gsb",
+        "gp_1787060569919_ov80gcy",
+        "gp_1786388790209_sr4ldku"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366827_bnpn1wydz",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Bola e'h carne, KruX, el pepe.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.827Z",
+    "scheduledAt": "2026-09-17T04:46:06.827Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786391892402_8intsz3",
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366830_qze2qocna",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: DeathFrost, Brian, Alexs.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.830Z",
+    "scheduledAt": "2026-09-17T04:46:06.830Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787060569919_ov80gcy",
+        "gp_1786388790209_sr4ldku",
+        "gp_1787409813244_ymqkq1e"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366833_j35p7uhyr",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: KruX, el pepe, Adecty.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.833Z",
+    "scheduledAt": "2026-09-17T04:46:06.833Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366836_e6lj8eorx",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Brian, Alexs, TQMandreFN.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.836Z",
+    "scheduledAt": "2026-09-17T04:46:06.836Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786388790209_sr4ldku",
+        "gp_1787409813244_ymqkq1e",
+        "gp_1786387243524_6er0c9u"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366839_evfdr8hl0",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: el pepe, Adecty.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.839Z",
+    "scheduledAt": "2026-09-17T04:46:06.839Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786756661811_fa5pg74",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366842_dtbkfbyvk",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Alexs, TQMandreFN, you.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.842Z",
+    "scheduledAt": "2026-09-17T04:46:06.842Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787409813244_ymqkq1e",
+        "gp_1786387243524_6er0c9u",
+        "gp_1786408732935_gefziig"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366846_m556q93i1",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Adecty, Yokai.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.846Z",
+    "scheduledAt": "2026-09-17T04:46:06.846Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786387250178_ac5thmv",
+        "gp_1786802386624_ficm2tl"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366849_8cymbof58",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: TQMandreFN, you, Akuma.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.849Z",
+    "scheduledAt": "2026-09-17T04:46:06.849Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786387243524_6er0c9u",
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366852_kymuocuea",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Yokai, Yoeeee.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.852Z",
+    "scheduledAt": "2026-09-17T04:46:06.852Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366855_9spwjfc5h",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: you, Akuma, WolfCat Silence.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.855Z",
+    "scheduledAt": "2026-09-17T04:46:06.855Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787798635187_v9qifdf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366859_dk1zcac6s",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Yokai, Yoeeee, Rhadam, WiikiFox.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.859Z",
+    "scheduledAt": "2026-09-17T04:46:06.859Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9",
+        "gp_1787409902362_3u9f0qr",
+        "gp_1787087788652_q2n124j"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366862_46u6hj8zn",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Akuma, Rhadam, WolfCat Silence.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.862Z",
+    "scheduledAt": "2026-09-17T04:46:06.862Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787409902362_3u9f0qr",
+        "gp_1787798635187_v9qifdf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366866_zbkj1f1dn",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Rhadam, Yoeeee, Tails.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.866Z",
+    "scheduledAt": "2026-09-17T04:46:06.866Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787409902362_3u9f0qr",
+        "gp_1786758755895_bgdf2b9",
+        "gp_1786391783115_87zwx03"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366869_ge97nvfb5",
+    "recipientId": "gp_1787798635187_v9qifdf",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Sybau, Slendy.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.869Z",
+    "scheduledAt": "2026-09-17T04:46:06.869Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366872_ht7uovsb7",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: WiikiFox, Tails, Sementino.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.872Z",
+    "scheduledAt": "2026-09-17T04:46:06.872Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366875_lu00lv8ca",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Sybau, Slendy, Grimmjo.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.875Z",
+    "scheduledAt": "2026-09-17T04:46:06.875Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366878_njxmkzlfh",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Tails, Sementino, Pokred.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.878Z",
+    "scheduledAt": "2026-09-17T04:46:06.878Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i",
+        "gp_1787202786652_4bme4ih"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789620366881_h5q5a8auv",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "league_week_start",
+    "title": "League Week 3 started",
+    "message": "Week 3 of Smash new at last has started. Your opponents this week: Slendy, Grimmjo, Poke.",
+    "read": false,
+    "createdAt": "2026-09-17T04:46:06.881Z",
+    "scheduledAt": "2026-09-17T04:46:06.881Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 3,
+      "opponentIds": [
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p"
+      ]
+    }
+  },
+  {
+    "id": "notif_1789690406549_6q9dstijz",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Gino. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "9dbc82bc-6dbb-491d-b3ca-73a9f66205d5"
+    }
+  },
+  {
+    "id": "notif_1789690406549_d7s1f8ew0",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es KruX. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "9dbc82bc-6dbb-491d-b3ca-73a9f66205d5"
+    }
+  },
+  {
+    "id": "notif_1789690406549_ovt9jao60",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Adecty. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "5da7a97f-5419-4b27-8390-8ff269479837"
+    }
+  },
+  {
+    "id": "notif_1789690406549_2yqukxxmo",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es TQMandreFN. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "5da7a97f-5419-4b27-8390-8ff269479837"
+    }
+  },
+  {
+    "id": "notif_1789690406549_hhi05wfnf",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Daysuke. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d18e7c6f-ec64-4f5b-a0e2-03d9368e114b"
+    }
+  },
+  {
+    "id": "notif_1789690406549_qrjz4hr5a",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Brian. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d18e7c6f-ec64-4f5b-a0e2-03d9368e114b"
+    }
+  },
+  {
+    "id": "notif_1789690406549_msv7pjh5s",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es negroloko_54. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "b81801e5-d3a4-49fc-99d0-b3d8f8d87691"
+    }
+  },
+  {
+    "id": "notif_1789690406549_gq77ywe91",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Oby. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "b81801e5-d3a4-49fc-99d0-b3d8f8d87691"
+    }
+  },
+  {
+    "id": "notif_1789690406549_sqayv97yz",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es DeathFrost. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "a5441027-7514-4ebc-b349-6f1ee8c54cf5"
+    }
+  },
+  {
+    "id": "notif_1789690406549_khcguhzkk",
+    "recipientId": "gp_1787060569919_ov80gcy",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Tails. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "a5441027-7514-4ebc-b349-6f1ee8c54cf5"
+    }
+  },
+  {
+    "id": "notif_1789690406549_1ouqpx6z9",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Drakonite. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c31a5175-9d61-4495-9d1c-12335737650c"
+    }
+  },
+  {
+    "id": "notif_1789690406549_29ov3bz2t",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Shiro. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c31a5175-9d61-4495-9d1c-12335737650c"
+    }
+  },
+  {
+    "id": "notif_1789690406549_ei5ix9fkb",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es WolfCat Silence. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c7511368-d084-4d26-9e90-48056d2ad6a5"
+    }
+  },
+  {
+    "id": "notif_1789690406549_zqyxvr747",
+    "recipientId": "gp_1787798635187_v9qifdf",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Bola e'h carne. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c7511368-d084-4d26-9e90-48056d2ad6a5"
+    }
+  },
+  {
+    "id": "notif_1789690406549_82n2hmzg0",
+    "recipientId": "gp_1786391936937_anlwmxy",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es you. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "3a279d55-ecf8-46ee-97c3-267f8630b012"
+    }
+  },
+  {
+    "id": "notif_1789690406549_z8eom8anr",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Eknd3las. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "3a279d55-ecf8-46ee-97c3-267f8630b012"
+    }
+  },
+  {
+    "id": "notif_1789690406549_sdciq6l7l",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Verne. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "cca422f0-3e9e-4b47-91fd-8d8467e30900"
+    }
+  },
+  {
+    "id": "notif_1789690406549_d6mxcpzsh",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Olimak. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "cca422f0-3e9e-4b47-91fd-8d8467e30900"
+    }
+  },
+  {
+    "id": "notif_1789690406549_zu12n14rr",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Manuel(Z). Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "eae6a5e4-432c-4dd7-a2c6-1319bdf3e0e7"
+    }
+  },
+  {
+    "id": "notif_1789690406549_x01x5jltk",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Sementino. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "eae6a5e4-432c-4dd7-a2c6-1319bdf3e0e7"
+    }
+  },
+  {
+    "id": "notif_1789690406549_cp6iymp56",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Pollo. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "b169071c-25e3-4bcf-a06c-b564a0b79d9a"
+    }
+  },
+  {
+    "id": "notif_1789690406549_as7r199qg",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es LiokLiok18. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "b169071c-25e3-4bcf-a06c-b564a0b79d9a"
+    }
+  },
+  {
+    "id": "notif_1789690406549_cz8e1tlan",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ismael. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "9e29ff53-1a6b-47f1-b50c-4821a3ea4c70"
+    }
+  },
+  {
+    "id": "notif_1789690406549_m7oyvfdgm",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es AmorAltras. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "9e29ff53-1a6b-47f1-b50c-4821a3ea4c70"
+    }
+  },
+  {
+    "id": "notif_1789690406549_6jj5when8",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Rhadam. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "074907ae-f66d-4b38-9c10-bdbf7be666df"
+    }
+  },
+  {
+    "id": "notif_1789690406549_6goteokzi",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Obake. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "074907ae-f66d-4b38-9c10-bdbf7be666df"
+    }
+  },
+  {
+    "id": "notif_1789690406549_ata8ft7yu",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es ElTarket. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "da38a384-9518-40a6-83ab-89df46e08428"
+    }
+  },
+  {
+    "id": "notif_1789690406549_mays7vnmv",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Pal. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "da38a384-9518-40a6-83ab-89df46e08428"
+    }
+  },
+  {
+    "id": "notif_1789690406549_e8hg5jc9w",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Yoeeee. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "57669b21-72eb-44d0-a7db-90747eebda19"
+    }
+  },
+  {
+    "id": "notif_1789690406549_696b2cqqa",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Nelson. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "57669b21-72eb-44d0-a7db-90747eebda19"
+    }
+  },
+  {
+    "id": "notif_1789690406549_pf0sup3a9",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Dante. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "524beee2-72a3-47ea-90b0-9b08a764cf56"
+    }
+  },
+  {
+    "id": "notif_1789690406549_shpzdm8kk",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Nilo. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "524beee2-72a3-47ea-90b0-9b08a764cf56"
+    }
+  },
+  {
+    "id": "notif_1789690406549_ssi68s35i",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Daeron. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "f2d8e617-4647-432a-81fe-98c5e822cbfb"
+    }
+  },
+  {
+    "id": "notif_1789690406549_17af3f473",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es ERNE. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "f2d8e617-4647-432a-81fe-98c5e822cbfb"
+    }
+  },
+  {
+    "id": "notif_1789690406549_asoi5puy1",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Soru-san. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d21f03b7-f184-44b2-94ac-df946bb18678"
+    }
+  },
+  {
+    "id": "notif_1789690406549_3hvox3hkl",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es el pepe. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d21f03b7-f184-44b2-94ac-df946bb18678"
+    }
+  },
+  {
+    "id": "notif_1789690406549_4ind2z9xu",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ragna. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "60716d33-5499-49aa-8c0c-6d6f89415808"
+    }
+  },
+  {
+    "id": "notif_1789690406549_vnug0vud6",
+    "recipientId": "gp_1787409434840_k4h4ski",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Akuma. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "60716d33-5499-49aa-8c0c-6d6f89415808"
+    }
+  },
+  {
+    "id": "notif_1789690406549_47wp4hg81",
+    "recipientId": "gp_1786758906647_1ib85c1",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Pokred. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "31ee59f9-683b-40f9-b663-6cdd8690b2ca"
+    }
+  },
+  {
+    "id": "notif_1789690406549_alj9335jx",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Yoko. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "31ee59f9-683b-40f9-b663-6cdd8690b2ca"
+    }
+  },
+  {
+    "id": "notif_1789690406549_kry5zjv8l",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ghost. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d87a9c56-e63d-48b2-b86e-0bf1a6ef0681"
+    }
+  },
+  {
+    "id": "notif_1789690406549_nw6i81veg",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Grimmjo. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d87a9c56-e63d-48b2-b86e-0bf1a6ef0681"
+    }
+  },
+  {
+    "id": "notif_1789690406549_e4kngh6p1",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ev. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "7a16f8e1-6fb3-45d6-abbb-ca3c31bb501d"
+    }
+  },
+  {
+    "id": "notif_1789690406549_o24yo5wh6",
+    "recipientId": "gp_1787176726649_m106rr7",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Yokai. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "7a16f8e1-6fb3-45d6-abbb-ca3c31bb501d"
+    }
+  },
+  {
+    "id": "notif_1789690406549_xznv2u1xl",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Slendy. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "7f371a4f-ad6d-4360-b32a-5217d7f666a8"
+    }
+  },
+  {
+    "id": "notif_1789690406549_x96cqqcmj",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Sybau. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "7f371a4f-ad6d-4360-b32a-5217d7f666a8"
+    }
+  },
+  {
+    "id": "notif_1789690406549_zg8gwr7g0",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Jhony Aris. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "41c7f9ff-612b-4e58-a757-85c9e0a34f96"
+    }
+  },
+  {
+    "id": "notif_1789690406549_8kghu997e",
+    "recipientId": "gp_1788133877544_8tir635",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Neuthor. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "41c7f9ff-612b-4e58-a757-85c9e0a34f96"
+    }
+  },
+  {
+    "id": "notif_1789690406549_03ek4jk8i",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Virutica JR. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "47e1f6fa-4bd8-4694-9708-1a51d6bfabc0"
+    }
+  },
+  {
+    "id": "notif_1789690406549_spqm8mxt2",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Poke. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "47e1f6fa-4bd8-4694-9708-1a51d6bfabc0"
+    }
+  },
+  {
+    "id": "notif_1789690406549_f8ld9p29z",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Heroe. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "99a20e61-2629-4680-8e38-5e56e1614516"
+    }
+  },
+  {
+    "id": "notif_1789690406549_rlwjg1ojq",
+    "recipientId": "gp_1788050783096_xsly08y",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es WiikiFox. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "99a20e61-2629-4680-8e38-5e56e1614516"
+    }
+  },
+  {
+    "id": "notif_1789690406549_k5ejlmogp",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es TQMandreFN. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c9c89ddd-fd41-41c9-a59a-1ffbcdbc5ed5"
+    }
+  },
+  {
+    "id": "notif_1789690406549_ix5koykos",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es KruX. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c9c89ddd-fd41-41c9-a59a-1ffbcdbc5ed5"
+    }
+  },
+  {
+    "id": "notif_1789690406549_fss73ozg6",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es AmorAltras. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "55ef2714-a0b3-4e7d-b1b9-eae61f80fe09"
+    }
+  },
+  {
+    "id": "notif_1789690406549_n90qjtvpv",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Gino. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "55ef2714-a0b3-4e7d-b1b9-eae61f80fe09"
+    }
+  },
+  {
+    "id": "notif_1789690406549_yzjeuuvgt",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ismael. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "7a62da6b-7180-4498-8b47-008710aecc4c"
+    }
+  },
+  {
+    "id": "notif_1789690406549_kwoek6wq7",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Adecty. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "7a62da6b-7180-4498-8b47-008710aecc4c"
+    }
+  },
+  {
+    "id": "notif_1789690406549_4a1bnsu44",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Rhadam. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d58ad70c-76f8-499b-8e56-df891b7b9208"
+    }
+  },
+  {
+    "id": "notif_1789690406549_474ltnhay",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Brian. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d58ad70c-76f8-499b-8e56-df891b7b9208"
+    }
+  },
+  {
+    "id": "notif_1789690406549_3n2bzyc5t",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Pollo. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "cb53f737-3c69-4c48-ab95-6ec816b69cd3"
+    }
+  },
+  {
+    "id": "notif_1789690406549_awjtkdjyn",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Oby. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "cb53f737-3c69-4c48-ab95-6ec816b69cd3"
+    }
+  },
+  {
+    "id": "notif_1789690406549_cwyim1nmo",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Virutica JR. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "59db6be1-6fe5-421e-9b62-ff1293c61934"
+    }
+  },
+  {
+    "id": "notif_1789690406549_ip6ngq7wv",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Tails. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "59db6be1-6fe5-421e-9b62-ff1293c61934"
+    }
+  },
+  {
+    "id": "notif_1789690406549_l1hsk5kb4",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Daeron. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.549Z",
+    "scheduledAt": "2026-09-18T00:13:26.549Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "862697d9-2762-48c3-9d64-d0131bcad8b1"
+    }
+  },
+  {
+    "id": "notif_1789690406550_t07veua0t",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Shiro. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "862697d9-2762-48c3-9d64-d0131bcad8b1"
+    }
+  },
+  {
+    "id": "notif_1789690406550_3pmkr4sv6",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Sementino. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "8c6be5e9-8980-40d8-91b8-90b50f5215ba"
+    }
+  },
+  {
+    "id": "notif_1789690406550_1yrl6xnn4",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Bola e'h carne. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "8c6be5e9-8980-40d8-91b8-90b50f5215ba"
+    }
+  },
+  {
+    "id": "notif_1789690406550_iugoucujy",
+    "recipientId": "gp_1786391936937_anlwmxy",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Verne. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "308f9503-2b40-42cb-833e-d654e5c0e371"
+    }
+  },
+  {
+    "id": "notif_1789690406550_0kz5rbvti",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Eknd3las. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "308f9503-2b40-42cb-833e-d654e5c0e371"
+    }
+  },
+  {
+    "id": "notif_1789690406550_ksh5np84y",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Soru-san. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "e772d6c6-68ab-4e11-b8f1-5838557194b3"
+    }
+  },
+  {
+    "id": "notif_1789690406550_jkulvtbet",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Olimak. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "e772d6c6-68ab-4e11-b8f1-5838557194b3"
+    }
+  },
+  {
+    "id": "notif_1789690406550_z54evcdmv",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Pokred. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d0f503a3-27b5-411f-a40a-e8a8636e21b9"
+    }
+  },
+  {
+    "id": "notif_1789690406550_4cxjbu1ki",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es LiokLiok18. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d0f503a3-27b5-411f-a40a-e8a8636e21b9"
+    }
+  },
+  {
+    "id": "notif_1789690406550_ckv9zagr0",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Nelson. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "ec1f7e9f-b913-41f8-9ebc-4bae8178dafa"
+    }
+  },
+  {
+    "id": "notif_1789690406550_jhh5lt32b",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Obake. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "ec1f7e9f-b913-41f8-9ebc-4bae8178dafa"
+    }
+  },
+  {
+    "id": "notif_1789690406550_nw3oq945q",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Alexs. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c2f5deb0-ce2e-4af6-8d49-23cc0ca5c3b0"
+    }
+  },
+  {
+    "id": "notif_1789690406550_4sqaophal",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Daysuke. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c2f5deb0-ce2e-4af6-8d49-23cc0ca5c3b0"
+    }
+  },
+  {
+    "id": "notif_1789690406550_i4z2gtd7k",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es ERNE. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "93140e18-d8a1-41d0-9fcb-cb6d5f4c0864"
+    }
+  },
+  {
+    "id": "notif_1789690406550_jd44yp8o8",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Pal. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "93140e18-d8a1-41d0-9fcb-cb6d5f4c0864"
+    }
+  },
+  {
+    "id": "notif_1789690406550_nkjs10iuz",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Grimmjo. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "79acf7ae-9eb4-4f6a-a52c-f9fbc16b5417"
+    }
+  },
+  {
+    "id": "notif_1789690406550_vwks9fnb8",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es you. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "79acf7ae-9eb4-4f6a-a52c-f9fbc16b5417"
+    }
+  },
+  {
+    "id": "notif_1789690406550_op0g05jvm",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Neuthor. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "b5d58fc9-4a7f-4212-bb86-e8576ba79807"
+    }
+  },
+  {
+    "id": "notif_1789690406550_qqut9t51m",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Nilo. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "b5d58fc9-4a7f-4212-bb86-e8576ba79807"
+    }
+  },
+  {
+    "id": "notif_1789690406550_atfe3b8nc",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Yoeeee. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "281c219f-ca38-40b3-818d-e1783e45fc15"
+    }
+  },
+  {
+    "id": "notif_1789690406550_5alv313ix",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Manuel(Z). Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "281c219f-ca38-40b3-818d-e1783e45fc15"
+    }
+  },
+  {
+    "id": "notif_1789690406550_qpqy6ycpy",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ragna. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "34f5e5fe-17db-472a-82e5-c0c3174384c1"
+    }
+  },
+  {
+    "id": "notif_1789690406550_6u2fz7zii",
+    "recipientId": "gp_1787409434840_k4h4ski",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es negroloko_54. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "34f5e5fe-17db-472a-82e5-c0c3174384c1"
+    }
+  },
+  {
+    "id": "notif_1789690406550_7pkj2umuq",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Drakonite. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "fc4a9d49-d006-4a7f-92f2-5030c19eea24"
+    }
+  },
+  {
+    "id": "notif_1789690406550_45yso54kt",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es ElTarket. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "fc4a9d49-d006-4a7f-92f2-5030c19eea24"
+    }
+  },
+  {
+    "id": "notif_1789690406550_5i5x41k8k",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Slendy. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "000f7653-4b22-41c9-8a78-80413788396d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_p7q0k9gjg",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es el pepe. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "000f7653-4b22-41c9-8a78-80413788396d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_902ju5lvb",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Yoko. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "f08acc58-2085-4384-b0b3-e91aeca0ce91"
+    }
+  },
+  {
+    "id": "notif_1789690406550_yerk22ehd",
+    "recipientId": "gp_1786758906647_1ib85c1",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Akuma. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "f08acc58-2085-4384-b0b3-e91aeca0ce91"
+    }
+  },
+  {
+    "id": "notif_1789690406550_dq7va2llm",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Dante. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d0285a04-d9a4-41fd-81ae-9be761666ce9"
+    }
+  },
+  {
+    "id": "notif_1789690406550_0n3nac15n",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Yokai. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d0285a04-d9a4-41fd-81ae-9be761666ce9"
+    }
+  },
+  {
+    "id": "notif_1789690406550_hj3tbulcl",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ev. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c0d2da5d-1f63-4f96-ba7b-05de1d35d761"
+    }
+  },
+  {
+    "id": "notif_1789690406550_lgnoe2w69",
+    "recipientId": "gp_1787176726649_m106rr7",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Sybau. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c0d2da5d-1f63-4f96-ba7b-05de1d35d761"
+    }
+  },
+  {
+    "id": "notif_1789690406550_vrz0xogo4",
+    "recipientId": "gp_1787060569919_ov80gcy",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Heroe. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c0a73f5f-b817-4b85-9cda-17a7fdff6c9c"
+    }
+  },
+  {
+    "id": "notif_1789690406550_aue2ucbhc",
+    "recipientId": "gp_1788050783096_xsly08y",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es DeathFrost. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c0a73f5f-b817-4b85-9cda-17a7fdff6c9c"
+    }
+  },
+  {
+    "id": "notif_1789690406550_vdmghs383",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Jhony Aris. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c7afb6cb-db19-49f5-92e8-ab3d79b48bb2"
+    }
+  },
+  {
+    "id": "notif_1789690406550_a3wqw7n4j",
+    "recipientId": "gp_1788133877544_8tir635",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Poke. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c7afb6cb-db19-49f5-92e8-ab3d79b48bb2"
+    }
+  },
+  {
+    "id": "notif_1789690406550_5haw5ju1f",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ghost. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c9f2b635-82c5-4621-bfb9-0920bddbe09b"
+    }
+  },
+  {
+    "id": "notif_1789690406550_7bplafxl8",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es WiikiFox. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c9f2b635-82c5-4621-bfb9-0920bddbe09b"
+    }
+  },
+  {
+    "id": "notif_1789690406550_q3ggl90z9",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Adecty. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "5e114e2c-f5c3-4774-9483-c5b878ee15f8"
+    }
+  },
+  {
+    "id": "notif_1789690406550_ifw282rjv",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es KruX. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "5e114e2c-f5c3-4774-9483-c5b878ee15f8"
+    }
+  },
+  {
+    "id": "notif_1789690406550_241tamhw9",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es TQMandreFN. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d0c11314-aa26-4fea-bf9e-65d7a32dd5d6"
+    }
+  },
+  {
+    "id": "notif_1789690406550_pntobj6qg",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Gino. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d0c11314-aa26-4fea-bf9e-65d7a32dd5d6"
+    }
+  },
+  {
+    "id": "notif_1789690406550_myvw6cl9k",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Alexs. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "5a7ca5bd-a723-424e-a9e8-6357131650f3"
+    }
+  },
+  {
+    "id": "notif_1789690406550_iarp89eaj",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Brian. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "5a7ca5bd-a723-424e-a9e8-6357131650f3"
+    }
+  },
+  {
+    "id": "notif_1789690406550_4ecg7hur4",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Yokai. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "0decc072-df67-4aa7-880e-9b38757bfb90"
+    }
+  },
+  {
+    "id": "notif_1789690406550_xoi7e6lbj",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Oby. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "0decc072-df67-4aa7-880e-9b38757bfb90"
+    }
+  },
+  {
+    "id": "notif_1789690406550_r6ttkg1ij",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Heroe. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "a1062dc6-cebe-466a-b080-f41d51e6e44c"
+    }
+  },
+  {
+    "id": "notif_1789690406550_tevi6ot11",
+    "recipientId": "gp_1788050783096_xsly08y",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Tails. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "a1062dc6-cebe-466a-b080-f41d51e6e44c"
+    }
+  },
+  {
+    "id": "notif_1789690406550_j8q01triv",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Poke. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "09c4b469-f6fa-4fcf-82fd-02a23b9ffbbf"
+    }
+  },
+  {
+    "id": "notif_1789690406550_mlsjqzl1h",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Shiro. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "09c4b469-f6fa-4fcf-82fd-02a23b9ffbbf"
+    }
+  },
+  {
+    "id": "notif_1789690406550_4fakfsn27",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Yoeeee. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "f3b3b0c7-a092-4fe0-87b0-58124edbd432"
+    }
+  },
+  {
+    "id": "notif_1789690406550_j0yttwbpv",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Bola e'h carne. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "f3b3b0c7-a092-4fe0-87b0-58124edbd432"
+    }
+  },
+  {
+    "id": "notif_1789690406550_tx6vgy11z",
+    "recipientId": "gp_1786391936937_anlwmxy",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es el pepe. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "4b6216e8-00a1-4b46-9ec1-bf67b9ccf286"
+    }
+  },
+  {
+    "id": "notif_1789690406550_vu8dspnxv",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Eknd3las. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "4b6216e8-00a1-4b46-9ec1-bf67b9ccf286"
+    }
+  },
+  {
+    "id": "notif_1789690406550_dism1uelu",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Grimmjo. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d7b306e8-aa38-45d5-8427-0ae6d9b57b96"
+    }
+  },
+  {
+    "id": "notif_1789690406550_n5lsiv5u7",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Olimak. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "d7b306e8-aa38-45d5-8427-0ae6d9b57b96"
+    }
+  },
+  {
+    "id": "notif_1789690406550_lo2rsjt9n",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Dante. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "4ff86c71-fa4d-42b8-906b-999922b717a1"
+    }
+  },
+  {
+    "id": "notif_1789690406550_wkrv2dddq",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Sementino. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "4ff86c71-fa4d-42b8-906b-999922b717a1"
+    }
+  },
+  {
+    "id": "notif_1789690406550_7gqchu1sk",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ragna. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "047e10ca-9167-4331-adea-2b5c51c4e5ad"
+    }
+  },
+  {
+    "id": "notif_1789690406550_y2kop8sjh",
+    "recipientId": "gp_1787409434840_k4h4ski",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es LiokLiok18. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "047e10ca-9167-4331-adea-2b5c51c4e5ad"
+    }
+  },
+  {
+    "id": "notif_1789690406550_8dcr7347j",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Daysuke. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "2eb51a7f-6ed0-46bd-bf33-963b9e50fd0a"
+    }
+  },
+  {
+    "id": "notif_1789690406550_k9jsum3ok",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es AmorAltras. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "2eb51a7f-6ed0-46bd-bf33-963b9e50fd0a"
+    }
+  },
+  {
+    "id": "notif_1789690406550_j3fi66toe",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Manuel(Z). Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "39659773-ecca-4f93-a2f0-821d5537d33b"
+    }
+  },
+  {
+    "id": "notif_1789690406550_lx69f145b",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Obake. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "39659773-ecca-4f93-a2f0-821d5537d33b"
+    }
+  },
+  {
+    "id": "notif_1789690406550_z60sjtnjq",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Slendy. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c9a6162f-68ef-45de-8de4-bdb9f42583d8"
+    }
+  },
+  {
+    "id": "notif_1789690406550_5xp5044ud",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Pal. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c9a6162f-68ef-45de-8de4-bdb9f42583d8"
+    }
+  },
+  {
+    "id": "notif_1789690406550_kmya8em0y",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Virutica JR. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "14dff84a-886f-4695-9e41-bf300a7ad430"
+    }
+  },
+  {
+    "id": "notif_1789690406550_k76yafau6",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Nelson. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "14dff84a-886f-4695-9e41-bf300a7ad430"
+    }
+  },
+  {
+    "id": "notif_1789690406550_ct239npj1",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Rhadam. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "3a19c601-5521-4db4-9b75-6d74576a777d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_ywprk8nwi",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ismael. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "3a19c601-5521-4db4-9b75-6d74576a777d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_t2whbm0t2",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Verne. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "03214bfb-2f5e-4ada-a095-3ed0a042bc1d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_ybdiyfgv4",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es you. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "03214bfb-2f5e-4ada-a095-3ed0a042bc1d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_9nxfqvk7v",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Pokred. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "6cad22c5-3076-46a3-8112-8dc45f996de5"
+    }
+  },
+  {
+    "id": "notif_1789690406550_lrhtiejoi",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Nilo. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "6cad22c5-3076-46a3-8112-8dc45f996de5"
+    }
+  },
+  {
+    "id": "notif_1789690406550_s5vjwnpe1",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Drakonite. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c886dbc2-ee48-4c77-89d0-1898e226c4c1"
+    }
+  },
+  {
+    "id": "notif_1789690406550_77ccg3a13",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es negroloko_54. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "c886dbc2-ee48-4c77-89d0-1898e226c4c1"
+    }
+  },
+  {
+    "id": "notif_1789690406550_bcja3guwy",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Sybau. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "5da92e9d-6ac5-4db0-8680-249416907f9d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_gmx1c2322",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es ERNE. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "5da92e9d-6ac5-4db0-8680-249416907f9d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_ckbs4rr64",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Ghost. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "33f8e661-f93a-4d27-9d2f-32cf1271f920"
+    }
+  },
+  {
+    "id": "notif_1789690406550_pc2rp5ftb",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es ElTarket. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "33f8e661-f93a-4d27-9d2f-32cf1271f920"
+    }
+  },
+  {
+    "id": "notif_1789690406550_5cosoxgov",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Yoko. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "611ef953-ee28-4f38-acfc-a45855ef055d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_doviorr6p",
+    "recipientId": "gp_1786758906647_1ib85c1",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Soru-san. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "611ef953-ee28-4f38-acfc-a45855ef055d"
+    }
+  },
+  {
+    "id": "notif_1789690406550_9co5rke0y",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Daeron. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "cd2b459b-0318-4c2f-9da7-bf08bfb7ea8f"
+    }
+  },
+  {
+    "id": "notif_1789690406550_3sre5x51g",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Akuma. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "cd2b459b-0318-4c2f-9da7-bf08bfb7ea8f"
+    }
+  },
+  {
+    "id": "notif_1789690406550_4hgjkcgfc",
+    "recipientId": "gp_1787060569919_ov80gcy",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es WolfCat Silence. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "57d6fef8-98bf-4cc2-a12a-3b0ac2891d7a"
+    }
+  },
+  {
+    "id": "notif_1789690406550_c3caqee1y",
+    "recipientId": "gp_1787798635187_v9qifdf",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es DeathFrost. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "57d6fef8-98bf-4cc2-a12a-3b0ac2891d7a"
+    }
+  },
+  {
+    "id": "notif_1789690406550_av3v3x8t0",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Pollo. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "31a4dbbc-631c-40ee-9f05-660d3d1d5306"
+    }
+  },
+  {
+    "id": "notif_1789690406550_fi2tu6as1",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Neuthor. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "31a4dbbc-631c-40ee-9f05-660d3d1d5306"
+    }
+  },
+  {
+    "id": "notif_1789690406550_02pvechov",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es Jhony Aris. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "22ca8a7d-bcf5-471b-b38a-275f83926618"
+    }
+  },
+  {
+    "id": "notif_1789690406550_5t8eixnj9",
+    "recipientId": "gp_1788133877544_8tir635",
+    "type": "matchmaking",
+    "title": "Matchmaking — Semptiembe (Período 1)",
+    "message": "Tu rival es WiikiFox. Juega antes del 9/23/2026.",
+    "read": false,
+    "createdAt": "2026-09-18T00:13:26.550Z",
+    "scheduledAt": "2026-09-18T00:13:26.550Z",
+    "data": {
+      "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+      "assignmentId": "22ca8a7d-bcf5-471b-b38a-275f83926618"
+    }
   }
 ]

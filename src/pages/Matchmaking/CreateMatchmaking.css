@@ -1,0 +1,373 @@
+/* ── Create Matchmaking ─────────────────────────────────────────── */
+
+.cm-page {
+  min-height: 100vh;
+  padding: 2rem 0;
+  background: var(--bg-primary);
+}
+
+.cm-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+
+.cm-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cm-header-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+  border: 1.5px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.cm-header h1 {
+  margin: 0 0 0.2rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.cm-subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ── Section titles ─────────────────────────────────────────────── */
+
+.cm-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cm-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cm-section-title i {
+  color: var(--primary-color);
+}
+
+/* ── Grid ───────────────────────────────────────────────────────── */
+
+.cm-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 560px) {
+  .cm-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ── Labels & inputs ─────────────────────────────────────────────── */
+
+.cm-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+/* ── Period cards ───────────────────────────────────────────────── */
+
+.cm-period-cards {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.cm-period-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+
+.cm-period-card:hover {
+  border-color: var(--primary-color);
+}
+
+.cm-period-card.selected {
+  border-color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 8%, var(--bg-primary));
+}
+
+.cm-period-card i:first-child {
+  font-size: 1.3rem;
+  color: var(--text-secondary);
+}
+
+.cm-period-card.selected i:first-child {
+  color: var(--primary-color);
+}
+
+.cm-period-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.cm-period-label {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.cm-period-sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.cm-period-check {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.6rem;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+}
+
+/* ── Match count buttons ─────────────────────────────────────────── */
+
+.cm-matches-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cm-match-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cm-match-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.cm-match-btn.selected {
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+  color: #fff;
+}
+
+/* ── Hint ───────────────────────────────────────────────────────── */
+
+.cm-hint {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Preview panel ───────────────────────────────────────────────── */
+
+.cm-preview {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cm-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.cm-preview-row i {
+  color: var(--primary-color);
+  font-size: 0.75rem;
+  width: 14px;
+}
+
+.cm-preview-row strong {
+  color: var(--text-primary);
+}
+
+/* ── Grace period slider ─────────────────────────────────────────── */
+
+.cm-grace-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cm-range {
+  flex: 1;
+  accent-color: var(--primary-color);
+  height: 6px;
+  cursor: pointer;
+}
+
+.cm-grace-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  min-width: 56px;
+  text-align: right;
+}
+
+.cm-grace-value span {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+/* ── Duration cards ───────────────────────────────────────────────── */
+
+.cm-duration-cards {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.cm-duration-card {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cm-duration-card:hover { border-color: var(--primary-color); }
+
+.cm-duration-card.selected {
+  border-color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 8%, var(--bg-primary));
+}
+
+.cm-duration-card i:first-child {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-top: 0.15rem;
+}
+
+.cm-duration-card.selected i:first-child { color: var(--primary-color); }
+
+.cm-duration-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.cm-duration-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Game badge ──────────────────────────────────────────────────── */
+
+.cm-game-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid;
+  background: color-mix(in srgb, var(--bg-primary) 80%, transparent);
+}
+
+.cm-game-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cm-game-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.cm-game-tag {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-left: auto;
+}
+
+/* ── Actions ─────────────────────────────────────────────────────── */
+
+.cm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.cm-create-btn {
+  padding: 0.65rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+
+@media (max-width: 560px) {
+  .cm-card { padding: 1.25rem; }
+  .cm-period-cards { flex-direction: column; }
+  .cm-matches-row { gap: 0.4rem; }
+  .cm-match-btn { width: 38px; height: 38px; }
+  .cm-actions { flex-direction: column; }
+}

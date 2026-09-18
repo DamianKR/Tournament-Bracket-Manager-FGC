@@ -2503,5 +2503,44 @@
     ],
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-09-16T08:58:53.881Z"
+  },
+  {
+    "id": "8b5d6cfe-5b0f-4ddd-8f20-99265d786cf3",
+    "communityId": "community_fgc_santa_clara",
+    "gameId": "ssbu",
+    "playerAId": "gp_1786387243524_6er0c9u",
+    "playerBId": "gp_1786387250178_ac5thmv",
+    "winnerId": "gp_1786387243524_6er0c9u",
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387243524_6er0c9u",
+        "player1Character": "mario",
+        "player2Character": "luigi"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387250178_ac5thmv",
+        "player1Character": "mario",
+        "player2Character": "luigi"
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "gp_1786387243524_6er0c9u",
+        "player1Character": "mario",
+        "player2Character": "luigi"
+      },
+      {
+        "gameNumber": 4,
+        "winnerId": "gp_1786387243524_6er0c9u",
+        "player1Character": "mario",
+        "player2Character": "luigi"
+      }
+    ],
+    "type": "matchmaking",
+    "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+    "periodIndex": 0,
+    "createdAt": "2026-09-18T00:30:34.352Z",
+    "updatedAt": "2026-09-18T00:30:34.352Z"
   }
 ]

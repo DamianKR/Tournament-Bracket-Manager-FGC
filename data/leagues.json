@@ -344,10 +344,11 @@
     "status": "active",
     "currentWeek": 1,
     "createdAt": "2026-09-02T21:44:25.834Z",
-    "updatedAt": "2026-09-10T00:10:44.936Z",
+    "updatedAt": "2026-09-17T04:46:06.884Z",
     "notifiedWeeks": [
       1,
-      2
+      2,
+      3
     ]
   }
 ]

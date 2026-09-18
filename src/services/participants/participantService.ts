@@ -102,6 +102,7 @@ export async function updateParticipant(
     primaryGameId?: string | null;
     gameIds?: string[];
     gameMainCharacters?: Record<string, string | null>;
+    gameAvailability?: Record<string, boolean>;
     phoneNumber?: string | null;
     communityId?: string;
   }

@@ -162,6 +162,14 @@ router.post('/', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'Both participants must be registered for this game' });
     }
 
+    // Availability check — inactive players cannot challenge or be challenged
+    if (challenger.games[gameId].available === false) {
+      return res.status(403).json({ error: 'You are currently inactive for ranked activity in this game. Enable availability in your profile.' });
+    }
+    if (challenged.games[gameId].available === false) {
+      return res.status(403).json({ error: 'That participant is currently inactive for ranked activity in this game.' });
+    }
+
     // ELO restriction enforced server-side per selected game
     const settings = await duelSettings.getAll();
     const config = settings.find(s => s.communityId === communityId) || duelSettingsShape(communityId);

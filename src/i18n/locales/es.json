@@ -295,6 +295,7 @@
     "title": "Partidas rankeadas",
     "subtitle": "Registra y sigue partidas competitivas rankeadas",
     "duels": "Duels",
+    "matchmaking": "Matchmaking",
     "matchmakingComingSoon": "Matchmaking (Próximamente)",
     "matchmakingTitle": "Matchmaking próximamente",
     "matchmakingDesc": "El sistema de matchmaking automático está en desarrollo.",
@@ -824,7 +825,10 @@
       "inviteSectionTitle": "Invitar a tu comunidad",
       "inviteSectionDesc": "El participante recibirá una invitación para unirse a la comunidad seleccionada.",
       "inviteToCommunity": "Invitar",
-      "inviteSent": "Invitación enviada"
+      "inviteSent": "Invitación enviada",
+      "availabilityTitle": "Disponible para duelos y matchmaking",
+      "available": "Activo",
+      "unavailable": "Inactivo"
     },
     "errors": {
       "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",

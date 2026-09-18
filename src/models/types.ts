@@ -128,6 +128,9 @@ export interface ParticipantGameProfile {
   mainCharacterId: string | null;
   eloPoints: number | null; // null = unranked/no points yet in this game
   eloRank: string;          // Rank name derived from eloPoints in this game
+  /** Whether the player is available for ranked activity (duels + matchmaking seasons).
+   *  Defaults to true. If false: excluded from seasons, cannot challenge/be challenged. */
+  available?: boolean;
 }
 
 // ── Global Participant ─────────────────────────────────────────────────

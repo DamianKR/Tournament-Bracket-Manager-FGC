@@ -1290,6 +1290,44 @@
   }
 }
 
+/* Availability toggle in game row */
+.availability-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.availability-toggle input[type="checkbox"] {
+  display: none;
+}
+
+.availability-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1.5px solid;
+  transition: background 0.15s, color 0.15s;
+}
+
+.availability-toggle:has(input:checked) .availability-label {
+  background: color-mix(in srgb, #22c55e 15%, transparent);
+  color: #22c55e;
+  border-color: #22c55e;
+}
+
+.availability-toggle:has(input:not(:checked)) .availability-label {
+  background: color-mix(in srgb, #ef4444 12%, transparent);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
 /* ── Matches Tab ──────────────────────────────────────────────────────── */
 
 .matches-filters {

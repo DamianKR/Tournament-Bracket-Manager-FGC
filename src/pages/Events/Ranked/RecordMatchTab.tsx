@@ -13,6 +13,7 @@ import {
 import { getParticipantElo, getParticipantRank } from '@/utils/participantGames';
 import { getDuelChallenge, reportDuelResult, resolveConflict, completeDuelChallenge, getDuelSettingsAsync } from '@/services/duels/duelService';
 import { DuelChallenge } from '@/models/duel';
+import { MatchmakingAssignment, recordAssignmentResult } from '@/services/matchmaking/matchmakingService';
 import type { MatchGame } from '@/models/rankedMatch';
 import { getGame } from '@/data/games';
 import GameLogEditor from '@/components/GameLogEditor/GameLogEditor';
@@ -25,10 +26,11 @@ const MAX_EVIDENCE_SIZE_BYTES = MAX_EVIDENCE_SIZE_MB * 1024 * 1024;
 interface RecordMatchTabProps {
   matchType: 'duel' | 'matchmaking';
   selectedChallengeId?: string | null;
+  mmAssignment?: MatchmakingAssignment | null;
   onMatchRecorded?: () => void;
 }
 
-function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTabProps) {
+function RecordMatchTab({ selectedChallengeId, mmAssignment, onMatchRecorded }: RecordMatchTabProps) {
   const { t } = useTranslation();
   const { currentCommunity, canAdminCurrentCommunity, canAdminGame, myParticipantId } = useCommunity();
   const communityId = currentCommunity?.id;
@@ -79,9 +81,16 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
     return err ? t(`matchValidation.${err.code}`, err) : null;
   }
 
-  // Auto-populate from selected challenge
+  // Auto-populate from selected challenge or matchmaking assignment
   useEffect(() => {
-    if (selectedChallengeId && allParticipants.length > 0 && communityId) {
+    if (mmAssignment) {
+      setChallenge(null);
+      setPlayerAId(mmAssignment.player1Id);
+      setPlayerBId(mmAssignment.player2Id);
+      setLastResult(null);
+      setEvidence('');
+      setEvidenceFile(null);
+    } else if (selectedChallengeId && allParticipants.length > 0 && communityId) {
       getDuelChallenge(selectedChallengeId, communityId).then(ch => {
         if (ch) {
           setChallenge(ch);
@@ -96,7 +105,7 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
     } else {
       setChallenge(null);
     }
-  }, [selectedChallengeId, allParticipants]);
+  }, [selectedChallengeId, mmAssignment, allParticipants]);
 
   // Check if current user is a participant in the challenge (participant de esta comunidad)
   const isParticipant = challenge && myParticipantId &&
@@ -239,6 +248,94 @@ function RecordMatchTab({ selectedChallengeId, onMatchRecorded }: RecordMatchTab
 
   function pName(id: string) {
     return participantMap.get(id)?.name ?? id;
+  }
+
+  // ── Matchmaking assignment flow ──────────────────────────────────────────
+  if (mmAssignment) {
+    async function handleMmResult() {
+      if (!mmAssignment) return;
+      if (!winnerId) { setRecordError('Selecciona el ganador'); return; }
+      const sErr = seriesError();
+      if (sErr) { setRecordError(sErr); return; }
+      setRecording(true); setRecordError('');
+      try {
+        await recordAssignmentResult(mmAssignment.id, { winnerId, games });
+        onMatchRecorded?.();
+      } catch (err: unknown) {
+        setRecordError(err instanceof Error ? err.message : 'Error al guardar resultado');
+      } finally { setRecording(false); }
+    }
+
+    const mmGame = getGame(mmAssignment.gameId);
+    const mmGamesPerMatch = gamesPerMatch;
+
+    return (
+      <div className="record-match-tab">
+        <div className="card rk-record-card">
+          <div className="rk-record-header">
+            <span className="rk-record-icon"><i className="fas fa-shuffle" /></span>
+            <div>
+              <h2>Reportar — Matchmaking</h2>
+              <p>Registra el resultado de tu partida asignada</p>
+            </div>
+          </div>
+          <div className="rk-matchup">
+            <div className="rk-player-slot">
+              <div className="rk-player-locked">{pName(playerAId)}</div>
+              {playerAId && participantMap.get(playerAId) && (
+                <EloPreview
+                  participant={participantMap.get(playerAId)!}
+                  gameId={mmAssignment.gameId}
+                  isWinner={winnerId === playerAId}
+                />
+              )}
+            </div>
+            <span className="rk-vs">{t('ranked.duelInfo.record.vs')}</span>
+            <div className="rk-player-slot">
+              <div className="rk-player-locked">{pName(playerBId)}</div>
+              {playerBId && participantMap.get(playerBId) && (
+                <EloPreview
+                  participant={participantMap.get(playerBId)!}
+                  gameId={mmAssignment.gameId}
+                  isWinner={winnerId === playerBId}
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="rk-characters-section">
+            <h4>{t('tournament.matchResult.gameLog')}</h4>
+            <GameLogEditor
+              games={games}
+              onChange={setGames}
+              playerAId={playerAId}
+              playerBId={playerBId}
+              playerAName={pName(playerAId)}
+              playerBName={pName(playerBId)}
+              gameId={mmAssignment.gameId}
+              characters={mmGame?.characters ?? []}
+              gamesPerMatch={mmGamesPerMatch}
+            />
+          </div>
+
+          {winnerId && (
+            <p className="rk-label" style={{ textAlign: 'center' }}>
+              <i className="fas fa-trophy" style={{ color: '#f59e0b', marginRight: '0.4rem' }} />
+              {t('ranked.duelInfo.record.winner')}: <strong>{pName(winnerId)}</strong>
+            </p>
+          )}
+
+          {recordError && <div className="error-message">{recordError}</div>}
+          <button
+            className="btn-primary rk-submit-btn"
+            onClick={handleMmResult}
+            disabled={recording || !winnerId || games.length === 0}
+          >
+            {recording ? t('common.saving') : 'Confirmar resultado'}
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // If not admin and no challenge selected, show message

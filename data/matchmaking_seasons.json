@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+    "communityId": "community_fgc_santa_clara",
+    "gameId": "ssbu",
+    "name": "Semptiembe",
+    "periodType": "weekly",
+    "matchesPerPlayer": 3,
+    "gracePeriodDays": 7,
+    "startDate": "2026-09-17T00:00:00.000Z",
+    "totalPeriods": 4,
+    "endDate": null,
+    "status": "active",
+    "currentPeriod": {
+      "index": 0,
+      "startDate": "2026-09-17T00:00:00.000Z",
+      "endDate": "2026-09-24T00:00:00.000Z",
+      "status": "active"
+    },
+    "createdAt": "2026-09-18T00:12:15.056Z",
+    "updatedAt": "2026-09-18T00:13:26.534Z"
+  }
+]

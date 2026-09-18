@@ -12,6 +12,7 @@ import CreateTournament from './pages/CreateTournament/CreateTournament';
 import TournamentView from './pages/Tournament/TournamentView';
 import CreateLeague from './pages/Leagues/CreateLeague';
 import LeagueView from './pages/Leagues/LeagueView';
+import CreateMatchmaking from './pages/Matchmaking/CreateMatchmaking';
 import ParticipantsPage from './pages/Participants/ParticipantsPage';
 import ParticipantProfile from './pages/Participants/ParticipantProfile';
 import RankingPage from './pages/Ranking/RankingPage';
@@ -71,6 +72,11 @@ function App() {
                   <AdminRoute><CreateLeague /></AdminRoute>
                 } />
                 <Route path="events/leagues/:id" element={<LeagueView />} />
+
+                {/* Matchmaking — solo admin puede crear temporadas */}
+                <Route path="events/matchmaking/create" element={
+                  <AdminRoute><CreateMatchmaking /></AdminRoute>
+                } />
 
                 {/* Participants — gestión solo para admin; perfiles son públicos */}
                 <Route path="participants" element={

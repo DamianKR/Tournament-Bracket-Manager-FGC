@@ -653,7 +653,7 @@ router.put('/:id', requireAuth, async (req, res) => {
     }
 
     // UPDATE: merge editable fields only
-    const { name, alias, avatarUrl, stats, gameId, mainCharacterId, gameIds, primaryGameId, gameMainCharacters } = req.body;
+    const { name, alias, avatarUrl, stats, gameId, mainCharacterId, gameIds, primaryGameId, gameMainCharacters, gameAvailability } = req.body;
 
     // Check for duplicate name if name is changing (scoped to the participant's community)
     if (name && name.trim().toLowerCase() !== existing.name.toLowerCase()) {
@@ -694,6 +694,14 @@ router.put('/:id', requireAuth, async (req, res) => {
       }
       const effectivePrimary = existing.primaryGameId || existing.gameId;
       setParticipantGameList(updated, effectiveIds, effectivePrimary, effectiveMains);
+      // Apply availability flags (per-game) after the list is set
+      if (gameAvailability && typeof gameAvailability === 'object') {
+        for (const [gId, avail] of Object.entries(gameAvailability)) {
+          if (updated.games?.[gId]) {
+            updated.games[gId].available = Boolean(avail);
+          }
+        }
+      }
     } else if (gameId !== undefined) {
       // Game-scoped admin no puede cambiar el default game del participante
       if (!isScopedAdmin(req.user, existing.communityId)) {

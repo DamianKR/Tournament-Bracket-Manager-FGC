@@ -25,6 +25,7 @@ import rankedMatchesRouter from './server/routes/rankedMatches.js';
 import authRouter from './server/routes/auth.js';
 import notificationsRouter from './server/routes/notifications.js';
 import communitiesRouter from './server/routes/communities.js';
+import matchmakingRouter from './server/routes/matchmaking.js';
 import { expireAllOldDuels } from './server/services/duelExpiration.js';
 import { expireAllOldLeagueMatches } from './server/services/leagueExpiration.js';
 import { reschedulableLeagueNotifications } from './server/services/notificationScheduler.js';
@@ -62,6 +63,7 @@ app.use('/api/duels', duelsRouter);
 app.use('/api/ranked-matches', rankedMatchesRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/communities', communitiesRouter);
+app.use('/api/matchmaking', matchmakingRouter);
 
 // GET /api/health — lightweight ping to keep Render free instance awake
 app.get('/api/health', (_req, res) => {

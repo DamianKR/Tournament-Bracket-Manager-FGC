@@ -95,25 +95,11 @@ export default function NotificationBell() {
       {open && (
         <div className="notif-dropdown">
           <div className="notif-dropdown-header">
-            <span className="notif-dropdown-title">
-              <i className="fas fa-bell" /> {t('notifications.title')}
-              {unreadCount > 0 && <span className="notif-count-label">{unreadCount} {t('notifications.new')}</span>}
-            </span>
-            <div className="notif-dropdown-actions">
-              <button
-                className={`notif-mark-all-btn ${unreadCount === 0 ? 'disabled' : ''}`}
-                onClick={() => { if (unreadCount > 0) markAllRead(); }}
-                title={unreadCount > 0 ? t('notifications.markAllRead') : t('notifications.allCaughtUp')}
-                disabled={unreadCount === 0}
-              >
-                <i className="fas fa-check-double" /> {t('notifications.markAllRead')}
-              </button>
-              <button
-                className="notif-view-all-btn"
-                onClick={() => { setOpen(false); navigate(getPath('notifications')); }}
-              >
-                {t('notifications.viewAll')}
-              </button>
+            <div className="notif-dropdown-title-row">
+              <span className="notif-dropdown-title">
+                <i className="fas fa-bell" /> {t('notifications.title')}
+                {unreadCount > 0 && <span className="notif-count-label">{unreadCount} {t('notifications.new')}</span>}
+              </span>
               <i
                 className="fas fa-times notif-dropdown-close"
                 onClick={() => setOpen(false)}
@@ -123,6 +109,21 @@ export default function NotificationBell() {
                 tabIndex={0}
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setOpen(false); }}
               />
+            </div>
+            <div className="notif-dropdown-actions">
+              <button
+                className={`notif-mark-all-btn ${unreadCount === 0 ? 'disabled' : ''}`}
+                onClick={() => { if (unreadCount > 0) markAllRead(); }}
+                disabled={unreadCount === 0}
+              >
+                <i className="fas fa-check-double" /> {t('notifications.markAllRead')}
+              </button>
+              <button
+                className="notif-view-all-btn"
+                onClick={() => { setOpen(false); navigate(getPath('notifications')); }}
+              >
+                {t('notifications.viewAll')} <i className="fas fa-arrow-right" />
+              </button>
             </div>
           </div>
 

@@ -79,5 +79,9 @@ export const membershipRequests = col('membership_requests.json', 'membership_re
 // Migraciones
 export const migrations         = col('migrations.json',         'migrations');
 
+// Matchmaking
+export const matchmakingSeasons     = col('matchmaking_seasons.json',     'matchmaking_seasons');
+export const matchmakingAssignments = col('matchmaking_assignments.json', 'matchmaking_assignments');
+
 // Legacy — compatibilidad hacia atrás
 export const matches            = col('matches.json',            'matches');
