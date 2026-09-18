@@ -18,6 +18,9 @@
       "status": "active"
     },
     "createdAt": "2026-09-18T00:12:15.056Z",
-    "updatedAt": "2026-09-18T00:13:26.534Z"
+    "updatedAt": "2026-09-18T01:37:07.025Z",
+    "removedParticipants": [
+      "gp_1786393834683_lievrvf"
+    ]
   }
 ]

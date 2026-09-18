@@ -26,89 +26,6 @@
   align-items: center;
 }
 
-/* ── Info banner ─────────────────────────────────────────────────── */
-
-.mm-info-banner {
-  position: relative;
-  background: linear-gradient(135deg,
-    color-mix(in srgb, var(--primary-color) 9%, var(--bg-primary)) 0%,
-    color-mix(in srgb, var(--primary-color) 4%, var(--bg-primary)) 100%);
-  border: 1px solid color-mix(in srgb, var(--primary-color) 30%, var(--border-color));
-  border-radius: 0.6rem;
-  padding: 1rem 2.6rem 1rem 1.1rem;
-}
-
-.mm-info-close {
-  position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
-  background: none;
-  border: none;
-  color: var(--text-tertiary);
-  font-size: 0.8rem;
-  cursor: pointer;
-  padding: 0.3rem;
-  border-radius: 0.3rem;
-  transition: all 0.15s;
-}
-
-.mm-info-close:hover {
-  color: var(--danger-color);
-  background: color-mix(in srgb, var(--danger-color) 8%, transparent);
-}
-
-.mm-info-steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.1rem;
-}
-
-.mm-info-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.7rem;
-}
-
-.mm-info-step-icon {
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--primary-color) 14%, var(--bg-primary));
-  border: 1px solid color-mix(in srgb, var(--primary-color) 35%, transparent);
-  color: var(--primary-color);
-  font-size: 0.85rem;
-}
-
-.mm-info-step div:last-child {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  min-width: 0;
-}
-
-.mm-info-step strong {
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-primary);
-}
-
-.mm-info-step span {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
-
-@media (max-width: 720px) {
-  .mm-info-steps { grid-template-columns: 1fr; gap: 0.8rem; }
-}
-
 /* ── Season list ─────────────────────────────────────────────────── */
 
 .mm-season-list {
@@ -347,6 +264,121 @@
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
+}
+
+/* ── Detail tabs ──────────────────────────────────────────────────── */
+
+.mm-detail-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0;
+}
+
+.mm-detail-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: -1px;
+}
+
+.mm-detail-tab i {
+  font-size: 0.75rem;
+}
+
+.mm-detail-tab:hover {
+  color: var(--text-primary);
+}
+
+.mm-detail-tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.mm-detail-tab-count {
+  background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+  color: var(--primary-color);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+}
+
+/* ── Participant rows ─────────────────────────────────────────────── */
+
+.mm-player-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--success-color);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 0.9rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mm-player-row:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.mm-player-row--removed {
+  border-left-color: var(--danger-color);
+  opacity: 0.7;
+  background: var(--bg-secondary);
+}
+
+.mm-player-row-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.mm-player-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.mm-player-matches {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.mm-player-matches i {
+  color: var(--primary-color);
+  font-size: 0.65rem;
+}
+
+.mm-players-hint {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.25rem 0 0;
+}
+
+.mm-players-hint i {
+  font-size: 0.7rem;
 }
 
 /* ── Sections ─────────────────────────────────────────────────────── */

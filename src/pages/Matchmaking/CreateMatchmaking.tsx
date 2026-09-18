@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { GAMES } from '@/data/games';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { createSeason } from '@/services/matchmaking/matchmakingService';
 import './CreateMatchmaking.css';
 
-const PERIOD_OPTIONS = [
-  { value: 'weekly',    days: 7,  icon: 'fas fa-calendar-week',     label: 'Semanal',    sub: 'Cada 7 días'  },
-  { value: 'biweekly',  days: 14, icon: 'fas fa-calendar-alt',      label: 'Bisemanal',  sub: 'Cada 14 días' },
-] as const;
-
 type DurationMode = 'open' | 'periods' | 'date';
 
 function CreateMatchmaking() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const PERIOD_OPTIONS = [
+    { value: 'weekly',   days: 7,  icon: 'fas fa-calendar-week', label: t('ranked.mm.create.weekly'),   sub: t('ranked.mm.create.every7')  },
+    { value: 'biweekly', days: 14, icon: 'fas fa-calendar-alt',  label: t('ranked.mm.create.biweekly'), sub: t('ranked.mm.create.every14') },
+  ] as const;
   const { currentCommunity, getPath, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
   const creatableGames = GAMES.filter((g) => canAdminGame(g.id));
@@ -39,8 +41,8 @@ function CreateMatchmaking() {
   const periodEnd  = new Date(new Date(startDate).getTime() + periodDays * 86400000);
 
   async function handleCreate() {
-    if (!name.trim()) { setError('El nombre es requerido'); return; }
-    if (!gameId)      { setError('Selecciona un juego'); return; }
+    if (!name.trim()) { setError(t('ranked.mm.create.errName')); return; }
+    if (!gameId)      { setError(t('ranked.mm.create.errGame')); return; }
     setCreating(true); setError('');
     try {
       await createSeason({
@@ -57,7 +59,7 @@ function CreateMatchmaking() {
       });
       navigate(getPath(`events?tab=ranked&sub=matchmaking`));
     } catch (e: any) {
-      setError(e.message ?? 'Error al crear la temporada');
+      setError(e.message ?? t('ranked.mm.create.errCreate'));
     } finally {
       setCreating(false);
     }
@@ -72,8 +74,8 @@ function CreateMatchmaking() {
           <div className="cm-header">
             <div className="cm-header-icon"><i className="fas fa-shuffle" /></div>
             <div>
-              <h1>Nueva temporada de matchmaking</h1>
-              <p className="cm-subtitle">Los emparejamientos se generan automáticamente cada período</p>
+              <h1>{t('ranked.mm.create.title')}</h1>
+              <p className="cm-subtitle">{t('ranked.mm.create.subtitle')}</p>
             </div>
           </div>
 
@@ -82,16 +84,16 @@ function CreateMatchmaking() {
           {/* ── Nombre + Juego ── */}
           <div className="cm-grid-2">
             <div className="form-group">
-              <label className="cm-label">Nombre de la temporada</label>
+              <label className="cm-label">{t('ranked.mm.create.seasonName')}</label>
               <input
                 className="form-control"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ej: Temporada Septiembre 2026"
+                placeholder={t('ranked.mm.create.namePlaceholder')}
               />
             </div>
             <div className="form-group">
-              <label className="cm-label">Juego</label>
+              <label className="cm-label">{t('ranked.mm.create.game')}</label>
               <select className="form-control" value={gameId} onChange={(e) => setGameId(e.target.value)}>
                 {creatableGames.map((g) => (
                   <option key={g.id} value={g.id}>{g.name}</option>
@@ -102,7 +104,7 @@ function CreateMatchmaking() {
 
           {/* ── Tipo de período ── */}
           <div className="cm-section">
-            <div className="cm-section-title"><i className="fas fa-clock" /> Frecuencia del emparejamiento</div>
+            <div className="cm-section-title"><i className="fas fa-clock" /> {t('ranked.mm.create.frequencyTitle')}</div>
             <div className="cm-period-cards">
               {PERIOD_OPTIONS.map((opt) => (
                 <button
@@ -123,7 +125,7 @@ function CreateMatchmaking() {
 
           {/* ── Partidas por jugador ── */}
           <div className="cm-section">
-            <div className="cm-section-title"><i className="fas fa-swords" /> Partidas por jugador por período</div>
+            <div className="cm-section-title"><i className="fas fa-swords" /> {t('ranked.mm.create.matchesTitle')}</div>
             <div className="cm-matches-row">
               {[1,2,3,4,5,6,7,8,9,10].map((n) => (
                 <button
@@ -135,15 +137,15 @@ function CreateMatchmaking() {
                 </button>
               ))}
             </div>
-            <p className="cm-hint">Cada jugador recibirá {matchesPerPlayer} rival{matchesPerPlayer !== 1 ? 'es' : ''} distinto{matchesPerPlayer !== 1 ? 's' : ''} por período.</p>
+            <p className="cm-hint">{t('ranked.mm.create.rivalsHint', { count: matchesPerPlayer })}</p>
           </div>
 
           {/* ── Fecha de inicio ── */}
           <div className="cm-section">
-            <div className="cm-section-title"><i className="fas fa-calendar" /> Fecha de inicio</div>
+            <div className="cm-section-title"><i className="fas fa-calendar" /> {t('ranked.mm.create.startDateTitle')}</div>
             <div className="cm-grid-2">
               <div className="form-group">
-                <label className="cm-label">Fecha</label>
+                <label className="cm-label">{t('ranked.mm.create.date')}</label>
                 <input
                   type="date"
                   className="form-control"
@@ -154,15 +156,15 @@ function CreateMatchmaking() {
               <div className="cm-preview">
                 <div className="cm-preview-row">
                   <i className="fas fa-play-circle" />
-                  <span>Período 1: <strong>{startDate}</strong></span>
+                  <span>{t('ranked.mm.create.periodStart', { date: startDate })}</span>
                 </div>
                 <div className="cm-preview-row">
                   <i className="fas fa-stop-circle" />
-                  <span>Termina: <strong>{periodEnd.toISOString().split('T')[0]}</strong></span>
+                  <span>{t('ranked.mm.create.periodEnd', { date: periodEnd.toISOString().split('T')[0] })}</span>
                 </div>
                 <div className="cm-preview-row">
                   <i className="fas fa-hourglass-half" />
-                  <span>Gracia: <strong>+{graceDays} días</strong></span>
+                  <span>{t('ranked.mm.create.gracePreview', { count: graceDays })}</span>
                 </div>
               </div>
             </div>
@@ -170,7 +172,7 @@ function CreateMatchmaking() {
 
           {/* ── Duración de la temporada ── */}
           <div className="cm-section">
-            <div className="cm-section-title"><i className="fas fa-flag-checkered" /> Duración de la temporada</div>
+            <div className="cm-section-title"><i className="fas fa-flag-checkered" /> {t('ranked.mm.create.durationTitle')}</div>
             <div className="cm-duration-cards">
               <button
                 className={`cm-duration-card${durationMode === 'periods' ? ' selected' : ''}`}
@@ -178,8 +180,8 @@ function CreateMatchmaking() {
               >
                 <i className="fas fa-list-ol" />
                 <div>
-                  <span className="cm-period-label">N° de períodos</span>
-                  <span className="cm-period-sub">Termina automáticamente</span>
+                  <span className="cm-period-label">{t('ranked.mm.create.durPeriods')}</span>
+                  <span className="cm-period-sub">{t('ranked.mm.create.durPeriodsSub')}</span>
                 </div>
               </button>
               <button
@@ -188,8 +190,8 @@ function CreateMatchmaking() {
               >
                 <i className="fas fa-calendar-check" />
                 <div>
-                  <span className="cm-period-label">Fecha límite</span>
-                  <span className="cm-period-sub">Termina en fecha exacta</span>
+                  <span className="cm-period-label">{t('ranked.mm.create.durDate')}</span>
+                  <span className="cm-period-sub">{t('ranked.mm.create.durDateSub')}</span>
                 </div>
               </button>
               <button
@@ -198,8 +200,8 @@ function CreateMatchmaking() {
               >
                 <i className="fas fa-infinity" />
                 <div>
-                  <span className="cm-period-label">Indefinida</span>
-                  <span className="cm-period-sub">Cierra el admin manualmente</span>
+                  <span className="cm-period-label">{t('ranked.mm.create.durOpen')}</span>
+                  <span className="cm-period-sub">{t('ranked.mm.create.durOpenSub')}</span>
                 </div>
               </button>
             </div>
@@ -218,7 +220,7 @@ function CreateMatchmaking() {
                   ))}
                 </div>
                 <p className="cm-hint">
-                  La temporada corre {totalPeriods} período{totalPeriods !== 1 ? 's' : ''} de {periodType === 'weekly' ? '7' : '14'} días cada uno — se cierra sola después.
+                  {t('ranked.mm.create.durPeriodsHint', { periods: totalPeriods, days: periodType === 'weekly' ? 7 : 14 })}
                 </p>
               </div>
             )}
@@ -226,7 +228,7 @@ function CreateMatchmaking() {
             {durationMode === 'date' && (
               <div className="cm-duration-input">
                 <div className="form-group" style={{ maxWidth: '220px' }}>
-                  <label className="cm-label">Fecha de cierre</label>
+                  <label className="cm-label">{t('ranked.mm.create.closeDate')}</label>
                   <input
                     type="date"
                     className="form-control"
@@ -235,7 +237,7 @@ function CreateMatchmaking() {
                     onChange={(e) => setEndDate(e.target.value)}
                   />
                 </div>
-                <p className="cm-hint">La temporada se cierra automáticamente al llegar esa fecha.</p>
+                <p className="cm-hint">{t('ranked.mm.create.durDateHint')}</p>
               </div>
             )}
 
@@ -243,7 +245,7 @@ function CreateMatchmaking() {
               <div className="cm-duration-input">
                 <p className="cm-hint">
                   <i className="fas fa-info-circle" style={{ marginRight: '0.4rem' }} />
-                  Sin fecha de fin — tú la cierras manualmente desde el panel de la temporada cuando quieras.
+                  {t('ranked.mm.create.durOpenHint')}
                 </p>
               </div>
             )}
@@ -251,7 +253,7 @@ function CreateMatchmaking() {
 
           {/* ── Período de gracia ── */}
           <div className="cm-section">
-            <div className="cm-section-title"><i className="fas fa-shield-alt" /> Período de gracia</div>
+            <div className="cm-section-title"><i className="fas fa-shield-alt" /> {t('ranked.mm.create.graceTitle')}</div>
             <div className="cm-grace-row">
               <input
                 type="range"
@@ -261,11 +263,10 @@ function CreateMatchmaking() {
                 onChange={(e) => setGraceDays(Number(e.target.value))}
                 className="cm-range"
               />
-              <div className="cm-grace-value">{graceDays} <span>días</span></div>
+              <div className="cm-grace-value">{graceDays} <span>{t('ranked.mm.create.graceDays')}</span></div>
             </div>
             <p className="cm-hint">
-              Días extra tras el fin del período antes de que los matches pendientes se cancelen.
-              Durante la gracia los jugadores pueden seguir reportando resultados.
+              {t('ranked.mm.create.graceHint')}
             </p>
           </div>
 
@@ -274,19 +275,19 @@ function CreateMatchmaking() {
             <div className="cm-game-preview" style={{ borderColor: selectedGame.color }}>
               <span className="cm-game-dot" style={{ background: selectedGame.color }} />
               <span className="cm-game-name">{selectedGame.name}</span>
-              <span className="cm-game-tag">Matchmaking activo para este juego</span>
+              <span className="cm-game-tag">{t('ranked.mm.create.gameActive')}</span>
             </div>
           )}
 
           {/* ── Actions ── */}
           <div className="cm-actions">
             <button className="btn-outline" onClick={() => navigate(getPath('events?tab=ranked&sub=matchmaking'))}>
-              Cancelar
+              {t('ranked.mm.create.cancel')}
             </button>
             <button className="btn-primary cm-create-btn" onClick={handleCreate} disabled={creating}>
               {creating
-                ? <><i className="fas fa-spinner fa-spin" /> Creando...</>
-                : <><i className="fas fa-shuffle" /> Crear temporada</>}
+                ? <><i className="fas fa-spinner fa-spin" /> {t('ranked.mm.create.creating')}</>
+                : <><i className="fas fa-shuffle" /> {t('ranked.mm.create.create')}</>}
             </button>
           </div>
 

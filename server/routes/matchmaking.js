@@ -21,12 +21,11 @@
 
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { matchmakingSeasons, matchmakingAssignments, participants, rankedMatches } from '../db/collections.js';
+import { matchmakingSeasons, matchmakingAssignments, participants } from '../db/collections.js';
 import { requireAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, isInUserScope, isAdminInCommunity, getTargetCommunityId, participantIdFor } from '../utils/communityScope.js';
+import { filterByCommunity, isInUserScope, isAdminInCommunity, canAdminGame, getTargetCommunityId, participantIdFor } from '../utils/communityScope.js';
 import { getEffectiveElo } from '../utils/participantGames.js';
 import { createNotification } from '../services/notificationService.js';
-import { calculateElo, getRankName } from '../utils/eloEngine.js';
 
 const router = Router();
 
@@ -78,6 +77,7 @@ function seasonShape(id, communityId, body) {
     startDate,            // season start ISO
     totalPeriods: totalPeriods ?? null,  // null = open-ended
     endDate: endDate ?? null,            // null = open-ended
+    removedParticipants: [],             // admin-removed player ids (excluded from pairing)
     status: 'draft',      // draft | active | closed
     currentPeriod: { ...period, status: 'pending' }, // pending until generate
     createdAt: new Date().toISOString(),
@@ -236,11 +236,13 @@ async function maybeAdvancePeriod(season) {
 
 async function generatePeriodMatches(season) {
   const allParticipants = await participants.getAll();
+  const removed = new Set(season.removedParticipants ?? []);
   const pool = allParticipants.filter(
     (p) =>
       p.communityId === season.communityId &&
       p.games?.[season.gameId] &&
-      p.games[season.gameId].available !== false
+      p.games[season.gameId].available !== false &&
+      !removed.has(p.id)
   );
 
   if (pool.length < 2) {
@@ -492,6 +494,55 @@ router.post('/seasons/:id/close', requireAuth, async (req, res) => {
   }
 });
 
+// PUT /api/matchmaking/seasons/:id/participants/:participantId
+// Body: { removed: boolean }
+// removed=true  → exclude player from future pairing + cancel their pending
+//                 assignments this period WITHOUT penalty (admin special removal)
+// removed=false → restore them for future periods
+router.put('/seasons/:id/participants/:participantId', requireAuth, async (req, res) => {
+  try {
+    const season = await matchmakingSeasons.findById(req.params.id);
+    if (!season) return res.status(404).json({ error: 'Season not found' });
+    if (!canAdminGame(req.user, season.communityId, season.gameId)) {
+      return res.status(403).json({ error: 'Admin required for this game' });
+    }
+    if (season.status === 'closed') return res.status(400).json({ error: 'Season is closed' });
+
+    const { participantId } = req.params;
+    const removed = req.body.removed !== false; // default true
+    const current = season.removedParticipants ?? [];
+    let cancelled = 0;
+
+    if (removed) {
+      if (!current.includes(participantId)) {
+        season.removedParticipants = [...current, participantId];
+      }
+      // Cancel this player's pending assignments in the current period
+      const allA = await matchmakingAssignments.getAll();
+      const periodIdx = season.currentPeriod?.index ?? 0;
+      for (const a of allA) {
+        if (a.seasonId === season.id && a.periodIndex === periodIdx && a.status === 'pending'
+            && (a.player1Id === participantId || a.player2Id === participantId)) {
+          a.status = 'cancelled';
+          a.cancelReason = 'participant_removed';
+          a.updatedAt = new Date().toISOString();
+          cancelled++;
+        }
+      }
+      if (cancelled) await matchmakingAssignments.replaceAll(allA);
+    } else {
+      season.removedParticipants = current.filter((id) => id !== participantId);
+    }
+
+    season.updatedAt = new Date().toISOString();
+    await matchmakingSeasons.upsert(season);
+    res.json({ ok: true, removedParticipants: season.removedParticipants, cancelled });
+  } catch (err) {
+    console.error('[Matchmaking] PUT /seasons/:id/participants/:participantId:', err);
+    res.status(500).json({ error: 'Failed to update season participant' });
+  }
+});
+
 // ── Assignment routes ─────────────────────────────────────────────────────────
 
 // GET /api/matchmaking/assignments
@@ -523,60 +574,21 @@ router.put('/assignments/:id/result', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'Not a participant in this assignment' });
     }
 
-    const { winnerId, games } = req.body;
+    // ELO + match record are created via POST /api/ranking/match beforehand;
+    // here we only mark the assignment completed and link the match.
+    const { winnerId, matchId } = req.body;
     if (!winnerId || (winnerId !== assignment.player1Id && winnerId !== assignment.player2Id)) {
       return res.status(400).json({ error: 'Invalid winnerId' });
     }
 
-    const allP = await participants.getAll();
-    const p1 = allP.find((p) => p.id === assignment.player1Id);
-    const p2 = allP.find((p) => p.id === assignment.player2Id);
-    if (!p1 || !p2) return res.status(404).json({ error: 'Participant not found' });
-
-    const winner = winnerId === assignment.player1Id ? p1 : p2;
-    const loser  = winnerId === assignment.player1Id ? p2 : p1;
-    const { newRA: newWElo, newRB: newLElo } = calculateElo(
-      getEffectiveElo(winner, assignment.gameId),
-      getEffectiveElo(loser, assignment.gameId),
-      'A'
-    );
-
-    const updW = { ...winner, games: { ...winner.games } };
-    updW.games[assignment.gameId] = { ...(winner.games?.[assignment.gameId] ?? {}), gameId: assignment.gameId, eloPoints: newWElo, eloRank: getRankName(newWElo) };
-    const updL = { ...loser, games: { ...loser.games } };
-    updL.games[assignment.gameId] = { ...(loser.games?.[assignment.gameId] ?? {}), gameId: assignment.gameId, eloPoints: newLElo, eloRank: getRankName(newLElo) };
-
-    await participants.replaceAll(allP.map((p) => {
-      if (p.id === updW.id) return updW;
-      if (p.id === updL.id) return updL;
-      return p;
-    }));
-
-    const match = {
-      id: randomUUID(),
-      communityId: assignment.communityId,
-      gameId: assignment.gameId,
-      playerAId: assignment.player1Id,
-      playerBId: assignment.player2Id,
-      winnerId,
-      games: games ?? [],
-      type: 'matchmaking',
-      seasonId: assignment.seasonId,
-      periodIndex: assignment.periodIndex,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const allMatches = await rankedMatches.getAll();
-    await rankedMatches.replaceAll([...allMatches, match]);
-
     assignment.status = 'completed';
     assignment.winnerId = winnerId;
-    assignment.rankedMatchId = match.id;
+    assignment.rankedMatchId = matchId ?? null;
     assignment.updatedAt = new Date().toISOString();
     const allA = await matchmakingAssignments.getAll();
     await matchmakingAssignments.replaceAll(allA.map((a) => (a.id === assignment.id ? assignment : a)));
 
-    res.json({ assignment, match, updatedWinner: updW, updatedLoser: updL });
+    res.json({ assignment });
   } catch (err) {
     console.error('[Matchmaking] PUT /assignments/:id/result:', err);
     res.status(500).json({ error: 'Failed to record result' });
@@ -591,35 +603,19 @@ router.put('/assignments/:id/forfeit', requireAuth, async (req, res) => {
     if (!isAdminInCommunity(req.user, assignment.communityId)) return res.status(403).json({ error: 'Admin required' });
     if (assignment.status !== 'pending') return res.status(400).json({ error: 'Assignment is not pending' });
 
-    const { forfeitPlayerId, note } = req.body;
+    const { forfeitPlayerId, note, matchId } = req.body;
     if (forfeitPlayerId !== assignment.player1Id && forfeitPlayerId !== assignment.player2Id) {
       return res.status(400).json({ error: 'forfeitPlayerId must be one of the two players' });
     }
 
+    // ELO + match record are created via POST /api/ranking/match beforehand;
+    // here we only mark the assignment as forfeited and link the match.
     const winnerId = forfeitPlayerId === assignment.player1Id ? assignment.player2Id : assignment.player1Id;
-    const allP = await participants.getAll();
-    const w = allP.find((p) => p.id === winnerId);
-    const l = allP.find((p) => p.id === forfeitPlayerId);
-    if (w && l) {
-      const { newRA: nW, newRB: nL } = calculateElo(
-        getEffectiveElo(w, assignment.gameId),
-        getEffectiveElo(l, assignment.gameId),
-        'A'
-      );
-      const updW = { ...w, games: { ...w.games } };
-      updW.games[assignment.gameId] = { ...(w.games?.[assignment.gameId] ?? {}), gameId: assignment.gameId, eloPoints: nW, eloRank: getRankName(nW) };
-      const updL = { ...l, games: { ...l.games } };
-      updL.games[assignment.gameId] = { ...(l.games?.[assignment.gameId] ?? {}), gameId: assignment.gameId, eloPoints: nL, eloRank: getRankName(nL) };
-      await participants.replaceAll(allP.map((p) => {
-        if (p.id === updW.id) return updW;
-        if (p.id === updL.id) return updL;
-        return p;
-      }));
-    }
 
     assignment.status = forfeitPlayerId === assignment.player1Id ? 'forfeit_p1' : 'forfeit_p2';
     assignment.winnerId = winnerId;
     assignment.forfeitNote = note ?? null;
+    assignment.rankedMatchId = matchId ?? null;
     assignment.updatedAt = new Date().toISOString();
     const allA = await matchmakingAssignments.getAll();
     await matchmakingAssignments.replaceAll(allA.map((a) => (a.id === assignment.id ? assignment : a)));

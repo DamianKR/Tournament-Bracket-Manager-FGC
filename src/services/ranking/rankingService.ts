@@ -150,7 +150,8 @@ export async function recordMatch(
   communityId?: string,
   scoreA?: number,
   scoreB?: number,
-  games?: MatchGame[]
+  games?: MatchGame[],
+  extra?: { seasonId?: string; periodIndex?: number }
 ): Promise<MatchResult> {
   const res = await fetch(`${API_BASE}/match`, {
     method: 'POST',
@@ -165,6 +166,8 @@ export async function recordMatch(
       player1Score: scoreA,
       player2Score: scoreB,
       games,
+      ...(extra?.seasonId && { seasonId: extra.seasonId }),
+      ...(extra?.periodIndex !== undefined && { periodIndex: extra.periodIndex }),
     }),
   });
   if (!res.ok) {

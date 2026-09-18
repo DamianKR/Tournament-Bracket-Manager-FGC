@@ -7,10 +7,11 @@
     "periodIndex": 0,
     "player1Id": "gp_1786387087046_wnwtadb",
     "player2Id": "gp_1786387234567_aoe1z95",
-    "status": "pending",
-    "rankedMatchId": null,
+    "status": "completed",
+    "rankedMatchId": "1c2cebca-abf1-43d3-9152-7e8925718bf8",
     "createdAt": "2026-09-18T00:13:26.532Z",
-    "updatedAt": "2026-09-18T00:13:26.532Z"
+    "updatedAt": "2026-09-18T01:41:27.410Z",
+    "winnerId": "gp_1786387087046_wnwtadb"
   },
   {
     "id": "5da7a97f-5419-4b27-8390-8ff269479837",
@@ -34,10 +35,11 @@
     "periodIndex": 0,
     "player1Id": "gp_1786388790209_sr4ldku",
     "player2Id": "gp_1786396304199_u7v6gsb",
-    "status": "pending",
-    "rankedMatchId": null,
+    "status": "completed",
+    "rankedMatchId": "m_1789698502656_y5ip2zd",
     "createdAt": "2026-09-18T00:13:26.532Z",
-    "updatedAt": "2026-09-18T00:13:26.532Z"
+    "updatedAt": "2026-09-18T02:28:22.667Z",
+    "winnerId": "gp_1786388790209_sr4ldku"
   },
   {
     "id": "b81801e5-d3a4-49fc-99d0-b3d8f8d87691",
@@ -60,10 +62,11 @@
     "periodIndex": 0,
     "player1Id": "gp_1786391783115_87zwx03",
     "player2Id": "gp_1787060569919_ov80gcy",
-    "status": "pending",
-    "rankedMatchId": null,
+    "status": "completed",
+    "rankedMatchId": "m_1789697420175_hbqftna",
     "createdAt": "2026-09-18T00:13:26.532Z",
-    "updatedAt": "2026-09-18T00:13:26.532Z"
+    "updatedAt": "2026-09-18T02:10:20.187Z",
+    "winnerId": "gp_1786391783115_87zwx03"
   },
   {
     "id": "c31a5175-9d61-4495-9d1c-12335737650c",
@@ -151,10 +154,11 @@
     "periodIndex": 0,
     "player1Id": "gp_1786393834683_lievrvf",
     "player2Id": "gp_1786408686972_s4nl3vz",
-    "status": "pending",
+    "status": "cancelled",
     "rankedMatchId": null,
     "createdAt": "2026-09-18T00:13:26.532Z",
-    "updatedAt": "2026-09-18T00:13:26.532Z"
+    "updatedAt": "2026-09-18T01:37:07.023Z",
+    "cancelReason": "participant_removed"
   },
   {
     "id": "074907ae-f66d-4b38-9c10-bdbf7be666df",
@@ -359,10 +363,11 @@
     "periodIndex": 0,
     "player1Id": "gp_1786387234567_aoe1z95",
     "player2Id": "gp_1786393834683_lievrvf",
-    "status": "pending",
+    "status": "cancelled",
     "rankedMatchId": null,
     "createdAt": "2026-09-18T00:13:26.532Z",
-    "updatedAt": "2026-09-18T00:13:26.532Z"
+    "updatedAt": "2026-09-18T01:37:07.023Z",
+    "cancelReason": "participant_removed"
   },
   {
     "id": "7a62da6b-7180-4498-8b47-008710aecc4c",
@@ -827,10 +832,11 @@
     "periodIndex": 0,
     "player1Id": "gp_1786393834683_lievrvf",
     "player2Id": "gp_1786396304199_u7v6gsb",
-    "status": "pending",
+    "status": "cancelled",
     "rankedMatchId": null,
     "createdAt": "2026-09-18T00:13:26.532Z",
-    "updatedAt": "2026-09-18T00:13:26.532Z"
+    "updatedAt": "2026-09-18T01:37:07.024Z",
+    "cancelReason": "participant_removed"
   },
   {
     "id": "39659773-ecca-4f93-a2f0-821d5537d33b",

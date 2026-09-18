@@ -254,15 +254,42 @@ function RecordMatchTab({ selectedChallengeId, mmAssignment, onMatchRecorded }: 
   if (mmAssignment) {
     async function handleMmResult() {
       if (!mmAssignment) return;
-      if (!winnerId) { setRecordError('Selecciona el ganador'); return; }
+      if (!winnerId) { setRecordError(t('ranked.mm.reportFlow.selectWinner')); return; }
       const sErr = seriesError();
       if (sErr) { setRecordError(sErr); return; }
       setRecording(true); setRecordError('');
       try {
-        await recordAssignmentResult(mmAssignment.id, { winnerId, games });
-        onMatchRecorded?.();
+        // Same endpoint as duels — records match, applies ELO, returns MatchResult
+        const result = await recordMatch(
+          mmAssignment.player1Id,
+          mmAssignment.player2Id,
+          winnerId,
+          mmAssignment.gameId,
+          'matchmaking',
+          communityId,
+          scoreA,
+          scoreB,
+          games,
+          { seasonId: mmAssignment.seasonId, periodIndex: mmAssignment.periodIndex }
+        );
+        // Link the assignment to the recorded match
+        await recordAssignmentResult(mmAssignment.id, { winnerId, matchId: result.match.id });
+        setLastResult(result);
+        // Patch local participants with updated ELO values
+        const pA = (result as unknown as { updatedParticipantA?: GlobalParticipant }).updatedParticipantA;
+        const pB = (result as unknown as { updatedParticipantB?: GlobalParticipant }).updatedParticipantB;
+        if (pA || pB) {
+          setAllParticipants((prev) =>
+            prev.map((p) => {
+              if (pA && p.id === pA.id) return pA;
+              if (pB && p.id === pB.id) return pB;
+              return p;
+            })
+          );
+        }
+        setTimeout(() => onMatchRecorded?.(), 2500);
       } catch (err: unknown) {
-        setRecordError(err instanceof Error ? err.message : 'Error al guardar resultado');
+        setRecordError(err instanceof Error ? err.message : t('ranked.mm.reportFlow.saveError'));
       } finally { setRecording(false); }
     }
 
@@ -275,8 +302,8 @@ function RecordMatchTab({ selectedChallengeId, mmAssignment, onMatchRecorded }: 
           <div className="rk-record-header">
             <span className="rk-record-icon"><i className="fas fa-shuffle" /></span>
             <div>
-              <h2>Reportar — Matchmaking</h2>
-              <p>Registra el resultado de tu partida asignada</p>
+              <h2>{t('ranked.mm.reportFlow.title')}</h2>
+              <p>{t('ranked.mm.reportFlow.subtitle')}</p>
             </div>
           </div>
           <div className="rk-matchup">
@@ -302,6 +329,21 @@ function RecordMatchTab({ selectedChallengeId, mmAssignment, onMatchRecorded }: 
               )}
             </div>
           </div>
+
+          {/* Score display — same as duel flow */}
+          {playerAId && playerBId && (
+            <div className="rk-score-section">
+              <div className="rk-score-inputs">
+                <div className="rk-score-player">
+                  <span className="rk-score-display">{scoreA}</span>
+                </div>
+                <span className="rk-score-separator">-</span>
+                <div className="rk-score-player">
+                  <span className="rk-score-display">{scoreB}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="rk-characters-section">
             <h4>{t('tournament.matchResult.gameLog')}</h4>
@@ -331,8 +373,20 @@ function RecordMatchTab({ selectedChallengeId, mmAssignment, onMatchRecorded }: 
             onClick={handleMmResult}
             disabled={recording || !winnerId || games.length === 0}
           >
-            {recording ? t('common.saving') : 'Confirmar resultado'}
+            {recording ? t('common.saving') : t('ranked.mm.reportFlow.confirm')}
           </button>
+
+          {/* Result feedback — same ResultCard as duels */}
+          {lastResult && (
+            <div className="rk-result-box">
+              <h4>{t('ranked.duelInfo.record.resultRecorded')}</h4>
+              <div className="rk-result-row">
+                <ResultCard r={lastResult.playerA} isWinner={lastResult.playerA.id === lastResult.match.winnerId} />
+                <span className="rk-result-vs">{t('ranked.duelInfo.record.vs')}</span>
+                <ResultCard r={lastResult.playerB} isWinner={lastResult.playerB.id === lastResult.match.winnerId} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

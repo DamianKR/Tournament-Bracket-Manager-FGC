@@ -26,6 +26,8 @@ export interface MatchmakingSeason {
   status: 'draft' | 'active' | 'closed';
   totalPeriods?: number | null;
   endDate?: string | null;
+  /** Admin-removed player ids — excluded from pairing, pending matches cancelled. */
+  removedParticipants?: string[];
   currentPeriod: MatchmakingPeriod;
   createdAt: string;
   updatedAt: string;
@@ -142,6 +144,21 @@ export async function closeSeason(seasonId: string): Promise<{ ok: boolean; clos
   return res.json();
 }
 
+/** Remove (ban) or restore a participant in a season — pending matches cancelled without penalty. */
+export async function setSeasonParticipantRemoved(
+  seasonId: string,
+  participantId: string,
+  removed: boolean
+): Promise<{ ok: boolean; removedParticipants: string[]; cancelled: number }> {
+  const res = await fetch(`${BASE}/seasons/${seasonId}/participants/${participantId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ removed }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 // ── Assignments ───────────────────────────────────────────────────────────────
 
 export async function getAssignments(params: {
@@ -158,9 +175,10 @@ export async function getAssignments(params: {
   return res.json();
 }
 
+/** Links an assignment to a ranked match already recorded via recordMatch(). */
 export async function recordAssignmentResult(
   assignmentId: string,
-  payload: { winnerId: string; games?: unknown[] }
+  payload: { winnerId: string; matchId?: string }
 ): Promise<{ assignment: MatchmakingAssignment }> {
   const res = await fetch(`${BASE}/assignments/${assignmentId}/result`, {
     method: 'PUT',
@@ -174,12 +192,13 @@ export async function recordAssignmentResult(
 export async function forfeitAssignment(
   assignmentId: string,
   forfeitPlayerId: string,
-  note?: string
+  note?: string,
+  matchId?: string
 ): Promise<{ assignment: MatchmakingAssignment }> {
   const res = await fetch(`${BASE}/assignments/${assignmentId}/forfeit`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ forfeitPlayerId, note }),
+    body: JSON.stringify({ forfeitPlayerId, note, matchId }),
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json();

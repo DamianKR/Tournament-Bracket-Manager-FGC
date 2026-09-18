@@ -31,7 +31,7 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Master",
-        "eloPoints": 1733,
+        "eloPoints": 1739,
         "mainCharacterId": "samus"
       }
     },
@@ -73,7 +73,7 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Vanquisher",
-        "eloPoints": 1686,
+        "eloPoints": 1680,
         "mainCharacterId": "link"
       }
     },
@@ -208,14 +208,14 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Diamante",
-        "eloPoints": 1546,
+        "eloPoints": 1557,
         "mainCharacterId": "terry"
       }
     },
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T19:06:30.209Z",
-    "updatedAt": "2026-09-14T18:42:46.545Z",
+    "updatedAt": "2026-09-18T02:28:22.656Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786388748055-8yrbvigzm",
@@ -256,14 +256,14 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Diamante",
-        "eloPoints": 1523,
+        "eloPoints": 1534,
         "mainCharacterId": "king_dedede"
       }
     },
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T19:56:23.115Z",
-    "updatedAt": "2026-09-10T20:50:03.459Z",
+    "updatedAt": "2026-09-18T02:10:20.175Z",
     "communityId": "community_fgc_santa_clara",
     "phoneNumber": "+5359288953",
     "tournamentIds": [
@@ -498,14 +498,14 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Diamante",
-        "eloPoints": 1546,
+        "eloPoints": 1535,
         "mainCharacterId": "cloud"
       }
     },
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T21:11:44.199Z",
-    "updatedAt": "2026-09-14T18:42:46.544Z",
+    "updatedAt": "2026-09-18T02:28:22.656Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786645309882-n8iemn0fx",
@@ -979,14 +979,14 @@
       "ssbu": {
         "gameId": "ssbu",
         "eloRank": "Diamante",
-        "eloPoints": 1527,
+        "eloPoints": 1516,
         "mainCharacterId": "link"
       }
     },
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-18T13:42:49.919Z",
-    "updatedAt": "2026-09-12T06:41:21.203Z",
+    "updatedAt": "2026-09-18T02:10:20.175Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1787069005182-knkndcjgv"

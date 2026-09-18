@@ -189,12 +189,14 @@ router.post('/match', requireAuth, async (req, res) => {
     const pA = normalizeParticipant(rawA);
     const pB = normalizeParticipant(rawB);
 
+    // Capture BEFORE applying the new ELO — setParticipantGameElo mutates pA/pB
+    const eloBeforeA  = getEffectiveElo(pA, matchGameId);
+    const eloBeforeB  = getEffectiveElo(pB, matchGameId);
+    const rankBeforeA = getParticipantRank(pA, matchGameId);
+    const rankBeforeB = getParticipantRank(pB, matchGameId);
+
     const winner = winnerId === playerAId ? 'A' : 'B';
-    const { newRA, newRB, deltaA, deltaB } = calculateElo(
-      getEffectiveElo(pA, matchGameId),
-      getEffectiveElo(pB, matchGameId),
-      winner
-    );
+    const { newRA, newRB, deltaA, deltaB } = calculateElo(eloBeforeA, eloBeforeB, winner);
 
     const newRankA = getRankName(newRA);
     const newRankB = getRankName(newRB);
@@ -210,20 +212,23 @@ router.post('/match', requireAuth, async (req, res) => {
       loserId: winnerId === playerAId ? playerBId : playerAId,
       type: req.body.matchType || 'free',
       gameId: matchGameId,
-      playerAPointsBefore: getEffectiveElo(pA, matchGameId),
-      playerBPointsBefore: getEffectiveElo(pB, matchGameId),
+      playerAPointsBefore: eloBeforeA,
+      playerBPointsBefore: eloBeforeB,
       playerAPointsAfter: newRA,
       playerBPointsAfter: newRB,
       playerADelta: deltaA,
       playerBDelta: deltaB,
-      playerARankBefore: getParticipantRank(pA, matchGameId),
-      playerBRankBefore: getParticipantRank(pB, matchGameId),
+      playerARankBefore: rankBeforeA,
+      playerBRankBefore: rankBeforeB,
       playerARankAfter: newRankA,
       playerBRankAfter: newRankB,
       // Detailed match data (optional, retrocompatible)
       ...(req.body.player1Score !== undefined && { player1Score: req.body.player1Score }),
       ...(req.body.player2Score !== undefined && { player2Score: req.body.player2Score }),
       ...(req.body.games && { games: req.body.games }),
+      // Matchmaking linkage (optional)
+      ...(req.body.seasonId && { seasonId: req.body.seasonId }),
+      ...(req.body.periodIndex !== undefined && { periodIndex: req.body.periodIndex }),
       communityId,
       createdAt: new Date().toISOString(),
     };

@@ -5015,7 +5015,7 @@
     "type": "league_week_start",
     "title": "League Week 2 started",
     "message": "Week 2 of Testing smash has started. Your opponents this week: Akuma, Yoeeee, WolfCat Silence.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-09T16:50:05.772Z",
     "scheduledAt": "2026-09-09T16:50:05.772Z",
     "data": {
@@ -5026,7 +5026,8 @@
         "gp_1786758755895_bgdf2b9",
         "gp_1787798635187_v9qifdf"
       ]
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.410Z"
   },
   {
     "id": "notif_1788972605776_zrlw0v2gk",
@@ -5848,7 +5849,7 @@
     "type": "league_week_start",
     "title": "League Week 2 started",
     "message": "Week 2 of Timing League Creation has started. Your opponents this week: Akuma, WolfCat Silence.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-09T16:50:05.896Z",
     "scheduledAt": "2026-09-09T16:50:05.896Z",
     "data": {
@@ -5858,7 +5859,8 @@
         "gp_1786757329455_8ijcyo8",
         "gp_1787798635187_v9qifdf"
       ]
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.415Z"
   },
   {
     "id": "notif_1788972605898_8norw86oc",
@@ -6766,7 +6768,7 @@
     "type": "league_week_start",
     "title": "League Week 2 started",
     "message": "Week 2 of Smash new at last has started. Your opponents this week: WolfCat Silence, Sybau, Slendy.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-10T00:10:44.737Z",
     "scheduledAt": "2026-09-10T00:10:44.737Z",
     "data": {
@@ -6777,7 +6779,8 @@
         "gp_1786808135517_vfoni2a",
         "gp_1787202759812_b30336h"
       ]
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.421Z"
   },
   {
     "id": "notif_1788999044742_63le3550d",
@@ -8008,13 +8011,14 @@
     "type": "duel_accepted",
     "title": "Duel Accepted!",
     "message": "KruX accepted your duel challenge. Play and record the result before it expires.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T21:18:44.210Z",
     "scheduledAt": "2026-09-12T21:18:44.210Z",
     "data": {
       "duelId": "duel_1789247922474_u34x1f3h6",
       "challengedId": "gp_1786387087046_wnwtadb"
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.427Z"
   },
   {
     "id": "notif_1789247924214_puczn5m6z",
@@ -8022,13 +8026,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-12T21:18:44.214Z",
     "scheduledAt": "2026-09-16T21:18:44.207Z",
     "data": {
       "duelId": "duel_1789247922474_u34x1f3h6",
       "expiresAt": "2026-09-19T21:18:44.207Z"
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.432Z"
   },
   {
     "id": "notif_1789247924218_rl7ryjwwn",
@@ -8169,7 +8174,7 @@
     "type": "league_week_start",
     "title": "League Week 3 started",
     "message": "Week 3 of Testing smash has started. Your opponents this week: WiikiFox, Sybau, Tails.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-16T01:40:41.740Z",
     "scheduledAt": "2026-09-16T01:40:41.740Z",
     "data": {
@@ -8180,7 +8185,8 @@
         "gp_1786808135517_vfoni2a",
         "gp_1786391783115_87zwx03"
       ]
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.436Z"
   },
   {
     "id": "notif_1789522841744_ef0jy19mt",
@@ -9002,7 +9008,7 @@
     "type": "league_week_start",
     "title": "League Week 3 started",
     "message": "Week 3 of Timing League Creation has started. Your opponents this week: Sybau, Slendy.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-16T01:40:41.889Z",
     "scheduledAt": "2026-09-16T01:40:41.889Z",
     "data": {
@@ -9012,7 +9018,8 @@
         "gp_1786808135517_vfoni2a",
         "gp_1787202759812_b30336h"
       ]
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.441Z"
   },
   {
     "id": "notif_1789522841892_fium4eu92",
@@ -10019,14 +10026,15 @@
     "type": "duel_challenge",
     "title": "New Duel Challenge!",
     "message": "KruX has challenged you to a duel. Accept or decline in the Events section.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-16T08:58:02.979Z",
     "scheduledAt": "2026-09-16T08:58:02.979Z",
     "data": {
       "duelId": "duel_1789549082968_im9tmupfu",
       "challengerId": "gp_1786387087046_wnwtadb",
       "type": "normal"
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.446Z"
   },
   {
     "id": "notif_1789549084760_w1ipy2qn6",
@@ -10064,13 +10072,14 @@
     "type": "duel_expiring",
     "title": "Duel expiring soon",
     "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-16T08:58:04.769Z",
     "scheduledAt": "2026-09-20T08:58:04.756Z",
     "data": {
       "duelId": "duel_1789549082968_im9tmupfu",
       "expiresAt": "2026-09-23T08:58:04.756Z"
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.451Z"
   },
   {
     "id": "notif_1789620366722_upgk17e8o",
@@ -10097,7 +10106,7 @@
     "type": "league_week_start",
     "title": "League Week 3 started",
     "message": "Week 3 of Smash new at last has started. Your opponents this week: Grimmjo, Poke, Olimak.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-17T04:46:06.726Z",
     "scheduledAt": "2026-09-17T04:46:06.726Z",
     "data": {
@@ -10108,7 +10117,8 @@
         "gp_1787087495865_2esi76p",
         "gp_1786393655444_41zyrro"
       ]
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.455Z"
   },
   {
     "id": "notif_1789620366730_sioof9acu",
@@ -11073,13 +11083,14 @@
     "type": "matchmaking",
     "title": "Matchmaking — Semptiembe (Período 1)",
     "message": "Tu rival es Adecty. Juega antes del 9/23/2026.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-18T00:13:26.549Z",
     "scheduledAt": "2026-09-18T00:13:26.549Z",
     "data": {
       "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
       "assignmentId": "5da7a97f-5419-4b27-8390-8ff269479837"
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.461Z"
   },
   {
     "id": "notif_1789690406549_2yqukxxmo",
@@ -11787,13 +11798,14 @@
     "type": "matchmaking",
     "title": "Matchmaking — Semptiembe (Período 1)",
     "message": "Tu rival es KruX. Juega antes del 9/23/2026.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-18T00:13:26.549Z",
     "scheduledAt": "2026-09-18T00:13:26.549Z",
     "data": {
       "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
       "assignmentId": "c9c89ddd-fd41-41c9-a59a-1ffbcdbc5ed5"
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.466Z"
   },
   {
     "id": "notif_1789690406549_fss73ozg6",
@@ -12543,13 +12555,14 @@
     "type": "matchmaking",
     "title": "Matchmaking — Semptiembe (Período 1)",
     "message": "Tu rival es Gino. Juega antes del 9/23/2026.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-18T00:13:26.550Z",
     "scheduledAt": "2026-09-18T00:13:26.550Z",
     "data": {
       "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
       "assignmentId": "d0c11314-aa26-4fea-bf9e-65d7a32dd5d6"
-    }
+    },
+    "readAt": "2026-09-18T01:06:17.471Z"
   },
   {
     "id": "notif_1789690406550_myvw6cl9k",

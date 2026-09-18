@@ -2542,5 +2542,144 @@
     "periodIndex": 0,
     "createdAt": "2026-09-18T00:30:34.352Z",
     "updatedAt": "2026-09-18T00:30:34.352Z"
+  },
+  {
+    "id": "1c2cebca-abf1-43d3-9152-7e8925718bf8",
+    "communityId": "community_fgc_santa_clara",
+    "gameId": "ssbu",
+    "playerAId": "gp_1786387087046_wnwtadb",
+    "playerBId": "gp_1786387234567_aoe1z95",
+    "winnerId": "gp_1786387087046_wnwtadb",
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "samus",
+        "player1Color": 4,
+        "player2Character": "link",
+        "player2Color": 7
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "samus",
+        "player1Color": 4,
+        "player2Character": "link",
+        "player2Color": 7
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "gp_1786387087046_wnwtadb",
+        "player1Character": "samus",
+        "player1Color": 4,
+        "player2Character": "link",
+        "player2Color": 7
+      }
+    ],
+    "type": "matchmaking",
+    "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+    "periodIndex": 0,
+    "createdAt": "2026-09-18T01:41:27.408Z",
+    "updatedAt": "2026-09-18T01:41:27.408Z"
+  },
+  {
+    "id": "m_1789697420175_hbqftna",
+    "playerAId": "gp_1786391783115_87zwx03",
+    "playerBId": "gp_1787060569919_ov80gcy",
+    "winnerId": "gp_1786391783115_87zwx03",
+    "loserId": "gp_1787060569919_ov80gcy",
+    "type": "matchmaking",
+    "gameId": "ssbu",
+    "playerAPointsBefore": 1534,
+    "playerBPointsBefore": 1516,
+    "playerAPointsAfter": 1534,
+    "playerBPointsAfter": 1516,
+    "playerADelta": 11,
+    "playerBDelta": -11,
+    "playerARankBefore": "Diamante",
+    "playerBRankBefore": "Diamante",
+    "playerARankAfter": "Diamante",
+    "playerBRankAfter": "Diamante",
+    "player1Score": 3,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786391783115_87zwx03",
+        "player1Character": "donkey_kong",
+        "player1Color": 5,
+        "player2Character": "byleth",
+        "player2Color": 3
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786391783115_87zwx03",
+        "player1Character": "donkey_kong",
+        "player1Color": 5,
+        "player2Character": "byleth",
+        "player2Color": 3
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "gp_1786391783115_87zwx03",
+        "player1Character": "donkey_kong",
+        "player1Color": 5,
+        "player2Character": "byleth",
+        "player2Color": 3
+      }
+    ],
+    "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+    "periodIndex": 0,
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-18T02:10:20.175Z"
+  },
+  {
+    "id": "m_1789698502656_y5ip2zd",
+    "playerAId": "gp_1786388790209_sr4ldku",
+    "playerBId": "gp_1786396304199_u7v6gsb",
+    "winnerId": "gp_1786388790209_sr4ldku",
+    "loserId": "gp_1786396304199_u7v6gsb",
+    "type": "matchmaking",
+    "gameId": "ssbu",
+    "playerAPointsBefore": 1546,
+    "playerBPointsBefore": 1546,
+    "playerAPointsAfter": 1557,
+    "playerBPointsAfter": 1535,
+    "playerADelta": 11,
+    "playerBDelta": -11,
+    "playerARankBefore": "Diamante",
+    "playerBRankBefore": "Diamante",
+    "playerARankAfter": "Diamante",
+    "playerBRankAfter": "Diamante",
+    "player1Score": 3,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "gp_1786388790209_sr4ldku",
+        "player1Character": "terry",
+        "player2Character": "cloud"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "gp_1786388790209_sr4ldku",
+        "player1Character": "terry",
+        "player1Color": 0,
+        "player2Character": "cloud",
+        "player2Color": 0
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "gp_1786388790209_sr4ldku",
+        "player1Character": "terry",
+        "player1Color": 0,
+        "player2Character": "cloud",
+        "player2Color": 0
+      }
+    ],
+    "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
+    "periodIndex": 0,
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-18T02:28:22.656Z"
   }
 ]

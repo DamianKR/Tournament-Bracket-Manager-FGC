@@ -10,10 +10,12 @@ import RecordMatchTab from './RecordMatchTab';
 import ActiveChallenges from './ActiveChallenges';
 import DuelInfo from './DuelInfo';
 import MatchmakingTab from './MatchmakingTab';
+import MatchmakingInfo from './MatchmakingInfo';
 import { MatchmakingAssignment } from '@/services/matchmaking/matchmakingService';
 import './RankedTab.css';
 
 type RankedSubTab = 'record' | 'challenges' | 'info';
+type MmSubTab = 'seasons' | 'info';
 
 function RankedTab() {
   const { t } = useTranslation();
@@ -28,6 +30,7 @@ function RankedTab() {
   const [settings, setSettings] = useState<DuelSettingsType>(DEFAULT_DUEL_SETTINGS);
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
   const [mmAssignment, setMmAssignment] = useState<MatchmakingAssignment | null>(null);
+  const [mmSubTab, setMmSubTab] = useState<MmSubTab>('seasons');
 
   useEffect(() => {
     loadSettings();
@@ -120,20 +123,40 @@ function RankedTab() {
       )}
 
       {matchType === 'matchmaking' && !mmAssignment && (
-        <MatchmakingTab
-          onReportAssignment={(a) => {
-            setMmAssignment(a);
-            setSubTab('record');
-            setMatchType('matchmaking' as any);
-          }}
-        />
+        <>
+          <div className="ranked-tabs">
+            <button
+              className={`ranked-tab-btn ${mmSubTab === 'seasons' ? 'active' : ''}`}
+              onClick={() => setMmSubTab('seasons')}
+            >
+              <i className="fas fa-shuffle" /> {t('ranked.matchmaking')}
+            </button>
+            <button
+              className={`ranked-tab-btn ${mmSubTab === 'info' ? 'active' : ''}`}
+              onClick={() => setMmSubTab('info')}
+            >
+              <i className="fas fa-info-circle" /> {t('ranked.info')}
+            </button>
+          </div>
+          <div className="ranked-content">
+            {mmSubTab === 'seasons' && (
+              <MatchmakingTab
+                onReportAssignment={(a) => {
+                  setMmAssignment(a);
+                  setSubTab('record');
+                }}
+              />
+            )}
+            {mmSubTab === 'info' && <MatchmakingInfo />}
+          </div>
+        </>
       )}
 
       {matchType === 'matchmaking' && mmAssignment && subTab === 'record' && (
         <>
           <div className="ranked-tabs">
             <button className="ranked-tab-btn" onClick={() => { setMmAssignment(null); setSubTab('challenges'); }}>
-              <i className="fas fa-arrow-left" /> Volver a Matchmaking
+              <i className="fas fa-arrow-left" /> {t('ranked.mm.backToMatchmaking')}
             </button>
           </div>
           <div className="ranked-content">
