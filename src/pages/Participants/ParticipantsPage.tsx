@@ -22,6 +22,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { outranksOf, isCommunityAdminOf, communityRoleOf } from '@/utils/membershipRole';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
+import ResetAvailabilityButton from '@/components/ResetAvailabilityButton/ResetAvailabilityButton';
 import Loading from '@/components/Loading/Loading';
 import PasswordInput from '@/components/PasswordInput/PasswordInput';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
@@ -78,6 +79,15 @@ function ParticipantsPage() {
   const [creating, setCreating] = useState(false);
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [badgePopover, setBadgePopover] = useState<{ pid: string; key: string } | null>(null);
+
+  // Close the activity popover on any outside click
+  useEffect(() => {
+    if (!badgePopover) return;
+    const close = () => setBadgePopover(null);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [badgePopover]);
 
   // ── Account management ────────────────────────────────────────────────
   const [usersMap, setUsersMap] = useState<Map<string, AuthUser>>(new Map());
@@ -274,9 +284,12 @@ function ParticipantsPage() {
             <p className="text-secondary">{t('participants.subtitle')}</p>
           </div>
           {canAdminCurrentCommunity && (
-            <button className="btn-primary" onClick={() => { setShowCreateForm(true); setError(''); }}>
-              + {t('participants.newParticipant')}
-            </button>
+            <div className="pp-header-actions">
+              <ResetAvailabilityButton />
+              <button className="btn-primary" onClick={() => { setShowCreateForm(true); setError(''); }}>
+                + {t('participants.newParticipant')}
+              </button>
+            </div>
           )}
         </div>
 
@@ -502,6 +515,57 @@ function ParticipantsPage() {
                     </div>
                   </div>
                   <div className="pp-item-actions">
+                    {/* Activity availability badges (ranked / leagues / tournaments) */}
+                    {(() => {
+                      const flagKey = { ranked: 'available', leagues: 'leagueAvailable', tournaments: 'tournamentAvailable' } as const;
+                      const acts = [
+                        { key: 'ranked',      icon: 'fa-khanda',        label: t('ranked.mm.activities.ranked') },
+                        { key: 'leagues',     icon: 'fa-calendar-week', label: t('ranked.mm.activities.leagues') },
+                        { key: 'tournaments', icon: 'fa-trophy',        label: t('ranked.mm.activities.tournaments') },
+                      ] as const;
+                      const profiles = Object.values(p.games ?? {});
+                      return (
+                        <span className="pp-activity-badges">
+                          {acts.map((a) => {
+                            const rows = profiles.map((gp) => ({ gp, on: gp[flagKey[a.key]] !== false }));
+                            const on = rows.some((r) => r.on);
+                            const popOpen = badgePopover?.pid === p.id && badgePopover?.key === a.key;
+                            return (
+                              <span key={a.key} className="pp-activity-badge-wrap">
+                                <button
+                                  className={`pp-activity-badge ${on ? 'on' : 'off'}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setBadgePopover(popOpen ? null : { pid: p.id, key: a.key });
+                                  }}
+                                  title={a.label}
+                                >
+                                  <i className={`fas ${a.icon}`} />
+                                </button>
+                                {popOpen && (
+                                  <div className="pp-activity-popover" onClick={(e) => e.stopPropagation()}>
+                                    <div className="pp-activity-popover-title">
+                                      <i className={`fas ${a.icon}`} /> {a.label}
+                                    </div>
+                                    {rows.length === 0 && (
+                                      <div className="pp-activity-popover-empty">
+                                        {t('participants.noGamesRegistered', { defaultValue: 'No games registered' })}
+                                      </div>
+                                    )}
+                                    {rows.map(({ gp, on: gOn }) => (
+                                      <div key={gp.gameId} className={`pp-activity-popover-row ${gOn ? 'on' : 'off'}`}>
+                                        <i className={`fas ${gOn ? 'fa-circle-check' : 'fa-circle-xmark'}`} />
+                                        <span>{getGame(gp.gameId)?.name ?? gp.gameId}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </span>
+                            );
+                          })}
+                        </span>
+                      );
+                    })()}
                     {/* Account badge */}
                     {(() => {
                       const u = usersMap.get(p.id);

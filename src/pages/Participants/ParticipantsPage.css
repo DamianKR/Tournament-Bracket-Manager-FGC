@@ -15,6 +15,116 @@
   text-shadow: 0 0 24px rgba(124, 58, 237, 0.2);
 }
 
+.pp-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Per-activity availability indicators on each participant row */
+.pp-activity-badges {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.pp-activity-badge {
+  width: 1.6rem;
+  height: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  border: 1px solid var(--border-color);
+  cursor: default;
+}
+
+.pp-activity-badge.on {
+  color: #22c55e;
+  border-color: #22c55e;
+  background: color-mix(in srgb, #22c55e 12%, transparent);
+}
+
+.pp-activity-badge.off {
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+  background: var(--bg-secondary);
+  opacity: 0.65;
+}
+
+.pp-activity-badge-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.pp-activity-badge {
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.pp-activity-badge:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 15%, transparent);
+}
+
+/* Popover: per-game availability detail for one activity */
+.pp-activity-popover {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  min-width: 190px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  padding: 0.45rem;
+  z-index: 60;
+  animation: pp-pop-in 0.13s ease;
+}
+
+@keyframes pp-pop-in {
+  from { opacity: 0; transform: translateY(-5px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.pp-activity-popover-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  padding: 0.15rem 0.3rem 0.4rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.3rem;
+}
+
+.pp-activity-popover-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.28rem 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 0.35rem;
+}
+
+.pp-activity-popover-row.on i  { color: #22c55e; }
+.pp-activity-popover-row.off i { color: #ef4444; }
+.pp-activity-popover-row.off span { color: var(--text-secondary); }
+
+.pp-activity-popover-empty {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 0.35rem 0.3rem;
+}
+
 .pp-count {
   display: inline-flex;
   align-items: center;

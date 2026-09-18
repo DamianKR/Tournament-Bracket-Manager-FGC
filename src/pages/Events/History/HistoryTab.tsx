@@ -267,7 +267,7 @@ function HistoryTab() {
           className={`filter-btn ${filter === 'duel' ? 'active' : ''}`}
           onClick={() => setFilter('duel')}
         >
-          <i className="fas fa-swords" /> {t('history.duels')} ({matches.filter(m => m.type === 'duel').length})
+          <i className="fas fa-khanda" /> {t('history.duels')} ({matches.filter(m => m.type === 'duel').length})
         </button>
         <button
           className={`filter-btn ${filter === 'matchmaking' ? 'active' : ''}`}
@@ -288,7 +288,7 @@ function HistoryTab() {
           </p>
           {filter === 'duel' && (
             <button className="btn-primary mt-2" onClick={() => navigate(getPath('events?tab=ranked'))}>
-              <i className="fas fa-swords" /> {t('history.goToRanked')}
+              <i className="fas fa-khanda" /> {t('history.goToRanked')}
             </button>
           )}
         </div>

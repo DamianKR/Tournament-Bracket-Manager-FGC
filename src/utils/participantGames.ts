@@ -61,6 +61,9 @@ export function ensureGameProfile(
       mainCharacterId: null,
       eloPoints: null,
       eloRank: 'Sin puntos',
+      available: false,
+      leagueAvailable: false,
+      tournamentAvailable: false,
     };
   }
   return p.games[gameId];

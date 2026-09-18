@@ -290,6 +290,12 @@ router.post('/:id/register', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'Already registered' });
     }
 
+    // League availability — inactive players cannot join
+    const me = await participants.findById(participantId);
+    if (me?.games?.[league.gameId]?.leagueAvailable === false) {
+      return res.status(403).json({ error: 'You are inactive for leagues in this game. Enable it in your profile.' });
+    }
+
     league.participantIds.push(participantId);
     league.updatedAt = new Date().toISOString();
     await leagues.upsert(league);
@@ -390,6 +396,17 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     });
     if (ineligible.length > 0) {
       return res.status(400).json({ error: 'One or more participants are not registered for this game' });
+    }
+
+    // Players who opted out of leagues cannot be added — not even by admin
+    const inactiveNames = participantIds
+      .map((pid) => participantList.find((x) => x.id === pid))
+      .filter((p) => p?.games?.[gameId]?.leagueAvailable === false)
+      .map((p) => p.alias || p.name);
+    if (inactiveNames.length > 0) {
+      return res.status(403).json({
+        error: `${inactiveNames.join(', ')} ${inactiveNames.length === 1 ? 'is' : 'are'} inactive for leagues in this game.`,
+      });
     }
 
     const isDraft = startDate && new Date(startDate) > new Date();

@@ -85,7 +85,7 @@ function RankedTab() {
               className={`ranked-tab-btn ${subTab === 'challenges' ? 'active' : ''}`}
               onClick={() => { setSubTab('challenges'); setSelectedChallenge(null); }}
             >
-              <i className="fas fa-swords" /> {t('ranked.manageChallenges')}
+              <i className="fas fa-khanda" /> {t('ranked.manageChallenges')}
             </button>
             {(isAdminHere || (isInMyCommunity && selectedChallenge)) && (
               <button

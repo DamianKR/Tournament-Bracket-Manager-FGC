@@ -61,6 +61,18 @@ CREATE TABLE IF NOT EXISTS duel_settings (
   data JSONB NOT NULL
 );
 
+-- ── Matchmaking (temporadas + asignaciones por período) ────────────────────
+
+CREATE TABLE IF NOT EXISTS matchmaking_seasons (
+  id   TEXT PRIMARY KEY,
+  data JSONB NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS matchmaking_assignments (
+  id   TEXT PRIMARY KEY,
+  data JSONB NOT NULL
+);
+
 -- ── Auth / Usuarios ───────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS users (
@@ -109,6 +121,8 @@ ALTER TABLE league_matches     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ranked_matches     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE duels              ENABLE ROW LEVEL SECURITY;
 ALTER TABLE duel_settings      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE matchmaking_seasons     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE matchmaking_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users              ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE migrations         ENABLE ROW LEVEL SECURITY;

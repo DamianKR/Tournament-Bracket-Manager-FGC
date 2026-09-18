@@ -39,11 +39,16 @@ export function getEffectiveElo(p, gameId = null) {
 export function ensureGameProfile(p, gameId) {
   if (!p.games) p.games = {};
   if (!p.games[gameId]) {
+    // New profiles start opted-out of every activity — the user or an admin
+    // must activate each one from the profile edit.
     p.games[gameId] = {
       gameId,
       mainCharacterId: null,
       eloPoints: null,
       eloRank: 'Sin puntos',
+      available: false,
+      leagueAvailable: false,
+      tournamentAvailable: false,
     };
   }
   return p.games[gameId];

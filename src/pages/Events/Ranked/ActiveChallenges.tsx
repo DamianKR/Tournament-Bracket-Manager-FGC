@@ -5,6 +5,7 @@ import { GlobalParticipant } from '@/models/types';
 import { GAMES } from '@/data/games';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
+import { useToast } from '@/contexts/NotificationContext';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import { 
@@ -27,6 +28,7 @@ interface ActiveChallengesProps {
 
 function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const { t } = useTranslation();
+  const toast = useToast();
   const { user } = useAuth();
   const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, canAdminGame, myParticipantId, communityRole, gameAdminForHere } = useCommunity();
   const communityId = currentCommunity?.id;
@@ -87,6 +89,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
       const challenge = await createDuelChallenge(player1Id, player2Id, duelGameId, duelType, communityId);
       if (challenge) {
         await loadData();
+        toast.success(t('ranked.challenges.toastCreated'));
         setShowCreateModal(false);
         setPlayer1Id('');
         setPlayer2Id('');
@@ -94,18 +97,30 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         setDuelType('normal');
       }
     } catch (err: any) {
-      setCreateError(err.message || t('ranked.challenges.failedCreate'));
+      const msg = err.message || t('ranked.challenges.failedCreate');
+      setCreateError(msg);
+      toast.error(msg);
     }
   };
 
   const handleAccept = async (challengeId: string) => {
-    await acceptDuelChallenge(challengeId);
-    await loadData();
+    try {
+      await acceptDuelChallenge(challengeId);
+      toast.success(t('ranked.challenges.toastAccepted'));
+      await loadData();
+    } catch (err: any) {
+      toast.error(err.message || t('ranked.challenges.failedCreate'));
+    }
   };
 
   const handleDecline = async (challengeId: string) => {
-    await declineDuelChallenge(challengeId);
-    await loadData();
+    try {
+      await declineDuelChallenge(challengeId);
+      toast.success(t('ranked.challenges.toastDeclined'));
+      await loadData();
+    } catch (err: any) {
+      toast.error(err.message || t('ranked.challenges.failedCreate'));
+    }
   };
 
   const handleRecordMatch = (challenge: DuelChallenge) => {

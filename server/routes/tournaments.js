@@ -10,13 +10,31 @@
  */
 
 import { Router } from 'express';
-import { tournaments, tournamentMatches } from '../db/collections.js';
+import { tournaments, tournamentMatches, participants } from '../db/collections.js';
 import { validateTournament } from '../models/tournament.js';
 import { applyTournamentElo } from '../utils/tournamentElo.js';
 import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
 import { filterByCommunity, getTargetCommunityId, isInUserScope, canAdminGame, communityRole } from '../utils/communityScope.js';
 
 const router = Router();
+
+/**
+ * Returns names of NEWLY-added tournament participants who opted out of
+ * tournaments for this game (tournamentAvailable === false). Players already
+ * in the roster are not gated — opting out only blocks future additions.
+ */
+async function findInactiveTournamentPlayers(tps, prevTps, gameId) {
+  const prevIds = new Set((prevTps ?? []).map((p) => p.globalParticipantId).filter(Boolean));
+  const newGids = [...new Set((tps ?? []).map((p) => p.globalParticipantId).filter(Boolean))]
+    .filter((gid) => !prevIds.has(gid));
+  if (!newGids.length || !gameId) return [];
+  const allP = await participants.getAll();
+  const pMap = new Map(allP.map((p) => [p.id, p]));
+  return newGids
+    .map((gid) => pMap.get(gid))
+    .filter((gp) => gp?.games?.[gameId]?.tournamentAvailable === false)
+    .map((gp) => gp.alias || gp.name);
+}
 
 // GET /api/tournaments?communityId=...
 router.get('/', optionalAuth, async (req, res) => {
@@ -88,6 +106,13 @@ router.post('/', requireAuth, async (req, res) => {
       if (communityRole(req.user, targetCommunityId) === 'admin' && !canAdminGame(req.user, targetCommunityId, tGameId)) {
         return res.status(403).json({ error: 'You are not admin of this game' });
       }
+      // Players who opted out of tournaments cannot be added — not even by admin
+      const inactiveT = await findInactiveTournamentPlayers(t.participants, prev?.participants, tGameId);
+      if (inactiveT.length > 0) {
+        return res.status(403).json({
+          error: `${inactiveT.join(', ')} ${inactiveT.length === 1 ? 'is' : 'are'} inactive for tournaments in this game.`,
+        });
+      }
       const becomesCompleted = t.status === 'completed' && (!prev || prev.status !== 'completed');
       const alreadyApplied   = t.eloApplied || (prev && prev.eloApplied);
 
@@ -152,6 +177,14 @@ router.put('/:id', requireAuth, async (req, res) => {
     const bodyGameId = body.gameId ?? existing?.gameId ?? null;
     if (communityRole(req.user, targetCommunityId) === 'admin' && !canAdminGame(req.user, targetCommunityId, bodyGameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
+    }
+
+    // Players who opted out of tournaments cannot be added — not even by admin
+    const inactiveBody = await findInactiveTournamentPlayers(body.participants, existing?.participants, bodyGameId);
+    if (inactiveBody.length > 0) {
+      return res.status(403).json({
+        error: `${inactiveBody.join(', ')} ${inactiveBody.length === 1 ? 'is' : 'are'} inactive for tournaments in this game.`,
+      });
     }
 
     // When a tournament transitions to 'completed', award ELO points for placements once.

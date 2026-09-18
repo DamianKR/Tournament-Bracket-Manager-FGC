@@ -24,7 +24,7 @@ function MatchmakingInfo() {
       </section>
 
       <section className="duel-info-section">
-        <h3><i className="fas fa-swords" /> {t('ranked.mm.infoTab.mandatory')}</h3>
+        <h3><i className="fas fa-khanda" /> {t('ranked.mm.infoTab.mandatory')}</h3>
         <p>{t('ranked.mm.infoTab.mandatoryDesc')}</p>
       </section>
 

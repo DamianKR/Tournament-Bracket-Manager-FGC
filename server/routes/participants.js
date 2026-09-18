@@ -111,10 +111,14 @@ function mergeGameProfiles(current = {}, incoming = {}) {
     if (!merged[gameId]) {
       merged[gameId] = { ...inc };
     } else {
-      // Keep server ELO values, allow client to update main character
+      // Keep server ELO values; client may update main character and the
+      // per-activity availability flags (ranked / leagues / tournaments).
       merged[gameId] = {
         ...merged[gameId],
         mainCharacterId: inc.mainCharacterId ?? merged[gameId].mainCharacterId,
+        ...(inc.available !== undefined && { available: Boolean(inc.available) }),
+        ...(inc.leagueAvailable !== undefined && { leagueAvailable: Boolean(inc.leagueAvailable) }),
+        ...(inc.tournamentAvailable !== undefined && { tournamentAvailable: Boolean(inc.tournamentAvailable) }),
       };
     }
   }
@@ -694,11 +698,17 @@ router.put('/:id', requireAuth, async (req, res) => {
       }
       const effectivePrimary = existing.primaryGameId || existing.gameId;
       setParticipantGameList(updated, effectiveIds, effectivePrimary, effectiveMains);
-      // Apply availability flags (per-game) after the list is set
+      // Apply availability flags (per-game, per-activity) after the list is set
       if (gameAvailability && typeof gameAvailability === 'object') {
         for (const [gId, avail] of Object.entries(gameAvailability)) {
-          if (updated.games?.[gId]) {
-            updated.games[gId].available = Boolean(avail);
+          const prof = updated.games?.[gId];
+          if (!prof) continue;
+          if (typeof avail === 'boolean') {
+            prof.available = avail;
+          } else if (avail && typeof avail === 'object') {
+            if (avail.ranked !== undefined) prof.available = Boolean(avail.ranked);
+            if (avail.leagues !== undefined) prof.leagueAvailable = Boolean(avail.leagues);
+            if (avail.tournaments !== undefined) prof.tournamentAvailable = Boolean(avail.tournaments);
           }
         }
       }

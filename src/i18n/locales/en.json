@@ -327,7 +327,9 @@
         "removed": "Removed",
         "empty": "No eligible participants.",
         "matchesThisPeriod": "{{count}} matches",
-        "inactiveHint": "They disabled their availability — they return if they re-enable it.",
+        "inactiveHint": "Inactive — won't be paired next period, but their current matches are still mandatory",
+        "inactiveBadge": "Inactive",
+        "inactiveNote": "{{count}} inactive — their current-period matches are still mandatory; they won't be paired next period.",
         "remove": "Remove",
         "restore": "Restore"
       },
@@ -395,9 +397,10 @@
         "notePlaceholder": "E.g.: Did not show up to the event",
         "confirmForfeit": "Confirm Forfeit",
         "applying": "Applying...",
-        "resetBody": "All participants of that game will be set to Inactive. They must re-enable themselves to enter the next period.",
+        "resetBody": "All participants of that game will be set to Inactive for the chosen activity. They must re-enable it from their profile.",
         "resetConfirm": "Confirm — Deactivate all",
         "game": "Game",
+        "activity": "Activity",
         "cancel": "Cancel",
         "removeTitle": "Remove participant",
         "removeBody": "{{name}} will be removed from this season. Their pending matches are cancelled without penalty for anyone and they won't be paired in upcoming periods. You can restore them later.",
@@ -415,6 +418,14 @@
         "removed": "{{name}} removed — {{count}} pending matches cancelled",
         "removedZero": "{{name}} removed from the season",
         "restored": "{{name}} restored to the season"
+      },
+      "activities": {
+        "ranked": "Ranked",
+        "leagues": "Leagues",
+        "tournaments": "Tournaments",
+        "rankedDesc": "Duels and matchmaking seasons",
+        "leaguesDesc": "League participant pools",
+        "tournamentsDesc": "Tournament participant pools"
       },
       "create": {
         "title": "New matchmaking season",
@@ -503,7 +514,10 @@
       "unranked": "unranked",
       "cancel": "Cancel",
       "create": "Create Challenge",
-      "failedCreate": "Failed to create challenge"
+      "failedCreate": "Failed to create challenge",
+      "toastCreated": "Duel created",
+      "toastAccepted": "Duel accepted",
+      "toastDeclined": "Duel declined"
     },
     "duelInfo": {
       "title": "How Duels Work",
@@ -990,7 +1004,13 @@
       "inviteSent": "Invitation sent",
       "availabilityTitle": "Available for duels and matchmaking",
       "available": "Active",
-      "unavailable": "Inactive"
+      "unavailable": "Inactive",
+      "act_ranked": "Ranked",
+      "act_leagues": "Leagues",
+      "act_tournaments": "Tournaments",
+      "act_rankedHint": "Duels and matchmaking seasons",
+      "act_leaguesHint": "Can be added to leagues",
+      "act_tournamentsHint": "Can be added to tournaments"
     },
     "errors": {
       "passwordTooShort": "Password must be at least 6 characters",

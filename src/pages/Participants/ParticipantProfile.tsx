@@ -38,6 +38,7 @@ import { getParticipantElo, getParticipantRank, allGameProfiles, getGameProfile 
 import { getDuelStats, getDuelSettingsAsync, getNextWeeklyReset, formatTimeUntilReset } from '@/services/duels/duelService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
+import { useToast } from '@/contexts/NotificationContext';
 import { communityRoleOf, gameAdminForOf, outranksOf } from '@/utils/membershipRole';
 import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccount } from '@/services/auth/authService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
@@ -57,6 +58,7 @@ type MatchResultFilter = 'all' | 'wins' | 'losses';
 
 function ParticipantProfile() {
   const { t } = useTranslation();
+  const toast = useToast();
   const { id, communityId: urlCommunityId } = useParams<{ id: string; communityId: string }>();
   const navigate = useNavigate();
   const { currentCommunity, allCommunities, getPath, canAdminCurrentCommunity, isCommunityAdminHere, gameAdminForHere, communityRole } = useCommunity();
@@ -143,7 +145,9 @@ function ParticipantProfile() {
   const [editAlias, setEditAlias] = useState('');
   const [editGameIds, setEditGameIds] = useState<string[]>([]);
   const [editGameMainChars, setEditGameMainChars] = useState<Record<string, string | null>>({});
-  const [editGameAvailability, setEditGameAvailability] = useState<Record<string, boolean>>({});
+  const [editGameAvailability, setEditGameAvailability] = useState<
+    Record<string, { ranked: boolean; leagues: boolean; tournaments: boolean }>
+  >({});
   const [editPrimaryGameId, setEditPrimaryGameId] = useState<string | null>(null);
   const [editPhone, setEditPhone] = useState('');
   const [saving, setSaving] = useState(false);
@@ -236,10 +240,14 @@ function ParticipantProfile() {
         const games = Object.keys(p.games || {});
         setEditGameIds(games.length > 0 ? games : (p.gameId ? [p.gameId] : []));
         const mains: Record<string, string | null> = {};
-        const avail: Record<string, boolean> = {};
+        const avail: Record<string, { ranked: boolean; leagues: boolean; tournaments: boolean }> = {};
         for (const [g, prof] of Object.entries(p.games || {})) {
           mains[g] = prof.mainCharacterId ?? null;
-          avail[g] = prof.available !== false; // default true
+          avail[g] = {
+            ranked:      prof.available !== false,
+            leagues:     prof.leagueAvailable !== false,
+            tournaments: prof.tournamentAvailable !== false,
+          };
         }
         setEditGameMainChars(mains);
         setEditGameAvailability(avail);
@@ -495,9 +503,11 @@ function ParticipantProfile() {
       setParticipant(updated);
       setStats(computeStats(updated));
       setEditSuccess(true);
+      toast.success(t('participantProfile.edit.success'));
       setTab('overview');
     } catch (err: any) {
       setEditError(err.message);
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
@@ -510,9 +520,11 @@ function ParticipantProfile() {
     try {
       await changeMyPassword(pwCurrent, pwNew);
       setPwSuccess(true);
+      toast.success(t('participantProfile.edit.passwordSuccess'));
       setPwCurrent(''); setPwNew(''); setPwConfirm('');
     } catch (err: any) {
       setPwError(err.message || t('participantProfile.errors.passwordChangeFailed'));
+      toast.error(err.message || t('participantProfile.errors.passwordChangeFailed'));
     } finally {
       setPwSaving(false);
     }
@@ -557,11 +569,14 @@ function ParticipantProfile() {
         setLinkedUser(updated);
         setAdmPassword(''); setAdmConfirm('');
         setAdmSuccess(true);
+        toast.success(t('participantProfile.edit.accountUpdated'));
       } else {
         setAdmError(t('participantProfile.errors.noChanges'));
+        toast.info(t('participantProfile.errors.noChanges'));
       }
     } catch (err: any) {
       setAdmError(err.message || t('participantProfile.errors.updateAccountFailed'));
+      toast.error(err.message || t('participantProfile.errors.updateAccountFailed'));
     } finally {
       setAdmSaving(false);
     }
@@ -574,8 +589,10 @@ function ParticipantProfile() {
     try {
       await inviteToCommunity(participant.id, targetId);
       setInviteMsg(t('participantProfile.edit.inviteSent', { defaultValue: 'Invitación enviada' }));
+      toast.success(t('participantProfile.edit.inviteSent', { defaultValue: 'Invitación enviada' }));
     } catch (err: any) {
       setInviteError(err.message || 'Failed to send invite');
+      toast.error(err.message || 'Failed to send invite');
     } finally {
       setInviteSaving(false);
     }
@@ -589,8 +606,10 @@ function ParticipantProfile() {
       if (linkedUser) await deleteUserAccount(linkedUser.id);
       setShowDeleteConfirm(false);
       navigate(getPath('participants'));
+      toast.success(t('participants.deleted', { defaultValue: 'Participante eliminado' }));
     } catch (err: any) {
       setEditError(err.message || t('participantProfile.errors.deleteFailed'));
+      toast.error(err.message || t('participantProfile.errors.deleteFailed'));
     } finally {
       setDeleteSaving(false);
     }
@@ -929,7 +948,7 @@ function ParticipantProfile() {
             {/* Ranked Duels — challenge info only (stats are in overview dashboard) */}
             <div className="card profile-duels-card">
               <div className="profile-duels-header">
-                <h3><i className="fas fa-swords" /> {t('participantProfile.rankedDuels.title')}</h3>
+                <h3><i className="fas fa-khanda" /> {t('participantProfile.rankedDuels.title')}</h3>
                 <button
                   className="btn-outline btn-sm"
                   onClick={() => navigate(getPath('events?tab=ranked'))}
@@ -1045,7 +1064,7 @@ function ParticipantProfile() {
                     className={`filter-btn ${matchTypeFilter === 'duel' ? 'active' : ''}`}
                     onClick={() => setMatchTypeFilter('duel')}
                   >
-                    <i className="fas fa-swords" /> {t('participantProfile.matches.duel')}
+                    <i className="fas fa-khanda" /> {t('participantProfile.matches.duel')}
                   </button>
                 </div>
               </div>
@@ -1133,7 +1152,7 @@ function ParticipantProfile() {
                           <span className="match-item-type">
                             {m.type && (
                               <>
-                                <i className={m.type === 'tournament' ? 'fas fa-trophy' : m.type === 'league' ? 'fas fa-calendar-alt' : m.type === 'duel' ? 'fas fa-swords' : m.type === 'matchmaking' ? 'fas fa-random' : 'fas fa-gamepad'} />
+                                <i className={m.type === 'tournament' ? 'fas fa-trophy' : m.type === 'league' ? 'fas fa-calendar-alt' : m.type === 'duel' ? 'fas fa-khanda' : m.type === 'matchmaking' ? 'fas fa-random' : 'fas fa-gamepad'} />
                                 {' '}{t(`participantProfile.matches.matchTypes.${m.type}`)}
                               </>
                             )}
@@ -1251,20 +1270,41 @@ function ParticipantProfile() {
                           <option key={c.id} value={c.id}>{c.name}</option>
                         ))}
                       </select>
-                      <label className="availability-toggle" title={t('participantProfile.edit.availabilityTitle', { defaultValue: 'Disponible para duelos y matchmaking' })}>
-                        <input
-                          type="checkbox"
-                          checked={editGameAvailability[g.id] !== false}
-                          disabled={outOfScope}
-                          onChange={(e) => setEditGameAvailability((prev) => ({ ...prev, [g.id]: e.target.checked }))}
-                        />
-                        <span className="availability-label">
-                          <i className={`fas ${editGameAvailability[g.id] !== false ? 'fa-circle-check' : 'fa-circle-xmark'}`} />
-                          {editGameAvailability[g.id] !== false
-                            ? t('participantProfile.edit.available', { defaultValue: 'Activo' })
-                            : t('participantProfile.edit.unavailable', { defaultValue: 'Inactivo' })}
-                        </span>
-                      </label>
+                      <div className="activity-toggles">
+                        {([
+                          { key: 'ranked',      icon: 'fa-khanda' },
+                          { key: 'leagues',     icon: 'fa-calendar-week' },
+                          { key: 'tournaments', icon: 'fa-trophy' },
+                        ] as const).map(({ key, icon }) => {
+                          const on = editGameAvailability[g.id]?.[key] !== false;
+                          return (
+                            <label
+                              key={key}
+                              className="availability-toggle activity-toggle"
+                              title={t(`participantProfile.edit.act_${key}Hint`, { defaultValue: key })}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={on}
+                                disabled={outOfScope}
+                                onChange={(e) =>
+                                  setEditGameAvailability((prev) => ({
+                                    ...prev,
+                                    [g.id]: {
+                                      ...(prev[g.id] ?? { ranked: true, leagues: true, tournaments: true }),
+                                      [key]: e.target.checked,
+                                    },
+                                  }))
+                                }
+                              />
+                              <span className="availability-label">
+                                <i className={`fas ${icon}`} />
+                                {t(`participantProfile.edit.act_${key}`)}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
                     </>
                   )}
                 </div>

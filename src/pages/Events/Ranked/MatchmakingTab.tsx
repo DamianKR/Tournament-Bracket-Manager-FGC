@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GAMES } from '@/data/games';
 import { useCommunity } from '@/contexts/CommunityContext';
+import { useToast } from '@/contexts/NotificationContext';
 import { getAllParticipantsAsync } from '@/services/participants/participantService';
 import { recordMatch } from '@/services/ranking/rankingService';
 import { GlobalParticipant } from '@/models/types';
-import { getRankIcon } from '@/utils/rank';
+import { getRankIcon, getRankColor } from '@/utils/rank';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import {
   MatchmakingSeason,
@@ -19,7 +20,6 @@ import {
   closeSeason,
   forfeitAssignment,
   cancelAssignment,
-  resetAvailability,
   setSeasonParticipantRemoved,
 } from '@/services/matchmaking/matchmakingService';
 import './MatchmakingTab.css';
@@ -42,6 +42,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentCommunity, canAdminCurrentCommunity, canAdminGame, myParticipantId, getPath } = useCommunity();
+  const toast = useToast();
   const communityId = currentCommunity?.id ?? '';
   const isAdmin = canAdminCurrentCommunity;
 
@@ -50,12 +51,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState('');
-  const [actionMsg, setActionMsg]   = useState('');
 
-  // Reset availability modal
-  const [showReset, setShowReset]   = useState(false);
-  const [resetGameId, setResetGameId] = useState(GAMES[0]?.id ?? '');
-  const [resetting, setResetting]   = useState(false);
 
   // Forfeit modal
   const [forfeitModal, setForfeitModal] = useState<{ assignment: MatchmakingAssignment; player: 'p1' | 'p2' } | null>(null);
@@ -102,7 +98,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
 
   const pMap  = new Map(participants.map((p) => [p.id, p]));
   const pName = (id: string) => { const p = pMap.get(id); return p ? (p.alias || p.name) : id; };
-  const flash = (msg: string) => { setActionMsg(msg); setTimeout(() => setActionMsg(''), 3500); };
+  const flash = (msg: string) => toast.success(msg);
 
   // ── Admin actions ──────────────────────────────────────────────────────────
 
@@ -113,7 +109,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       flash(t('ranked.mm.flash.generated', { matches: result.assignments.length, players: result.totalPlayers }));
       await loadDetail(seasonId);
       await loadSeasons();
-    } catch (e: any) { setError(e.message); setLoading(false); }
+    } catch (e: any) { toast.error(e.message); setLoading(false); }
   }
 
   async function handleAdvance() {
@@ -125,7 +121,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       flash(t('ranked.mm.flash.advanced', { n: result.season.currentPeriod.index + 1, matches: result.assignments.length }));
       await loadDetail(selected.id);
       await loadSeasons();
-    } catch (e: any) { setError(e.message); } finally { setAdvancing(false); }
+    } catch (e: any) { toast.error(e.message); } finally { setAdvancing(false); }
   }
 
   async function handleClose(seasonId: string) {
@@ -135,7 +131,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       flash(t('ranked.mm.flash.closed', { count: result.closedAssignments }));
       await loadDetail(seasonId);
       await loadSeasons();
-    } catch (e: any) { setError(e.message); setLoading(false); }
+    } catch (e: any) { toast.error(e.message); setLoading(false); }
   }
 
   async function handleDelete(seasonId: string) {
@@ -145,7 +141,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       setSelected(null);
       flash(t('ranked.mm.flash.deleted'));
       await loadSeasons();
-    } catch (e: any) { setError(e.message); setLoading(false); }
+    } catch (e: any) { toast.error(e.message); setLoading(false); }
   }
 
   async function handleForfeit() {
@@ -172,7 +168,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       setForfeitModal(null); setForfeitNote('');
       flash(t('ranked.mm.flash.forfeit'));
       if (selected) await loadDetail(selected.id);
-    } catch (e: any) { setError(e.message); } finally { setForfeitLoading(false); }
+    } catch (e: any) { toast.error(e.message); } finally { setForfeitLoading(false); }
   }
 
   async function handleCancel(assignmentId: string) {
@@ -181,7 +177,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       await cancelAssignment(assignmentId, 'admin_cancelled');
       flash(t('ranked.mm.flash.cancelled'));
       if (selected) await loadDetail(selected.id);
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) { toast.error(e.message); }
   }
 
   async function handleRemoveParticipant(participantId: string, removed: boolean) {
@@ -198,18 +194,9 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
         : t('ranked.mm.flash.restored', { name }));
       await loadDetail(selected.id);
       await loadSeasons();
-    } catch (e: any) { setError(e.message); } finally { setRemoving(false); }
+    } catch (e: any) { toast.error(e.message); } finally { setRemoving(false); }
   }
 
-  async function handleResetAvailability() {
-    if (!resetGameId) return;
-    setResetting(true); setError('');
-    try {
-      const result = await resetAvailability(communityId, resetGameId);
-      setShowReset(false);
-      flash(t('ranked.mm.flash.reset', { count: result.updated }));
-    } catch (e: any) { setError(e.message); } finally { setResetting(false); }
-  }
 
   // ── Render helpers ─────────────────────────────────────────────────────────
 
@@ -229,42 +216,46 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       <div key={a.id} className={`mm-assignment mm-assignment--${a.status}${isMine ? ' mm-assignment--mine' : ''}`}>
         <div className="mm-assignment-players">
           <div className={`mm-player${p1Won ? ' mm-player--winner' : ''}`}>
+            {a.status === 'pending' && isGameAdmin && (
+              <button
+                className="mm-flag-btn"
+                onClick={() => setForfeitModal({ assignment: a, player: 'p1' })}
+                title={t('ranked.mm.forfeitPlayer', { name: pName(a.player1Id) })}
+              >
+                <i className="fas fa-flag" />
+              </button>
+            )}
             {p1Won && <i className="fas fa-crown mm-win-icon" />}
-            {p1Rank && <i className={`${getRankIcon(p1Rank)} mm-rank-icon`} title={p1Rank} />}
+            {p1Rank && <i className={`${getRankIcon(p1Rank)} mm-rank-icon`} style={{ color: getRankColor(p1Rank) }} title={p1Rank} />}
             <span className="mm-player-name">{pName(a.player1Id)}</span>
             {p1Elo != null && <span className="mm-elo">{p1Elo}</span>}
           </div>
           <span className="mm-vs">VS</span>
           <div className={`mm-player${p2Won ? ' mm-player--winner' : ''}`}>
+            {a.status === 'pending' && isGameAdmin && (
+              <button
+                className="mm-flag-btn"
+                onClick={() => setForfeitModal({ assignment: a, player: 'p2' })}
+                title={t('ranked.mm.forfeitPlayer', { name: pName(a.player2Id) })}
+              >
+                <i className="fas fa-flag" />
+              </button>
+            )}
             {p2Won && <i className="fas fa-crown mm-win-icon" />}
-            {p2Rank && <i className={`${getRankIcon(p2Rank)} mm-rank-icon`} title={p2Rank} />}
+            {p2Rank && <i className={`${getRankIcon(p2Rank)} mm-rank-icon`} style={{ color: getRankColor(p2Rank) }} title={p2Rank} />}
             <span className="mm-player-name">{pName(a.player2Id)}</span>
             {p2Elo != null && <span className="mm-elo">{p2Elo}</span>}
           </div>
         </div>
         <div className="mm-assignment-actions">
           <StatusBadge status={a.status} />
-          {a.status === 'pending' && (isMine || isGameAdmin) && (
-            <button className="btn-primary btn-sm" onClick={() => onReportAssignment(a)}>
-              <i className="fas fa-gamepad" /> {t('ranked.mm.report')}
-            </button>
-          )}
-          {a.status === 'pending' && isGameAdmin && (
-            <div className="mm-admin-icons">
-              <button
-                className="mm-icon-btn"
-                onClick={() => setForfeitModal({ assignment: a, player: 'p1' })}
-                title={t('ranked.mm.forfeitPlayer', { name: pName(a.player1Id) })}
-              >
-                <i className="fas fa-flag" /> {pName(a.player1Id)}
+          <div className="mm-assignment-actions-right">
+            {a.status === 'pending' && (isMine || isGameAdmin) && (
+              <button className="btn-primary btn-sm" onClick={() => onReportAssignment(a)}>
+                <i className="fas fa-gamepad" /> {t('ranked.mm.report')}
               </button>
-              <button
-                className="mm-icon-btn"
-                onClick={() => setForfeitModal({ assignment: a, player: 'p2' })}
-                title={t('ranked.mm.forfeitPlayer', { name: pName(a.player2Id) })}
-              >
-                <i className="fas fa-flag" /> {pName(a.player2Id)}
-              </button>
+            )}
+            {a.status === 'pending' && isGameAdmin && (
               <button
                 className="mm-icon-btn mm-icon-btn--danger"
                 onClick={() => handleCancel(a.id)}
@@ -272,8 +263,8 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
               >
                 <i className="fas fa-ban" />
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     );
@@ -290,16 +281,17 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
     const completedCount = assignments.filter((a) => a.status === 'completed').length;
 
     // Participant pools for the players tab
+    // Everyone with the game registered and not admin-removed is a season
+    // participant — inactive members keep their current-period matches
+    // (they're still mandatory) but won't be paired in future periods.
     const isSeasonAdmin = canAdminGame(selected.gameId);
     const removedSet    = new Set(selected.removedParticipants ?? []);
     const gameElo       = (p: (typeof participants)[number]) => p.games?.[selected.gameId]?.eloPoints ?? 0;
-    const eligiblePool  = participants
-      .filter((p) => p.games?.[selected.gameId] && p.games[selected.gameId].available !== false && !removedSet.has(p.id))
+    const seasonPool    = participants
+      .filter((p) => p.games?.[selected.gameId] && !removedSet.has(p.id))
       .sort((a, b) => gameElo(b) - gameElo(a));
     const removedPool   = participants.filter((p) => removedSet.has(p.id));
-    const inactiveCount = participants.filter((p) =>
-      p.games?.[selected.gameId] && p.games[selected.gameId].available === false && !removedSet.has(p.id)
-    ).length;
+    const inactiveCount = seasonPool.filter((p) => p.games[selected.gameId].available === false).length;
     const matchesCount  = (pid: string) =>
       assignments.filter((a) => a.player1Id === pid || a.player2Id === pid).length;
 
@@ -355,7 +347,6 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
         </div>
 
         {error && <div className="error-message">{error}</div>}
-        {actionMsg && <div className="success-message">{actionMsg}</div>}
 
         {/* Period card */}
         {period && selected.status !== 'draft' && (
@@ -423,14 +414,14 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
             className={`mm-detail-tab${detailTab === 'matches' ? ' active' : ''}`}
             onClick={() => setDetailTab('matches')}
           >
-            <i className="fas fa-swords" /> {t('ranked.mm.tabs.matches')}
+            <i className="fas fa-khanda" /> {t('ranked.mm.tabs.matches')}
           </button>
           <button
             className={`mm-detail-tab${detailTab === 'players' ? ' active' : ''}`}
             onClick={() => setDetailTab('players')}
           >
             <i className="fas fa-users" /> {t('ranked.mm.tabs.players')}
-            <span className="mm-detail-tab-count">{eligiblePool.length}</span>
+            <span className="mm-detail-tab-count">{seasonPool.length}</span>
           </button>
         </div>
 
@@ -457,23 +448,29 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
         {/* Participants */}
         {detailTab === 'players' && (
           <section className="mm-section">
-            <h3><i className="fas fa-users" /> {t('ranked.mm.players.active')} · {eligiblePool.length}</h3>
-            {eligiblePool.length === 0 && (
+            <h3><i className="fas fa-users" /> {t('ranked.mm.players.active')} · {seasonPool.length}</h3>
+            {seasonPool.length === 0 && (
               <div className="mm-empty">{t('ranked.mm.players.empty')}</div>
             )}
-            {eligiblePool.map((p) => {
+            {seasonPool.map((p) => {
               const gp = p.games?.[selected.gameId];
               const count = matchesCount(p.id);
+              const inactive = gp?.available === false;
               return (
-                <div key={p.id} className="mm-player-row">
+                <div key={p.id} className={`mm-player-row${inactive ? ' mm-player-row--inactive' : ''}`}>
                   <div className="mm-player-row-info">
-                    {gp?.eloRank && <i className={`${getRankIcon(gp.eloRank)} mm-rank-icon`} title={gp.eloRank} />}
+                    {gp?.eloRank && <i className={`${getRankIcon(gp.eloRank)} mm-rank-icon`} style={{ color: getRankColor(gp.eloRank) }} title={gp.eloRank} />}
                     <span className="mm-player-name">{p.alias || p.name}</span>
+                    {inactive && (
+                      <span className="mm-player-badge-inactive" title={t('ranked.mm.players.inactiveHint')}>
+                        {t('ranked.mm.players.inactiveBadge')}
+                      </span>
+                    )}
                     {gp?.eloPoints != null && <span className="mm-elo">{gp.eloPoints}</span>}
                   </div>
                   <div className="mm-player-row-actions">
                     <span className="mm-player-matches">
-                      <i className="fas fa-swords" /> {t('ranked.mm.players.matchesThisPeriod', { count })}
+                      <i className="fas fa-khanda" /> {t('ranked.mm.players.matchesThisPeriod', { count })}
                     </span>
                     {isSeasonAdmin && selected.status !== 'closed' && (
                       <button
@@ -490,7 +487,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
             })}
             {inactiveCount > 0 && (
               <p className="mm-players-hint">
-                <i className="fas fa-user-clock" /> {inactiveCount} {t('ranked.mm.players.inactive')} — {t('ranked.mm.players.inactiveHint')}
+                <i className="fas fa-user-clock" /> {t('ranked.mm.players.inactiveNote', { count: inactiveCount })}
               </p>
             )}
 
@@ -502,7 +499,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
                   return (
                     <div key={p.id} className="mm-player-row mm-player-row--removed">
                       <div className="mm-player-row-info">
-                        {gp?.eloRank && <i className={`${getRankIcon(gp.eloRank)} mm-rank-icon`} title={gp.eloRank} />}
+                        {gp?.eloRank && <i className={`${getRankIcon(gp.eloRank)} mm-rank-icon`} style={{ color: getRankColor(gp.eloRank) }} title={gp.eloRank} />}
                         <span className="mm-player-name">{p.alias || p.name}</span>
                         {gp?.eloPoints != null && <span className="mm-elo">{gp.eloPoints}</span>}
                       </div>
@@ -621,9 +618,8 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
         </div>
         {isAdmin && (
           <div className="mm-header-actions">
-            <button className="btn-outline" onClick={() => setShowReset(true)} title={t('ranked.mm.deactivateAllTitle')}>
-              <i className="fas fa-user-slash" /> {t('ranked.mm.deactivateAll')}
-            </button>
+
+
             <button className="btn-primary" onClick={() => navigate(getPath('events/matchmaking/create'))}>
               <i className="fas fa-plus" /> {t('ranked.mm.newSeason')}
             </button>
@@ -632,7 +628,6 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       </div>
 
       {error && <div className="error-message">{error}</div>}
-      {actionMsg && <div className="success-message">{actionMsg}</div>}
       {loading && <div className="loading-spinner"><i className="fas fa-spinner fa-spin" /></div>}
 
 
@@ -657,7 +652,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
                 <span className="mm-season-name">{s.name}</span>
                 <div className="mm-season-card-meta">
                   <span><i className="fas fa-redo" /> {s.periodType === 'weekly' ? t('ranked.mm.weekly') : t('ranked.mm.biweekly')}</span>
-                  <span><i className="fas fa-swords" /> {t('ranked.mm.matchesPerPlayer', { count: s.matchesPerPlayer })}</span>
+                  <span><i className="fas fa-khanda" /> {t('ranked.mm.matchesPerPlayer', { count: s.matchesPerPlayer })}</span>
                   {s.currentPeriod && s.status !== 'draft' && (
                     <span className="mm-season-period-chip">
                       <i className="fas fa-bolt" /> {t('ranked.mm.period', { n: s.currentPeriod.index + 1 })}
@@ -677,33 +672,8 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       </div>
 
       {/* Reset availability modal */}
-      {showReset && isAdmin && (
-        <div className="modal-overlay" onClick={() => setShowReset(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2><i className="fas fa-user-slash" /> {t('ranked.mm.deactivateAll')}</h2>
-              <button className="btn-icon" onClick={() => setShowReset(false)}><i className="fas fa-times" /></button>
-            </div>
-            <div className="modal-body">
-              <p className="text-secondary" style={{ marginBottom: '1rem' }}>
-                {t('ranked.mm.modals.resetBody')}
-              </p>
-              <div className="form-group">
-                <label>{t('ranked.mm.modals.game')}</label>
-                <select className="form-control" value={resetGameId} onChange={(e) => setResetGameId(e.target.value)}>
-                  {GAMES.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
-                </select>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button className="btn-outline" onClick={() => setShowReset(false)}>{t('ranked.mm.modals.cancel')}</button>
-              <button className="btn-danger" onClick={handleResetAvailability} disabled={resetting}>
-                {resetting ? t('ranked.mm.modals.applying') : t('ranked.mm.modals.resetConfirm')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
+
     </div>
   );
 }

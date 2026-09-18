@@ -21,6 +21,7 @@ import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 
 import { useCommunity } from '@/contexts/CommunityContext';
+import ResetAvailabilityButton from '@/components/ResetAvailabilityButton/ResetAvailabilityButton';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import RankingInfo from './RankingInfo';
@@ -203,6 +204,7 @@ function RankingPage() {
               >
                 <i className="fas fa-triangle-exclamation" /> {t('ranking.hardReset')}
               </button>
+              <ResetAvailabilityButton />
             </div>
           )}
           <div className="rk-game-filter">

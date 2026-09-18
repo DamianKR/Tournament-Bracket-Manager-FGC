@@ -125,7 +125,7 @@ function CreateMatchmaking() {
 
           {/* ── Partidas por jugador ── */}
           <div className="cm-section">
-            <div className="cm-section-title"><i className="fas fa-swords" /> {t('ranked.mm.create.matchesTitle')}</div>
+            <div className="cm-section-title"><i className="fas fa-khanda" /> {t('ranked.mm.create.matchesTitle')}</div>
             <div className="cm-matches-row">
               {[1,2,3,4,5,6,7,8,9,10].map((n) => (
                 <button

@@ -321,6 +321,20 @@ export async function validateDuelChallenge(
     return { valid: false, error: 'One or both participants not found' };
   }
 
+  // 1b. Availability — inactive players cannot challenge or be challenged
+  if (!challenger.games?.[gameId]) {
+    return { valid: false, error: 'The challenger is not registered for this game' };
+  }
+  if (!challenged.games?.[gameId]) {
+    return { valid: false, error: `${challenged.alias || challenged.name} is not registered for this game` };
+  }
+  if (challenger.games[gameId].available === false) {
+    return { valid: false, error: 'You are inactive for ranked activity in this game. Enable availability in your profile.' };
+  }
+  if (challenged.games[gameId].available === false) {
+    return { valid: false, error: `${challenged.alias || challenged.name} is inactive for ranked activity in this game.` };
+  }
+
   // 2. Check weekly limit (includes both normal and mandatory)
   const challengesThisWeek = await getChallengesThisWeek(challengerId, communityId);
   if (challengesThisWeek.length >= settings.maxChallengesPerWeek) {
@@ -458,25 +472,24 @@ export async function createDuelChallenge(
     ...(type === 'mandatory' && { acceptedAt: new Date().toISOString() }),
   };
 
-  // Add to localStorage cache
+  // Sync to server FIRST — the server is authoritative for validation
+  // (availability, ELO restriction, admin scope). Only cache on success.
+  if (await isServerAvailable()) {
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(challenge),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Server rejected challenge (${res.status})`);
+    }
+  }
+
+  // Add to localStorage cache only after the server accepted it
   const all = lsReadChallenges();
   all.push(challenge);
   lsWriteChallenges(all);
-
-  // Sync to server
-  if (await isServerAvailable()) {
-    try {
-      const res = await fetch(API_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify(challenge),
-      });
-      if (!res.ok) throw new Error('Server rejected challenge');
-    } catch (err) {
-      console.warn('[Duels] Server challenge create failed:', err);
-      resetServerCache();
-    }
-  }
 
   return challenge;
 }

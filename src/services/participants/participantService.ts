@@ -102,7 +102,8 @@ export async function updateParticipant(
     primaryGameId?: string | null;
     gameIds?: string[];
     gameMainCharacters?: Record<string, string | null>;
-    gameAvailability?: Record<string, boolean>;
+    /** Per-game availability: boolean = ranked only; object = per-activity flags. */
+    gameAvailability?: Record<string, boolean | { ranked?: boolean; leagues?: boolean; tournaments?: boolean }>;
     phoneNumber?: string | null;
     communityId?: string;
   }
@@ -133,6 +134,21 @@ export async function updateParticipant(
     const gameId = updates.gameId !== undefined ? updates.gameId : participant.gameId;
     const mainCharacterId = updates.mainCharacterId !== undefined ? updates.mainCharacterId : participant.mainCharacterId;
     setParticipantPrimaryGame(participant, gameId, mainCharacterId);
+  }
+
+  // Apply per-activity availability flags to the game profiles
+  if (updates.gameAvailability && typeof updates.gameAvailability === 'object') {
+    for (const [gId, avail] of Object.entries(updates.gameAvailability)) {
+      const prof = participant.games?.[gId];
+      if (!prof) continue;
+      if (typeof avail === 'boolean') {
+        prof.available = avail;
+      } else {
+        if (avail.ranked !== undefined) prof.available = avail.ranked;
+        if (avail.leagues !== undefined) prof.leagueAvailable = avail.leagues;
+        if (avail.tournaments !== undefined) prof.tournamentAvailable = avail.tournaments;
+      }
+    }
   }
 
   participant.updatedAt = new Date().toISOString();

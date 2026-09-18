@@ -327,7 +327,9 @@
         "removed": "Removidos",
         "empty": "No hay participantes elegibles.",
         "matchesThisPeriod": "{{count}} partidas",
-        "inactiveHint": "Desactivaron su disponibilidad — vuelven si la reactivan.",
+        "inactiveHint": "Inactivo — no se empareja en próximos períodos, pero sus partidas actuales siguen siendo obligatorias",
+        "inactiveBadge": "Inactivo",
+        "inactiveNote": "{{count}} inactivos — sus partidas del período actual siguen siendo obligatorias; no serán emparejados en el próximo.",
         "remove": "Remover",
         "restore": "Restaurar"
       },
@@ -395,9 +397,10 @@
         "notePlaceholder": "Ej: No se presentó al evento",
         "confirmForfeit": "Confirmar Forfeit",
         "applying": "Aplicando...",
-        "resetBody": "Todos los participantes de ese juego quedarán en Inactivo. Deben activarse manualmente para entrar en el próximo período.",
+        "resetBody": "Todos los participantes de ese juego quedarán en Inactivo para la actividad elegida. Deben activarse manualmente desde su perfil.",
         "resetConfirm": "Confirmar — Desactivar todos",
         "game": "Juego",
+        "activity": "Actividad",
         "cancel": "Cancelar",
         "removeTitle": "Remover participante",
         "removeBody": "{{name}} quedará fuera de esta temporada. Sus partidas pendientes se cancelan sin penalización para nadie y no será emparejado en los próximos períodos. Puedes restaurarlo después.",
@@ -415,6 +418,14 @@
         "removed": "{{name}} removido — {{count}} partidas pendientes canceladas",
         "removedZero": "{{name}} removido de la temporada",
         "restored": "{{name}} restaurado a la temporada"
+      },
+      "activities": {
+        "ranked": "Ranked",
+        "leagues": "Ligas",
+        "tournaments": "Torneos",
+        "rankedDesc": "Duelos y temporadas de matchmaking",
+        "leaguesDesc": "Pools de ligas",
+        "tournamentsDesc": "Pools de torneos"
       },
       "create": {
         "title": "Nueva temporada de matchmaking",
@@ -503,7 +514,10 @@
       "unranked": "sin rango",
       "cancel": "Cancelar",
       "create": "Crear desafío",
-      "failedCreate": "Error al crear desafío"
+      "failedCreate": "Error al crear desafío",
+      "toastCreated": "Duelo creado",
+      "toastAccepted": "Duelo aceptado",
+      "toastDeclined": "Duelo rechazado"
     },
     "duelInfo": {
       "title": "Cómo funcionan los duelos",
@@ -990,7 +1004,13 @@
       "inviteSent": "Invitación enviada",
       "availabilityTitle": "Disponible para duelos y matchmaking",
       "available": "Activo",
-      "unavailable": "Inactivo"
+      "unavailable": "Inactivo",
+      "act_ranked": "Ranked",
+      "act_leagues": "Ligas",
+      "act_tournaments": "Torneos",
+      "act_rankedHint": "Duelos y temporadas de matchmaking",
+      "act_leaguesHint": "Puede ser agregado a ligas",
+      "act_tournamentsHint": "Puede ser agregado a torneos"
     },
     "errors": {
       "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
