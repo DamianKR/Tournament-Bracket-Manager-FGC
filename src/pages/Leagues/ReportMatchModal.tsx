@@ -7,6 +7,7 @@ import { validateSeriesGames } from '@/utils/matchSeries';
 import { getGame } from '@/data/games';
 
 import { useCommunity } from '@/contexts/CommunityContext';
+import { useToast } from '@/contexts/NotificationContext';
 import { reportMatchResult, resolveLeagueMatch } from '@/services/leagues/leagueService';
 import './ReportMatchModal.css';
 
@@ -23,6 +24,7 @@ const MAX_EVIDENCE_SIZE_BYTES = MAX_EVIDENCE_SIZE_MB * 1024 * 1024;
 
 function ReportMatchModal({ league, match, participants, onClose, onSuccess }: ReportMatchModalProps) {
   const { t } = useTranslation();
+  const toast = useToast();
   const { canAdminGame } = useCommunity();
   const canAdminLeague = canAdminGame(league.gameId);
   const [games, setGames] = useState<MatchGame[]>([]);
@@ -99,7 +101,9 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
         });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('league.reportMatch.errors.submitFailed'));
+      const msg = err instanceof Error ? err.message : t('league.reportMatch.errors.submitFailed');
+      setError(msg);
+      toast.error(msg);
       submittingRef.current = false;
       setSubmitting(false);
       return;
@@ -109,10 +113,17 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     setSubmitting(false);
 
     if (!result) {
-      setError(t('league.reportMatch.errors.submitFailed'));
+      const msg = t('league.reportMatch.errors.submitFailed');
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
+    toast.success(
+      canAdminLeague && match.status === 'pending_review'
+        ? t('league.reportMatch.resolveSuccess')
+        : t('league.reportMatch.submitSuccess')
+    );
     onSuccess();
   }
 

@@ -10,26 +10,26 @@ import {
 } from '@/services/participants/participantService';
 import Loading from '@/components/Loading/Loading';
 import { communityRoleOf, gameAdminForOf } from '@/utils/membershipRole';
+import { useToast } from '@/contexts/NotificationContext';
 import './MembershipRequestsPage.css';
 
 function MembershipRequestsPage() {
   const { t } = useTranslation();
+  const toast = useToast();
   const { user, refreshUser } = useAuth();
   const { allCommunities, currentCommunity } = useCommunity();
   const [requests, setRequests] = useState<MembershipRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState<Record<string, boolean>>({});
 
   async function loadRequests() {
     setLoading(true);
-    setError(null);
     try {
       const data = await getMembershipRequests();
       data.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
       setRequests(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load requests');
+      toast.error(err instanceof Error ? err.message : t('membershipRequests.loadError'));
     } finally {
       setLoading(false);
     }
@@ -41,15 +41,19 @@ function MembershipRequestsPage() {
 
   async function handleResolve(req: MembershipRequest, action: 'accept' | 'decline') {
     setProcessing((prev) => ({ ...prev, [req.id]: true }));
-    setError(null);
     try {
       await resolveMembershipRequest(req.id, action);
       setRequests((prev) => prev.filter((r) => r.id !== req.id));
       // Al aceptar una invitación propia se crea una membership nueva —
       // refrescar el session user para que participantByCommunity se actualice.
-      if (action === 'accept') await refreshUser();
+      if (action === 'accept') {
+        await refreshUser();
+        toast.success(t('membershipRequests.acceptSuccess'));
+      } else {
+        toast.info(t('membershipRequests.declineSuccess'));
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to resolve request');
+      toast.error(err instanceof Error ? err.message : t('membershipRequests.resolveError'));
     } finally {
       setProcessing((prev) => ({ ...prev, [req.id]: false }));
     }
@@ -92,8 +96,6 @@ function MembershipRequestsPage() {
             {t('membershipRequests.toCommunities', { defaultValue: 'Comunidades' })}
           </Link>
         </div>
-
-        {error && <div className="error-message">{error}</div>}
 
         {loading ? (
           <Loading />

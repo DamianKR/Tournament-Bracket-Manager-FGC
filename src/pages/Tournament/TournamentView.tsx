@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { Tournament } from '@/models/types';
 import { getTournament, setMatchWinner, undoMatchResult, registerForTournament } from '@/services/tournament/tournamentService';
+import { useToast } from '@/contexts/NotificationContext';
 
 import Sidebar from '@/components/Sidebar/Sidebar';
 import BracketView from '@/components/Bracket/BracketView';
@@ -19,11 +20,11 @@ function TournamentView() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const toast = useToast();
   const { user } = useAuth();
   const { getPath, canAdminGame } = useCommunity();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('bracket');
-  const [error, setError] = useState('');
   const [registering, setRegistering] = useState(false);
 
   useEffect(() => {
@@ -32,14 +33,8 @@ function TournamentView() {
 
   const loadTournament = () => {
     if (!id) return;
-    
     const loadedTournament = getTournament(id);
-    if (!loadedTournament) {
-      setError(t('tournament.view.notFoundTitle'));
-      return;
-    }
-    
-    setTournament(loadedTournament);
+    if (loadedTournament) setTournament(loadedTournament);
   };
 
   const handleMatchResult = async (
@@ -55,9 +50,8 @@ function TournamentView() {
     try {
       const updatedTournament = await setMatchWinner(id, matchId, winnerId, score1, score2, chars1, chars2);
       setTournament(updatedTournament);
-      setError('');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -84,9 +78,8 @@ function TournamentView() {
     try {
       const updatedTournament = await setMatchWinner(id, matchId, winnerId, score1, score2, undefined, undefined, games);
       setTournament(updatedTournament);
-      setError('');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -96,9 +89,8 @@ function TournamentView() {
     try {
       const updatedTournament = await undoMatchResult(id, matchId);
       setTournament(updatedTournament);
-      setError('');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -115,16 +107,16 @@ function TournamentView() {
     if (!id || !user) return;
     const participantId = getCurrentParticipantId();
     if (!participantId) {
-      setError(t('tournament.view.noParticipant'));
+      toast.error(t('tournament.view.noParticipant'));
       return;
     }
     setRegistering(true);
-    setError('');
     try {
       const updated = await registerForTournament(id, participantId);
       setTournament(updated);
+      toast.success(t('tournament.view.registerSuccess'));
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setRegistering(false);
     }
@@ -136,7 +128,7 @@ function TournamentView() {
         <div className="container">
           <div className="error-state card">
             <h2>{t('tournament.view.notFoundTitle')}</h2>
-            <p className="text-secondary">{error || t('tournament.view.notFoundDesc')}</p>
+            <p className="text-secondary">{t('tournament.view.notFoundDesc')}</p>
             <button className="btn-primary mt-2" onClick={handleBackToDashboard}>
               {t('tournament.view.backToDashboard')}
             </button>
@@ -227,12 +219,6 @@ function TournamentView() {
                 <i className="fas fa-check" /> {t('tournament.view.registered')}
               </span>
             )}
-          </div>
-        )}
-
-        {error && (
-          <div className="error-message">
-            {error}
           </div>
         )}
 

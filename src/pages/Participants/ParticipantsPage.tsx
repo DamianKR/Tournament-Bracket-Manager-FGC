@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '@/contexts/NotificationContext';
 import { GlobalParticipant, ComputedStats } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
 import { getCharacter, getGame, GAMES } from '@/data/games';
@@ -35,6 +36,7 @@ const DEFAULT_COMMUNITY_ID = 'community_fgc_santa_clara';
 function ParticipantsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const toast = useToast();
   const { user } = useAuth();
   const { currentCommunity, getPath, isInMyCommunity, canAdminCurrentCommunity, communityRole, gameAdminForHere } = useCommunity();
   // Admin con gameAdminFor: solo gestiona participantes que compartan sus juegos
@@ -209,6 +211,7 @@ function ParticipantsPage() {
         setNewName(''); setNewAlias(''); setNewGameIds([]); setNewGameMainChars({}); setNewPrimaryGameId(null);
         setNewUsername(''); setNewPassword(''); setNewRole('user');
         setShowCreateForm(false);
+        toast.success(t('participants.createSuccess', { name: p.name }));
       } catch (userErr: any) {
         // Rollback: delete the participant if user creation failed
         try {
@@ -240,6 +243,7 @@ function ParticipantsPage() {
 
   async function confirmDelete() {
     if (!deleteTarget) return;
+    const name = deleteTarget.name;
     try {
       await removeParticipant(deleteTarget.id);
       const user = usersMap.get(deleteTarget.id);
@@ -249,7 +253,8 @@ function ParticipantsPage() {
       nextUsers.delete(deleteTarget.id);
       setParticipants(next); refreshStats(next);
       setUsersMap(nextUsers);
-    } catch (err: any) { setError(err.message); }
+      toast.info(t('participants.deleteSuccess', { name }));
+    } catch (err: any) { toast.error(err.message); }
     setDeleteTarget(null);
   }
 

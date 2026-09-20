@@ -5,6 +5,7 @@ import { GAMES } from '@/data/games';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { createSeason } from '@/services/matchmaking/matchmakingService';
+import { useToast } from '@/contexts/NotificationContext';
 import './CreateMatchmaking.css';
 
 type DurationMode = 'open' | 'periods' | 'date';
@@ -12,6 +13,7 @@ type DurationMode = 'open' | 'periods' | 'date';
 function CreateMatchmaking() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const PERIOD_OPTIONS = [
     { value: 'weekly',   days: 7,  icon: 'fas fa-calendar-week', label: t('ranked.mm.create.weekly'),   sub: t('ranked.mm.create.every7')  },
@@ -59,7 +61,7 @@ function CreateMatchmaking() {
       });
       navigate(getPath(`events?tab=ranked&sub=matchmaking`));
     } catch (e: any) {
-      setError(e.message ?? t('ranked.mm.create.errCreate'));
+      toast.error(e.message ?? t('ranked.mm.create.errCreate'));
     } finally {
       setCreating(false);
     }

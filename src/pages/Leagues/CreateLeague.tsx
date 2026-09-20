@@ -8,11 +8,13 @@ import { GlobalParticipant } from '@/models/types';
 import { GAMES } from '@/data/games';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { useCommunity } from '@/contexts/CommunityContext';
+import { useToast } from '@/contexts/NotificationContext';
 import './CreateLeague.css';
 
 function CreateLeague() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const toast = useToast();
   const { currentCommunity, getPath, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
   // Admin con gameAdminFor: solo puede crear ligas de SUS juegos
@@ -130,7 +132,7 @@ function CreateLeague() {
     setCreating(false);
 
     if (!result) {
-      setError(t('league.create.errors.createFailed'));
+      toast.error(t('league.create.errors.createFailed'));
       return;
     }
 

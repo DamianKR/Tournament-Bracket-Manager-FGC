@@ -15,11 +15,13 @@ import type { GlobalParticipant, Tournament } from '@/models/types';
 import type { League } from '@/models/league';
 import Loading from '@/components/Loading/Loading';
 import { isCommunityAdminOf } from '@/utils/membershipRole';
+import { useToast } from '@/contexts/NotificationContext';
 import './CommunityDashboard.css';
 
 export default function CommunityDashboard() {
   const { communityId } = useParams<{ communityId: string }>();
   const { t } = useTranslation();
+  const toast = useToast();
   const { allCommunities, setCommunityId, refresh } = useCommunity();
   const { user } = useAuth();
   const [community, setCommunity] = useState<Community | null>(null);
@@ -31,7 +33,6 @@ export default function CommunityDashboard() {
   const [editDesc, setEditDesc] = useState('');
   const [editIsPublic, setEditIsPublic] = useState(true);
   const [editError, setEditError] = useState('');
-  const [editSuccess, setEditSuccess] = useState('');
   const [editSaving, setEditSaving] = useState(false);
   const [participants, setParticipants] = useState<GlobalParticipant[]>([]);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -94,7 +95,6 @@ export default function CommunityDashboard() {
     setEditDesc(community.description ?? '');
     setEditIsPublic(community.isPublic !== false);
     setEditError('');
-    setEditSuccess('');
     setEditOpen(true);
   }
 
@@ -112,9 +112,9 @@ export default function CommunityDashboard() {
       setCommunity(updated);
       await refresh();
       setEditOpen(false);
-      setEditSuccess(t('communities.updateSuccess', { defaultValue: 'Comunidad actualizada correctamente' }));
+      toast.success(t('communities.updateSuccess'));
     } catch (err: any) {
-      setEditError(err.message || t('communityDashboard.errors.save'));
+      toast.error(err.message || t('communityDashboard.errors.save'));
     } finally {
       setEditSaving(false);
     }
@@ -139,7 +139,6 @@ export default function CommunityDashboard() {
               <> — <span className="cd-my-community">{t('communityDashboard.myCommunity')}</span></>
             )}
           </p>
-          {editSuccess && <p className="success-message cd-save-success" role="status">{editSuccess}</p>}
           {canEditCommunity && (
             <div className="cd-hero-actions">
               <button className="cd-hero-edit-btn" onClick={openEdit}>

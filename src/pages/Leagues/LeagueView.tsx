@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
+import { useToast } from '@/contexts/NotificationContext';
 import { League, LeagueMatch, LeagueStanding } from '@/models/league';
 import { GlobalParticipant } from '@/models/types';
 import {
@@ -30,6 +31,7 @@ function LeagueView() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const toast = useToast();
   const { user } = useAuth();
   const { currentCommunity, getPath, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id;
@@ -98,9 +100,10 @@ function LeagueView() {
       const updated = await registerForLeague(id);
       if (updated) {
         setLeague(updated);
+        toast.success(t('league.view.registerSuccess'));
       }
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || t('league.view.registerError'));
     } finally {
       setRegistering(false);
     }

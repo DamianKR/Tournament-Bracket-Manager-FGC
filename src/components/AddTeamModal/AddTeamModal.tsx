@@ -15,6 +15,7 @@ interface AddTeamModalProps {
 function AddTeamModal({ isOpen, teamSize, excludedNames = [], onConfirm, onCancel }: AddTeamModalProps) {
   const { t } = useTranslation();
   const [teamName, setTeamName] = useState('');
+  const [modalError, setModalError] = useState('');
   const [memberNames, setMemberNames] = useState<string[]>(Array(teamSize).fill(''));
   const [suggestions, setSuggestions] = useState<GlobalParticipant[][]>(
     Array(teamSize).fill([])
@@ -151,16 +152,17 @@ function AddTeamModal({ isOpen, teamSize, excludedNames = [], onConfirm, onCance
 
   const handleSubmit = () => {
     if (!teamName.trim()) {
-      alert(t('tournament.addTeamModal.errors.teamNameRequired'));
+      setModalError(t('tournament.addTeamModal.errors.teamNameRequired'));
       return;
     }
 
     const filledMembers = memberNames.filter((name) => name.trim());
     if (filledMembers.length !== teamSize) {
-      alert(t('tournament.addTeamModal.errors.membersRequired', { count: teamSize }));
+      setModalError(t('tournament.addTeamModal.errors.membersRequired', { count: teamSize }));
       return;
     }
 
+    setModalError('');
     onConfirm(teamName.trim(), memberNames.map((n) => n.trim()));
   };
 
@@ -170,6 +172,8 @@ function AddTeamModal({ isOpen, teamSize, excludedNames = [], onConfirm, onCance
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal-content add-team-modal" onClick={(e) => e.stopPropagation()}>
         <h2>{t('tournament.addTeamModal.title')}</h2>
+
+        {modalError && <div className="error-message">{modalError}</div>}
 
         <div className="form-group">
           <label>{t('tournament.addTeamModal.teamNameLabel')}</label>

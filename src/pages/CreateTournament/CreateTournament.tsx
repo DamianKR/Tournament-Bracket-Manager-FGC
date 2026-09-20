@@ -20,6 +20,7 @@ import { searchParticipants } from '@/services/participants/participantService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { useCommunity } from '@/contexts/CommunityContext';
+import { useToast } from '@/contexts/NotificationContext';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
 import BracketPreview from '@/components/Bracket/BracketPreview';
@@ -33,6 +34,7 @@ type ViewMode = 'participants' | 'bracket' | 'seeding-preview' | 'manual-standin
 function CreateTournament() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const toast = useToast();
   const { id } = useParams<{ id: string }>();
   const { currentCommunity, getPath, canAdminGame } = useCommunity();
   // Admin con gameAdminFor: solo puede crear torneos de SUS juegos
@@ -187,7 +189,7 @@ function CreateTournament() {
       setIsCreated(true);
       setError('');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -202,7 +204,7 @@ function CreateTournament() {
       setParticipants(tournament.participants);
       setNewParticipantName('');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setAdding(false);
       // Wait for React to re-enable the input before focusing.
@@ -225,7 +227,7 @@ function CreateTournament() {
       const tournament = await addTeam(tournamentId, teamName, memberNames);
       setParticipants(tournament.participants);
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setAdding(false);
     }
@@ -236,9 +238,8 @@ function CreateTournament() {
     try {
       const tournament = removeParticipant(tournamentId, participantId);
       setParticipants(tournament.participants);
-      setError('');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -247,9 +248,8 @@ function CreateTournament() {
     try {
       const tournament = updateParticipantName(tournamentId, participantId, newName);
       setParticipants(tournament.participants);
-      setError('');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -258,9 +258,8 @@ function CreateTournament() {
     try {
       const tournament = moveParticipant(tournamentId, participantId, direction);
       setParticipants(tournament.participants);
-      setError('');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -269,9 +268,8 @@ function CreateTournament() {
     try {
       const tournament = shuffleParticipants(tournamentId);
       setParticipants(tournament.participants);
-      setError('');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -304,7 +302,7 @@ function CreateTournament() {
       await startTournament(tournamentId);
       navigate(getPath(`events/tournaments/${tournamentId}`));
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -317,7 +315,7 @@ function CreateTournament() {
       await finishManualTournament(tournamentId, placements);
       navigate(getPath(`events/tournaments/${tournamentId}`));
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
       setFinishingManual(false);
     }
   };
