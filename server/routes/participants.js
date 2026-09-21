@@ -1102,9 +1102,12 @@ router.get('/:id/head-to-head', async (req, res) => {
       const games = Array.isArray(m.games) ? m.games : [];
       const myScoreVal = isP1 ? (m.player1Score ?? null) : (m.player2Score ?? null);
       const oppScoreVal = isP1 ? (m.player2Score ?? null) : (m.player1Score ?? null);
+      // games[].winnerId holds the tournament-local participant id, NOT the
+      // global participant id — compare against player1Id/player2Id.
+      const myLocalId = isP1 ? m.player1Id : m.player2Id;
       const gc = gameCount(
         games,
-        (g) => g.winnerId === (isP1 ? m.player1GlobalId : m.player2GlobalId),
+        (g) => g.winnerId === myLocalId,
         myScoreVal,
         oppScoreVal
       );
@@ -1129,7 +1132,7 @@ router.get('/:id/head-to-head', async (req, res) => {
           oppChar: isP1 ? g.player2Character : g.player1Character,
           myColor: isP1 ? g.player1Color : g.player2Color,
           oppColor: isP1 ? g.player2Color : g.player1Color,
-          won: g.winnerId === (isP1 ? m.player1GlobalId : m.player2GlobalId),
+          won: g.winnerId === myLocalId,
         })),
       });
     }
