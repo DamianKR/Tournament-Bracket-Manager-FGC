@@ -48,7 +48,8 @@ function TournamentsTab() {
 
   const handleOpenTournament = (id: string) => {
     const tournament = tournaments.find(t => t.id === id);
-    if (tournament?.status === 'setup') {
+    // Setup editor is admin-only; everyone else goes to the public view
+    if (tournament?.status === 'setup' && canAdminGame(tournament.gameId)) {
       navigate(getPath(`events/tournaments/create/${id}`));
     } else {
       navigate(getPath(`events/tournaments/${id}`));
@@ -179,10 +180,10 @@ function TournamentsTab() {
               <div className="tournament-card-actions">
                 <button
                   className="btn-outline"
-                  onClick={() => tournament.status === 'setup' ? navigate(getPath(`events/tournaments/create/${tournament.id}`)) : navigate(getPath(`events/tournaments/${tournament.id}`))}
+                  onClick={() => tournament.status === 'setup' && canAdminGame(tournament.gameId) ? navigate(getPath(`events/tournaments/create/${tournament.id}`)) : navigate(getPath(`events/tournaments/${tournament.id}`))}
                 >
-                  <i className={tournament.status === 'setup' ? 'fas fa-pen' : 'fas fa-eye'} />
-                  {tournament.status === 'setup' ? ` ${t('tournaments.continueSetup')}` : ` ${t('tournaments.viewBracket')}`}
+                  <i className={tournament.status === 'setup' && canAdminGame(tournament.gameId) ? 'fas fa-pen' : 'fas fa-eye'} />
+                  {tournament.status === 'setup' && canAdminGame(tournament.gameId) ? ` ${t('tournaments.continueSetup')}` : ` ${t('tournaments.viewBracket')}`}
                 </button>
                 {canAdminGame(tournament.gameId) && (
                   <button

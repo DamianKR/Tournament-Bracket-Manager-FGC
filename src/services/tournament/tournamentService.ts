@@ -4,7 +4,7 @@ import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progression/matchProgression';
 import { getTournamentPlacement } from '@/utils/tournamentPlacements';
-import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament, loadGlobalParticipants } from '@/services/storage/localStorage';
+import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament, loadGlobalParticipants, cacheTournament } from '@/services/storage/localStorage';
 import { findGlobalParticipantByName } from '@/services/storage/localStorage';
 import { getAuthHeader } from '@/services/auth/authService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
@@ -94,8 +94,14 @@ export async function addParticipant(
   if (!global || global.communityId !== tournament.communityId) {
     throw new Error('Participant not found in this community');
   }
-  if (!global.games?.[tournament.gameId ?? 'ssbu']) {
+  const gameKey = tournament.gameId ?? 'ssbu';
+  if (!global.games?.[gameKey]) {
     throw new Error('Participant is not registered for this game');
+  }
+
+  // Block participants who opted out of tournaments for this game
+  if (global.games?.[gameKey]?.tournamentAvailable === false) {
+    throw new Error(`${global.name} is not available for tournaments in this game`);
   }
 
   // Check if this GlobalParticipant is already in the tournament
@@ -114,6 +120,8 @@ export async function addParticipant(
   };
 
   tournament.participants.push(participant);
+  // Adding a participant invalidates any previously applied bracket seeding
+  tournament.bracketSeeded = false;
   tournament.updatedAt = new Date().toISOString();
 
   await saveTournamentAsync(tournament);
@@ -178,6 +186,8 @@ export async function addTeam(
   };
 
   tournament.participants.push(participant);
+  // Adding a team invalidates any previously applied bracket seeding
+  tournament.bracketSeeded = false;
   tournament.updatedAt = new Date().toISOString();
 
   await saveTournamentAsync(tournament);
@@ -205,6 +215,8 @@ export function removeParticipant(
 
   tournament.participants = tournament.participants.filter((p: Participant) => p.id !== participantId);
   tournament.participants = assignSeeds(tournament.participants);
+  // Removing a participant invalidates any previously applied bracket seeding
+  tournament.bracketSeeded = false;
   tournament.updatedAt = new Date().toISOString();
 
   saveTournament(tournament);
@@ -261,6 +273,8 @@ export function moveParticipant(
   tournament.participants[newIndex] = temp;
 
   tournament.participants = assignSeeds(tournament.participants);
+  // Manual reordering invalidates any previously applied bracket seeding
+  tournament.bracketSeeded = false;
   tournament.updatedAt = new Date().toISOString();
 
   saveTournament(tournament);
@@ -276,6 +290,8 @@ export function shuffleParticipants(tournamentId: string): Tournament {
   if (tournament.status !== 'setup') throw new Error('Cannot shuffle participants in a tournament in progress');
 
   tournament.participants = randomizeParticipants(tournament.participants);
+  // Shuffling invalidates any previously applied bracket seeding
+  tournament.bracketSeeded = false;
   tournament.updatedAt = new Date().toISOString();
 
   saveTournament(tournament);
@@ -285,11 +301,11 @@ export function shuffleParticipants(tournamentId: string): Tournament {
 /**
  * Update tournament participants order (for seeding preview)
  */
-export function updateTournamentParticipants(
+export async function updateTournamentParticipants(
   tournamentId: string,
   participants: Participant[],
   bracketSeeded = false
-): Tournament {
+): Promise<Tournament> {
   const tournament = loadTournament(tournamentId);
   if (!tournament) throw new Error('Tournament not found');
   if (tournament.status !== 'setup') throw new Error('Cannot update participants in a tournament in progress');
@@ -298,7 +314,7 @@ export function updateTournamentParticipants(
   tournament.bracketSeeded = bracketSeeded;
   tournament.updatedAt = new Date().toISOString();
 
-  saveTournament(tournament);
+  await saveTournamentAsync(tournament);
   return tournament;
 }
 
@@ -322,6 +338,12 @@ export async function registerForTournament(
   const global = loadGlobalParticipants().find(p => p.id === globalParticipantId);
   if (!global) throw new Error('Participant not found');
 
+  // Block self-registration for participants who opted out of tournaments
+  const gameKey = tournament.gameId ?? 'ssbu';
+  if (global.games?.[gameKey]?.tournamentAvailable === false) {
+    throw new Error(`${global.name} is not available for tournaments in this game`);
+  }
+
   const participant: Participant = {
     id: generateId(),
     name: global.name,
@@ -332,7 +354,33 @@ export async function registerForTournament(
     globalParticipantId: global.id,
   };
 
+  // Self-registration goes through the dedicated endpoint — regular members
+  // are not allowed to PUT the whole tournament.
+  if (await isServerAvailable()) {
+    try {
+      const res = await fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournamentId)}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error ?? `Registration failed (${res.status})`);
+      }
+      const updated = (await res.json()) as Tournament;
+      cacheTournament(updated);
+      return updated;
+    } catch (err) {
+      // fetch TypeError = server unreachable → offline fallback below.
+      // Server rejections (4xx/5xx) surface to the caller's toast.
+      if (!(err instanceof TypeError)) throw err;
+      resetServerCache();
+    }
+  }
+
+  // Offline fallback — local-only registration
   tournament.participants.push(participant);
+  // A new registration invalidates any previously applied bracket seeding
+  tournament.bracketSeeded = false;
   tournament.updatedAt = new Date().toISOString();
   await saveTournamentAsync(tournament);
   return tournament;

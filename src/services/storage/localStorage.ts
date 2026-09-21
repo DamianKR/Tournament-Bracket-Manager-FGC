@@ -111,9 +111,25 @@ async function readAllTournaments(communityId?: string): Promise<Tournament[]> {
         // Only overwrite localStorage if server has data OR localStorage is also empty.
         // This prevents wiping localStorage on a fresh server with no data yet.
         if (data.length > 0 || lsReadTournaments().length === 0) {
-          lsWriteTournaments(data);
+          // Merge instead of blind overwrite: a local tournament that is newer
+          // than the server copy has unsynced changes (e.g. a seeding PUT that
+          // was still in flight or was rejected). Keep it and re-push.
+          const serverMap = new Map(data.map((t) => [t.id, t]));
+          const merged = [...data];
+          for (const lt of lsReadTournaments()) {
+            const st = serverMap.get(lt.id);
+            const localIsNewer = st && new Date(lt.updatedAt).getTime() > new Date(st.updatedAt).getTime();
+            if (!st || localIsNewer) {
+              if (st) merged[merged.indexOf(st)] = lt; else merged.push(lt);
+              writeOneTournament(lt).catch((err) =>
+                console.warn('[Storage] Re-sync of local tournament failed:', err)
+              );
+            }
+          }
+          lsWriteTournaments(merged);
+          return filterByCommunityId(merged, communityId);
         }
-        return data.length > 0 ? filterByCommunityId(data, communityId) : filterByCommunityId(lsReadTournaments(), communityId);
+        return filterByCommunityId(lsReadTournaments(), communityId);
       }
     } catch (err) {
       console.warn('[Storage] Local server tournaments read failed:', err);
@@ -144,13 +160,36 @@ async function writeAllTournaments(data: Tournament[]): Promise<void> {
 }
 
 // Write a single tournament via PUT (more efficient than bulk POST).
+// Unlike authedFetch, this AWAITS the response and THROWS on server-side
+// errors (4xx/5xx) so callers like saveTournamentAsync can surface them.
+// Pure network failures (fetch TypeError) are swallowed so the app keeps
+// working in localStorage-only mode when the server is unreachable.
 async function writeOneTournament(tournament: Tournament): Promise<void> {
   if (await isServerAvailable()) {
-    authedFetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournament.id)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-      body: JSON.stringify(tournament),
-    });
+    let res: Response;
+    try {
+      res = await fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournament.id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(tournament),
+      });
+    } catch (networkErr) {
+      // Server unreachable — continue in localStorage-only mode, do not throw.
+      console.warn('[Storage] Write network error (offline mode):', networkErr);
+      resetServerCache();
+      return;
+    }
+    if (res.status === 401) {
+      console.warn('[Storage] Write rejected with 401 — session expired');
+      dispatchAuthExpired();
+      return;
+    }
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      const msg = (body as { error?: string }).error ?? `Server rejected tournament save (${res.status})`;
+      console.warn('[Storage] Write failed:', res.status, msg);
+      throw new Error(msg);
+    }
   }
   if (hasSupabase()) {
     _supabaseSyncTournaments([tournament]).catch((err) =>
@@ -205,13 +244,41 @@ export function saveTournament(tournament: Tournament): void {
 export async function saveTournamentAsync(tournament: Tournament): Promise<void> {
   const all = lsReadTournaments();
   const idx = all.findIndex((t) => t.id === tournament.id);
+  // Keep the previous state so we can rollback on server rejection.
+  const previous = idx >= 0 ? all[idx] : null;
   if (idx >= 0) { all[idx] = tournament; } else { all.push(tournament); }
   lsWriteTournaments(all);
-  await writeOneTournament(tournament);
+  try {
+    await writeOneTournament(tournament);
+  } catch (serverErr) {
+    // Server explicitly rejected the save (e.g., 403 inactive player).
+    // Rollback localStorage so client state stays in sync with the server.
+    const rollbackAll = lsReadTournaments();
+    const rollbackIdx = rollbackAll.findIndex((t) => t.id === tournament.id);
+    if (previous && rollbackIdx >= 0) {
+      rollbackAll[rollbackIdx] = previous;
+    } else if (!previous && rollbackIdx >= 0) {
+      rollbackAll.splice(rollbackIdx, 1);
+    }
+    lsWriteTournaments(rollbackAll);
+    throw serverErr;
+  }
 }
 
 export function loadTournament(id: string): Tournament | null {
   return lsReadTournaments().find((t) => t.id === id) ?? null;
+}
+
+/**
+ * Write a tournament to the localStorage cache ONLY — no server PUT.
+ * Used to store server-authoritative responses (e.g. self-registration via
+ * POST /api/tournaments/:id/register) so we don't echo the write back.
+ */
+export function cacheTournament(tournament: Tournament): void {
+  const all = lsReadTournaments();
+  const idx = all.findIndex((t) => t.id === tournament.id);
+  if (idx >= 0) { all[idx] = tournament; } else { all.push(tournament); }
+  lsWriteTournaments(all);
 }
 
 export function deleteTournament(id: string): void {

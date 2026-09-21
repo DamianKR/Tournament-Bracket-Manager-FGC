@@ -108,10 +108,14 @@ function MatchDetailModal({
   };
 
   const addGame = () => {
-    setGames(prev => [
-      ...prev,
-      { gameNumber: prev.length + 1, winnerId: participant1Id, ...inheritChars(prev[prev.length - 1]) },
-    ]);
+    setGames(prev => {
+      const next = [
+        ...prev,
+        { gameNumber: prev.length + 1, winnerId: participant1Id, ...inheritChars(prev[prev.length - 1]) },
+      ];
+      recalcScores(next);
+      return next;
+    });
   };
 
   const recalcScores = (next: MatchGame[]) => {

@@ -93,6 +93,12 @@ function CreateTournament() {
     if (!tournamentId) return;
     const tournament = getTournament(tournamentId);
     if (tournament) {
+      // Non-admins cannot manage tournament setup — send them to the
+      // public tournament view where they can watch or self-register.
+      if (!canAdminGame(tournament.gameId)) {
+        navigate(getPath(`events/tournaments/${tournamentId}`), { replace: true });
+        return;
+      }
       setTournamentName(tournament.name);
       setMode(tournament.mode);
       setType(tournament.type || 'singles');
@@ -100,6 +106,12 @@ function CreateTournament() {
       setGivesPoints(tournament.givesPoints !== false);
       setPointsDepth(tournament.pointsDepth ?? 8);
       setGameId(tournament.gameId ?? GAMES[0]?.id ?? 'ssbu');
+      // Restore setup options persisted on the tournament — without these a
+      // re-entered tournament loses its seeding config and starts unseeded.
+      setSeedingMode(tournament.seedingMode ?? 'none');
+      setPartialSeedCount(tournament.partialSeedCount ?? 8);
+      setManualMode(tournament.manualMode ?? 'double');
+      setRegistrationDeadline(tournament.registrationDeadline ?? '');
       setParticipants(tournament.participants);
       setIsCreated(true);
     }
@@ -354,7 +366,17 @@ function CreateTournament() {
 
       <div className="create-tournament-content">
         <div className="container">
-          {!isCreated ? (
+          {!isCreated && creatableGames.length === 0 ? (
+            <div className="setup-form card">
+              <h2>{t('tournament.create.title')}</h2>
+              <p className="text-secondary">
+                {t('tournament.create.noPermission', { defaultValue: 'You need admin permissions to create tournaments.' })}
+              </p>
+              <div className="form-actions">
+                <button className="btn-outline" onClick={handleCancel}>{t('tournament.create.cancel')}</button>
+              </div>
+            </div>
+          ) : !isCreated ? (
             <div className="setup-form card">
               <h2>{t('tournament.create.title')}</h2>
 

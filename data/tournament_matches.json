@@ -2540,5 +2540,934 @@
     ],
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-09-14T18:42:46.523Z"
+  },
+  {
+    "id": "tm_1789919071175_o2ubp507r",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789879369608-vewiroi9g",
+    "player2Id": "1789917700109-bg2bma1p6",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1789917361535_umligu0",
+    "player1Name": "Damiam",
+    "player2Name": "Rivb",
+    "winnerId": "1789879369608-vewiroi9g",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 1,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "roy",
+        "player2Character": "pyra_mythra",
+        "player1Color": 4
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "roy",
+        "player1Color": 4,
+        "player2Character": "pyra_mythra",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T15:44:31.175Z"
+  },
+  {
+    "id": "tm_1789919119276_phpfdn4ly",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917750201-zfyvawg9x",
+    "player2Id": "1789917763036-806ldqj7k",
+    "player1GlobalId": "gp_1786399934148_stq7jpb",
+    "player2GlobalId": "gp_1786393655444_41zyrro",
+    "player1Name": "Pal",
+    "player2Name": "Olimak",
+    "winnerId": "1789917750201-zfyvawg9x",
+    "winnerGlobalId": "gp_1786399934148_stq7jpb",
+    "round": 1,
+    "matchNumber": 10,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917750201-zfyvawg9x",
+        "player1Character": "luigi",
+        "player2Character": "robin"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917750201-zfyvawg9x",
+        "player1Character": "luigi",
+        "player2Character": "byleth"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T15:45:19.276Z"
+  },
+  {
+    "id": "tm_1789919775572_yqdxjajbw",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917768177-oohn3gaqm",
+    "player2Id": "1789917780210-5jjqifdrv",
+    "player1GlobalId": "gp_1787176804167_dgzm0z9",
+    "player2GlobalId": "gp_1786756661811_fa5pg74",
+    "player1Name": "Miguel",
+    "player2Name": "Brayan",
+    "winnerId": "1789917768177-oohn3gaqm",
+    "winnerGlobalId": "gp_1787176804167_dgzm0z9",
+    "round": 1,
+    "matchNumber": 11,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917768177-oohn3gaqm",
+        "player1Character": "sora",
+        "player2Character": "corrin"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917768177-oohn3gaqm",
+        "player1Character": "sora",
+        "player2Character": "corrin"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T15:56:15.572Z"
+  },
+  {
+    "id": "tm_1789920344404_go8x9w748",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917793432-rpw03at5p",
+    "player2Id": "1789917796300-ze5w47oqg",
+    "player1GlobalId": "gp_1786391783115_87zwx03",
+    "player2GlobalId": "gp_1786408686972_s4nl3vz",
+    "player1Name": "Tails",
+    "player2Name": "Ismael",
+    "winnerId": "1789917796300-ze5w47oqg",
+    "winnerGlobalId": "gp_1786408686972_s4nl3vz",
+    "round": 1,
+    "matchNumber": 12,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917796300-ze5w47oqg",
+        "player1Character": "donkey_kong",
+        "player2Character": "sonic"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917796300-ze5w47oqg",
+        "player1Character": "donkey_kong",
+        "player1Color": 0,
+        "player2Character": "sonic",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T16:05:44.404Z"
+  },
+  {
+    "id": "tm_1789920390825_f6ovck6zn",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789879375423-x4kgnag8o",
+    "player2Id": "1789917798981-ykbcofleq",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786399978250_n7msxo5",
+    "player1Name": "Alexis",
+    "player2Name": "Nelson",
+    "winnerId": "1789879375423-x4kgnag8o",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 1,
+    "matchNumber": 13,
+    "player1Score": 2,
+    "player2Score": 1,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917798981-ykbcofleq",
+        "player1Character": "ken",
+        "player2Character": "incineroar"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879375423-x4kgnag8o",
+        "player1Character": "king_k_rool",
+        "player1Color": 0,
+        "player2Character": "incineroar",
+        "player2Color": 0
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "1789879375423-x4kgnag8o",
+        "player1Character": "king_k_rool",
+        "player1Color": 0,
+        "player2Character": "mario",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T16:06:30.825Z"
+  },
+  {
+    "id": "tm_1789921094144_kxne0ncgg",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789918051049-xbhu5e0j6",
+    "player2Id": "1789879378011-zqn5l5n4c",
+    "player1GlobalId": "gp_1789918015924_bpo9r2z",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "EddyKill",
+    "player2Name": "Gino",
+    "winnerId": "1789879378011-zqn5l5n4c",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 1,
+    "matchNumber": 16,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789879378011-zqn5l5n4c",
+        "player1Character": "cloud",
+        "player2Character": "link"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879378011-zqn5l5n4c",
+        "player1Character": "cloud",
+        "player1Color": 0,
+        "player2Character": "link",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T16:18:14.144Z"
+  },
+  {
+    "id": "tm_1789921135940_azesvjunb",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789918043062-2j5e25q0i",
+    "player2Id": "1789918045527-2v2a1g62w",
+    "player1GlobalId": "gp_1789918036150_hufsyeh",
+    "player2GlobalId": "gp_1786393783053_ztfg99d",
+    "player1Name": "Eduardo",
+    "player2Name": "Livan",
+    "winnerId": "1789918045527-2v2a1g62w",
+    "winnerGlobalId": "gp_1786393783053_ztfg99d",
+    "round": 1,
+    "matchNumber": 15,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789918045527-2v2a1g62w",
+        "player2Character": "link",
+        "player1Character": "peach"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789918045527-2v2a1g62w",
+        "player1Character": "yoshi",
+        "player1Color": 0,
+        "player2Character": "link",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T16:18:55.940Z"
+  },
+  {
+    "id": "tm_1789921174166_nec6gq6an",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917816198-w1qcmozfo",
+    "player2Id": "1789917902009-u12ikvs8x",
+    "player1GlobalId": "gp_1788050783096_xsly08y",
+    "player2GlobalId": "gp_1786393670067_xild06i",
+    "player1Name": "Heroe",
+    "player2Name": "Sementino",
+    "winnerId": "1789917816198-w1qcmozfo",
+    "winnerGlobalId": "gp_1788050783096_xsly08y",
+    "round": 1,
+    "matchNumber": 14,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917816198-w1qcmozfo",
+        "player1Character": "hero",
+        "player2Character": "meta_knight"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917816198-w1qcmozfo",
+        "player1Character": "hero",
+        "player1Color": 0,
+        "player2Character": "meta_knight",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T16:19:34.166Z"
+  },
+  {
+    "id": "tm_1789922200888_syervwjbc",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917709663-hq0c436r4",
+    "player2Id": "1789879369608-vewiroi9g",
+    "player1GlobalId": "gp_1786408732935_gefziig",
+    "player2GlobalId": "gp_1786387087046_wnwtadb",
+    "player1Name": "yudiel",
+    "player2Name": "Damiam",
+    "winnerId": "1789879369608-vewiroi9g",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "toon_link",
+        "player2Character": "ganondorf"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "toon_link",
+        "player1Color": 0,
+        "player2Character": "ganondorf",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T16:36:40.888Z"
+  },
+  {
+    "id": "tm_1789922246622_1izow73a8",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917798981-ykbcofleq",
+    "player2Id": "1789917902009-u12ikvs8x",
+    "player1GlobalId": "gp_1786399978250_n7msxo5",
+    "player2GlobalId": "gp_1786393670067_xild06i",
+    "player1Name": "Nelson",
+    "player2Name": "Sementino",
+    "winnerId": "1789917798981-ykbcofleq",
+    "winnerGlobalId": "gp_1786399978250_n7msxo5",
+    "round": 1,
+    "matchNumber": 7,
+    "player1Score": 2,
+    "player2Score": 1,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917798981-ykbcofleq",
+        "player1Character": "donkey_kong",
+        "player2Character": "lucas"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917902009-u12ikvs8x",
+        "player1Character": "donkey_kong",
+        "player1Color": 0,
+        "player2Character": "lucas",
+        "player2Color": 0
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "1789917798981-ykbcofleq",
+        "player1Character": "donkey_kong",
+        "player1Color": 0,
+        "player2Character": "lucas",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T16:37:26.622Z"
+  },
+  {
+    "id": "tm_1789922817931_kbvszadpa",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917780210-5jjqifdrv",
+    "player2Id": "1789917793432-rpw03at5p",
+    "player1GlobalId": "gp_1786756661811_fa5pg74",
+    "player2GlobalId": "gp_1786391783115_87zwx03",
+    "player1Name": "Brayan",
+    "player2Name": "Tails",
+    "winnerId": "1789917793432-rpw03at5p",
+    "winnerGlobalId": "gp_1786391783115_87zwx03",
+    "round": 1,
+    "matchNumber": 6,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917793432-rpw03at5p",
+        "player1Character": "donkey_kong",
+        "player2Character": "corrin"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917793432-rpw03at5p",
+        "player1Character": "donkey_kong",
+        "player1Color": 0,
+        "player2Character": "corrin",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T16:46:57.931Z"
+  },
+  {
+    "id": "tm_1789922904056_3hqbejguh",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917719529-mim9b2hob",
+    "player2Id": "1789917721594-qw3vmnbez",
+    "player1GlobalId": "gp_1789917345838_9s4wrcb",
+    "player2GlobalId": "gp_1786396304199_u7v6gsb",
+    "player1Name": "Alexxei",
+    "player2Name": "Dianger",
+    "winnerId": "1789917721594-qw3vmnbez",
+    "winnerGlobalId": "gp_1786396304199_u7v6gsb",
+    "round": 2,
+    "matchNumber": 2,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917721594-qw3vmnbez",
+        "player1Character": "kirby",
+        "player2Character": "cloud"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917721594-qw3vmnbez",
+        "player1Character": "kirby",
+        "player1Color": 0,
+        "player2Character": "cloud",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T16:48:24.056Z"
+  },
+  {
+    "id": "tm_1789923641338_u87oygrxm",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917768177-oohn3gaqm",
+    "player2Id": "1789917796300-ze5w47oqg",
+    "player1GlobalId": "gp_1787176804167_dgzm0z9",
+    "player2GlobalId": "gp_1786408686972_s4nl3vz",
+    "player1Name": "Miguel",
+    "player2Name": "Ismael",
+    "winnerId": "1789917768177-oohn3gaqm",
+    "winnerGlobalId": "gp_1787176804167_dgzm0z9",
+    "round": 2,
+    "matchNumber": 6,
+    "player1Score": 2,
+    "player2Score": 1,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917796300-ze5w47oqg",
+        "player1Character": "sora",
+        "player2Character": "sonic"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917768177-oohn3gaqm",
+        "player1Character": "sora",
+        "player1Color": 0,
+        "player2Character": "sonic",
+        "player2Color": 0
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "1789917768177-oohn3gaqm",
+        "player1Character": "sora",
+        "player1Color": 0,
+        "player2Character": "sonic",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:00:41.338Z"
+  },
+  {
+    "id": "tm_1789923677849_u0cjpgsav",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917729088-d7picwo4v",
+    "player2Id": "1789917731131-cwjdy3v9c",
+    "player1GlobalId": "gp_1786391892402_8intsz3",
+    "player2GlobalId": "gp_1786648984526_6yyg6ao",
+    "player1Name": "Delvi",
+    "player2Name": "Fabio",
+    "winnerId": "1789917729088-d7picwo4v",
+    "winnerGlobalId": "gp_1786391892402_8intsz3",
+    "round": 2,
+    "matchNumber": 4,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917729088-d7picwo4v",
+        "player1Character": "bowser",
+        "player2Character": "donkey_kong"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917729088-d7picwo4v",
+        "player1Character": "bowser",
+        "player1Color": 0,
+        "player2Character": "donkey_kong",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:01:17.849Z"
+  },
+  {
+    "id": "tm_1789923743263_dupc9br5n",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789918043062-2j5e25q0i",
+    "player2Id": "1789918051049-xbhu5e0j6",
+    "player1GlobalId": "gp_1789918036150_hufsyeh",
+    "player2GlobalId": "gp_1789918015924_bpo9r2z",
+    "player1Name": "Eduardo",
+    "player2Name": "EddyKill",
+    "winnerId": "1789918043062-2j5e25q0i",
+    "winnerGlobalId": "gp_1789918036150_hufsyeh",
+    "round": 1,
+    "matchNumber": 8,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789918043062-2j5e25q0i",
+        "player1Character": "link",
+        "player2Character": "sephiroth"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789918043062-2j5e25q0i",
+        "player1Character": "link",
+        "player1Color": 0,
+        "player2Character": "cloud",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:02:23.263Z"
+  },
+  {
+    "id": "tm_1789924062439_7gx2p1na6",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917726083-st3azkt4w",
+    "player2Id": "1789917723508-51kcfmlrr",
+    "player1GlobalId": "gp_1786393850039_1imzf6x",
+    "player2GlobalId": "gp_1786393834683_lievrvf",
+    "player1Name": "Dionisio",
+    "player2Name": "Kevin",
+    "winnerId": "1789917726083-st3azkt4w",
+    "winnerGlobalId": "gp_1786393850039_1imzf6x",
+    "round": 2,
+    "matchNumber": 3,
+    "player1Score": 2,
+    "player2Score": 1,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917723508-51kcfmlrr",
+        "player1Character": "terry",
+        "player2Character": "steve"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917726083-st3azkt4w",
+        "player1Character": "kazuya",
+        "player1Color": 0,
+        "player2Character": "steve",
+        "player2Color": 0
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "1789917726083-st3azkt4w",
+        "player1Character": "kazuya",
+        "player1Color": 0,
+        "player2Character": "inkling",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:07:42.439Z"
+  },
+  {
+    "id": "tm_1789924746417_9l6c3k7mp",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917763036-806ldqj7k",
+    "player2Id": "1789917731131-cwjdy3v9c",
+    "player1GlobalId": "gp_1786393655444_41zyrro",
+    "player2GlobalId": "gp_1786648984526_6yyg6ao",
+    "player1Name": "Olimak",
+    "player2Name": "Fabio",
+    "winnerId": "1789917731131-cwjdy3v9c",
+    "winnerGlobalId": "gp_1786648984526_6yyg6ao",
+    "round": 2,
+    "matchNumber": 5,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917731131-cwjdy3v9c",
+        "player1Character": "ken",
+        "player2Character": "ryu"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917731131-cwjdy3v9c",
+        "player1Character": "ken",
+        "player1Color": 0,
+        "player2Character": "ryu",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:19:06.417Z"
+  },
+  {
+    "id": "tm_1789924778946_h99t8ydt8",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789879375423-x4kgnag8o",
+    "player2Id": "1789917816198-w1qcmozfo",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1788050783096_xsly08y",
+    "player1Name": "Alexis",
+    "player2Name": "Heroe",
+    "winnerId": "1789879375423-x4kgnag8o",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 2,
+    "matchNumber": 7,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789879375423-x4kgnag8o",
+        "player2Character": "hero",
+        "player1Character": "luigi"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879375423-x4kgnag8o",
+        "player1Character": "luigi",
+        "player1Color": 0,
+        "player2Character": "hero",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:19:38.946Z"
+  },
+  {
+    "id": "tm_1789924811081_i4x790nmb",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789879373006-80hmke47r",
+    "player2Id": "1789917750201-zfyvawg9x",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1786399934148_stq7jpb",
+    "player1Name": "Ale",
+    "player2Name": "Pal",
+    "winnerId": "1789879373006-80hmke47r",
+    "winnerGlobalId": "gp_1786387243524_6er0c9u",
+    "round": 2,
+    "matchNumber": 5,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789879373006-80hmke47r",
+        "player1Character": "mario",
+        "player2Character": "bayonetta"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879373006-80hmke47r",
+        "player1Character": "mario",
+        "player1Color": 0,
+        "player2Character": "bayonetta",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:20:11.081Z"
+  },
+  {
+    "id": "tm_1789924893363_fti0wa980",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917793432-rpw03at5p",
+    "player2Id": "1789917723508-51kcfmlrr",
+    "player1GlobalId": "gp_1786391783115_87zwx03",
+    "player2GlobalId": "gp_1786393834683_lievrvf",
+    "player1Name": "Tails",
+    "player2Name": "Kevin",
+    "winnerId": "1789917723508-51kcfmlrr",
+    "winnerGlobalId": "gp_1786393834683_lievrvf",
+    "round": 2,
+    "matchNumber": 6,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917723508-51kcfmlrr",
+        "player1Character": "donkey_kong",
+        "player2Character": "steve"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917723508-51kcfmlrr",
+        "player1Character": "donkey_kong",
+        "player1Color": 0,
+        "player2Character": "steve",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:21:33.363Z"
+  },
+  {
+    "id": "tm_1789925463347_noz9pqwkl",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789879369608-vewiroi9g",
+    "player2Id": "1789917721594-qw3vmnbez",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786396304199_u7v6gsb",
+    "player1Name": "Damiam",
+    "player2Name": "Dianger",
+    "winnerId": "1789879369608-vewiroi9g",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 3,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "samus",
+        "player2Character": "cloud"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "samus",
+        "player1Color": 0,
+        "player2Character": "sephiroth",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:31:03.347Z"
+  },
+  {
+    "id": "tm_1789925521811_g5mtpuebs",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789879378011-zqn5l5n4c",
+    "player2Id": "1789918045527-2v2a1g62w",
+    "player1GlobalId": "gp_1786387234567_aoe1z95",
+    "player2GlobalId": "gp_1786393783053_ztfg99d",
+    "player1Name": "Gino",
+    "player2Name": "Livan",
+    "winnerId": "1789879378011-zqn5l5n4c",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 2,
+    "matchNumber": 8,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789879378011-zqn5l5n4c",
+        "player1Character": "shulk",
+        "player2Character": "link"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879378011-zqn5l5n4c",
+        "player1Character": "fox",
+        "player1Color": 0,
+        "player2Character": "link",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:32:01.811Z"
+  },
+  {
+    "id": "tm_1789925577268_7mr3x5d5l",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789917796300-ze5w47oqg",
+    "player2Id": "1789917750201-zfyvawg9x",
+    "player1GlobalId": "gp_1786408686972_s4nl3vz",
+    "player2GlobalId": "gp_1786399934148_stq7jpb",
+    "player1Name": "Ismael",
+    "player2Name": "Pal",
+    "winnerId": "1789917750201-zfyvawg9x",
+    "winnerGlobalId": "gp_1786399934148_stq7jpb",
+    "round": 3,
+    "matchNumber": 2,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789917750201-zfyvawg9x",
+        "player1Character": "sonic",
+        "player2Character": "luigi"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789917750201-zfyvawg9x",
+        "player1Character": "sonic",
+        "player1Color": 0,
+        "player2Character": "luigi",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T17:32:57.268Z"
+  },
+  {
+    "id": "tm_1789954272453_tbn51axcm",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789879369608-vewiroi9g",
+    "player2Id": "1789917721594-qw3vmnbez",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786396304199_u7v6gsb",
+    "player1Name": "Damiam",
+    "player2Name": "Dianger",
+    "winnerId": "1789879369608-vewiroi9g",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 3,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "banjo",
+        "player2Character": "cloud"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "banjo",
+        "player1Color": 0,
+        "player2Character": "cloud",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-21T01:31:12.453Z"
+  },
+  {
+    "id": "tm_1789957257025_sdtstol62",
+    "tournamentId": "1789879175366-ken0ph8uz",
+    "tournamentName": "Smash SC Singles - 3",
+    "gameId": "ssbu",
+    "player1Id": "1789879369608-vewiroi9g",
+    "player2Id": "1789917721594-qw3vmnbez",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786396304199_u7v6gsb",
+    "player1Name": "Damiam",
+    "player2Name": "Dianger",
+    "winnerId": "1789879369608-vewiroi9g",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 3,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "samus",
+        "player2Character": "cloud"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1789879369608-vewiroi9g",
+        "player1Character": "samus",
+        "player1Color": 0,
+        "player2Character": "sephiroth",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-21T02:20:57.025Z"
   }
 ]

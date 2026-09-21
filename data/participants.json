@@ -38,7 +38,7 @@
         "mainCharacterId": "sub_zero",
         "available": true,
         "leagueAvailable": true,
-        "tournamentAvailable": false
+        "tournamentAvailable": true
       },
       "ssbu": {
         "gameId": "ssbu",
@@ -53,7 +53,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-09-20T04:42:49.616Z",
+    "updatedAt": "2026-09-21T02:29:08.594Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -76,7 +76,10 @@
       "1787069005182-knkndcjgv",
       "1786158558338-ey6twflzq",
       "1787926772254-rfmvzuacg",
-      "1787926905258-q0tw79fm2"
+      "1787926905258-q0tw79fm2",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "samus"
   },
@@ -96,7 +99,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-09-20T04:42:58.018Z",
+    "updatedAt": "2026-09-21T02:29:10.593Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -117,7 +120,10 @@
       "1787069005182-knkndcjgv",
       "1786158558338-ey6twflzq",
       "1787926772254-rfmvzuacg",
-      "1787926905258-q0tw79fm2"
+      "1787926905258-q0tw79fm2",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "link"
   },
@@ -143,7 +149,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-09-20T04:42:53.013Z",
+    "updatedAt": "2026-09-21T02:29:11.968Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -165,7 +171,10 @@
       "1787069005182-knkndcjgv",
       "1786158558338-ey6twflzq",
       "1787926772254-rfmvzuacg",
-      "1787926905258-q0tw79fm2"
+      "1787926905258-q0tw79fm2",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "mario"
   },
@@ -191,7 +200,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-09-20T04:42:55.429Z",
+    "updatedAt": "2026-09-21T02:29:13.030Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -214,7 +223,10 @@
       "1787069005182-knkndcjgv",
       "1786158558338-ey6twflzq",
       "1787926772254-rfmvzuacg",
-      "1787926905258-q0tw79fm2"
+      "1787926905258-q0tw79fm2",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "luigi"
   },
@@ -284,7 +296,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T19:56:23.115Z",
-    "updatedAt": "2026-09-18T02:10:20.175Z",
+    "updatedAt": "2026-09-21T02:17:39.089Z",
     "communityId": "community_fgc_santa_clara",
     "phoneNumber": "+5359288953",
     "tournamentIds": [
@@ -296,7 +308,8 @@
       "1786763010204-fwzepsyo7",
       "1786802844864-5bjdz2hif",
       "1786977122065-rrypq1js6",
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957020567-n11nuowye"
     ],
     "mainCharacterId": "king_dedede"
   },
@@ -340,12 +353,15 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T19:58:12.402Z",
-    "updatedAt": "2026-09-12T06:41:21.205Z",
+    "updatedAt": "2026-09-21T02:29:24.302Z",
     "communityId": "community_fgc_santa_clara",
     "phoneNumber": "+5350548152",
     "tournamentIds": [
       "1786763010204-fwzepsyo7",
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "bowser"
   },
@@ -365,12 +381,14 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T19:58:56.937Z",
-    "updatedAt": "2026-09-09T23:18:47.603Z",
+    "updatedAt": "2026-09-21T02:29:35.250Z",
     "communityId": "community_fgc_santa_clara",
     "phoneNumber": "+5351356595",
     "tournamentIds": [
       "1786645309882-n8iemn0fx",
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957020567-n11nuowye",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "rob"
   },
@@ -390,7 +408,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T20:27:35.444Z",
-    "updatedAt": "2026-09-06T01:54:34.045Z",
+    "updatedAt": "2026-09-20T15:22:43.046Z",
     "communityId": "community_fgc_santa_clara",
     "phoneNumber": "+53 53940600",
     "tournamentIds": [
@@ -417,7 +435,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T20:27:50.067Z",
-    "updatedAt": "2026-09-04T23:04:01.884Z",
+    "updatedAt": "2026-09-20T15:25:02.019Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786756153973-4tu0cxfut",
@@ -439,16 +457,18 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "link",
-        "available": false
+        "available": false,
+        "tournamentAvailable": true
       }
     },
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T20:29:43.053Z",
-    "updatedAt": "2026-09-04T23:04:01.943Z",
+    "updatedAt": "2026-09-20T15:27:25.536Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789879175366-ken0ph8uz"
     ],
     "mainCharacterId": "link"
   },
@@ -468,7 +488,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T20:30:34.683Z",
-    "updatedAt": "2026-09-07T15:52:10.757Z",
+    "updatedAt": "2026-09-21T02:31:09.361Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786394988044-sb88chetv",
@@ -482,7 +502,10 @@
       "1787069005182-knkndcjgv",
       "1786158558338-ey6twflzq",
       "1787926772254-rfmvzuacg",
-      "1787926905258-q0tw79fm2"
+      "1787926905258-q0tw79fm2",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "steve"
   },
@@ -502,7 +525,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T20:30:50.039Z",
-    "updatedAt": "2026-09-04T23:04:02.054Z",
+    "updatedAt": "2026-09-21T02:29:18.376Z",
     "communityId": "community_fgc_santa_clara",
     "phoneNumber": "56648423",
     "tournamentIds": [
@@ -515,7 +538,10 @@
       "1786977122065-rrypq1js6",
       "1787069005182-knkndcjgv",
       "1787926772254-rfmvzuacg",
-      "1787926905258-q0tw79fm2"
+      "1787926905258-q0tw79fm2",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "kazuya"
   },
@@ -535,7 +561,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T21:11:44.199Z",
-    "updatedAt": "2026-09-18T02:28:22.656Z",
+    "updatedAt": "2026-09-21T02:29:16.819Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786645309882-n8iemn0fx",
@@ -543,7 +569,10 @@
       "1786763010204-fwzepsyo7",
       "1786802844864-5bjdz2hif",
       "1786977122065-rrypq1js6",
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "cloud"
   },
@@ -563,7 +592,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T22:12:14.148Z",
-    "updatedAt": "2026-09-14T18:42:46.537Z",
+    "updatedAt": "2026-09-20T15:22:30.209Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786759219748-qzufrr9ky",
@@ -588,7 +617,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T22:12:58.250Z",
-    "updatedAt": "2026-09-06T16:48:55.699Z",
+    "updatedAt": "2026-09-20T15:23:18.989Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786759219748-qzufrr9ky",
@@ -617,10 +646,12 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-11T00:38:06.972Z",
-    "updatedAt": "2026-09-11T19:54:20.261Z",
+    "updatedAt": "2026-09-21T02:21:47.700Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu"
     ],
     "mainCharacterId": "sonic"
   },
@@ -640,12 +671,13 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-11T00:38:52.935Z",
-    "updatedAt": "2026-09-10T13:00:13.905Z",
+    "updatedAt": "2026-09-21T02:29:41.608Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786645309882-n8iemn0fx",
       "1786759219748-qzufrr9ky",
-      "1786802844864-5bjdz2hif"
+      "1786802844864-5bjdz2hif",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "toon_link"
   },
@@ -758,14 +790,16 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-13T19:23:04.526Z",
-    "updatedAt": "2026-09-04T23:04:02.667Z",
+    "updatedAt": "2026-09-21T02:21:49.839Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786756153973-4tu0cxfut",
       "1786759219748-qzufrr9ky",
       "1786802844864-5bjdz2hif",
       "1786977122065-rrypq1js6",
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957020567-n11nuowye",
+      "1789957278840-7xsoskngu"
     ],
     "mainCharacterId": "donkey_kong"
   },
@@ -785,12 +819,13 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-15T01:17:41.811Z",
-    "updatedAt": "2026-09-04T23:04:02.709Z",
+    "updatedAt": "2026-09-21T02:17:49.543Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786759219748-qzufrr9ky",
       "1786802844864-5bjdz2hif",
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957020567-n11nuowye"
     ],
     "mainCharacterId": "corrin"
   },
@@ -913,13 +948,14 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-15T02:46:21.144Z",
-    "updatedAt": "2026-09-16T08:39:11.763Z",
+    "updatedAt": "2026-09-21T02:21:52.427Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786759219748-qzufrr9ky",
       "1786802844864-5bjdz2hif",
       "1787069005182-knkndcjgv",
-      "1786158558338-ey6twflzq"
+      "1786158558338-ey6twflzq",
+      "1789957278840-7xsoskngu"
     ],
     "mainCharacterId": "sephiroth"
   },
@@ -1036,10 +1072,11 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-18T13:42:49.919Z",
-    "updatedAt": "2026-09-18T02:10:20.175Z",
+    "updatedAt": "2026-09-21T02:21:42.073Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957278840-7xsoskngu"
     ],
     "mainCharacterId": "link"
   },
@@ -1196,10 +1233,11 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-19T14:40:48.285Z",
-    "updatedAt": "2026-09-04T23:04:03.469Z",
+    "updatedAt": "2026-09-21T02:29:20.493Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "terry"
   },
@@ -1242,7 +1280,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-19T22:00:04.167Z",
-    "updatedAt": "2026-09-10T13:00:13.905Z",
+    "updatedAt": "2026-09-20T15:22:48.185Z",
     "communityId": "community_fgc_santa_clara",
     "phoneNumber": "52704326",
     "tournamentIds": [
@@ -1358,10 +1396,12 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-22T14:45:02.362Z",
-    "updatedAt": "2026-09-14T18:42:46.540Z",
+    "updatedAt": "2026-09-21T02:29:22.083Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
-      "1787069005182-knkndcjgv"
+      "1787069005182-knkndcjgv",
+      "1789957278840-7xsoskngu",
+      "1789957743805-hluxlgzjd"
     ],
     "mainCharacterId": "snake"
   },
@@ -1402,7 +1442,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-30T00:46:23.096Z",
-    "updatedAt": "2026-09-04T23:04:03.920Z",
+    "updatedAt": "2026-09-20T15:23:36.208Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [],
     "mainCharacterId": "hero"
@@ -1453,5 +1493,156 @@
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [],
     "mainCharacterId": "kabal"
+  },
+  {
+    "id": "gp_1789917345838_9s4wrcb",
+    "name": "Alexxei",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1789957743805-hluxlgzjd"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": true
+      }
+    },
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T15:15:45.838Z",
+    "updatedAt": "2026-09-21T02:29:15.126Z",
+    "stats": {
+      "tournamentsPlayed": 0,
+      "wins": 0,
+      "matchWins": 0,
+      "matchLosses": 0
+    }
+  },
+  {
+    "id": "gp_1789917361535_umligu0",
+    "name": "Rivb",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T15:16:01.535Z",
+    "updatedAt": "2026-09-20T15:21:40.117Z",
+    "stats": {
+      "tournamentsPlayed": 0,
+      "wins": 0,
+      "matchWins": 0,
+      "matchLosses": 0
+    }
+  },
+  {
+    "id": "gp_1789917888062_4mb2g47",
+    "name": "Victor",
+    "alias": "Seke",
+    "avatarUrl": null,
+    "tournamentIds": [],
+    "gameId": "ssbu",
+    "mainCharacterId": "link",
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": "link",
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T15:24:48.062Z",
+    "updatedAt": "2026-09-20T15:25:03.913Z",
+    "stats": {
+      "tournamentsPlayed": 0,
+      "wins": 0,
+      "matchWins": 0,
+      "matchLosses": 0
+    }
+  },
+  {
+    "id": "gp_1789918015924_bpo9r2z",
+    "name": "EddyKill",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1789879175366-ken0ph8uz"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": true
+      }
+    },
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T15:26:55.924Z",
+    "updatedAt": "2026-09-20T15:27:31.059Z",
+    "stats": {
+      "tournamentsPlayed": 0,
+      "wins": 0,
+      "matchWins": 0,
+      "matchLosses": 0
+    }
+  },
+  {
+    "id": "gp_1789918036150_hufsyeh",
+    "name": "Eduardo",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1789879175366-ken0ph8uz"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": true
+      }
+    },
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-09-20T15:27:16.150Z",
+    "updatedAt": "2026-09-20T15:27:23.071Z",
+    "stats": {
+      "tournamentsPlayed": 0,
+      "wins": 0,
+      "matchWins": 0,
+      "matchLosses": 0
+    }
   }
 ]

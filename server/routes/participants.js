@@ -68,6 +68,22 @@ function isScopedAdmin(user, communityId) {
 }
 
 /**
+ * true si el body de un participant tiene al menos UNO de los juegos del
+ * scope del admin seleccionado (gameIds, gameId, primaryGameId o games{}).
+ * Los scoped admins solo pueden crear participants de SUS juegos.
+ */
+function bodyHasScopedGame(user, communityId, body) {
+  const scope = gameAdminForInCommunity(user, communityId);
+  const selected = new Set([
+    ...(Array.isArray(body?.gameIds) ? body.gameIds : []),
+    body?.gameId,
+    body?.primaryGameId,
+    ...Object.keys(body?.games || {}),
+  ].filter(Boolean));
+  return [...selected].some((g) => scope.includes(g));
+}
+
+/**
  * Recorta los juegos de un participant body a los que el scoped admin gestiona
  * EN la comunidad del participant. gameIds, gameId/primaryGameId y
  * gameMainCharacters quedan limitados al scope.
@@ -551,6 +567,17 @@ router.post('/', requireAuth, async (req, res) => {
         return res.status(403).json({ error: 'Cannot sync participants outside your community scope' });
       }
 
+      // Bulk sync upserts whole participant records (stats included) — it is an
+      // admin operation in every target community. Regular members can only
+      // edit their own participant via PUT /:id.
+      const notAdmin = req.body.some((incoming) => {
+        const communityId = getTargetCommunityId(req.user, incoming.communityId);
+        return !isAdminInCommunity(req.user, communityId);
+      });
+      if (notAdmin) {
+        return res.status(403).json({ error: 'Only community admins can create or sync participants' });
+      }
+
       const merged = req.body.map((incoming) => {
         const current = existingMap.get(incoming.id);
         const communityId = getTargetCommunityId(req.user, incoming.communityId);
@@ -576,10 +603,18 @@ router.post('/', requireAuth, async (req, res) => {
       return res.json({ ok: true, count: merged.length });
     }
 
-    // Single object upsert
+    // Single object upsert — admin-only. Regular members edit their own
+    // participant through PUT /:id (ownership check lives there).
     const newCommunityId = getTargetCommunityId(req.user, req.body.communityId);
     if (!isInUserScope(req.user, newCommunityId)) {
       return res.status(403).json({ error: 'Cannot create participant in this community' });
+    }
+    if (!isAdminInCommunity(req.user, newCommunityId)) {
+      return res.status(403).json({ error: 'Only community admins can create participants' });
+    }
+    // Game-scoped admin: the participant must have one of their games selected
+    if (isScopedAdmin(req.user, newCommunityId) && !bodyHasScopedGame(req.user, newCommunityId, req.body)) {
+      return res.status(403).json({ error: 'You can only add participants for your games' });
     }
     const body = clampGamesToAdminScope(req.user, newCommunityId, req.body);
     body.communityId = newCommunityId;
@@ -634,6 +669,17 @@ router.put('/:id', requireAuth, async (req, res) => {
       // CREATE: body must contain the full participant object from the frontend
       const body = { ...req.body, id: req.params.id };
       if (!body.communityId) body.communityId = getTargetCommunityId(req.user);
+      // Scope + admin gates: only community admins can create participants
+      if (!isInUserScope(req.user, body.communityId)) {
+        return res.status(403).json({ error: 'Participant is not in your community scope' });
+      }
+      if (!isAdminInCommunity(req.user, body.communityId)) {
+        return res.status(403).json({ error: 'Only community admins can create participants' });
+      }
+      if (isScopedAdmin(req.user, body.communityId) && !bodyHasScopedGame(req.user, body.communityId, body)) {
+        return res.status(403).json({ error: 'You can only add participants for your games' });
+      }
+      clampGamesToAdminScope(req.user, body.communityId, body);
       const { valid, errors } = validateParticipant(body);
       if (!valid) return res.status(400).json({ error: 'Invalid data', details: errors });
 
@@ -659,6 +705,12 @@ router.put('/:id', requireAuth, async (req, res) => {
     // UPDATE: merge editable fields only
     const { name, alias, avatarUrl, stats, gameId, mainCharacterId, gameIds, primaryGameId, gameMainCharacters, gameAvailability } = req.body;
 
+    // tournamentIds are linked server-side (tournament register/add flows);
+    // only admins may sync them — members must not rewrite their history.
+    const incomingTournamentIds = isAdminRole(req.user, existing.communityId) && Array.isArray(req.body.tournamentIds)
+      ? req.body.tournamentIds
+      : undefined;
+
     // Check for duplicate name if name is changing (scoped to the participant's community)
     if (name && name.trim().toLowerCase() !== existing.name.toLowerCase()) {
       const all = await participants.getAll();
@@ -677,6 +729,7 @@ router.put('/:id', requireAuth, async (req, res) => {
     if (alias !== undefined) updated.alias = alias.trim();
     if (avatarUrl !== undefined) updated.avatarUrl = avatarUrl;
     if (stats !== undefined) updated.stats = stats;
+    if (incomingTournamentIds !== undefined) updated.tournamentIds = incomingTournamentIds;
     updated.communityId = getTargetCommunityId(req.user, req.body.communityId);
     updated.updatedAt = new Date().toISOString();
 
@@ -762,12 +815,16 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
-// POST /api/participants/:id/stats — merge-update stats after a tournament
-router.post('/:id/stats', async (req, res) => {
+// POST /api/participants/:id/stats — merge-update stats after a tournament.
+// Admin-only: this mutates community data, not the caller's own profile.
+router.post('/:id/stats', requireAuth, async (req, res) => {
   try {
     const existing = await participants.findById(req.params.id);
     // If participant doesn't exist in JSON yet (was only in localStorage), skip silently
     if (!existing) return res.json({ ok: true, skipped: true });
+    if (!isAdminInCommunity(req.user, existing.communityId)) {
+      return res.status(403).json({ error: 'Admin required' });
+    }
 
     const { tournamentsPlayed = 0, wins = 0, matchWins = 0, matchLosses = 0 } = req.body;
 

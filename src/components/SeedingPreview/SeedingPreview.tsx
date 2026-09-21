@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Participant, SeedingMode, PartialSeedCount } from '@/models/types';
 import { applySeed, applyBracketSeeding } from '@/services/seeding/seedingService';
 import { updateTournamentParticipants } from '@/services/tournament/tournamentService';
+import { useToast } from '@/contexts/NotificationContext';
 import './SeedingPreview.css';
 
 interface SeedingPreviewProps {
@@ -27,8 +28,10 @@ function SeedingPreview({
   onParticipantsChange,
 }: SeedingPreviewProps) {
   const { t } = useTranslation();
+  const toast = useToast();
   const [seededParticipants, setSeededParticipants] = useState<Participant[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     // Apply seeding on mount
@@ -64,17 +67,26 @@ function SeedingPreview({
     setDraggedIndex(null);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     // Apply bracket seeding positions (includes nulls for byes)
     const bracketSeededWithByes = applyBracketSeeding(seededParticipants);
-    
+
     // Filter out nulls for tournament participants array
     const bracketSeeded = bracketSeededWithByes.filter((p): p is Participant => p !== null);
-    
-    // Mark tournament as bracket-seeded so engine knows not to re-sort
-    updateTournamentParticipants(tournamentId, bracketSeeded, true);
-    onParticipantsChange(bracketSeeded);
-    onConfirm();
+
+    setSaving(true);
+    try {
+      // Mark tournament as bracket-seeded so engine knows not to re-sort.
+      // Awaited: if the server rejects the save, surface the error instead of
+      // silently continuing with a divergent local state.
+      await updateTournamentParticipants(tournamentId, bracketSeeded, true);
+      onParticipantsChange(bracketSeeded);
+      onConfirm();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const topSeedCount = seedingMode === 'partial' ? partialSeedCount : seededParticipants.length;
@@ -128,8 +140,8 @@ function SeedingPreview({
         <button className="btn-outline" onClick={onBack}>
           {t('tournament.seedingPreview.back')}
         </button>
-        <button className="btn-primary" onClick={handleConfirm}>
-          {t('tournament.seedingPreview.confirm')}
+        <button className="btn-primary" onClick={handleConfirm} disabled={saving}>
+          {saving ? t('common.saving', { defaultValue: 'Saving...' }) : t('tournament.seedingPreview.confirm')}
         </button>
       </div>
     </div>

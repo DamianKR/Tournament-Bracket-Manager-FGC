@@ -10,6 +10,7 @@
 
 import { Router } from 'express';
 import { requireAuth } from '../utils/jwtMiddleware.js';
+import { notifications } from '../db/collections.js';
 import {
   getNotificationsForRecipient,
   markNotificationRead,
@@ -79,12 +80,14 @@ router.put('/read-all', async (req, res) => {
 // PUT /api/notifications/:id/read
 router.put('/:id/read', async (req, res) => {
   try {
+    // Ownership check BEFORE mutating: users can only read-mark their own
+    const existing = await notifications.findById(req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Notification not found' });
     const pids = new Set(userParticipantIds(req.user));
-    const notif = await markNotificationRead(req.params.id);
-    if (!notif) return res.status(404).json({ error: 'Notification not found' });
-    if (!pids.has(notif.recipientId) && req.user.role !== 'superadmin') {
+    if (!pids.has(existing.recipientId) && req.user.role !== 'superadmin') {
       return res.status(403).json({ error: 'Not your notification' });
     }
+    const notif = await markNotificationRead(req.params.id);
     res.json(notif);
   } catch (err) {
     console.error('[Notifications] PUT /:id/read error:', err);
@@ -95,6 +98,13 @@ router.put('/:id/read', async (req, res) => {
 // DELETE /api/notifications/:id
 router.delete('/:id', async (req, res) => {
   try {
+    // Ownership check: users can only delete their own notifications
+    const notif = await notifications.findById(req.params.id);
+    if (!notif) return res.status(404).json({ error: 'Notification not found' });
+    const pids = new Set(userParticipantIds(req.user));
+    if (!pids.has(notif.recipientId) && req.user.role !== 'superadmin') {
+      return res.status(403).json({ error: 'Not your notification' });
+    }
     const deleted = await deleteNotification(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Notification not found' });
     res.json({ success: true });

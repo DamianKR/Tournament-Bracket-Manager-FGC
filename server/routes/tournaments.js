@@ -14,7 +14,7 @@ import { tournaments, tournamentMatches, participants } from '../db/collections.
 import { validateTournament } from '../models/tournament.js';
 import { applyTournamentElo } from '../utils/tournamentElo.js';
 import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, getTargetCommunityId, isInUserScope, canAdminGame, communityRole } from '../utils/communityScope.js';
+import { filterByCommunity, getTargetCommunityId, isInUserScope, canAdminGame, communityRole, participantIdFor } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -101,17 +101,21 @@ router.post('/', requireAuth, async (req, res) => {
       }
       t.communityId = targetCommunityId;
       t.totalParticipants = t.totalParticipants ?? t.participants?.length ?? prev?.participants?.length ?? 0;
-      // game_admin: solo puede tocar torneos de sus juegos asignados
+      // Solo admins pueden modificar torneos: community_admin de esa comunidad,
+      // superadmin, o admin con el juego en su gameAdminFor.
       const tGameId = t.gameId ?? prev?.gameId ?? null;
-      if (communityRole(req.user, targetCommunityId) === 'admin' && !canAdminGame(req.user, targetCommunityId, tGameId)) {
+      if (!canAdminGame(req.user, targetCommunityId, tGameId)) {
         return res.status(403).json({ error: 'You are not admin of this game' });
       }
-      // Players who opted out of tournaments cannot be added — not even by admin
-      const inactiveT = await findInactiveTournamentPlayers(t.participants, prev?.participants, tGameId);
-      if (inactiveT.length > 0) {
-        return res.status(403).json({
-          error: `${inactiveT.join(', ')} ${inactiveT.length === 1 ? 'is' : 'are'} inactive for tournaments in this game.`,
-        });
+      // Players who opted out of tournaments cannot be added during setup.
+      // Skip the gate once the tournament has started or is being completed.
+      if (t.status === 'setup') {
+        const inactiveT = await findInactiveTournamentPlayers(t.participants, prev?.participants, tGameId);
+        if (inactiveT.length > 0) {
+          return res.status(403).json({
+            error: `${inactiveT.join(', ')} ${inactiveT.length === 1 ? 'is' : 'are'} inactive for tournaments in this game.`,
+          });
+        }
       }
       const becomesCompleted = t.status === 'completed' && (!prev || prev.status !== 'completed');
       const alreadyApplied   = t.eloApplied || (prev && prev.eloApplied);
@@ -173,18 +177,24 @@ router.put('/:id', requireAuth, async (req, res) => {
     }
     body.communityId = targetCommunityId;
 
-    // game_admin: solo puede tocar torneos de sus juegos asignados
+    // Solo admins pueden modificar torneos: community_admin de esa comunidad,
+    // superadmin, o admin con el juego en su gameAdminFor. Members use the
+    // dedicated POST /:id/register endpoint for self-registration.
     const bodyGameId = body.gameId ?? existing?.gameId ?? null;
-    if (communityRole(req.user, targetCommunityId) === 'admin' && !canAdminGame(req.user, targetCommunityId, bodyGameId)) {
+    if (!canAdminGame(req.user, targetCommunityId, bodyGameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
 
-    // Players who opted out of tournaments cannot be added — not even by admin
-    const inactiveBody = await findInactiveTournamentPlayers(body.participants, existing?.participants, bodyGameId);
-    if (inactiveBody.length > 0) {
-      return res.status(403).json({
-        error: `${inactiveBody.join(', ')} ${inactiveBody.length === 1 ? 'is' : 'are'} inactive for tournaments in this game.`,
-      });
+    // Players who opted out of tournaments cannot be added during setup.
+    // When the tournament is already starting (in_progress) or finishing (completed) we
+    // skip this gate — participants were already accepted into the roster earlier.
+    if (body.status === 'setup') {
+      const inactiveBody = await findInactiveTournamentPlayers(body.participants, existing?.participants, bodyGameId);
+      if (inactiveBody.length > 0) {
+        return res.status(403).json({
+          error: `${inactiveBody.join(', ')} ${inactiveBody.length === 1 ? 'is' : 'are'} inactive for tournaments in this game.`,
+        });
+      }
     }
 
     // When a tournament transitions to 'completed', award ELO points for placements once.
@@ -208,6 +218,70 @@ router.put('/:id', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('[Tournaments] PUT /:id error:', err);
     res.status(500).json({ error: 'Failed to save tournament' });
+  }
+});
+
+// POST /api/tournaments/:id/register — self-registration for community members.
+// Regular users cannot PUT the whole tournament; this endpoint only lets the
+// caller add THEMSELF (their participant in the tournament's community).
+router.post('/:id/register', requireAuth, async (req, res) => {
+  try {
+    const tournament = await tournaments.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+    if (!isInUserScope(req.user, tournament.communityId)) {
+      return res.status(403).json({ error: 'Tournament is not in your community scope' });
+    }
+    if (tournament.status !== 'setup') {
+      return res.status(400).json({ error: 'Registration is closed' });
+    }
+    if (tournament.registrationDeadline && new Date(tournament.registrationDeadline) <= new Date()) {
+      return res.status(400).json({ error: 'Registration deadline has passed' });
+    }
+
+    const myPid = participantIdFor(req.user, tournament.communityId);
+    if (!myPid) {
+      return res.status(400).json({ error: 'You are not a participant of this community' });
+    }
+    if ((tournament.participants ?? []).some((p) => p.globalParticipantId === myPid)) {
+      return res.status(400).json({ error: 'Already registered' });
+    }
+
+    const me = await participants.findById(myPid);
+    const gameId = tournament.gameId ?? 'ssbu';
+    if (!me?.games?.[gameId]) {
+      return res.status(400).json({ error: 'You are not registered for this game' });
+    }
+    if (me.games[gameId].tournamentAvailable === false) {
+      return res.status(403).json({ error: 'You are inactive for tournaments in this game. Enable it in your profile.' });
+    }
+
+    tournament.participants.push({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      name: me.name,
+      alias: me.alias?.trim() || undefined,
+      seed: tournament.participants.length + 1,
+      eliminated: false,
+      lossCount: 0,
+      globalParticipantId: myPid,
+    });
+    // A new registration invalidates any previously applied bracket seeding
+    tournament.bracketSeeded = false;
+    tournament.totalParticipants = tournament.participants.length;
+    tournament.updatedAt = new Date().toISOString();
+    await tournaments.upsert(tournament);
+
+    // Bidirectional link: the participant knows about this tournament
+    me.tournamentIds = Array.isArray(me.tournamentIds) ? me.tournamentIds : [];
+    if (!me.tournamentIds.includes(tournament.id)) {
+      me.tournamentIds.push(tournament.id);
+      me.updatedAt = new Date().toISOString();
+      await participants.upsert(me);
+    }
+
+    res.json(tournament);
+  } catch (err) {
+    console.error('[Tournaments] POST /:id/register error:', err);
+    res.status(500).json({ error: 'Failed to register for tournament' });
   }
 });
 
