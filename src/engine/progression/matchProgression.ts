@@ -35,6 +35,39 @@ export function recordMatchResult(
     throw new Error('Winner must be a participant in this match');
   }
 
+  // Re-reporting a completed match: unwind the previous result first, or the
+  // old winner/loser stays placed downstream and losses get double-counted.
+  if (match.status === 'completed') {
+    const prevWinnerId = match.winnerId;
+    const prevLoserId = match.loserId;
+
+    if (prevLoserId) {
+      const prevLoser = tournament.participants.find((p: Participant) => p.id === prevLoserId);
+      if (prevLoser && prevLoser.lossCount > 0) {
+        prevLoser.lossCount--;
+        prevLoser.eliminated = false;
+        prevLoser.finalPosition = undefined;
+      }
+    }
+
+    // Reset before pulling downstream so bye checks see this feeder incomplete
+    match.winnerId = null;
+    match.loserId = null;
+    match.status = 'pending';
+    delete match.participant1Score;
+    delete match.participant2Score;
+    delete match.participant1Characters;
+    delete match.participant2Characters;
+    delete match.games;
+
+    if (match.nextWinnerMatchId && prevWinnerId) {
+      removeParticipantFromMatch(tournament.bracket, match.nextWinnerMatchId, prevWinnerId);
+    }
+    if (match.nextLoserMatchId && prevLoserId) {
+      removeParticipantFromMatch(tournament.bracket, match.nextLoserMatchId, prevLoserId);
+    }
+  }
+
   // Determine loser
   const loserId = match.participant1Id === winnerId 
     ? match.participant2Id 
@@ -323,26 +356,29 @@ export function revertMatchResult(
     }
   }
 
-  // Remove participants from next matches
-  if (match.nextWinnerMatchId && match.winnerId) {
-    removeParticipantFromMatch(tournament.bracket, match.nextWinnerMatchId, match.winnerId);
-  }
+  const winnerId = match.winnerId;
+  const loserId = match.loserId;
 
-  if (match.nextLoserMatchId && match.loserId) {
-    removeParticipantFromMatch(tournament.bracket, match.nextLoserMatchId, match.loserId);
-  }
-
-  // Reset match completely
+  // Reset the reverted match FIRST: downstream removals trigger implicit-bye
+  // checks, and they must see this feeder as incomplete — otherwise a phantom
+  // auto-bye fires mid-revert and advances someone who never played.
   match.winnerId = null;
   match.loserId = null;
   match.status = 'pending';
-  
-  // Clear detailed match data
   delete match.participant1Score;
   delete match.participant2Score;
   delete match.participant1Characters;
   delete match.participant2Characters;
   delete match.games;
+
+  // Remove participants from next matches
+  if (match.nextWinnerMatchId && winnerId) {
+    removeParticipantFromMatch(tournament.bracket, match.nextWinnerMatchId, winnerId);
+  }
+
+  if (match.nextLoserMatchId && loserId) {
+    removeParticipantFromMatch(tournament.bracket, match.nextLoserMatchId, loserId);
+  }
 
   // A grand-final revert invalidates a bracket-reset match created from it
   if (tournament.bracket.grandFinalReset && tournament.bracket.grandFinal?.status !== 'completed') {
@@ -375,38 +411,41 @@ function removeParticipantFromMatch(
   const match = findMatch(bracket, matchId);
   if (!match) return;
 
-  if (match.participant1Id === participantId) {
-    match.participant1Id = null;
-  } else if (match.participant2Id === participantId) {
-    match.participant2Id = null;
-  }
+  const removed =
+    match.participant1Id === participantId ? (match.participant1Id = null, true) :
+    match.participant2Id === participantId ? (match.participant2Id = null, true) : false;
 
-  // If this match auto-advanced participants downstream via an implicit bye
-  // or ghost completion (never really played), pull them back recursively so
-  // no stale participant survives the revert.
+  // A really-played match is never touched by a revert — canRevertMatch
+  // guarantees it. Bail instead of corrupting a real result.
   const wasReallyPlayed = match.status === 'completed' && !!match.loserId;
-  if (!wasReallyPlayed) {
-    if (match.winnerId && match.nextWinnerMatchId) {
-      removeParticipantFromMatch(bracket, match.nextWinnerMatchId, match.winnerId);
-    }
-    if (match.loserId && match.nextLoserMatchId) {
-      removeParticipantFromMatch(bracket, match.nextLoserMatchId, match.loserId);
-    }
-  }
+  if (wasReallyPlayed) return;
 
-  // Reset match status if needed
-  if (!match.participant1Id || !match.participant2Id) {
-    match.status = 'pending';
-    match.winnerId = null;
-    match.loserId = null;
-    delete match.participant1Score;
-    delete match.participant2Score;
-    delete match.participant1Characters;
-    delete match.participant2Characters;
-    delete match.games;
-    // If nothing upstream can feed this match again, re-resolve it as a bye
-    checkAndProcessImplicitBye(bracket, match);
-  }
+  // Nothing removed from a live match, and nothing to reopen → done.
+  if (!removed && match.status !== 'completed') return;
+
+  // Capture who this match pushed downstream BEFORE reopening it — auto-byes
+  // and ghosts can have propagated a winner into later matches.
+  const pullWinner = match.winnerId && match.nextWinnerMatchId ? match.winnerId : null;
+  const pullLoser = match.loserId && match.nextLoserMatchId ? match.loserId : null;
+
+  // Reopen the match (also covers ghosts/byes whose feeder was just reverted
+  // and can now receive a real participant). Reset before pulling so that
+  // downstream bye checks see this match as incomplete.
+  match.status = 'pending';
+  match.winnerId = null;
+  match.loserId = null;
+  delete match.participant1Score;
+  delete match.participant2Score;
+  delete match.participant1Characters;
+  delete match.participant2Characters;
+  delete match.games;
+
+  if (pullWinner) removeParticipantFromMatch(bracket, match.nextWinnerMatchId!, pullWinner);
+  if (pullLoser) removeParticipantFromMatch(bracket, match.nextLoserMatchId!, pullLoser);
+
+  // If nothing upstream can feed this match anymore, re-resolve it as a bye
+  // (re-ghosts correctly or re-advances the remaining participant).
+  checkAndProcessImplicitBye(bracket, match);
 }
 
 /**

@@ -56,8 +56,8 @@ function MatchCard({
     setShowDetailModal(false);
   };
 
-  const isWinner   = (id: string | null) => match.winnerId === id;
-  const isLoser    = (id: string | null) => match.loserId === id;
+  const isWinner   = (id: string | null) => id != null && match.winnerId === id;
+  const isLoser    = (id: string | null) => id != null && match.loserId === id;
 
   const isGhostMatch = match.status === 'completed' &&
     !match.participant1Id && !match.participant2Id && !match.winnerId;
