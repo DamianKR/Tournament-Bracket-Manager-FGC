@@ -1,9 +1,5 @@
 /* Responsive global utilities — loaded after component CSS */
 
-html, body, #root {
-  overflow-x: hidden;
-}
-
 img, video {
   max-width: 100%;
   height: auto;
