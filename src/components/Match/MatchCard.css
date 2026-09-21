@@ -306,6 +306,57 @@
   font-style: italic;
 }
 
+/* TBD slot states: waiting for a participant vs dead slot */
+.participant-name.tbd {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-style: italic;
+}
+
+/* "Live" waiting tag — pulsing neon badge, impossible to miss */
+.participant-name.tbd-waiting {
+  color: var(--warning-color);
+  font-style: normal;
+  font-weight: 800;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  padding: 0.12rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--warning-color) 70%, transparent);
+  border-radius: var(--border-radius);
+  background: color-mix(in srgb, var(--warning-color) 12%, transparent);
+  animation: tbd-waiting-pulse 1.6s ease-in-out infinite;
+}
+
+.participant-name.tbd-waiting .tbd-icon {
+  animation: tbd-icon-spin 3.2s linear infinite;
+}
+
+@keyframes tbd-waiting-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--warning-color) 0%, transparent);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 10px 1px color-mix(in srgb, var(--warning-color) 55%, transparent);
+    opacity: 0.85;
+  }
+}
+
+@keyframes tbd-icon-spin {
+  to { transform: rotate(360deg); }
+}
+
+.participant-name.tbd-dead {
+  color: var(--text-tertiary);
+  opacity: 0.55;
+}
+
+.tbd-icon {
+  font-size: 0.6rem;
+}
+
 @media (max-width: 768px) {
   .match-card {
     border-radius: 0.25rem;

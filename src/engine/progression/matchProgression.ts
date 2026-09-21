@@ -276,6 +276,7 @@ function checkAndProcessImplicitBye(bracket: Bracket, match: Match): void {
  * Check if a match can still receive participants from previous matches
  */
 function checkIfMatchCanReceiveParticipants(bracket: Bracket, targetMatch: Match): boolean {
+
   // Find all matches that could feed into this match
   const allMatches = [
     ...bracket.winnerBracket,
@@ -292,6 +293,40 @@ function checkIfMatchCanReceiveParticipants(bracket: Bracket, targetMatch: Match
   const hasIncompleteFeedingMatches = feedingMatches.some(m => m.status !== 'completed');
   
   return hasIncompleteFeedingMatches;
+}
+
+/**
+ * Which slot a winner-bracket loser's drop-in targets.
+ * WR1: odd matches → slot 1, even → slot 2. WR2+ → always slot 2.
+ * (Must mirror the targetSlot logic in recordMatchResult.)
+ */
+function loserDropInTargetSlot(feeder: Match): 1 | 2 {
+  return feeder.bracketType === 'winner' && feeder.roundNumber === 1
+    ? (feeder.matchNumber % 2 === 1 ? 1 : 2)
+    : 2;
+}
+
+/**
+ * Can an empty slot still receive a participant?
+ * Used by the UI to distinguish "TBD — waiting" from "dead slot".
+ *
+ * A slot is awaiting a participant when some incomplete feeder could still
+ * fill it: winner-feeders (they fill the first free slot) or loser-feeders
+ * whose drop-in targets this slot.
+ */
+export function isSlotAwaitingParticipant(
+  bracket: Bracket,
+  match: Match,
+  slot: 1 | 2
+): boolean {
+  if (match.status === 'completed') return false;
+  const feeders = [...bracket.winnerBracket, ...bracket.loserBracket];
+  return feeders.some((m) => {
+    if (m.status === 'completed') return false;
+    if (m.nextWinnerMatchId === match.id) return true;
+    if (m.nextLoserMatchId === match.id && loserDropInTargetSlot(m) === slot) return true;
+    return false;
+  });
 }
 
 /**

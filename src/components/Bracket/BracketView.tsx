@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Bracket, Participant, Match } from '@/models/types';
 import type { MatchGame } from '@/models/rankedMatch';
 import MatchCard from '@/components/Match/MatchCard';
-import { canRevertMatch } from '@/engine/progression/matchProgression';
+import { canRevertMatch, isSlotAwaitingParticipant } from '@/engine/progression/matchProgression';
 import { loadGlobalParticipants } from '@/services/storage/localStorage';
 import './BracketView.css';
 
@@ -131,6 +131,8 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
                       onSelectGames={onMatchGames}
                       onRevertMatch={onRevertMatch}
                       readOnly={readOnly}
+                      slot1Awaiting={!match.participant1Id && isSlotAwaitingParticipant(bracket, match, 1)}
+                      slot2Awaiting={!match.participant2Id && isSlotAwaitingParticipant(bracket, match, 2)}
                       reversible={onRevertMatch ? canRevertMatch(bracket, match.id) : false}
                     />
                   ))}
@@ -174,6 +176,8 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
               onRevertMatch={onRevertMatch}
               readOnly={readOnly}
               isGrandFinal={true}
+              slot1Awaiting={!bracket.grandFinal.participant1Id && isSlotAwaitingParticipant(bracket, bracket.grandFinal, 1)}
+              slot2Awaiting={!bracket.grandFinal.participant2Id && isSlotAwaitingParticipant(bracket, bracket.grandFinal, 2)}
               reversible={onRevertMatch ? canRevertMatch(bracket, bracket.grandFinal.id) : false}
             />
             {bracket.grandFinalReset && (
@@ -189,6 +193,8 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
                   onRevertMatch={onRevertMatch}
                   readOnly={readOnly}
                   isGrandFinal={true}
+                  slot1Awaiting={!bracket.grandFinalReset.participant1Id && isSlotAwaitingParticipant(bracket, bracket.grandFinalReset, 1)}
+                  slot2Awaiting={!bracket.grandFinalReset.participant2Id && isSlotAwaitingParticipant(bracket, bracket.grandFinalReset, 2)}
                   reversible={onRevertMatch ? canRevertMatch(bracket, bracket.grandFinalReset.id) : false}
                 />
               </div>

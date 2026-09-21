@@ -18,6 +18,9 @@ interface MatchCardProps {
   readOnly?: boolean;
   isGrandFinal?: boolean;
   reversible?: boolean;
+  /** Empty slot can still receive a participant (incomplete feeders) */
+  slot1Awaiting?: boolean;
+  slot2Awaiting?: boolean;
 }
 
 function MatchCard({
@@ -31,6 +34,8 @@ function MatchCard({
   readOnly = false,
   isGrandFinal = false,
   reversible = false,
+  slot1Awaiting = false,
+  slot2Awaiting = false,
 }: MatchCardProps) {
   const { t } = useTranslation();
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -124,7 +129,12 @@ function MatchCard({
                   )}
                 </div>
               )}
-              <span className="participant-name">{participant1Name}</span>
+              <span className={`participant-name ${!match.participant1Id ? (slot1Awaiting ? 'tbd tbd-waiting' : 'tbd tbd-dead') : ''}`}>
+                {!match.participant1Id && (
+                  <i className={`fas ${slot1Awaiting ? 'fa-circle-notch' : 'fa-ban'} tbd-icon`} />
+                )}
+                {participant1Name}
+              </span>
             </div>
             <div className="participant-right">
               {hasScore && <span className="participant-score">{match.participant1Score ?? 0}</span>}
@@ -163,7 +173,12 @@ function MatchCard({
                   )}
                 </div>
               )}
-              <span className="participant-name">{participant2Name}</span>
+              <span className={`participant-name ${!match.participant2Id ? (slot2Awaiting ? 'tbd tbd-waiting' : 'tbd tbd-dead') : ''}`}>
+                {!match.participant2Id && (
+                  <i className={`fas ${slot2Awaiting ? 'fa-circle-notch' : 'fa-ban'} tbd-icon`} />
+                )}
+                {participant2Name}
+              </span>
             </div>
             <div className="participant-right">
               {hasScore && <span className="participant-score">{match.participant2Score ?? 0}</span>}
