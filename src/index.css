@@ -45,9 +45,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html,
 body {
-  overflow-x: clip; /* evita scroll horizontal accidental en mobile */
+  /* clip en html rompe position:sticky — aplicado solo a body */
+  overflow-x: clip;
+  padding: 0px;
 }
 
 body {
