@@ -1,0 +1,42 @@
+/* Compact availability action buttons (activate all / deactivate all) */
+
+.availability-actions {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.avail-btn {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.avail-btn-on {
+  color: var(--success-color);
+}
+
+.avail-btn-on:hover:not(:disabled) {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+  color: #fff;
+}
+
+.avail-btn-off {
+  color: var(--danger-color);
+}
+
+.avail-btn-off:hover:not(:disabled) {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+  color: #fff;
+}

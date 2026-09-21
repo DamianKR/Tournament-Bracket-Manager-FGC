@@ -45,7 +45,7 @@
         "eloRank": "Master",
         "eloPoints": 1739,
         "mainCharacterId": "samus",
-        "available": false,
+        "available": true,
         "leagueAvailable": true,
         "tournamentAvailable": true
       }
@@ -93,7 +93,7 @@
         "eloRank": "Vanquisher",
         "eloPoints": 1680,
         "mainCharacterId": "link",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -143,7 +143,7 @@
         "eloRank": "Vanquisher",
         "eloPoints": 1659,
         "mainCharacterId": "mario",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -194,7 +194,7 @@
         "eloRank": "Vanquisher",
         "eloPoints": 1604,
         "mainCharacterId": "luigi",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -240,7 +240,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1557,
         "mainCharacterId": "terry",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -267,7 +267,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "yoshi",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -290,7 +290,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1534,
         "mainCharacterId": "king_dedede",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -323,7 +323,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "inkling",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -347,7 +347,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1510,
         "mainCharacterId": "bowser",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -375,7 +375,7 @@
         "eloRank": "Platino",
         "eloPoints": 1452,
         "mainCharacterId": "rob",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -402,7 +402,7 @@
         "eloRank": "Platino",
         "eloPoints": 1462,
         "mainCharacterId": "byleth",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -429,7 +429,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1514,
         "mainCharacterId": "lucas",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -457,7 +457,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "link",
-        "available": false,
+        "available": true,
         "tournamentAvailable": true
       }
     },
@@ -482,7 +482,7 @@
         "eloRank": "Vanquisher",
         "eloPoints": 1605,
         "mainCharacterId": "steve",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -519,7 +519,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1529,
         "mainCharacterId": "kazuya",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -555,7 +555,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1535,
         "mainCharacterId": "cloud",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -586,7 +586,7 @@
         "eloRank": "Platino",
         "eloPoints": 1484,
         "mainCharacterId": "bayonetta",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -611,7 +611,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1527,
         "mainCharacterId": "donkey_kong",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -640,7 +640,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1559,
         "mainCharacterId": "sonic",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -665,7 +665,7 @@
         "eloRank": "Platino",
         "eloPoints": 1445,
         "mainCharacterId": "toon_link",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -691,7 +691,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "kirby",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -715,7 +715,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1522,
         "mainCharacterId": "meta_knight",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -739,7 +739,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1500,
         "mainCharacterId": "bayonetta",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -760,7 +760,7 @@
         "eloRank": "Platino",
         "eloPoints": 1488,
         "mainCharacterId": "cloud",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -784,7 +784,7 @@
         "eloRank": "Platino",
         "eloPoints": 1485,
         "mainCharacterId": "donkey_kong",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -813,7 +813,7 @@
         "eloRank": "Platino",
         "eloPoints": 1460,
         "mainCharacterId": "corrin",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -839,7 +839,7 @@
         "eloRank": "Platino",
         "eloPoints": 1462,
         "mainCharacterId": "little_mac",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -864,7 +864,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1500,
         "mainCharacterId": "bowser",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -890,7 +890,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1516,
         "mainCharacterId": "kirby",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -916,7 +916,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "sora",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -942,7 +942,7 @@
         "eloRank": "Platino",
         "eloPoints": 1475,
         "mainCharacterId": "sephiroth",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -969,7 +969,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "dark_pit",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -994,7 +994,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "min_min",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1019,7 +1019,7 @@
         "eloRank": "Platino",
         "eloPoints": 1485,
         "mainCharacterId": "little_mac",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1045,7 +1045,7 @@
         "eloRank": "Platino",
         "eloPoints": 1455,
         "mainCharacterId": "zero_suit_samus",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1066,7 +1066,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1516,
         "mainCharacterId": "link",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1090,7 +1090,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "rob",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1111,7 +1111,7 @@
         "eloRank": "Platino",
         "eloPoints": 1499,
         "mainCharacterId": "joker",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1135,7 +1135,7 @@
         "eloRank": "Platino",
         "eloPoints": 1420,
         "mainCharacterId": "diddy_kong",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1158,7 +1158,7 @@
         "eloRank": "Platino",
         "eloPoints": 1479,
         "mainCharacterId": "dark_pit",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1181,7 +1181,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "mario",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1204,7 +1204,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "isabelle",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1227,7 +1227,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "terry",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1251,7 +1251,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "king_dedede",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1274,7 +1274,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1519,
         "mainCharacterId": "sora",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1298,7 +1298,7 @@
         "eloRank": "Platino",
         "eloPoints": 1472,
         "mainCharacterId": "cloud",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1321,7 +1321,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "mr_game_and_watch",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1344,7 +1344,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "king_dedede",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1367,7 +1367,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1544,
         "mainCharacterId": "steve",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1390,7 +1390,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1535,
         "mainCharacterId": "snake",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1415,7 +1415,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1510,
         "mainCharacterId": "lucario",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1436,7 +1436,7 @@
         "eloRank": "Diamante",
         "eloPoints": 1532,
         "mainCharacterId": "hero",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1457,7 +1457,7 @@
         "eloRank": "Sin puntos",
         "eloPoints": null,
         "mainCharacterId": "fox",
-        "available": false
+        "available": true
       }
     },
     "gameId": "ssbu",
@@ -1510,8 +1510,8 @@
         "mainCharacterId": null,
         "eloPoints": null,
         "eloRank": "Sin puntos",
-        "available": false,
-        "leagueAvailable": false,
+        "available": true,
+        "leagueAvailable": true,
         "tournamentAvailable": true
       }
     },
@@ -1539,8 +1539,8 @@
         "mainCharacterId": null,
         "eloPoints": null,
         "eloRank": "Sin puntos",
-        "available": false,
-        "leagueAvailable": false,
+        "available": true,
+        "leagueAvailable": true,
         "tournamentAvailable": false
       }
     },
@@ -1568,8 +1568,8 @@
         "mainCharacterId": "link",
         "eloPoints": null,
         "eloRank": "Sin puntos",
-        "available": false,
-        "leagueAvailable": false,
+        "available": true,
+        "leagueAvailable": true,
         "tournamentAvailable": false
       }
     },
@@ -1599,8 +1599,8 @@
         "mainCharacterId": null,
         "eloPoints": null,
         "eloRank": "Sin puntos",
-        "available": false,
-        "leagueAvailable": false,
+        "available": true,
+        "leagueAvailable": true,
         "tournamentAvailable": true
       }
     },
@@ -1630,8 +1630,8 @@
         "mainCharacterId": null,
         "eloPoints": null,
         "eloRank": "Sin puntos",
-        "available": false,
-        "leagueAvailable": false,
+        "available": true,
+        "leagueAvailable": true,
         "tournamentAvailable": true
       }
     },

@@ -649,9 +649,10 @@ router.put('/assignments/:id/cancel', requireAuth, async (req, res) => {
 });
 
 // POST /api/matchmaking/reset-availability
-// Body: { gameId, activity: 'ranked' | 'leagues' | 'tournaments' }
-// Sets the corresponding availability flag to false for every participant
-// in the community+game. Ranked covers duels AND matchmaking.
+// Body: { gameId, activity: 'ranked' | 'leagues' | 'tournaments', value?: boolean }
+// Sets the corresponding availability flag for every participant in the
+// community+game. value defaults to false (deactivate). Ranked covers
+// duels AND matchmaking.
 const ACTIVITY_FLAG = {
   ranked: 'available',
   leagues: 'leagueAvailable',
@@ -665,13 +666,15 @@ router.post('/reset-availability', requireAuth, async (req, res) => {
     if (!gameId) return res.status(400).json({ error: 'gameId required' });
     if (!canAdminGame(req.user, communityId, gameId)) return res.status(403).json({ error: 'Admin required for this game' });
 
+    const targetValue = req.body.value === true;
     const allP = await participants.getAll();
     let count = 0;
     const updated = allP.map((p) => {
       if (p.communityId !== communityId || !p.games?.[gameId]) return p;
-      if (p.games[gameId][flag] === false) return p;
+      // undefined flag = active (legacy profiles) — treat as true
+      if ((p.games[gameId][flag] ?? true) === targetValue) return p;
       const upd = { ...p, games: { ...p.games } };
-      upd.games[gameId] = { ...p.games[gameId], [flag]: false };
+      upd.games[gameId] = { ...p.games[gameId], [flag]: targetValue };
       count++;
       return upd;
     });

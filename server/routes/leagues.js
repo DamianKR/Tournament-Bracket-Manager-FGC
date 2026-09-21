@@ -863,7 +863,8 @@ router.post('/:id/matches/:matchId/report', requireAuth, async (req, res) => {
     }
 
     const reporterId = participantIdFor(req.user, league.communityId);
-    const isParticipant = reporterId === match.participant1Id || reporterId === match.participant2Id;
+    const isParticipant = !!reporterId &&
+      (reporterId === match.participant1Id || reporterId === match.participant2Id);
     const isAdminRole = canAdminGame(req.user, league.communityId, league.gameId);
     if (!isParticipant && !isAdminRole) {
       return res.status(403).json({ error: 'Only participants or admins of this game can report results' });

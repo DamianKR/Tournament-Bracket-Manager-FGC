@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, LeagueStanding, GlobalParticipant } from '@/models/types';
+import { useCommunity } from '@/contexts/CommunityContext';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
 import ReportMatchModal from './ReportMatchModal';
 import './LeagueMyMatchesTab.css';
@@ -15,8 +16,14 @@ interface LeagueMyMatchesTabProps {
 
 function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchUpdated }: LeagueMyMatchesTabProps) {
   const { t } = useTranslation();
+  const { isInMyCommunity, canAdminGame, myParticipantId } = useCommunity();
   const [selectedParticipantId, setSelectedParticipantId] = useState<string>('');
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
+
+  // Reporting: only the selected player themselves or an admin of this game.
+  const canAdminLeague = isInMyCommunity && canAdminGame(league.gameId);
+  const canReportSelected = canAdminLeague ||
+    (!!myParticipantId && selectedParticipantId === myParticipantId);
 
   function getParticipantName(id: string): string {
     const p = participants.get(id);
@@ -97,12 +104,14 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
           <>
             <div className="my-match-status">{t('league.myMatches.pending')}</div>
             {match.week <= effectiveCurrentWeek && (!match.scheduledDate || new Date(match.scheduledDate) <= new Date()) ? (
-              <button
-                className="btn-primary btn-sm"
-                onClick={() => setSelectedMatch(match)}
-              >
-                {t('league.myMatches.reportResult')}
-              </button>
+              canReportSelected && (
+                <button
+                  className="btn-primary btn-sm"
+                  onClick={() => setSelectedMatch(match)}
+                >
+                  {t('league.myMatches.reportResult')}
+                </button>
+              )
             ) : (
               <span className="match-locked" title={t('league.myMatches.lockedUntil', { week: match.week })}>
                 <i className="fas fa-lock" /> {match.week <= effectiveCurrentWeek ? t('league.myMatches.startsSoon') : t('league.myMatches.weekNumber', { week: match.week })}

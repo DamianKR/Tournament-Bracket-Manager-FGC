@@ -217,17 +217,27 @@ export async function cancelAssignment(
   return res.json();
 }
 
+/** Sets the activity availability flag for every participant in a community+game. */
+export async function setAvailability(
+  communityId: string,
+  gameId: string,
+  activity: 'ranked' | 'leagues' | 'tournaments',
+  value: boolean
+): Promise<{ ok: boolean; updated: number }> {
+  const res = await fetch(`${BASE}/reset-availability`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ communityId, gameId, activity, value }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 /** Sets the activity availability flag to false for every participant in a community+game. */
 export async function resetAvailability(
   communityId: string,
   gameId: string,
   activity: 'ranked' | 'leagues' | 'tournaments' = 'ranked'
 ): Promise<{ ok: boolean; updated: number }> {
-  const res = await fetch(`${BASE}/reset-availability`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ communityId, gameId, activity }),
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return setAvailability(communityId, gameId, activity, false);
 }

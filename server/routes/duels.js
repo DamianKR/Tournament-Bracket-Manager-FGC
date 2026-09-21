@@ -262,6 +262,37 @@ router.post('/', requireAuth, async (req, res) => {
       { duelId: challenge.id, challengerId, type }
     ).catch(err => console.warn('[Duels] Failed to create challenge notification:', err));
 
+    // Mandatory duels skip /accept — schedule the expiring notifications here.
+    // Their real deadline is expiresAt + challengeExpirationDays (grace).
+    if (type === 'mandatory') {
+      try {
+        const deadline = new Date(expiresAt);
+        deadline.setDate(deadline.getDate() + (config.challengeExpirationDays ?? 7));
+        const warnAt = new Date(deadline.getTime() - 3 * 24 * 60 * 60 * 1000);
+
+        if (warnAt > new Date()) {
+          await createNotification(
+            challengerId,
+            'duel_expiring',
+            'Duel expiring soon',
+            `Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.`,
+            { duelId: challenge.id, expiresAt: deadline.toISOString() },
+            warnAt.toISOString()
+          );
+          await createNotification(
+            challengedId,
+            'duel_expiring',
+            'Duel expiring soon',
+            `A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.`,
+            { duelId: challenge.id, expiresAt: deadline.toISOString() },
+            warnAt.toISOString()
+          );
+        }
+      } catch (err) {
+        console.warn('[Duels] Failed to schedule mandatory expiring notification:', err);
+      }
+    }
+
     res.status(201).json(challenge);
   } catch (err) {
     console.error('[Duels] POST / error:', err);
@@ -306,7 +337,9 @@ router.put('/:id/accept', requireAuth, async (req, res) => {
 
     // Schedule expiring notification for ~3 days before the deadline
     try {
-      const settings = await duelSettings.getAll().then(s => s.find(x => x.id === 'default') || { challengeExpirationDays: 7 });
+      const allDuelSettings = await duelSettings.getAll();
+      const settings = allDuelSettings.find(x => x.communityId === challenge.communityId)
+        || duelSettingsShape(challenge.communityId);
       const acceptedExpiresAt = new Date(challenge.acceptedAt);
       acceptedExpiresAt.setDate(acceptedExpiresAt.getDate() + settings.challengeExpirationDays);
       const warnAt = new Date(acceptedExpiresAt.getTime() - 3 * 24 * 60 * 60 * 1000);

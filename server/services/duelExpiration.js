@@ -118,7 +118,15 @@ export async function expireAllOldDuels() {
     }
 
     if (challenge.status === 'accepted' && challenge.acceptedAt) {
-      const acceptedExpiresAt = new Date(challenge.acceptedAt);
+      let acceptedExpiresAt;
+      if (challenge.type === 'mandatory' && challenge.expiresAt) {
+        // Mandatory duels are auto-accepted at creation, so they skip the
+        // pending window a normal duel has. Grant it as grace: expiry =
+        // challenge deadline (expiresAt) + play/report window.
+        acceptedExpiresAt = new Date(challenge.expiresAt);
+      } else {
+        acceptedExpiresAt = new Date(challenge.acceptedAt);
+      }
       acceptedExpiresAt.setDate(acceptedExpiresAt.getDate() + settings.challengeExpirationDays);
       if (acceptedExpiresAt < now) {
         shouldExpire = true;

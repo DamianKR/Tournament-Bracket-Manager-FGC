@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { GAMES } from '@/data/games';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { useToast } from '@/contexts/NotificationContext';
-import { resetAvailability } from '@/services/matchmaking/matchmakingService';
+import { setAvailability } from '@/services/matchmaking/matchmakingService';
+import './ResetAvailabilityButton.css';
 
 type Activity = 'ranked' | 'leagues' | 'tournaments';
+type Action = 'activate' | 'deactivate';
 
 const ACTIVITIES: { id: Activity; icon: string }[] = [
   { id: 'ranked',      icon: 'fa-khanda' },
@@ -13,9 +15,9 @@ const ACTIVITIES: { id: Activity; icon: string }[] = [
   { id: 'tournaments', icon: 'fa-trophy' },
 ];
 
-/** Admin control: sets the chosen activity's availability flag to false for
- *  every participant of a game in this community. Ranked covers duels AND
- *  matchmaking. Lives in the Ranked header because it affects all modes. */
+/** Admin control: sets the chosen activity's availability flag for every
+ *  participant of a game in this community. Ranked covers duels AND
+ *  matchmaking. Two compact buttons: activate all / deactivate all. */
 function ResetAvailabilityButton() {
   const { t } = useTranslation();
   const toast = useToast();
@@ -23,43 +25,78 @@ function ResetAvailabilityButton() {
   const communityId = currentCommunity?.id ?? '';
 
   const [show, setShow]           = useState(false);
+  const [action, setAction]       = useState<Action>('deactivate');
   const [gameId, setGameId]       = useState(GAMES[0]?.id ?? '');
   const [activity, setActivity]   = useState<Activity>('ranked');
-  const [resetting, setResetting] = useState(false);
+  const [applying, setApplying]   = useState(false);
 
-  async function handleReset() {
+  const isActivate = action === 'activate';
+
+  function open(a: Action) {
+    setAction(a);
+    setShow(true);
+  }
+
+  async function handleApply() {
     if (!gameId) return;
-    setResetting(true);
+    setApplying(true);
     try {
-      const result = await resetAvailability(communityId, gameId, activity);
+      const result = await setAvailability(communityId, gameId, activity, isActivate);
       setShow(false);
-      toast.success(t('ranked.mm.flash.reset', { count: result.updated }));
+      toast.success(t(isActivate ? 'ranked.mm.flash.enable' : 'ranked.mm.flash.reset', { count: result.updated }));
     } catch (e: any) {
       toast.error(e.message);
     } finally {
-      setResetting(false);
+      setApplying(false);
     }
   }
 
   return (
     <>
-      <button
-        className="btn-outline"
-        onClick={() => setShow(true)}
-        title={t('ranked.mm.deactivateAllTitle')}
-      >
-        <i className="fas fa-user-slash" /> {t('ranked.mm.deactivateAll')}
-      </button>
+      <div className="availability-actions">
+        <button
+          className="avail-btn avail-btn-on"
+          onClick={() => open('activate')}
+          title={t('ranked.mm.activateAllTitle')}
+        >
+          <i className="fas fa-user-check" />
+        </button>
+        <button
+          className="avail-btn avail-btn-off"
+          onClick={() => open('deactivate')}
+          title={t('ranked.mm.deactivateAllTitle')}
+        >
+          <i className="fas fa-user-slash" />
+        </button>
+      </div>
 
       {show && (
         <div className="modal-overlay" onClick={() => setShow(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2><i className="fas fa-user-slash" /> {t('ranked.mm.deactivateAll')}</h2>
+              <h2>
+                <i className={`fas ${isActivate ? 'fa-user-check' : 'fa-user-slash'}`} />{' '}
+                {isActivate ? t('ranked.mm.activateAll') : t('ranked.mm.deactivateAll')}
+              </h2>
               <button className="btn-icon" onClick={() => setShow(false)}><i className="fas fa-times" /></button>
             </div>
             <div className="modal-body">
-              <p className="text-secondary" style={{ marginBottom: '1rem' }}>{t('ranked.mm.modals.resetBody')}</p>
+              <p className="text-secondary" style={{ marginBottom: '1rem' }}>
+                {isActivate ? t('ranked.mm.modals.enableBody') : t('ranked.mm.modals.resetBody')}
+              </p>
+              <div className="form-group">
+                <label>{t('ranked.mm.modals.action')}</label>
+                <div className="duel-type-selector">
+                  <label className="duel-type-option">
+                    <input type="radio" name="availAction" checked={isActivate} onChange={() => setAction('activate')} />
+                    <span><i className="fas fa-user-check" /> {t('ranked.mm.modals.actionActivate')}</span>
+                  </label>
+                  <label className="duel-type-option">
+                    <input type="radio" name="availAction" checked={!isActivate} onChange={() => setAction('deactivate')} />
+                    <span><i className="fas fa-user-slash" /> {t('ranked.mm.modals.actionDeactivate')}</span>
+                  </label>
+                </div>
+              </div>
               <div className="form-group">
                 <label>{t('ranked.mm.modals.game')}</label>
                 <select className="form-control" value={gameId} onChange={(e) => setGameId(e.target.value)}>
@@ -86,8 +123,14 @@ function ResetAvailabilityButton() {
             </div>
             <div className="modal-footer">
               <button className="btn-outline" onClick={() => setShow(false)}>{t('ranked.mm.modals.cancel')}</button>
-              <button className="btn-danger" onClick={handleReset} disabled={resetting || !gameId}>
-                {resetting ? t('ranked.mm.modals.applying') : t('ranked.mm.modals.resetConfirm')}
+              <button
+                className={isActivate ? 'btn-success' : 'btn-danger'}
+                onClick={handleApply}
+                disabled={applying || !gameId}
+              >
+                {applying
+                  ? t('ranked.mm.modals.applying')
+                  : isActivate ? t('ranked.mm.modals.enableConfirm') : t('ranked.mm.modals.resetConfirm')}
               </button>
             </div>
           </div>
