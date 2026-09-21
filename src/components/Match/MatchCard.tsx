@@ -63,8 +63,6 @@ function MatchCard({
     !match.participant1Id && !match.participant2Id && !match.winnerId;
 
   const hasScore = match.participant1Score !== undefined || match.participant2Score !== undefined;
-  const hasCharacters = (match.participant1Characters && match.participant1Characters.length > 0) ||
-                        (match.participant2Characters && match.participant2Characters.length > 0);
   const hasGames = match.games && match.games.length > 0;
 
   const p1GameChars = hasGames
@@ -77,8 +75,11 @@ function MatchCard({
   return (
     <div className={`match-card ${isGrandFinal ? 'grand-final-match' : ''} ${isGhostMatch ? 'ghost-match' : ''}`}>
 
-      {/* Left column: match id + status */}
-      <div className="match-header">
+      {/* Left column: match id + status — also opens the modal */}
+      <div
+        className={`match-header ${(canSelect || canView) ? 'clickable' : ''}`}
+        onClick={() => { if (canSelect || canView) setShowDetailModal(true); }}
+      >
         <span className="match-id">{t('tournament.matchCard.match', { number: match.matchNumber })}</span>
         {match.status === 'completed' && !isGhostMatch && (
           <span className="match-status completed"><i className="fas fa-check" /></span>
@@ -99,7 +100,7 @@ function MatchCard({
             className={`participant
               ${isWinner(match.participant1Id) ? 'winner' : ''}
               ${isLoser(match.participant1Id) ? 'loser' : ''}
-              ${canSelect ? 'selectable' : ''}`}
+              ${(canSelect || canView) && match.participant1Id ? 'selectable' : ''}`}
             onClick={() => handleClickParticipant(match.participant1Id)}
           >
             <div className="participant-left">
@@ -138,7 +139,7 @@ function MatchCard({
             className={`participant
               ${isWinner(match.participant2Id) ? 'winner' : ''}
               ${isLoser(match.participant2Id) ? 'loser' : ''}
-              ${canSelect ? 'selectable' : ''}`}
+              ${(canSelect || canView) && match.participant2Id ? 'selectable' : ''}`}
             onClick={() => handleClickParticipant(match.participant2Id)}
           >
             <div className="participant-left">
@@ -171,13 +172,6 @@ function MatchCard({
           </div>
         </div>
 
-        {/* Hint for clickable matches */}
-        {(canSelect || canView) && (
-          <div className="match-click-hint">
-            {canSelect && <div className="hint-text">{t('tournament.matchCard.clickToReport')}</div>}
-            {canView && (hasScore || hasCharacters) && <div className="hint-text">{t('tournament.matchCard.clickToView')}</div>}
-          </div>
-        )}
       </div>
 
       {/* Detailed result modal */}

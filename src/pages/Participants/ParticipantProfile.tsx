@@ -31,6 +31,7 @@ import { getCharacter, getGame, GAMES } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import { charsWithColorsFromGames, parseScoreString } from '@/utils/matchData';
+import { compressAvatar } from '@/utils/imageCompression';
 import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import { getLeaderboard, getRankColor, getRankIcon, type LeaderboardEntry } from '@/services/ranking/rankingService';
@@ -150,6 +151,8 @@ function ParticipantProfile() {
   >({});
   const [editPrimaryGameId, setEditPrimaryGameId] = useState<string | null>(null);
   const [editPhone, setEditPhone] = useState('');
+  const [editAvatarUrl, setEditAvatarUrl] = useState<string | null>(null);
+  const [avatarBusy, setAvatarBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
   const [editSuccess, setEditSuccess] = useState(false);
@@ -253,6 +256,7 @@ function ParticipantProfile() {
         setEditGameAvailability(avail);
         setEditPrimaryGameId(p.gameId ?? (games[0] ?? null));
         setEditPhone(p.phoneNumber ?? '');
+        setEditAvatarUrl(p.avatarUrl ?? null);
       } catch {
         const p = getParticipant(id, communityId);
         if (!p) { setNotFound(true); return; }
@@ -486,6 +490,20 @@ function ParticipantProfile() {
     }
   }
 
+  async function handleAvatarFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setAvatarBusy(true); setEditError('');
+    try {
+      setEditAvatarUrl(await compressAvatar(file));
+    } catch {
+      setEditError(t('participantProfile.edit.avatarError'));
+    } finally {
+      setAvatarBusy(false);
+    }
+  }
+
   async function handleSave() {
     if (!participant) return;
     setSaving(true); setEditError(''); setEditSuccess(false);
@@ -499,6 +517,7 @@ function ParticipantProfile() {
         gameMainCharacters: editGameMainChars,
         gameAvailability: editGameAvailability,
         phoneNumber: editPhone || null,
+        avatarUrl: editAvatarUrl,
       });
       setParticipant(updated);
       setStats(computeStats(updated));
@@ -1232,6 +1251,29 @@ function ParticipantProfile() {
                   onKeyDown={(e) => e.key === 'Enter' && handleSave()}
                   placeholder={t('participantProfile.edit.aliasPlaceholder')} />
               </div>
+            </div>
+            <div className="form-group profile-avatar-field">
+              <label>{t('participantProfile.edit.avatarLabel')}</label>
+              <div className="profile-avatar-editor">
+                <div className="profile-avatar-preview" style={{ background: avatarColor(editName || participant.name) }}>
+                  {editAvatarUrl
+                    ? <img src={editAvatarUrl} alt="" />
+                    : initials(editName || participant.name)}
+                </div>
+                <div className="profile-avatar-actions">
+                  <label className="btn-outline btn-sm avatar-upload-btn">
+                    <i className="fas fa-camera" />
+                    {avatarBusy ? t('participantProfile.edit.avatarProcessing') : t('participantProfile.edit.avatarUpload')}
+                    <input type="file" accept="image/*" hidden onChange={handleAvatarFile} disabled={avatarBusy} />
+                  </label>
+                  {editAvatarUrl && (
+                    <button type="button" className="btn-outline btn-sm" onClick={() => setEditAvatarUrl(null)}>
+                      <i className="fas fa-trash" /> {t('participantProfile.edit.avatarRemove')}
+                    </button>
+                  )}
+                </div>
+              </div>
+              <small className="hint">{t('participantProfile.edit.avatarHint')}</small>
             </div>
             <div className="form-group profile-phone-field">
               <label>{t('participantProfile.edit.phoneLabel')}</label>

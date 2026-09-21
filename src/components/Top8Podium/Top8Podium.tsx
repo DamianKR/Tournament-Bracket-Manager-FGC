@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Participant, GlobalParticipant, Bracket } from '@/models/types';
 import { loadGlobalParticipants } from '@/services/storage/localStorage';
-import { getCharacterIconUrl, getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterIconUrl, getCharacterImageUrl, getCharacterThumbUrl } from '@/utils/characterImage';
 import './Top8Podium.css';
 
 interface Top8PodiumProps {
@@ -100,7 +100,10 @@ function Avatar({ global, gameId, fallbackIcon, large = false }: { global: Globa
   const effectiveGameId = gameId ?? global?.gameId;
   // Si hay gameId del torneo, buscar el personaje de ese juego en el perfil del participante
   const characterId = (gameId && global?.games?.[gameId]?.mainCharacterId) || global?.mainCharacterId || null;
-  const imgUrl = getCharacterImageUrl(effectiveGameId, characterId);
+  // Champion gets the full render; regular podium slots use the 160px thumb.
+  const imgUrl = large
+    ? getCharacterImageUrl(effectiveGameId, characterId)
+    : getCharacterThumbUrl(effectiveGameId, characterId);
   const icon = <i className={`fas ${fallbackIcon}`} />;
   return (
     <div className={`top8-avatar ${large ? 'champion-avatar' : ''}`}>

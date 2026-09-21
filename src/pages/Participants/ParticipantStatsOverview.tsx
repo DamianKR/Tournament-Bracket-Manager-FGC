@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ParticipantStatsSummary } from '@/services/participants/participantService';
 import { GlobalParticipant } from '@/models/types';
 import { getCharacter, getGame, GAMES } from '@/data/games';
-import { getCharacterImageUrl } from '@/utils/characterImage';
+import { getCharacterThumbUrl } from '@/utils/characterImage';
 import { gameBadgeStyle, gameAccent } from '@/utils/gameColor';
 import { getRankIcon, getRankColor, RANK_TIERS } from '@/utils/rank';
 import SectionTabs from '@/components/SectionTabs';
@@ -85,7 +85,7 @@ function CharacterRow({ gameId, characterId, label, winRate, count, sets, totalP
   return (
     <div className={`character-row ${isMain ? 'main' : ''}`}>
       <img
-        src={getCharacterImageUrl(gameId, characterId) ?? undefined}
+        src={getCharacterThumbUrl(gameId, characterId) ?? undefined}
         alt={displayName}
         className="character-row-icon"
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
@@ -452,7 +452,7 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
               {gameMains ? (
                 <div className="main-char-row">
                   <img
-                    src={getCharacterImageUrl(effectiveGame, gameMains.id) ?? undefined}
+                    src={getCharacterThumbUrl(effectiveGame, gameMains.id) ?? undefined}
                     alt={getCharacter(effectiveGame, gameMains.id)?.name || gameMains.id}
                     className="main-char-row-icon"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
@@ -572,7 +572,7 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
                       wins={c.wins}
                       losses={c.losses}
                       winRate={c.winRate}
-                      image={getCharacterImageUrl(c.gameId, c.characterId) ?? undefined}
+                      image={getCharacterThumbUrl(c.gameId, c.characterId) ?? undefined}
                     />
                   );
                 })}
