@@ -443,7 +443,45 @@ function MatchDetailModal({
             </div>
           )}
 
-          {/* Game Log */}
+          {/* Game Log — read-only view (works for all viewers, not just reporters) */}
+          {readOnly && games.length > 0 && (
+            <div className="game-log-section">
+              <h4>{t('tournament.matchResult.gameLog')}</h4>
+              {games.map((g) => (
+                <div key={g.gameNumber} className="game-log-row">
+                  <div className="game-log-char game-log-p1">
+                    {g.player1Character && gameId && (
+                      <img
+                        src={getCharacterIconUrl(gameId, g.player1Character, g.player1Color ?? undefined) ?? ''}
+                        alt={getCharacterName(g.player1Character)}
+                        title={getCharacterName(g.player1Character)}
+                        className="game-log-char-icon"
+                      />
+                    )}
+                  </div>
+                  <div className="game-log-center">
+                    <span className="game-log-number">{t('tournament.matchResult.game')} {g.gameNumber}</span>
+                    <span className="game-log-readonly-winner">
+                      <i className="fas fa-trophy" />{' '}
+                      {g.winnerId === participant1Id ? data.participant1Name : data.participant2Name}
+                    </span>
+                  </div>
+                  <div className="game-log-char game-log-p2">
+                    {g.player2Character && gameId && (
+                      <img
+                        src={getCharacterIconUrl(gameId, g.player2Character, g.player2Color ?? undefined) ?? ''}
+                        alt={getCharacterName(g.player2Character)}
+                        title={getCharacterName(g.player2Character)}
+                        className="game-log-char-icon"
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Game Log — editable */}
           {useGameLog && !readOnly && (
             <div className="game-log-section">
               <h4>{t('tournament.matchResult.gameLog')}</h4>

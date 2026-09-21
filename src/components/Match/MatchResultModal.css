@@ -609,6 +609,17 @@
   letter-spacing: 0.05em;
 }
 
+.game-log-readonly-winner {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--success-color, #10b981);
+}
+
+.game-log-readonly-winner i {
+  font-size: 0.6rem;
+  margin-right: 0.15rem;
+}
+
 .game-log-winner-select {
   background: var(--bg-primary);
   font-weight: 700;

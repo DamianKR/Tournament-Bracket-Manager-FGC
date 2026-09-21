@@ -184,7 +184,7 @@ function MatchCard({
           onConfirm={handleDetailedConfirm}
           onConfirmGames={onSelectGames ? handleDetailedConfirmGames : undefined}
           onCancel={() => setShowDetailModal(false)}
-          onRevert={!readOnly && reversible && onRevertMatch ? () => {
+          onRevert={reversible && onRevertMatch ? () => {
             onRevertMatch(match.id);
             setShowDetailModal(false);
           } : undefined}

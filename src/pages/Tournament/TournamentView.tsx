@@ -250,7 +250,7 @@ function TournamentView() {
                 gameId={tournament.gameId ?? undefined}
                 onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
                 onMatchGames={canAdminGame(tournament.gameId) ? handleMatchGames : undefined}
-                onRevertMatch={canAdminGame(tournament.gameId) && tournament.status !== 'completed' ? handleRevertMatch : undefined}
+                onRevertMatch={canAdminGame(tournament.gameId) ? handleRevertMatch : undefined}
                 readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
               />
             )}

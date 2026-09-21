@@ -36,6 +36,7 @@ function MatchResultModal({
     participant2Score: match.participant2Score,
     participant1Characters: match.participant1Characters,
     participant2Characters: match.participant2Characters,
+    games: match.games,
     winnerId: match.winnerId,
   };
 

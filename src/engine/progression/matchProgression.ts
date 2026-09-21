@@ -268,21 +268,28 @@ export function canRevertMatch(bracket: Bracket, matchId: string): boolean {
   const match = findMatch(bracket, matchId);
   if (!match || match.status !== 'completed') return false;
 
-  // Check if next matches have been played
-  if (match.nextWinnerMatchId) {
-    const nextMatch = findMatch(bracket, match.nextWinnerMatchId);
-    if (nextMatch && nextMatch.status === 'completed') {
-      return false;
-    }
+  // Walk downstream through matches that were never actually played —
+  // implicit byes and ghost matches are auto-completed by the engine and
+  // must NOT block a revert. Only a match with a real reported result
+  // (a loser) blocks.
+  const queue = [match.nextWinnerMatchId, match.nextLoserMatchId].filter(
+    (id): id is string => !!id
+  );
+  const seen = new Set<string>();
+  while (queue.length > 0) {
+    const nextId = queue.shift()!;
+    if (seen.has(nextId)) continue;
+    seen.add(nextId);
+    const next = findMatch(bracket, nextId);
+    if (!next || next.status !== 'completed') continue;
+    if (next.loserId) return false; // really played — unsafe to revert
+    // Ghost/bye: transparent — keep walking its outputs
+    queue.push(
+      ...[next.nextWinnerMatchId, next.nextLoserMatchId].filter(
+        (id): id is string => !!id
+      )
+    );
   }
-
-  if (match.nextLoserMatchId) {
-    const nextMatch = findMatch(bracket, match.nextLoserMatchId);
-    if (nextMatch && nextMatch.status === 'completed') {
-      return false;
-    }
-  }
-
   return true;
 }
 
@@ -335,6 +342,19 @@ export function revertMatchResult(
   delete match.participant2Score;
   delete match.participant1Characters;
   delete match.participant2Characters;
+  delete match.games;
+
+  // A grand-final revert invalidates a bracket-reset match created from it
+  if (tournament.bracket.grandFinalReset && tournament.bracket.grandFinal?.status !== 'completed') {
+    tournament.bracket.grandFinalReset = null;
+  }
+
+  // Reopening a finished tournament: revert un-decided the champion
+  if (tournament.status === 'completed') {
+    tournament.status = 'in_progress';
+    tournament.championId = null;
+    delete tournament.completedAt;
+  }
 
   // Recalculate partial positions after reverting
   assignFinalPositions(tournament);
@@ -361,11 +381,31 @@ function removeParticipantFromMatch(
     match.participant2Id = null;
   }
 
+  // If this match auto-advanced participants downstream via an implicit bye
+  // or ghost completion (never really played), pull them back recursively so
+  // no stale participant survives the revert.
+  const wasReallyPlayed = match.status === 'completed' && !!match.loserId;
+  if (!wasReallyPlayed) {
+    if (match.winnerId && match.nextWinnerMatchId) {
+      removeParticipantFromMatch(bracket, match.nextWinnerMatchId, match.winnerId);
+    }
+    if (match.loserId && match.nextLoserMatchId) {
+      removeParticipantFromMatch(bracket, match.nextLoserMatchId, match.loserId);
+    }
+  }
+
   // Reset match status if needed
   if (!match.participant1Id || !match.participant2Id) {
     match.status = 'pending';
     match.winnerId = null;
     match.loserId = null;
+    delete match.participant1Score;
+    delete match.participant2Score;
+    delete match.participant1Characters;
+    delete match.participant2Characters;
+    delete match.games;
+    // If nothing upstream can feed this match again, re-resolve it as a bye
+    checkAndProcessImplicitBye(bracket, match);
   }
 }
 
