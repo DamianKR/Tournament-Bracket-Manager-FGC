@@ -1608,6 +1608,17 @@
     "declineSuccess": "Request declined",
     "loadError": "Failed to load requests",
     "resolveError": "Failed to process request"
+  },
+  "sync": {
+    "conflictTitle": "Sync conflict",
+    "conflictDesc": "These records changed on this device and on the server since the last sync. Choose which version to keep for each — the other will be discarded.",
+    "tournament": "Tournament",
+    "participant": "Participant",
+    "localVersion": "Local version",
+    "serverVersion": "Server version",
+    "useLocal": "Use local",
+    "useServer": "Use server",
+    "decideLater": "Decide later"
   }
 }
 

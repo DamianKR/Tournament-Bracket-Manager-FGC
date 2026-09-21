@@ -4,7 +4,7 @@ import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
 import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progression/matchProgression';
 import { getTournamentPlacement } from '@/utils/tournamentPlacements';
-import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament, loadGlobalParticipants, cacheTournament } from '@/services/storage/localStorage';
+import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament, loadGlobalParticipants, cacheTournament, queueTournamentMatchRecord } from '@/services/storage/localStorage';
 import { findGlobalParticipantByName } from '@/services/storage/localStorage';
 import { getAuthHeader } from '@/services/auth/authService';
 import { MIN_PARTICIPANTS } from '@/constants/tournament';
@@ -537,31 +537,9 @@ export async function setMatchWinner(
         createdAt: new Date().toISOString(),
       };
 
-      // Update localStorage cache
-      const lsKey = 'bracket_tournament_matches';
-      try {
-        const raw = localStorage.getItem(lsKey);
-        const all: any[] = raw ? JSON.parse(raw) : [];
-        all.push(matchRecord);
-        localStorage.setItem(lsKey, JSON.stringify(all));
-      } catch (err) {
-        console.warn('[Tournament] Failed to cache match:', err);
-      }
-
-      // Sync to server
-      try {
-        const res = await fetch(`${SERVER_URL}/api/tournaments/${tournamentId}/matches`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-          body: JSON.stringify(matchRecord),
-        });
-        if (!res.ok) {
-          const body = await res.text().catch(() => '');
-          console.warn('[Tournament] Failed to sync match to server:', res.status, body);
-        }
-      } catch (err) {
-        console.warn('[Tournament] Failed to sync match to server:', err);
-      }
+      // Queue the record in the outbox — it is stored locally and pushed to
+      // the server now if reachable, otherwise retried on reconnect.
+      await queueTournamentMatchRecord(matchRecord);
     }
   }
 

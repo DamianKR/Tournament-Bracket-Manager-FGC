@@ -1608,6 +1608,17 @@
     "declineSuccess": "Solicitud rechazada",
     "loadError": "Error al cargar las solicitudes",
     "resolveError": "Error al procesar la solicitud"
+  },
+  "sync": {
+    "conflictTitle": "Conflicto de sincronización",
+    "conflictDesc": "Estos registros cambiaron en este dispositivo y en el servidor desde la última sincronización. Elige qué versión conservar en cada uno — la otra se descartará.",
+    "tournament": "Torneo",
+    "participant": "Participante",
+    "localVersion": "Versión local",
+    "serverVersion": "Versión del servidor",
+    "useLocal": "Usar local",
+    "useServer": "Usar servidor",
+    "decideLater": "Decidir luego"
   }
 }
 

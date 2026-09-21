@@ -6,6 +6,7 @@ import Header from './components/Header/Header';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminRoute from './components/AdminRoute/AdminRoute';
 import NotificationToast from './components/Notifications/NotificationToast';
+import SyncConflictModal from './components/SyncConflict/SyncConflictModal';
 import CommunityLayout from './components/CommunityLayout/CommunityLayout';
 import EventsPage from './pages/Events/EventsPage';
 import CreateTournament from './pages/CreateTournament/CreateTournament';
@@ -38,6 +39,7 @@ function App() {
           <NotificationProvider>
             <Header />
             <NotificationToast />
+            <SyncConflictModal />
             <Routes>
               {/* Auth */}
               <Route path="/login" element={<LoginPage />} />

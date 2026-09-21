@@ -32,18 +32,35 @@ const HEALTH_TIMEOUT_MS = 1500;
 // health checks paralelos en la misma sesión.
 
 let _healthPromise: Promise<boolean> | null = null;
+// Timestamp of the last failed health check. A failure is only trusted for
+// OFFLINE_RETRY_MS — after that we re-ping so reconnects are detected without
+// needing a page reload. A success is trusted until a request actually fails
+// (resetServerCache).
+let _offlineAt = 0;
+const OFFLINE_RETRY_MS = 5000;
 
 export function isServerAvailable(): Promise<boolean> {
-  if (_healthPromise) return _healthPromise;
+  if (_healthPromise) {
+    if (_offlineAt === 0) return _healthPromise;                     // known-good / in-flight
+    if (Date.now() - _offlineAt < OFFLINE_RETRY_MS) return _healthPromise; // still cooling down
+    // Offline grace expired — fall through and re-ping.
+  }
   _healthPromise = fetch(`${SERVER_URL}/api/health`, {
     signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
   })
     .then((res) => {
       const ok = res.ok;
-      console.log(`[API] Servidor ${ok ? 'disponible' : 'no responde correctamente'}`);
+      if (ok) {
+        _offlineAt = 0;
+        console.log('[API] Servidor disponible');
+      } else {
+        _offlineAt = Date.now();
+        console.log('[API] Servidor no responde correctamente');
+      }
       return ok;
     })
     .catch(() => {
+      _offlineAt = Date.now();
       console.log('[API] Servidor no disponible — modo offline (localStorage)');
       return false;
     });
@@ -53,6 +70,7 @@ export function isServerAvailable(): Promise<boolean> {
 /** Resetear cache de health check (llamar cuando una petición falla inesperadamente). */
 export function resetServerCache(): void {
   _healthPromise = null;
+  _offlineAt = 0;
 }
 
 // ── Detección de Supabase ─────────────────────────────────────────────────
