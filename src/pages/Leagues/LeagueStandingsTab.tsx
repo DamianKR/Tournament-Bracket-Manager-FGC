@@ -140,7 +140,7 @@ function LeagueStandingsTab({ leagueId, gameId, standings, participants, playoff
                         />
                       </td>
                     )}
-                    <td className="col-rank" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>
+                    <td className="col-rank" onClick={() => navigate(getPath(`participants/${s.participantId}${gameId ? `?game=${gameId}` : ''}`))}>
                       <span className={`rank-badge rank-${s.rank}`}>
                         {s.rank === 1 && '🥇'}
                         {s.rank === 2 && '🥈'}
@@ -148,7 +148,7 @@ function LeagueStandingsTab({ leagueId, gameId, standings, participants, playoff
                         {s.rank > 3 && s.rank}
                       </span>
                     </td>
-                    <td className="col-player" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>
+                    <td className="col-player" onClick={() => navigate(getPath(`participants/${s.participantId}${gameId ? `?game=${gameId}` : ''}`))}>
                       <div className="player-cell">
                         <span className="player-name">
                           {(() => {
@@ -163,11 +163,11 @@ function LeagueStandingsTab({ leagueId, gameId, standings, participants, playoff
                         )}
                       </div>
                     </td>
-                    <td className="col-stat" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>{s.matchesPlayed}</td>
-                    <td className="col-stat text-success" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>{s.wins}</td>
-                    <td className="col-stat text-danger" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>{s.losses}</td>
-                    <td className="col-stat font-bold" onClick={() => navigate(getPath(`participants/${s.participantId}`))}>{s.currentElo}</td>
-                    <td className={`col-stat ${s.eloChange >= 0 ? 'text-success' : 'text-danger'}`} onClick={() => navigate(getPath(`participants/${s.participantId}`))}>
+                    <td className="col-stat" onClick={() => navigate(getPath(`participants/${s.participantId}${gameId ? `?game=${gameId}` : ''}`))}>{s.matchesPlayed}</td>
+                    <td className="col-stat text-success" onClick={() => navigate(getPath(`participants/${s.participantId}${gameId ? `?game=${gameId}` : ''}`))}>{s.wins}</td>
+                    <td className="col-stat text-danger" onClick={() => navigate(getPath(`participants/${s.participantId}${gameId ? `?game=${gameId}` : ''}`))}>{s.losses}</td>
+                    <td className="col-stat font-bold" onClick={() => navigate(getPath(`participants/${s.participantId}${gameId ? `?game=${gameId}` : ''}`))}>{s.currentElo}</td>
+                    <td className={`col-stat ${s.eloChange >= 0 ? 'text-success' : 'text-danger'}`} onClick={() => navigate(getPath(`participants/${s.participantId}${gameId ? `?game=${gameId}` : ''}`))}>
                       {formatEloChange(s.eloChange)}
                     </td>
                   </tr>

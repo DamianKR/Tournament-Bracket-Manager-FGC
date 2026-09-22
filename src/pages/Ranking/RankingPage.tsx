@@ -285,7 +285,7 @@ function RankingPage() {
                     <tr
                       key={entry.id}
                       className={`rk-row ${entry.position != null && entry.position <= 5 ? 'legend-row' : ''}`}
-                      onClick={() => navigate(getPath(`participants/${entry.id}`))}
+                      onClick={() => navigate(getPath(`participants/${entry.id}${selectedGameId && selectedGameId !== 'all' ? `?game=${selectedGameId}` : ''}`))}
                     >
                       <td className="rk-col-pos">
                         <span className={`rk-pos ${entry.position != null && entry.position <= 3 ? `top${entry.position}` : ''}`}>

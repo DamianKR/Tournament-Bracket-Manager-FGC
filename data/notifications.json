@@ -11055,13 +11055,14 @@
     "type": "matchmaking",
     "title": "Matchmaking — Semptiembe (Período 1)",
     "message": "Tu rival es Gino. Juega antes del 9/23/2026.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-18T00:13:26.549Z",
     "scheduledAt": "2026-09-18T00:13:26.549Z",
     "data": {
       "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
       "assignmentId": "9dbc82bc-6dbb-491d-b3ca-73a9f66205d5"
-    }
+    },
+    "readAt": "2026-09-22T02:55:10.533Z"
   },
   {
     "id": "notif_1789690406549_d7s1f8ew0",
@@ -11784,13 +11785,14 @@
     "type": "matchmaking",
     "title": "Matchmaking — Semptiembe (Período 1)",
     "message": "Tu rival es TQMandreFN. Juega antes del 9/23/2026.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-18T00:13:26.549Z",
     "scheduledAt": "2026-09-18T00:13:26.549Z",
     "data": {
       "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
       "assignmentId": "c9c89ddd-fd41-41c9-a59a-1ffbcdbc5ed5"
-    }
+    },
+    "readAt": "2026-09-22T02:55:10.537Z"
   },
   {
     "id": "notif_1789690406549_ix5koykos",
@@ -12513,13 +12515,14 @@
     "type": "matchmaking",
     "title": "Matchmaking — Semptiembe (Período 1)",
     "message": "Tu rival es Adecty. Juega antes del 9/23/2026.",
-    "read": false,
+    "read": true,
     "createdAt": "2026-09-18T00:13:26.550Z",
     "scheduledAt": "2026-09-18T00:13:26.550Z",
     "data": {
       "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
       "assignmentId": "5e114e2c-f5c3-4774-9483-c5b878ee15f8"
-    }
+    },
+    "readAt": "2026-09-22T02:55:10.542Z"
   },
   {
     "id": "notif_1789690406550_ifw282rjv",
@@ -13234,6 +13237,63 @@
     "data": {
       "seasonId": "1bffa483-22d9-428e-b913-8f5dd38862a7",
       "assignmentId": "22ca8a7d-bcf5-471b-b38a-275f83926618"
+    }
+  },
+  {
+    "id": "notif_1790037460729_la9n03qd6",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "duel_challenge",
+    "title": "New Duel Challenge!",
+    "message": "Pollo has challenged you to a duel. Accept or decline in the Events section.",
+    "read": false,
+    "createdAt": "2026-09-22T00:37:40.729Z",
+    "scheduledAt": "2026-09-22T00:37:40.729Z",
+    "data": {
+      "duelId": "duel_1790037460723_ul0wpyzg1",
+      "challengerId": "gp_1787112745370_2zahvg8",
+      "type": "normal"
+    }
+  },
+  {
+    "id": "notif_1790037462699_f3ay6ktfc",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "duel_accepted",
+    "title": "Duel Accepted!",
+    "message": "ERNE accepted your duel challenge. Play and record the result before it expires.",
+    "read": false,
+    "createdAt": "2026-09-22T00:37:42.699Z",
+    "scheduledAt": "2026-09-22T00:37:42.699Z",
+    "data": {
+      "duelId": "duel_1790037460723_ul0wpyzg1",
+      "challengedId": "gp_1786420928315_91m6kmr"
+    }
+  },
+  {
+    "id": "notif_1790037462705_o0w015g64",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "Your duel is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-22T00:37:42.705Z",
+    "scheduledAt": "2026-09-26T00:37:42.696Z",
+    "data": {
+      "duelId": "duel_1790037460723_ul0wpyzg1",
+      "expiresAt": "2026-09-29T00:37:42.696Z"
+    }
+  },
+  {
+    "id": "notif_1790037462710_9ozojh2ga",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "duel_expiring",
+    "title": "Duel expiring soon",
+    "message": "A duel against you is expiring in less than 3 days. Make sure to record and confirm the match results.",
+    "read": false,
+    "createdAt": "2026-09-22T00:37:42.710Z",
+    "scheduledAt": "2026-09-26T00:37:42.696Z",
+    "data": {
+      "duelId": "duel_1790037460723_ul0wpyzg1",
+      "expiresAt": "2026-09-29T00:37:42.696Z"
     }
   }
 ]
