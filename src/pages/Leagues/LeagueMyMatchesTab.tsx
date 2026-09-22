@@ -77,7 +77,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
       <div key={match.id} className={`my-match-row ${isCompleted ? 'completed' : 'pending'}`}>
         <div className="my-match-opponent">
           <span className="my-match-vs">{t('league.schedule.vs')}</span>
-          <ParticipantName id={opponentId} name={getParticipant(opponentId)?.name ?? getParticipantName(opponentId)} alias={getParticipant(opponentId)?.alias} className="opponent-name" />
+          <ParticipantName id={opponentId} name={getParticipant(opponentId)?.name ?? getParticipantName(opponentId)} alias={getParticipant(opponentId)?.alias} className="opponent-name" gameId={league.gameId} />
         </div>
 
         {isCompleted ? (
@@ -205,7 +205,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
               <div className="remaining-opponents">
                 {remainingOpponents.map((pid) => (
                   <span key={pid} className="opponent-chip">
-                    <ParticipantName id={pid} name={getParticipant(pid)?.name ?? getParticipantName(pid)} alias={getParticipant(pid)?.alias} />
+                    <ParticipantName id={pid} name={getParticipant(pid)?.name ?? getParticipantName(pid)} alias={getParticipant(pid)?.alias} gameId={league.gameId} />
                   </span>
                 ))}
               </div>

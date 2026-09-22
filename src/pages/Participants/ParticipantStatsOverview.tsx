@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ParticipantStatsSummary } from '@/services/participants/participantService';
 import { GlobalParticipant } from '@/models/types';
-import { getCharacter, getGame, GAMES } from '@/data/games';
+import { getCharacter, getGame, GAMES, GAMES_MAP } from '@/data/games';
 import { getCharacterThumbUrl } from '@/utils/characterImage';
 import { gameBadgeStyle, gameAccent } from '@/utils/gameColor';
 import { getRankIcon, getRankColor, RANK_TIERS } from '@/utils/rank';
@@ -178,16 +178,18 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
 
   // ── Global game selector ────────────────────────────────────────────────────
 
-  // Build the list of games this participant actually has data for
+  // Games shown in the selector: enabled in the participant profile ∪ games
+  // with stats ∪ the requested gameFilter (a valid ?game= always displays)
   const availableGames = useMemo(() => {
-    if (!stats) return GAMES;
     const ids = new Set<string>();
-    stats.peakEloByGame.forEach((e) => ids.add(e.gameId));
-    stats.recordByGame?.forEach((r) => ids.add(r.gameId));
-    stats.characterUsage.forEach((c) => ids.add(c.gameId));
+    stats?.peakEloByGame.forEach((e) => ids.add(e.gameId));
+    stats?.recordByGame?.forEach((r) => ids.add(r.gameId));
+    stats?.characterUsage.forEach((c) => ids.add(c.gameId));
+    Object.keys(participant?.games ?? {}).forEach((g) => ids.add(g));
+    if (gameFilter && GAMES_MAP.has(gameFilter)) ids.add(gameFilter);
     if (ids.size === 0) GAMES.forEach((g) => ids.add(g.id));
     return GAMES.filter((g) => ids.has(g.id));
-  }, [stats]);
+  }, [stats, participant, gameFilter]);
 
   const primaryGameId = useMemo(() => {
     if (!participant || !stats) return availableGames[0]?.id ?? GAMES[0]?.id ?? '';
@@ -205,7 +207,8 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
   if (!stats || !participant) return null;
 
   // ── Derived data filtered by effectiveGame ──────────────────────────────────
-  const gameElo = stats.peakEloByGame.find((e) => e.gameId === effectiveGame) ?? stats.peakEloByGame[0] ?? null;
+  // No fallback to another game's ELO — a game without ranked data shows empty
+  const gameElo = stats.peakEloByGame.find((e) => e.gameId === effectiveGame) ?? null;
 
   // Progress within current tier toward next rank
   const eloTier = gameElo ? RANK_TIERS.find((t) => t.name === gameElo.rank) : null;
@@ -240,7 +243,10 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
   }, [gameRecord, stats.recordByGameLast6Months, effectiveGame, charTimeRange, summaryMatchType]);
   const hasCharacterData = charSource.length > 0;
 
-  const gameMains = stats.mainCharactersByGame[effectiveGame] ?? null;
+  const gameMains = stats.mainCharactersByGame[effectiveGame]
+    ?? (participant.games?.[effectiveGame]?.mainCharacterId
+      ? { id: participant.games[effectiveGame].mainCharacterId! }
+      : null);
   const gamePlacements = stats.topPlacementsByGame?.[effectiveGame] ?? { top1: 0, top3: 0, top8: 0, top16: 0 };
   const gameHighlights = useMemo(
     () => stats.tournamentHighlights.filter((h) => h.gameId === effectiveGame),

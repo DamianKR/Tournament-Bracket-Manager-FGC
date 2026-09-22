@@ -27,7 +27,7 @@ import { loadTournamentsForParticipantAsync } from '@/services/storage/localStor
 import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
 import { getAllMatches } from '@/services/ranking/rankingService';
 import { initials, avatarColor } from './ParticipantsPage';
-import { getCharacter, getGame, GAMES } from '@/data/games';
+import { getCharacter, getGame, GAMES, GAMES_MAP } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import { charsWithColorsFromGames, parseScoreString } from '@/utils/matchData';
@@ -107,12 +107,17 @@ function ParticipantProfile() {
       || '';
     if (declared) return declared;
     const ids = new Set<string>();
+    Object.keys(participant.games ?? {}).forEach((g) => ids.add(g));
     statsSummary?.peakEloByGame.forEach((e) => ids.add(e.gameId));
     statsSummary?.recordByGame?.forEach((r) => ids.add(r.gameId));
     statsSummary?.characterUsage.forEach((c) => ids.add(c.gameId));
     if (ids.size === 0) GAMES.forEach((g) => ids.add(g.id));
     const availableGames = GAMES.filter((g) => ids.has(g.id));
-    return statsSummary?.peakEloByGame[0]?.gameId || availableGames[0]?.id || GAMES[0]?.id || '';
+    return Object.keys(participant.games ?? {})[0]
+      || statsSummary?.peakEloByGame[0]?.gameId
+      || availableGames[0]?.id
+      || GAMES[0]?.id
+      || '';
   }, [participant, statsSummary]);
 
   const [h2hData, setH2hData] = useState<HeadToHeadEntry[]>([]);
@@ -337,6 +342,13 @@ function ParticipantProfile() {
     if (primaryGameId && !profileGame) setProfileGame(primaryGameId);
   }, [primaryGameId, profileGame]);
 
+  // Sync profileGame when ?game= changes externally (links, back/forward) —
+  // the component stays mounted across param changes on the same route
+  const urlGame = searchParams.get('game') ?? '';
+  useEffect(() => {
+    if (urlGame && urlGame !== profileGame) setProfileGame(urlGame);
+  }, [urlGame]);
+
   // Close game dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -521,6 +533,8 @@ function ParticipantProfile() {
       });
       setParticipant(updated);
       setStats(computeStats(updated));
+      // Refresh server-computed summary (drives Mains card / ELO chips)
+      getParticipantStats(participant.id).then(setStatsSummary).catch(() => {});
       setEditSuccess(true);
       toast.success(t('participantProfile.edit.success'));
       setTab('overview');
@@ -839,11 +853,14 @@ function ParticipantProfile() {
 
       {/* ── Per-tab game selector (same as Overview, only when relevant) ── */}
       {tab !== 'edit' && (() => {
-        if (!statsSummary) return null;
         const ids = new Set<string>();
-        statsSummary.peakEloByGame.forEach((e) => ids.add(e.gameId));
-        statsSummary.recordByGame?.forEach((r) => ids.add(r.gameId));
-        statsSummary.characterUsage.forEach((c) => ids.add(c.gameId));
+        statsSummary?.peakEloByGame.forEach((e) => ids.add(e.gameId));
+        statsSummary?.recordByGame?.forEach((r) => ids.add(r.gameId));
+        statsSummary?.characterUsage.forEach((c) => ids.add(c.gameId));
+        // Juegos habilitados del participant siempre salen — tengan stats o no
+        Object.keys(participant.games ?? {}).forEach((g) => ids.add(g));
+        // Un ?game= válido en la URL siempre se muestra como seleccionado
+        if (profileGame && GAMES_MAP.has(profileGame)) ids.add(profileGame);
         if (ids.size === 0) GAMES.forEach((g) => ids.add(g.id));
         const availableGames = GAMES.filter((g) => ids.has(g.id));
         if (availableGames.length <= 1) return null;
@@ -1048,7 +1065,7 @@ function ParticipantProfile() {
             timeFilter={h2hTimeFilter}
             onTimeFilterChange={setH2hTimeFilter}
             loading={loadingH2h}
-            onNavigateParticipant={(pid) => navigate(getPath(`participants/${pid}`))}
+            onNavigateParticipant={(pid) => navigate(getPath(`participants/${pid}?game=${profileGame || primaryGameId}`))}
           />
         )}
 
@@ -1183,7 +1200,7 @@ function ParticipantProfile() {
                             <span className="match-item-vs">{t('common.vs')}</span>
                             <span
                               className="match-item-opponent-name"
-                              onClick={() => navigate(getPath(`participants/${opponentId}`))}
+                              onClick={() => navigate(getPath(`participants/${opponentId}?game=${m.gameId || profileGame}`))}
                             >
                               <PlayerDisplay name={opponentName || t('tournament.bracket.unknown')} alias={opponentAlias} size="sm" />
                             </span>

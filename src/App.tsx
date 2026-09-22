@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CommunityProvider } from './contexts/CommunityContext';
 import { NotificationProvider } from './contexts/NotificationContext';
@@ -24,6 +25,16 @@ import CommunitiesPage from './pages/Communities/CommunitiesPage';
 import CommunityDashboard from './pages/CommunityDashboard/CommunityDashboard';
 import MembershipRequestsPage from './pages/MembershipRequests/MembershipRequestsPage';
 
+// React Router mantiene el scroll vertical entre páginas — reset al top en
+// cada cambio de pathname (solo pathname: ?game=/?tab= no deben saltar).
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   // En GitHub Pages el sitio vive en /Tournament-Bracket-Manager-FGC/.
   // Vite expone la base configurada como BASE_URL; BrowserRouter necesita
@@ -34,6 +45,7 @@ function App() {
 
   return (
     <BrowserRouter basename={basename}>
+      <ScrollToTop />
       <AuthProvider>
         <CommunityProvider>
           <NotificationProvider>

@@ -112,14 +112,14 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
 
                     <div className="match-players">
                       <div className={`match-player ${winner === match.participant1Id ? 'winner' : ''}`}>
-                        <ParticipantName id={match.participant1Id} name={getParticipant(match.participant1Id)?.name ?? getParticipantName(match.participant1Id)} alias={getParticipant(match.participant1Id)?.alias} className="match-player-name" />
+                        <ParticipantName id={match.participant1Id} name={getParticipant(match.participant1Id)?.name ?? getParticipantName(match.participant1Id)} alias={getParticipant(match.participant1Id)?.alias} className="match-player-name" gameId={league.gameId} />
                         {isNoShow && match.noShowParticipantId === match.participant1Id && (
                           <span className="no-show-tag">{t('league.schedule.noShowTag')}</span>
                         )}
                       </div>
                       <span className="match-vs">{t('league.schedule.vs')}</span>
                       <div className={`match-player ${winner === match.participant2Id ? 'winner' : ''}`}>
-                        <ParticipantName id={match.participant2Id} name={getParticipant(match.participant2Id)?.name ?? getParticipantName(match.participant2Id)} alias={getParticipant(match.participant2Id)?.alias} className="match-player-name" />
+                        <ParticipantName id={match.participant2Id} name={getParticipant(match.participant2Id)?.name ?? getParticipantName(match.participant2Id)} alias={getParticipant(match.participant2Id)?.alias} className="match-player-name" gameId={league.gameId} />
                         {isNoShow && match.noShowParticipantId === match.participant2Id && (
                           <span className="no-show-tag">{t('league.schedule.noShowTag')}</span>
                         )}

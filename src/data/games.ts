@@ -406,6 +406,37 @@ const SC6_CHARACTERS: Character[] = [
   sc6Char('zasalamel',   'Zasalamel',                   'Zasalamel'),
 ].sort((a, b) => a.name.localeCompare(b.name));
 
+// ── Skullgirls ─────────────────────────────────────────────────────────────
+// Full roster (18) — base cast + all DLC (2nd Encore + Season 1 Pass)
+
+const sgChar = (id: string, name: string, codename: string): Character => ({
+  id,
+  name,
+  imageUrl: `${ASSET_BASE}/sg/full/full_${codename}_0.png`,
+  imageIconUrl: `${ASSET_BASE}/sg/base_files/icon/icon_${codename}_0.png`,
+});
+
+const SG_CHARACTERS: Character[] = [
+  sgChar('annie',        'Annie of the Stars', 'Annie'),
+  sgChar('beowulf',      'Beowulf',            'Beowulf'),
+  sgChar('big_band',     'Big Band',           'BigBand'),
+  sgChar('black_dahlia', 'Black Dahlia',       'BlackDahlia'),
+  sgChar('cerebella',    'Cerebella',          'Cerebella'),
+  sgChar('double',       'Double',             'Double'),
+  sgChar('eliza',        'Eliza',              'Eliza'),
+  sgChar('filia',        'Filia',              'Filia'),
+  sgChar('fukua',        'Fukua',              'Fukua'),
+  sgChar('marie',        'Marie',              'Marie'),
+  sgChar('ms_fortune',   'Ms. Fortune',        'MsFortune'),
+  sgChar('painwheel',    'Painwheel',          'Painwheel'),
+  sgChar('parasoul',     'Parasoul',           'Parasoul'),
+  sgChar('peacock',      'Peacock',            'Peacock'),
+  sgChar('robo_fortune', 'Robo-Fortune',       'RoboFortune'),
+  sgChar('squigly',      'Squigly',            'Squigly'),
+  sgChar('umbrella',     'Umbrella',           'Umbrella'),
+  sgChar('valentine',    'Valentine',          'Valentine'),
+].sort((a, b) => a.name.localeCompare(b.name));
+
 // ── Game registry ──────────────────────────────────────────────────────────
 
 export const GAMES: Game[] = [
@@ -450,6 +481,13 @@ export const GAMES: Game[] = [
     shortName: 'SC6',
     color: '#0ea5e9', // Azul cian — Soul Calibur (espada de luz azul)
     characters: SC6_CHARACTERS,
+  },
+  {
+    id: 'sg',
+    name: 'Skullgirls 2nd Encore',
+    shortName: 'Skullgirls',
+    color: '#be123c', // Carmesí art déco — branding Skullgirls
+    characters: SG_CHARACTERS,
   },
 ];
 

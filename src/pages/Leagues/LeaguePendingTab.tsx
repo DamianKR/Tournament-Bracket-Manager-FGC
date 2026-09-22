@@ -244,6 +244,7 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
                       name={getParticipant(match.participant1Id)?.name ?? getParticipantName(match.participant1Id)}
                       alias={getParticipant(match.participant1Id)?.alias}
                       className="pending-player-name"
+                      gameId={league.gameId}
                     />
                     <span className="pending-vs">{t('league.schedule.vs')}</span>
                     <ParticipantName
@@ -251,6 +252,7 @@ function LeaguePendingTab({ league, matches, participants, onMatchUpdated }: Lea
                       name={getParticipant(match.participant2Id)?.name ?? getParticipantName(match.participant2Id)}
                       alias={getParticipant(match.participant2Id)?.alias}
                       className="pending-player-name"
+                      gameId={league.gameId}
                     />
                   </div>
                   <div className="pending-match-meta">

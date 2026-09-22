@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import NotificationBell from '@/components/Notifications/NotificationBell';
+import { GAMES } from '@/data/games';
+import { getParticipant } from '@/services/participants/participantService';
 import './Header.css';
 
 function Header() {
@@ -13,6 +15,25 @@ function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { currentCommunity, allCommunities, myParticipantId, canAdminCurrentCommunity, communityRole } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Juegos habilitados del participant en la comunidad activa — opciones del
+  // dropdown de perfil (cada una abre el perfil con ?game= preseleccionado)
+  const myParticipant = myParticipantId ? getParticipant(myParticipantId) : null;
+  const myGames = GAMES.filter((g) => myParticipant?.games?.[g.id]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    }
+    if (profileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [profileMenuOpen]);
 
   // La comunidad activa para navegación: la que se está viendo en el URL,
   // o la comunidad del usuario logueado, o ninguna.
@@ -167,14 +188,46 @@ function Header() {
           <div className="header-auth">
             {isAuthenticated ? (
               <div className="header-user-pill">
-                <span
-                  className={`header-username ${myParticipantId ? 'clickable' : ''}`}
-                  onClick={() => myParticipantId && handleNav(currentCommunity ? `/c/${currentCommunity.id}/participants/${myParticipantId}` : '/communities')}
-                  title={myParticipantId ? t('common.viewProfile') : user!.username}
-                >
-                  <i className="fas fa-user-circle" />
-                  <span className="header-username-text">{user!.username}</span>
-                </span>
+                <div className="header-profile-wrap" ref={profileMenuRef}>
+                  <span
+                    className={`header-username ${myParticipantId ? 'clickable' : ''}`}
+                    onClick={() => {
+                      if (!myParticipantId) return;
+                      if (myGames.length > 0) {
+                        setProfileMenuOpen((v) => !v);
+                      } else {
+                        handleNav(currentCommunity ? `/c/${currentCommunity.id}/participants/${myParticipantId}` : '/communities');
+                      }
+                    }}
+                    title={myParticipantId ? t('common.viewProfile') : user!.username}
+                  >
+                    <i className="fas fa-user-circle" />
+                    <span className="header-username-text">{user!.username}</span>
+                    {myParticipantId && myGames.length > 0 && (
+                      <i className={`fas fa-chevron-down header-username-caret ${profileMenuOpen ? 'up' : ''}`} />
+                    )}
+                  </span>
+                  {profileMenuOpen && myGames.length > 0 && (
+                    <div className="header-profile-menu">
+                      <div className="header-profile-menu-label">{t('header.profileGames')}</div>
+                      {myGames.map((g) => (
+                        <button
+                          key={g.id}
+                          className="header-profile-option"
+                          onClick={() => {
+                            setProfileMenuOpen(false);
+                            handleNav(currentCommunity ? `/c/${currentCommunity.id}/participants/${myParticipantId}?game=${g.id}` : '/communities');
+                          }}
+                        >
+                          <span className="header-profile-option-badge" style={{ background: g.color }}>
+                            {g.id.toUpperCase()}
+                          </span>
+                          <span>{g.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 {userCommunity && (
                   <span className="header-community-badge" title={t('common.memberOf', { name: userCommunity.name })}>
                     {userCommunity.shortName || userCommunity.name}

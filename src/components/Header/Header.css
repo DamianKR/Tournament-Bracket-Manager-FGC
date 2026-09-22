@@ -155,6 +155,99 @@
   color: #fff;
 }
 
+/* ── Profile game dropdown ─────────────────────────────────────────────── */
+.header-profile-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.header-username-caret {
+  font-size: 0.65rem;
+  transition: transform 0.15s;
+}
+
+.header-username-caret.up {
+  transform: rotate(180deg);
+}
+
+.header-profile-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.4rem;
+  background: linear-gradient(160deg, #241540 0%, #150b28 100%);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  z-index: 300;
+}
+
+.header-profile-menu-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 0.3rem 0.6rem 0.2rem;
+}
+
+.header-profile-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.45rem 0.6rem;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.header-profile-option:hover {
+  background: rgba(168, 85, 247, 0.28);
+}
+
+.header-profile-option-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 20px;
+  padding: 0 0.3rem;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+
+@media (max-width: 768px) {
+  /* El pill ocupa todo el ancho en el menú hamburguesa — centrar el
+     dropdown en pantalla en vez de anclarlo a la derecha del wrap */
+  .header-profile-menu {
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(280px, 88vw);
+    z-index: 400;
+  }
+}
+
 .header-role-badge,
 .header-community-badge {
   border-radius: 999px;
