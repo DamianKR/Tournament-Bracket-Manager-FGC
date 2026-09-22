@@ -100,7 +100,11 @@ router.post('/', requireAuth, async (req, res) => {
         return res.status(403).json({ error: 'Cannot modify a tournament outside your community scope' });
       }
       t.communityId = targetCommunityId;
-      t.totalParticipants = t.totalParticipants ?? t.participants?.length ?? prev?.participants?.length ?? 0;
+      t.totalParticipants = Math.max(
+        t.participants?.length ?? 0,
+        t.totalParticipants ?? 0,
+        prev?.participants?.length ?? 0
+      );
       // Solo admins pueden modificar torneos: community_admin de esa comunidad,
       // superadmin, o admin con el juego en su gameAdminFor.
       const tGameId = t.gameId ?? prev?.gameId ?? null;
@@ -168,7 +172,11 @@ router.put('/:id', requireAuth, async (req, res) => {
     }
 
     const existing = await tournaments.findById(req.params.id);
-    body.totalParticipants = body.totalParticipants ?? body.participants?.length ?? existing?.participants?.length ?? 0;
+    body.totalParticipants = Math.max(
+      body.participants?.length ?? 0,
+      body.totalParticipants ?? 0,
+      existing?.participants?.length ?? 0
+    );
 
     // Community scope: cannot modify/create a tournament outside your community
     const targetCommunityId = existing?.communityId || getTargetCommunityId(req.user, body.communityId);
