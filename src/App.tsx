@@ -23,6 +23,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
 import CommunitiesPage from './pages/Communities/CommunitiesPage';
 import CommunityDashboard from './pages/CommunityDashboard/CommunityDashboard';
+import CommunityAdminPage from './pages/CommunityAdmin/CommunityAdminPage';
 import MembershipRequestsPage from './pages/MembershipRequests/MembershipRequestsPage';
 
 // React Router mantiene el scroll vertical entre páginas — reset al top en
@@ -100,6 +101,11 @@ function App() {
 
                 {/* Ranking — público */}
                 <Route path="ranking" element={<RankingPage />} />
+
+                {/* Admin control — owners + admins sin scope (gate interno) */}
+                <Route path="admin" element={
+                  <ProtectedRoute><CommunityAdminPage /></ProtectedRoute>
+                } />
 
                 {/* Notifications — solo usuarios autenticados */}
                 <Route path="notifications" element={

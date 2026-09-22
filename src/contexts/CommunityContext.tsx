@@ -7,8 +7,9 @@
  * - Superadmins can switch the active community via setCommunityId.
  */
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
-import type { Community } from '@/models/community';
+import { createContext, useContext, useEffect, useState, useCallback, useMemo, ReactNode } from 'react';
+import type { Community, CommunityFeatures } from '@/models/community';
+import { GAMES, type Game } from '@/data/games';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAllCommunities } from '@/services/communities/communityService';
@@ -56,6 +57,10 @@ interface CommunityContextValue {
   isCommunityAdminHere: boolean;
   /** Juegos que administra en la comunidad activa (solo aplica a role 'admin'; [] = todos). */
   gameAdminForHere: string[];
+  /** true si el feature está habilitado en la comunidad activa (ausente = habilitado). */
+  isFeatureEnabled: (feature: keyof CommunityFeatures) => boolean;
+  /** Juegos habilitados en la comunidad activa (sin gameIds = todos). */
+  communityGames: Game[];
 }
 
 const CommunityContext = createContext<CommunityContextValue | null>(null);
@@ -126,6 +131,18 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
        (user?.communityId === currentCommunity.id ? user.participantId : null))
     : (user?.participantId ?? null);
 
+  const isFeatureEnabled = useCallback((feature: keyof CommunityFeatures): boolean => {
+    return currentCommunity?.features?.[feature] !== false;
+  }, [currentCommunity]);
+
+  const communityGames = useMemo(() => {
+    const ids = currentCommunity?.gameIds;
+    if (!ids || ids.length === 0) return GAMES;
+    const set = new Set(ids);
+    const filtered = GAMES.filter((g) => set.has(g.id));
+    return filtered.length > 0 ? filtered : GAMES;
+  }, [currentCommunity]);
+
   const value: CommunityContextValue = {
     currentCommunity,
     allCommunities,
@@ -139,6 +156,8 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     communityRole,
     isCommunityAdminHere,
     gameAdminForHere,
+    isFeatureEnabled,
+    communityGames,
   };
 
   return (

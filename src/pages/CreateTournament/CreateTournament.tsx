@@ -36,9 +36,10 @@ function CreateTournament() {
   const navigate = useNavigate();
   const toast = useToast();
   const { id } = useParams<{ id: string }>();
-  const { currentCommunity, getPath, canAdminGame } = useCommunity();
-  // Admin con gameAdminFor: solo puede crear torneos de SUS juegos
-  const creatableGames = GAMES.filter(g => canAdminGame(g.id));
+  const { currentCommunity, getPath, canAdminGame, communityGames } = useCommunity();
+  // Admin con gameAdminFor: solo puede crear torneos de SUS juegos.
+  // Además: solo juegos habilitados en la comunidad.
+  const creatableGames = communityGames.filter(g => canAdminGame(g.id));
   const [tournamentId, setTournamentId] = useState<string | null>(id || null);
   const [tournamentName, setTournamentName] = useState('');
   const [mode, setMode] = useState<TournamentMode>('double_elimination');

@@ -19,13 +19,21 @@ type MmSubTab = 'seasons' | 'info';
 
 function RankedTab() {
   const { t } = useTranslation();
-  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, myParticipantId } = useCommunity();
+  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, myParticipantId, isFeatureEnabled } = useCommunity();
   const isAdminHere = canAdminCurrentCommunity;
   const communityId = currentCommunity?.id;
+  const duelsEnabled = isFeatureEnabled('duels');
+  const matchmakingEnabled = isFeatureEnabled('matchmaking');
   const [searchParams] = useSearchParams();
   const [matchType, setMatchType] = useState<RankedMatchType>(
     () => (searchParams.get('sub') as RankedMatchType | null) ?? 'duel'
   );
+
+  // Si el módulo activo está deshabilitado en la comunidad → saltar al otro
+  useEffect(() => {
+    if (matchType === 'duel' && !duelsEnabled && matchmakingEnabled) setMatchType('matchmaking');
+    if (matchType === 'matchmaking' && !matchmakingEnabled && duelsEnabled) setMatchType('duel');
+  }, [matchType, duelsEnabled, matchmakingEnabled]);
   const [subTab, setSubTab] = useState<RankedSubTab>('challenges');
   const [settings, setSettings] = useState<DuelSettingsType>(DEFAULT_DUEL_SETTINGS);
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
@@ -64,21 +72,23 @@ function RankedTab() {
           <p className="text-secondary">{t('ranked.subtitle')}</p>
         </div>
         <div className="ranked-actions">
-          <select
-            value={matchType}
-            onChange={e => setMatchType(e.target.value as RankedMatchType)}
-            className="match-type-select"
-          >
-            <option value="duel">{t('ranked.duels')}</option>
-            <option value="matchmaking">{t('ranked.matchmaking')}</option>
-          </select>
+          {duelsEnabled && matchmakingEnabled && (
+            <select
+              value={matchType}
+              onChange={e => setMatchType(e.target.value as RankedMatchType)}
+              className="match-type-select"
+            >
+              <option value="duel">{t('ranked.duels')}</option>
+              <option value="matchmaking">{t('ranked.matchmaking')}</option>
+            </select>
+          )}
           {matchType === 'duel' && isAdminHere && (
             <DuelSettings settings={settings} onUpdate={handleUpdateSettings} />
           )}
         </div>
       </div>
 
-      {matchType === 'duel' && (
+      {matchType === 'duel' && duelsEnabled && (
         <>
           <div className="ranked-tabs">
             <button
@@ -122,7 +132,7 @@ function RankedTab() {
         </>
       )}
 
-      {matchType === 'matchmaking' && !mmAssignment && (
+      {matchType === 'matchmaking' && matchmakingEnabled && !mmAssignment && (
         <>
           <div className="ranked-tabs">
             <button

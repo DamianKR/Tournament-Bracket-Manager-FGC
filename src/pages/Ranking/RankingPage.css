@@ -551,6 +551,24 @@
   color: #fff;
 }
 
+.rk-history-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid;
+  background: rgba(255,255,255,0.06);
+}
+
+.rk-history-type i {
+  font-size: 0.6rem;
+}
+
 .rk-history-date {
   margin-left: auto;
   font-size: 0.78rem;

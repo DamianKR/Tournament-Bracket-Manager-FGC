@@ -568,9 +568,10 @@ export interface HeadToHeadEntry {
 export type H2HMatchType = 'all' | 'tournament' | 'league' | 'duel';
 export type H2HTimeFilter = 'all' | '6';
 
-export async function getHeadToHead(participantId: string, type: H2HMatchType = 'all', gameId: string = 'all', months: H2HTimeFilter = 'all'): Promise<HeadToHeadEntry[]> {
+export async function getHeadToHead(participantId: string, type: H2HMatchType = 'all', gameId: string = 'all', months: H2HTimeFilter = 'all', exclude: string[] = []): Promise<HeadToHeadEntry[]> {
   try {
     const params = new URLSearchParams({ type, gameId, months });
+    if (exclude.length > 0) params.set('exclude', exclude.join(','));
     const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/head-to-head?${params.toString()}`);
     if (!res.ok) throw new Error('Failed to fetch head-to-head');
     return await res.json();

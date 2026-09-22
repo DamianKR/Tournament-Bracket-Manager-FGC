@@ -684,6 +684,33 @@
     "pendingRequestsNotice": "Tienes solicitudes o invitaciones pendientes.",
     "viewRequests": "Ver solicitudes"
   },
+  "communityAdmin": {
+    "title": "Admin Control",
+    "loading": "Cargando comunidad…",
+    "deniedTitle": "Se requiere acceso de administrador",
+    "deniedDesc": "Solo los owners y admins sin scope pueden gestionar esta comunidad.",
+    "saved": "Configuración de comunidad guardada",
+    "noGames": "Habilita al menos un juego.",
+    "modulesTitle": "Módulos",
+    "modulesDesc": "Los módulos deshabilitados desaparecen de la navegación, tabs de eventos y opciones de disponibilidad del perfil.",
+    "modules": {
+      "tournaments": "Torneos",
+      "tournamentsDesc": "Brackets de single y double elimination",
+      "leagues": "Ligas",
+      "leaguesDesc": "Ligas semanales con standings y playoffs",
+      "duels": "Duelos",
+      "duelsDesc": "Retos rankeados 1v1 entre miembros",
+      "matchmaking": "Matchmaking",
+      "matchmakingDesc": "Temporadas con emparejamiento automático"
+    },
+    "gamesTitle": "Juegos habilitados",
+    "gamesDesc": "Juegos que ofrece la comunidad — filtran todos los selectores de juego (torneos, ligas, ranked, perfiles).",
+    "generalTitle": "General",
+    "visibilityDesc": "Las comunidades públicas son visibles para todos.",
+    "dangerTitle": "Zona de peligro",
+    "availabilityTitle": "Disponibilidad masiva",
+    "availabilityDesc": "Activa o desactiva la disponibilidad ranked/liga/torneo de todos los participantes de un juego."
+  },
   "communityDashboard": {
     "communityHome": "Home de la comunidad",
     "myCommunity": "Tu comunidad",

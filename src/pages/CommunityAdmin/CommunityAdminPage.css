@@ -1,0 +1,422 @@
+/* ── Community Admin Control ─────────────────────────────────────────────── */
+
+.admin-page {
+  min-height: calc(100vh - 88px);
+  padding-bottom: 3rem;
+}
+
+.admin-hero {
+  background: linear-gradient(135deg, #1a1030 0%, #2a1a4a 60%, #3b1d6e 100%);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.35);
+  box-shadow: 0 4px 24px rgba(91, 33, 182, 0.25);
+  margin-bottom: 2rem;
+}
+
+.admin-hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1.75rem;
+  padding-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-hero-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--border-radius);
+  background: rgba(168, 85, 247, 0.25);
+  border: 1px solid rgba(168, 85, 247, 0.55);
+  color: #c4b5fd;
+  font-size: 1.4rem;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.35);
+}
+
+.admin-hero-title h1 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.admin-hero-title p {
+  margin: 0.15rem 0 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.admin-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Sections ── */
+
+.admin-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.admin-section-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary, #1e1b2e);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.35rem;
+}
+
+.admin-section-title i {
+  color: var(--primary-color);
+}
+
+.admin-section-title::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.5), transparent);
+}
+
+.admin-section-desc {
+  margin: 0 0 1rem;
+  color: var(--text-muted, #64748b);
+  font-size: 0.85rem;
+}
+
+/* ── Module toggle cards ── */
+
+.admin-modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.admin-module-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 1rem 1.1rem;
+  background: var(--surface-color, #fff);
+  border: 1.5px solid var(--border-color, #e2e8f0);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.admin-module-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--mod-color);
+}
+
+.admin-module-card.on {
+  border-color: var(--mod-color);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mod-color) 22%, transparent);
+}
+
+.admin-module-card.off {
+  opacity: 0.65;
+  filter: saturate(0.4);
+}
+
+.admin-module-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius);
+  background: color-mix(in srgb, var(--mod-color) 15%, transparent);
+  color: var(--mod-color);
+  font-size: 1.1rem;
+}
+
+.admin-module-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-primary, #1e1b2e);
+}
+
+.admin-module-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+  line-height: 1.35;
+  min-height: 1.9em;
+}
+
+/* Toggle switch */
+
+.admin-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 42px;
+  height: 22px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background 0.18s;
+}
+
+.admin-toggle.on {
+  background: var(--mod-color);
+}
+
+.admin-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.18s;
+}
+
+.admin-toggle.on .admin-toggle-knob {
+  transform: translateX(20px);
+}
+
+/* ── Games grid ── */
+
+.admin-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.7rem;
+}
+
+.admin-game-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--surface-color, #fff);
+  border: 1.5px solid var(--border-color, #e2e8f0);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--text-primary, #1e1b2e);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.admin-game-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--mod-color);
+}
+
+.admin-game-card.on {
+  border-color: var(--mod-color);
+  box-shadow: 0 3px 12px color-mix(in srgb, var(--mod-color) 20%, transparent);
+}
+
+.admin-game-card.off {
+  opacity: 0.55;
+  filter: saturate(0.35);
+}
+
+.admin-game-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 22px;
+  padding: 0 0.35rem;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
+.admin-game-name {
+  flex: 1;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.admin-game-check {
+  color: var(--mod-color);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.admin-game-card.off .admin-game-check {
+  color: #cbd5e1;
+}
+
+/* ── General ── */
+
+.admin-general-card {
+  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  border-top: 3px solid var(--primary-color);
+}
+
+.admin-general-card .form-group {
+  margin: 0;
+}
+
+.admin-general-card .form-group label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 0.35rem;
+}
+
+.admin-general-card .form-group input,
+.admin-general-card .form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-secondary, #f8f7fc);
+  border: 1.5px solid var(--border-color, #e2e8f0);
+  border-radius: var(--border-radius);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.admin-general-card .form-group input:focus,
+.admin-general-card .form-group textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.admin-general-card textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.admin-field-wide {
+  grid-column: 1 / -1;
+}
+
+.admin-visibility-row {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
+.admin-visibility-card {
+  width: 100%;
+  max-width: 380px;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .admin-general-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Danger zone ── */
+
+.admin-danger-title i {
+  color: var(--danger-color, #ef4444);
+}
+
+.admin-danger-card {
+  padding: 1.25rem;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.04), transparent);
+}
+
+.admin-danger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-danger-desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted, #64748b);
+}
+
+/* ── Denied ── */
+
+.admin-denied {
+  margin-top: 3rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-denied i {
+  font-size: 2.2rem;
+  color: var(--primary-color);
+}
+
+.admin-denied h2 {
+  margin: 0;
+}
+
+.admin-denied p {
+  color: var(--text-muted, #64748b);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .admin-hero-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-save-btn {
+    justify-content: center;
+  }
+
+  .admin-modules-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-games-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-modules-grid {
+    grid-template-columns: 1fr;
+  }
+}

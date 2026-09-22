@@ -6,6 +6,7 @@ import { getCharacter, getGame, GAMES, GAMES_MAP } from '@/data/games';
 import { getCharacterThumbUrl } from '@/utils/characterImage';
 import { gameBadgeStyle, gameAccent } from '@/utils/gameColor';
 import { getRankIcon, getRankColor, RANK_TIERS } from '@/utils/rank';
+import { useCommunity } from '@/contexts/CommunityContext';
 import SectionTabs from '@/components/SectionTabs';
 import './ParticipantStatsOverview.css';
 
@@ -143,7 +144,19 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
   const [h2hTab, setH2hTab] = useState<H2HTab>('players');
   const [h2hPlayerFilter, setH2hPlayerFilter] = useState<string>('');
   const [charTimeRange, setCharTimeRange] = useState<'allTime' | 'last6Months'>('allTime');
+  const { isFeatureEnabled, communityGames } = useCommunity();
   const [summaryMatchType, setSummaryMatchType] = useState<MatchType>('all');
+
+  // Match-type tabs gated by community features (ranked = duels o matchmaking)
+  const matchTypeEnabled = (mt: MatchType): boolean => {
+    if (mt === 'tournament') return isFeatureEnabled('tournaments');
+    if (mt === 'ranked') return isFeatureEnabled('duels') || isFeatureEnabled('matchmaking');
+    if (mt === 'league') return isFeatureEnabled('leagues');
+    return true;
+  };
+  useEffect(() => {
+    if (!matchTypeEnabled(summaryMatchType)) setSummaryMatchType('all');
+  }, [summaryMatchType]);
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
@@ -187,9 +200,10 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
     stats?.characterUsage.forEach((c) => ids.add(c.gameId));
     Object.keys(participant?.games ?? {}).forEach((g) => ids.add(g));
     if (gameFilter && GAMES_MAP.has(gameFilter)) ids.add(gameFilter);
-    if (ids.size === 0) GAMES.forEach((g) => ids.add(g.id));
-    return GAMES.filter((g) => ids.has(g.id));
-  }, [stats, participant, gameFilter]);
+    if (ids.size === 0) communityGames.forEach((g) => ids.add(g.id));
+    const enabledIds = new Set(communityGames.map((g) => g.id));
+    return GAMES.filter((g) => ids.has(g.id) && (enabledIds.has(g.id) || g.id === gameFilter));
+  }, [stats, participant, gameFilter, communityGames]);
 
   const primaryGameId = useMemo(() => {
     if (!participant || !stats) return availableGames[0]?.id ?? GAMES[0]?.id ?? '';
@@ -414,12 +428,12 @@ function ParticipantStatsOverview({ stats, participant, gameFilter }: Participan
         <div className="summary-section-header">
           <h2 className="summary-section-title">{t('participantProfile.stats.summary', 'Summary')}</h2>
           <SectionTabs
-            options={[
+            options={([
               { value: 'all', label: t('participantProfile.stats.all') },
               { value: 'tournament', label: t('participantProfile.stats.tournament') },
               { value: 'ranked', label: t('participantProfile.stats.ranked') },
               { value: 'league', label: t('participantProfile.stats.league') },
-            ]}
+            ] as { value: MatchType; label: string }[]).filter((o) => matchTypeEnabled(o.value))}
             value={summaryMatchType}
             onChange={(v) => setSummaryMatchType(v as MatchType)}
           />

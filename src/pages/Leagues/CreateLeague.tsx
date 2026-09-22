@@ -15,10 +15,11 @@ function CreateLeague() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const toast = useToast();
-  const { currentCommunity, getPath, canAdminGame } = useCommunity();
+  const { currentCommunity, getPath, canAdminGame, communityGames } = useCommunity();
   const communityId = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
-  // Admin con gameAdminFor: solo puede crear ligas de SUS juegos
-  const creatableGames = GAMES.filter(g => canAdminGame(g.id));
+  // Admin con gameAdminFor: solo puede crear ligas de SUS juegos.
+  // Además: solo juegos habilitados en la comunidad.
+  const creatableGames = communityGames.filter(g => canAdminGame(g.id));
 
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());

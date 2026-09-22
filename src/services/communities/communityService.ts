@@ -4,7 +4,7 @@
  * Communicates with the Express API for community management.
  */
 
-import type { Community } from '@/models/community';
+import type { Community, CommunityFeatures } from '@/models/community';
 import { SERVER_URL } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
 
@@ -55,6 +55,30 @@ export async function updateCommunity(
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify({ name, shortName, description, isPublic }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error ?? `Failed to update community: ${res.status}`);
+  }
+  return res.json() as Promise<Community>;
+}
+
+/** Partial update — feature toggles, enabled games, general fields. */
+export async function updateCommunityFields(
+  id: string,
+  fields: {
+    name?: string;
+    shortName?: string;
+    description?: string;
+    isPublic?: boolean;
+    features?: CommunityFeatures;
+    gameIds?: string[];
+  }
+): Promise<Community> {
+  const res = await fetch(`${API_BASE}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(fields),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));

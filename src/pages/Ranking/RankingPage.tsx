@@ -33,13 +33,36 @@ type Tab = 'leaderboard' | 'history' | 'info';
 function RankingPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentCommunity, getPath, canAdminGame } = useCommunity();
+  const { currentCommunity, getPath, canAdminGame, communityGames, isFeatureEnabled } = useCommunity();
   const communityId = currentCommunity?.id;
+
+  // Ranked apagado por completo (duels + matchmaking) → el tab History desaparece
+  const rankedHistoryEnabled = isFeatureEnabled('duels') || isFeatureEnabled('matchmaking');
+  const rankedTypeEnabled = (type: string | undefined): boolean => {
+    if (type === 'duel') return isFeatureEnabled('duels');
+    if (type === 'matchmaking') return isFeatureEnabled('matchmaking');
+    return rankedHistoryEnabled; // free/legacy = módulo ranked en general
+  };
 
   function formatRank(rank: string | null | undefined) {
     if (!rank || rank === 'Sin puntos') return t('common.unranked');
     if (rank === 'Legend') return t('rankingInfo.rankLegend');
     return t(`rankingInfo.tierNames.${rank}`);
+  }
+
+  // Badge de tipo de match en el historial (duel / matchmaking / free)
+  function historyTypeBadge(type: string | undefined) {
+    const mt = type === 'duel' ? 'duel' : type === 'matchmaking' ? 'matchmaking' : 'free';
+    const icon = mt === 'duel' ? 'fa-khanda' : mt === 'matchmaking' ? 'fa-random' : 'fa-star';
+    const color = mt === 'duel' ? '#8b5cf6' : mt === 'matchmaking' ? '#22c55e' : '#94a3b8';
+    const label = mt === 'duel' ? t('history.duels')
+      : mt === 'matchmaking' ? t('history.matchmaking')
+      : t('participantProfile.matches.matchTypes.free', { defaultValue: 'Ranked' });
+    return (
+      <span className="rk-history-type" style={{ color, borderColor: color }}>
+        <i className={`fas ${icon}`} /> {label}
+      </span>
+    );
   }
 
   const [tab, setTab] = useState<Tab>('leaderboard');
@@ -54,6 +77,13 @@ function RankingPage() {
 
   // Game filter
   const [selectedGameId, setSelectedGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
+
+  // Si la comunidad deshabilita el juego seleccionado → saltar al primero habilitado
+  useEffect(() => {
+    if (selectedGameId !== 'all' && communityGames.length > 0 && !communityGames.some((g) => g.id === selectedGameId)) {
+      setSelectedGameId(communityGames[0].id);
+    }
+  }, [communityGames]);
   // Resets aplican al juego seleccionado — un admin de juegos solo puede resetear SUS juegos
   const canAdminSelectedGame = canAdminGame(selectedGameId === 'all' ? null : selectedGameId);
 
@@ -111,8 +141,9 @@ function RankingPage() {
   }, [loadLeaderboard, communityId]);
 
   useEffect(() => {
+    if (tab === 'history' && !rankedHistoryEnabled) setTab('leaderboard');
     if (tab === 'history') loadHistory();
-  }, [tab, loadHistory]);
+  }, [tab, loadHistory, rankedHistoryEnabled]);
 
 
 
@@ -220,18 +251,20 @@ function RankingPage() {
                   {t('ranking.allGames', { defaultValue: 'All games' })}
                 </option>
               )}
-              {GAMES.map((g) => (
+              {communityGames.map((g) => (
                 <option key={g.id} value={g.id} style={{ color: g.color, fontWeight: 700 }}>{g.name}</option>
               ))}
             </select>
           </div>
           <div className="rk-tabs">
-            <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => { setTab('leaderboard'); if (selectedGameId === 'all') setSelectedGameId(GAMES[0]?.id ?? 'ssbu'); }}>
+            <button className={`rk-tab ${tab === 'leaderboard' ? 'active' : ''}`} onClick={() => { setTab('leaderboard'); if (selectedGameId === 'all' || !communityGames.some((g) => g.id === selectedGameId)) setSelectedGameId(communityGames[0]?.id ?? 'ssbu'); }}>
               <i className="fas fa-trophy" /> {t('ranking.tabs.ranking')}
             </button>
-            <button className={`rk-tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
-              <i className="fas fa-list" /> {t('ranking.tabs.history')}
-            </button>
+            {rankedHistoryEnabled && (
+              <button className={`rk-tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
+                <i className="fas fa-list" /> {t('ranking.tabs.history')}
+              </button>
+            )}
             <button className={`rk-tab ${tab === 'info' ? 'active' : ''}`} onClick={() => setTab('info')}>
               <i className="fas fa-info-circle" /> {t('ranking.tabs.info')}
             </button>
@@ -339,7 +372,7 @@ function RankingPage() {
 
 
       {/* ── HISTORY TAB ── */}
-      {tab === 'history' && (
+      {tab === 'history' && rankedHistoryEnabled && (
         <div className="rk-section">
           <div className="rk-history-header">
             <PlayerDropdown
@@ -352,7 +385,7 @@ function RankingPage() {
 
           {loadingHistory && <Loading message={t('ranking.loadingHistory')} />}
 
-          {!loadingHistory && matchHistory.filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId).length === 0 && (
+          {!loadingHistory && matchHistory.filter(m => rankedTypeEnabled(m.type)).filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId).length === 0 && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-list" /></span>
               <p>{t('ranking.emptyNoMatches')}</p>
@@ -368,6 +401,8 @@ function RankingPage() {
                 playerARankBefore: string; playerBRankBefore: string;
                 playerARankAfter: string; playerBRankAfter: string;
               })[])
+                .filter(m => rankedTypeEnabled(m.type))
+                .filter(m => !m.gameId || communityGames.some((g) => g.id === m.gameId))
                 .filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId)
                 .map((m) => (
                 <div key={m.id} className="card rk-history-card">
@@ -377,6 +412,7 @@ function RankingPage() {
                         {m.gameId.toUpperCase()}
                       </span>
                     )}
+                    {historyTypeBadge(m.type)}
                     <span className="rk-history-date">{formatDate(m.createdAt)}</span>
                     {canAdminGame(m.gameId) && (
                       <button
