@@ -962,7 +962,7 @@ router.get('/:id/tournament-results', async (req, res) => {
         .filter((m) => m.bracketType === 'loser')
         .map((m) => m.roundNumber));
 
-      const totalEntrants = t.totalParticipants ?? t.participants?.length ?? 0;
+      const totalEntrants = Math.max(t.totalParticipants ?? 0, t.participants?.length ?? 0);
 
       // Build bracket ID→bracket entry map so we can grab bracketType by round/matchNumber
       const bracketEntryById = new Map();
@@ -1987,7 +1987,7 @@ router.get('/:id/stats', async (req, res) => {
           name: t.name,
           gameId: t.gameId || tournamentGameMap.get(t.id),
           placement: tp.finalPosition,
-          entrants: t.totalParticipants ?? t.participants?.length ?? 0,
+          entrants: Math.max(t.totalParticipants ?? 0, t.participants?.length ?? 0),
           date: t.createdAt,
         };
       })
