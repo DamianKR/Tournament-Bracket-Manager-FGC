@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GAMES } from '@/data/games';
 import { useCommunity } from '@/contexts/CommunityContext';
@@ -21,7 +21,7 @@ const ACTIVITIES: { id: Activity; icon: string }[] = [
 function ResetAvailabilityButton() {
   const { t } = useTranslation();
   const toast = useToast();
-  const { currentCommunity } = useCommunity();
+  const { currentCommunity, communityGames } = useCommunity();
   const communityId = currentCommunity?.id ?? '';
 
   const [show, setShow]           = useState(false);
@@ -31,6 +31,13 @@ function ResetAvailabilityButton() {
   const [applying, setApplying]   = useState(false);
 
   const isActivate = action === 'activate';
+
+  // Si la comunidad deshabilita el juego seleccionado → saltar al primero habilitado
+  useEffect(() => {
+    if (communityGames.length > 0 && !communityGames.some((g) => g.id === gameId)) {
+      setGameId(communityGames[0].id);
+    }
+  }, [communityGames]);
 
   function open(a: Action) {
     setAction(a);
@@ -100,7 +107,7 @@ function ResetAvailabilityButton() {
               <div className="form-group">
                 <label>{t('ranked.mm.modals.game')}</label>
                 <select className="form-control" value={gameId} onChange={(e) => setGameId(e.target.value)}>
-                  {GAMES.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+                  {communityGames.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
                 </select>
               </div>
               <div className="form-group">

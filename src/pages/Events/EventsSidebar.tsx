@@ -13,8 +13,10 @@ interface EventsSidebarProps {
 function EventsSidebar({ activeTab, onTabChange }: EventsSidebarProps) {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
-  const { getPath } = useCommunity();
+  const { getPath, isFeatureEnabled } = useCommunity();
   const navigate = useNavigate();
+
+  const rankedEnabled = isFeatureEnabled('duels') || isFeatureEnabled('matchmaking');
 
   function handleAuthTab(tab: EventTab) {
     if (!isAuthenticated) {
@@ -32,32 +34,38 @@ function EventsSidebar({ activeTab, onTabChange }: EventsSidebarProps) {
       </div>
 
       <nav className="events-sidebar-nav">
-        <button
-          className={`events-sidebar-item ${activeTab === 'tournaments' ? 'active' : ''}`}
-          onClick={() => onTabChange('tournaments')}
-        >
-          <i className="fas fa-trophy" />
-          <span>{t('events.tabs.tournaments')}</span>
-        </button>
+        {isFeatureEnabled('tournaments') && (
+          <button
+            className={`events-sidebar-item ${activeTab === 'tournaments' ? 'active' : ''}`}
+            onClick={() => onTabChange('tournaments')}
+          >
+            <i className="fas fa-trophy" />
+            <span>{t('events.tabs.tournaments')}</span>
+          </button>
+        )}
 
-        <button
-          className={`events-sidebar-item ${activeTab === 'leagues' ? 'active' : ''}`}
-          onClick={() => onTabChange('leagues')}
-        >
-          <i className="fas fa-shield-alt" />
-          <span>{t('events.tabs.leagues')}</span>
-        </button>
+        {isFeatureEnabled('leagues') && (
+          <button
+            className={`events-sidebar-item ${activeTab === 'leagues' ? 'active' : ''}`}
+            onClick={() => onTabChange('leagues')}
+          >
+            <i className="fas fa-shield-alt" />
+            <span>{t('events.tabs.leagues')}</span>
+          </button>
+        )}
 
         {/* Ranked e History solo para usuarios autenticados */}
-        <button
-          className={`events-sidebar-item ${activeTab === 'ranked' ? 'active' : ''} ${!isAuthenticated ? 'locked' : ''}`}
-          onClick={() => handleAuthTab('ranked')}
-          title={!isAuthenticated ? t('events.signInToAccess', { tab: t('events.tabs.ranked') }) : undefined}
-        >
-          <i className="fas fa-star" />
-          <span>{t('events.tabs.ranked')}</span>
-          {!isAuthenticated && <i className="fas fa-lock events-sidebar-lock" />}
-        </button>
+        {rankedEnabled && (
+          <button
+            className={`events-sidebar-item ${activeTab === 'ranked' ? 'active' : ''} ${!isAuthenticated ? 'locked' : ''}`}
+            onClick={() => handleAuthTab('ranked')}
+            title={!isAuthenticated ? t('events.signInToAccess', { tab: t('events.tabs.ranked') }) : undefined}
+          >
+            <i className="fas fa-star" />
+            <span>{t('events.tabs.ranked')}</span>
+            {!isAuthenticated && <i className="fas fa-lock events-sidebar-lock" />}
+          </button>
+        )}
 
         <button
           className={`events-sidebar-item ${activeTab === 'history' ? 'active' : ''} ${!isAuthenticated ? 'locked' : ''}`}

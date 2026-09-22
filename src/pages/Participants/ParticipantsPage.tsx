@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useToast } from '@/contexts/NotificationContext';
 import { GlobalParticipant, ComputedStats } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
-import { getCharacter, getGame, GAMES } from '@/data/games';
+import { getCharacter, getGame } from '@/data/games';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import {
   getAllParticipants,
@@ -38,7 +38,7 @@ function ParticipantsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const { user } = useAuth();
-  const { currentCommunity, getPath, isInMyCommunity, canAdminCurrentCommunity, communityRole, gameAdminForHere } = useCommunity();
+  const { currentCommunity, getPath, isInMyCommunity, canAdminCurrentCommunity, communityRole, gameAdminForHere, communityGames } = useCommunity();
   // Admin con gameAdminFor: solo gestiona participantes que compartan sus juegos
   const isScopedAdmin = communityRole === 'admin' && gameAdminForHere.length > 0;
   const communityIdForChecks = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
@@ -52,8 +52,8 @@ function ParticipantsPage() {
   };
   // Al crear un participante solo se pueden asignar los juegos que administra
   const creatableGames = isScopedAdmin
-    ? GAMES.filter(g => gameAdminForHere.includes(g.id))
-    : GAMES;
+    ? communityGames.filter(g => gameAdminForHere.includes(g.id))
+    : communityGames;
   // Editar: cualquier admin de la comunidad (respeta jerarquía, pero no juegos)
   const canEditParticipant = (p: GlobalParticipant): boolean => {
     if (!canAdminCurrentCommunity) return false;
@@ -458,7 +458,7 @@ function ParticipantsPage() {
             aria-label={t('common.game')}
           >
             <option value="all">{t('ranking.allGames')}</option>
-            {GAMES.map((g) => (
+            {communityGames.map((g) => (
               <option key={g.id} value={g.id} style={{ color: g.color, fontWeight: 700 }}>{g.name}</option>
             ))}
           </select>

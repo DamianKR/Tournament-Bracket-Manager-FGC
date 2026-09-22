@@ -14,7 +14,7 @@ import type { Community } from '@/models/community';
 import type { GlobalParticipant, Tournament } from '@/models/types';
 import type { League } from '@/models/league';
 import Loading from '@/components/Loading/Loading';
-import { isCommunityAdminOf } from '@/utils/membershipRole';
+import { isCommunityAdminOf, adminLevelOf } from '@/utils/membershipRole';
 import { useToast } from '@/contexts/NotificationContext';
 import './CommunityDashboard.css';
 
@@ -22,11 +22,13 @@ export default function CommunityDashboard() {
   const { communityId } = useParams<{ communityId: string }>();
   const { t } = useTranslation();
   const toast = useToast();
-  const { allCommunities, setCommunityId, refresh } = useCommunity();
+  const { allCommunities, setCommunityId, refresh, communityGames } = useCommunity();
   const { user } = useAuth();
   const [community, setCommunity] = useState<Community | null>(null);
   // Solo el owner de la comunidad (community_admin de ESTA comunidad) o superadmin pueden editarla
   const canEditCommunity = community != null && isCommunityAdminOf(user, community.id);
+  // Admin Control: owners, superadmin y admins sin scope (adminLevel >= 2)
+  const canAccessAdmin = community != null && adminLevelOf(user, community.id) >= 2;
   const [editOpen, setEditOpen] = useState(false);
   const [editName, setEditName] = useState('');
   const [editShort, setEditShort] = useState('');
@@ -139,12 +141,20 @@ export default function CommunityDashboard() {
               <> — <span className="cd-my-community">{t('communityDashboard.myCommunity')}</span></>
             )}
           </p>
-          {canEditCommunity && (
+          {(canEditCommunity || canAccessAdmin) && (
             <div className="cd-hero-actions">
-              <button className="cd-hero-edit-btn" onClick={openEdit}>
-                <i className="fas fa-edit" />
-                <span>{t('communityDashboard.editCommunity')}</span>
-              </button>
+              {canEditCommunity && (
+                <button className="cd-hero-edit-btn" onClick={openEdit}>
+                  <i className="fas fa-edit" />
+                  <span>{t('communityDashboard.editCommunity')}</span>
+                </button>
+              )}
+              {canAccessAdmin && (
+                <Link to={`/c/${community.id}/admin`} className="cd-hero-edit-btn cd-hero-admin-btn">
+                  <i className="fas fa-shield-halved" />
+                  <span>{t('communityAdmin.title', { defaultValue: 'Admin Control' })}</span>
+                </Link>
+              )}
             </div>
           )}
         </div>
@@ -331,7 +341,7 @@ export default function CommunityDashboard() {
                   value={topRankedGameId}
                   onChange={(e) => setTopRankedGameId(e.target.value)}
                 >
-                  {GAMES.map((g) => (
+                  {communityGames.map((g) => (
                     <option key={g.id} value={g.id}>{g.name}</option>
                   ))}
                 </select>

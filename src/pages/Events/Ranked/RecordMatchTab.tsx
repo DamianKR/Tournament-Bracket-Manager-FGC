@@ -636,9 +636,10 @@ function RecordMatchTab({ selectedChallengeId, mmAssignment, onMatchRecorded }: 
 
 function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticipants: GlobalParticipant[]; communityId?: string }) {
   const { t } = useTranslation();
-  const { canAdminGame } = useCommunity();
-  // Admin con gameAdminFor: solo puede registrar partidas de SUS juegos
-  const adminGames = GAMES.filter(g => canAdminGame(g.id));
+  const { canAdminGame, communityGames } = useCommunity();
+  // Admin con gameAdminFor: solo puede registrar partidas de SUS juegos.
+  // Además: solo juegos habilitados en la comunidad.
+  const adminGames = communityGames.filter(g => canAdminGame(g.id));
   const [playerAId, setPlayerAId] = useState('');
   const [playerBId, setPlayerBId] = useState('');
   const [gameId, setGameId] = useState<string>(adminGames[0]?.id ?? GAMES[0]?.id ?? 'ssbu');

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { League } from '@/models/league';
 import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
-import { getGame, GAMES } from '@/data/games';
+import { getGame } from '@/data/games';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getEffectiveCurrentWeek } from '@/utils/leagueWeek';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
@@ -13,7 +13,7 @@ import './LeaguesTab.css';
 function LeaguesTab() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentCommunity, getPath, canAdminCurrentCommunity, canAdminGame } = useCommunity();
+  const { currentCommunity, getPath, canAdminCurrentCommunity, canAdminGame, communityGames } = useCommunity();
   const communityId = currentCommunity?.id;
   const [leagues, setLeagues] = useState<League[]>([]);
   const [gameFilter, setGameFilter] = useState<string>('all');
@@ -63,7 +63,7 @@ function LeaguesTab() {
             aria-label={t('ranking.gameLabel')}
           >
             <option value="all">{t('ranking.allGames')}</option>
-            {GAMES.map((g) => (
+            {communityGames.map((g) => (
               <option key={g.id} value={g.id} style={{ color: g.color, fontWeight: 700 }}>{g.name}</option>
             ))}
           </select>

@@ -62,7 +62,7 @@ function ParticipantProfile() {
   const toast = useToast();
   const { id, communityId: urlCommunityId } = useParams<{ id: string; communityId: string }>();
   const navigate = useNavigate();
-  const { currentCommunity, allCommunities, getPath, canAdminCurrentCommunity, isCommunityAdminHere, gameAdminForHere, communityRole } = useCommunity();
+  const { currentCommunity, allCommunities, getPath, canAdminCurrentCommunity, isCommunityAdminHere, gameAdminForHere, communityRole, isFeatureEnabled, communityGames } = useCommunity();
   const communityId = urlCommunityId || currentCommunity?.id;
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, isAdmin, isSuperAdmin } = useAuth();
@@ -245,8 +245,11 @@ function ParticipantProfile() {
         setStatsSummary(ps);
         setEditName(p.name);
         setEditAlias(p.alias ?? '');
-        const games = Object.keys(p.games || {});
-        setEditGameIds(games.length > 0 ? games : (p.gameId ? [p.gameId] : []));
+        // Solo juegos habilitados en la comunidad entran al editor —
+        // los deshabilitados se limpian del perfil en el próximo save
+        const enabledGameIds = new Set(communityGames.map((g) => g.id));
+        const games = Object.keys(p.games || {}).filter((g) => enabledGameIds.has(g));
+        setEditGameIds(games.length > 0 ? games : (p.gameId && enabledGameIds.has(p.gameId) ? [p.gameId] : []));
         const mains: Record<string, string | null> = {};
         const avail: Record<string, { ranked: boolean; leagues: boolean; tournaments: boolean }> = {};
         for (const [g, prof] of Object.entries(p.games || {})) {
@@ -312,16 +315,41 @@ function ParticipantProfile() {
     }
   }, [tab, id]);
 
+  // Tipos deshabilitados por la comunidad — se excluyen de TODA agregación
+  // (H2H 'all', matches, stats) no solo de los chips de filtro
+  const disabledMatchTypes = useMemo(() => {
+    const out: string[] = [];
+    if (!isFeatureEnabled('tournaments')) out.push('tournament');
+    if (!isFeatureEnabled('leagues')) out.push('league');
+    const noRanked = !isFeatureEnabled('duels') && !isFeatureEnabled('matchmaking');
+    if (!isFeatureEnabled('duels')) out.push('duel');
+    if (!isFeatureEnabled('matchmaking')) out.push('matchmaking');
+    if (noRanked) out.push('ranked', 'free');
+    return out;
+  }, [isFeatureEnabled]);
+
+  // Si el tipo seleccionado en los filtros queda deshabilitado → volver a 'all'
+  useEffect(() => {
+    if (h2hMatchType === 'tournament' && !isFeatureEnabled('tournaments')) setH2hMatchType('all');
+    if (h2hMatchType === 'league' && !isFeatureEnabled('leagues')) setH2hMatchType('all');
+    if (h2hMatchType === 'duel' && !isFeatureEnabled('duels') && !isFeatureEnabled('matchmaking')) setH2hMatchType('all');
+    if (matchTypeFilter === 'tournament' && !isFeatureEnabled('tournaments')) setMatchTypeFilter('all');
+    if (matchTypeFilter === 'league' && !isFeatureEnabled('leagues')) setMatchTypeFilter('all');
+    if (matchTypeFilter === 'duel' && !isFeatureEnabled('duels') && !isFeatureEnabled('matchmaking')) setMatchTypeFilter('all');
+    if (resultsSubTab === 'tournaments' && !isFeatureEnabled('tournaments')) setResultsSubTab('leagues');
+    if (resultsSubTab === 'leagues' && !isFeatureEnabled('leagues')) setResultsSubTab('tournaments');
+  }, [isFeatureEnabled, h2hMatchType, matchTypeFilter, resultsSubTab]);
+
   // Load head-to-head data when H2H tab is opened or filter changes
   useEffect(() => {
     if (tab === 'h2h' && id && !loadingH2h) {
       setLoadingH2h(true);
-      getHeadToHead(id, h2hMatchType, profileGame, h2hTimeFilter).then((data) => {
+      getHeadToHead(id, h2hMatchType, profileGame, h2hTimeFilter, disabledMatchTypes).then((data) => {
         setH2hData(data);
         setLoadingH2h(false);
       });
     }
-  }, [tab, id, h2hMatchType, profileGame, h2hTimeFilter]);
+  }, [tab, id, h2hMatchType, profileGame, h2hTimeFilter, disabledMatchTypes]);
 
   // Load linked user account (admin only)
   useEffect(() => {
@@ -520,14 +548,27 @@ function ParticipantProfile() {
     if (!participant) return;
     setSaving(true); setEditError(''); setEditSuccess(false);
     try {
+      // Juegos deshabilitados a nivel comunidad se eliminan del perfil al guardar
+      const enabledSet = new Set(communityGames.map((g) => g.id));
+      const cleanGameIds = editGameIds.filter((id) => enabledSet.has(id));
+      const cleanMains = Object.fromEntries(
+        Object.entries(editGameMainChars).filter(([g]) => enabledSet.has(g))
+      );
+      const cleanAvailability = Object.fromEntries(
+        Object.entries(editGameAvailability).filter(([g]) => enabledSet.has(g))
+      );
+      const cleanPrimary = editPrimaryGameId && enabledSet.has(editPrimaryGameId)
+        ? editPrimaryGameId
+        : cleanGameIds[0] ?? null;
+
       const updated = await updateParticipant(participant.id, {
         name: editName,
         alias: editAlias,
-        gameIds: editGameIds,
+        gameIds: cleanGameIds,
         // Un admin scopenado no puede cambiar el default game del participante
-        ...(!isScopedAdmin ? { primaryGameId: editPrimaryGameId } : {}),
-        gameMainCharacters: editGameMainChars,
-        gameAvailability: editGameAvailability,
+        ...(!isScopedAdmin ? { primaryGameId: cleanPrimary } : {}),
+        gameMainCharacters: cleanMains,
+        gameAvailability: cleanAvailability,
         phoneNumber: editPhone || null,
         avatarUrl: editAvatarUrl,
       });
@@ -585,12 +626,15 @@ function ParticipantProfile() {
       const currentRoleHere = communityRoleOf(linkedUser, communityId) ?? 'user';
       const currentGamesHere = gameAdminForOf(linkedUser, communityId);
       const roleChanged = admRole !== currentRoleHere;
+      // Scope de admin limitado a juegos habilitados en la comunidad
+      const enabledGameIds = new Set(communityGames.map((g) => g.id));
+      const cleanAdmGames = admGames.filter((g) => enabledGameIds.has(g));
       const gamesChanged = admRole === 'admin' &&
-        JSON.stringify([...admGames].sort()) !== JSON.stringify([...currentGamesHere].sort());
+        JSON.stringify([...cleanAdmGames].sort()) !== JSON.stringify([...currentGamesHere].sort());
 
       if (roleChanged) updates.role = admRole as AuthUser['role'];
       if (roleChanged || gamesChanged) {
-        if (admRole === 'admin') updates.gameAdminFor = admGames;
+        if (admRole === 'admin') updates.gameAdminFor = cleanAdmGames;
         else if (admRole !== 'superadmin') updates.gameAdminFor = [];
       }
       if ((roleChanged || gamesChanged) && admRole !== 'superadmin' && communityId) {
@@ -861,8 +905,9 @@ function ParticipantProfile() {
         Object.keys(participant.games ?? {}).forEach((g) => ids.add(g));
         // Un ?game= válido en la URL siempre se muestra como seleccionado
         if (profileGame && GAMES_MAP.has(profileGame)) ids.add(profileGame);
-        if (ids.size === 0) GAMES.forEach((g) => ids.add(g.id));
-        const availableGames = GAMES.filter((g) => ids.has(g.id));
+        if (ids.size === 0) communityGames.forEach((g) => ids.add(g.id));
+        const enabledIds = new Set(communityGames.map((g) => g.id));
+        const availableGames = GAMES.filter((g) => ids.has(g.id) && (enabledIds.has(g.id) || g.id === profileGame));
         if (availableGames.length <= 1) return null;
 
         const selectedGame = availableGames.find((g) => g.id === profileGame) || availableGames[0];
@@ -1016,21 +1061,25 @@ function ParticipantProfile() {
           <div className="results-tab">
             {/* Sub-tabs */}
             <div className="card results-subtab-bar">
-              <button
-                className={`results-subtab ${resultsSubTab === 'tournaments' ? 'active' : ''}`}
-                onClick={() => setResultsSubTab('tournaments')}
-              >
-                <i className="fas fa-trophy" /> {t('participantProfile.results.tournamentsTab', { count: tournamentResults.length })}
-              </button>
-              <button
-                className={`results-subtab ${resultsSubTab === 'leagues' ? 'active' : ''}`}
-                onClick={() => setResultsSubTab('leagues')}
-              >
-                <i className="fas fa-shield-alt" /> {t('participantProfile.results.leaguesTab', { count: completedLeagues.length })}
-              </button>
+              {isFeatureEnabled('tournaments') && (
+                <button
+                  className={`results-subtab ${resultsSubTab === 'tournaments' ? 'active' : ''}`}
+                  onClick={() => setResultsSubTab('tournaments')}
+                >
+                  <i className="fas fa-trophy" /> {t('participantProfile.results.tournamentsTab', { count: tournamentResults.length })}
+                </button>
+              )}
+              {isFeatureEnabled('leagues') && (
+                <button
+                  className={`results-subtab ${resultsSubTab === 'leagues' ? 'active' : ''}`}
+                  onClick={() => setResultsSubTab('leagues')}
+                >
+                  <i className="fas fa-shield-alt" /> {t('participantProfile.results.leaguesTab', { count: completedLeagues.length })}
+                </button>
+              )}
             </div>
 
-            {resultsSubTab === 'tournaments' && (
+            {resultsSubTab === 'tournaments' && isFeatureEnabled('tournaments') && (
               <div className="card results-panel">
                 {loadingTournamentResults ? (
                   <div className="tr-empty">
@@ -1045,7 +1094,7 @@ function ParticipantProfile() {
               </div>
             )}
 
-            {resultsSubTab === 'leagues' && (
+            {resultsSubTab === 'leagues' && isFeatureEnabled('leagues') && (
               <div className="card results-panel">
                 <ParticipantLeagueResults
                   results={profileGame ? completedLeagues.filter((l) => !l.gameId || l.gameId === profileGame) : completedLeagues}
@@ -1084,24 +1133,30 @@ function ParticipantProfile() {
                   >
                     {t('participantProfile.matches.all')}
                   </button>
-                  <button
-                    className={`filter-btn ${matchTypeFilter === 'tournament' ? 'active' : ''}`}
-                    onClick={() => setMatchTypeFilter('tournament')}
-                  >
-                    <i className="fas fa-trophy" /> {t('participantProfile.matches.tournament')}
-                  </button>
-                  <button
-                    className={`filter-btn ${matchTypeFilter === 'league' ? 'active' : ''}`}
-                    onClick={() => setMatchTypeFilter('league')}
-                  >
-                    <i className="fas fa-calendar-alt" /> {t('participantProfile.matches.league')}
-                  </button>
-                  <button
-                    className={`filter-btn ${matchTypeFilter === 'duel' ? 'active' : ''}`}
-                    onClick={() => setMatchTypeFilter('duel')}
-                  >
-                    <i className="fas fa-khanda" /> {t('participantProfile.matches.duel')}
-                  </button>
+                  {isFeatureEnabled('tournaments') && (
+                    <button
+                      className={`filter-btn ${matchTypeFilter === 'tournament' ? 'active' : ''}`}
+                      onClick={() => setMatchTypeFilter('tournament')}
+                    >
+                      <i className="fas fa-trophy" /> {t('participantProfile.matches.tournament')}
+                    </button>
+                  )}
+                  {isFeatureEnabled('leagues') && (
+                    <button
+                      className={`filter-btn ${matchTypeFilter === 'league' ? 'active' : ''}`}
+                      onClick={() => setMatchTypeFilter('league')}
+                    >
+                      <i className="fas fa-calendar-alt" /> {t('participantProfile.matches.league')}
+                    </button>
+                  )}
+                  {(isFeatureEnabled('duels') || isFeatureEnabled('matchmaking')) && (
+                    <button
+                      className={`filter-btn ${matchTypeFilter === 'duel' ? 'active' : ''}`}
+                      onClick={() => setMatchTypeFilter('duel')}
+                    >
+                      <i className="fas fa-khanda" /> {t('participantProfile.matches.duel')}
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -1135,7 +1190,10 @@ function ParticipantProfile() {
             {loadingMatches && <Loading message={t('participantProfile.matches.loading')} />}
 
             {!loadingMatches && (() => {
+              const enabledGameIds = new Set(communityGames.map((g) => g.id));
               const filtered = allMatches.filter(m => {
+                if (disabledMatchTypes.includes(m.type ?? '')) return false;
+                if (m.gameId && !enabledGameIds.has(m.gameId)) return false;
                 const typeMatch = matchTypeFilter === 'all' || m.type === matchTypeFilter;
                 const resultMatch = matchResultFilter === 'all' 
                   || (matchResultFilter === 'wins' && m.winnerId === id)
@@ -1302,7 +1360,7 @@ function ParticipantProfile() {
             </div>
             <div className="profile-game-list">
               <h4>{t('participantProfile.edit.games')}</h4>
-              {GAMES.map((g) => {
+              {communityGames.map((g) => {
                 const outOfScope = isScopedAdmin && !gameAdminForHere.includes(g.id);
                 return (
                 <div key={g.id} className="profile-game-row" style={outOfScope ? { opacity: 0.45 } : undefined}
@@ -1331,10 +1389,10 @@ function ParticipantProfile() {
                       </select>
                       <div className="activity-toggles">
                         {([
-                          { key: 'ranked',      icon: 'fa-khanda' },
-                          { key: 'leagues',     icon: 'fa-calendar-week' },
-                          { key: 'tournaments', icon: 'fa-trophy' },
-                        ] as const).map(({ key, icon }) => {
+                          { key: 'ranked',      icon: 'fa-khanda',     enabled: isFeatureEnabled('duels') || isFeatureEnabled('matchmaking') },
+                          { key: 'leagues',     icon: 'fa-calendar-week', enabled: isFeatureEnabled('leagues') },
+                          { key: 'tournaments', icon: 'fa-trophy',     enabled: isFeatureEnabled('tournaments') },
+                        ] as const).filter((a) => a.enabled).map(({ key, icon }) => {
                           const on = editGameAvailability[g.id]?.[key] !== false;
                           return (
                             <label
@@ -1484,7 +1542,7 @@ function ParticipantProfile() {
                         <div className="form-group game-admin-scope">
                           <label>{t('participantProfile.edit.gameAdminScopeLabel', { defaultValue: 'Juegos que puede administrar (vacío = todos)' })}</label>
                           <div className="game-admin-games">
-                            {GAMES.map(g => {
+                            {communityGames.map(g => {
                               const active = admGames.includes(g.id);
                               return (
                                 <label

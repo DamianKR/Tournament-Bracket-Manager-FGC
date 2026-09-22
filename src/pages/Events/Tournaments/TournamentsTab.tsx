@@ -7,7 +7,7 @@ import { loadTournamentsAsync, saveTournaments } from '@/services/storage/localS
 
 import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
-import { getGame, GAMES } from '@/data/games';
+import { getGame } from '@/data/games';
 
 import './TournamentsTab.css';
 
@@ -17,7 +17,7 @@ function TournamentsTab() {
   const [gameFilter, setGameFilter] = useState<string>('all');
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const navigate = useNavigate();
-  const { currentCommunity, getPath, canAdminCurrentCommunity, canAdminGame } = useCommunity();
+  const { currentCommunity, getPath, canAdminCurrentCommunity, canAdminGame, communityGames } = useCommunity();
   const communityId = currentCommunity?.id;
 
   useEffect(() => {
@@ -108,7 +108,7 @@ function TournamentsTab() {
             aria-label={t('ranking.gameLabel')}
           >
             <option value="all">{t('ranking.allGames')}</option>
-            {GAMES.map((g) => (
+            {communityGames.map((g) => (
               <option key={g.id} value={g.id} style={{ color: g.color, fontWeight: 700 }}>{g.name}</option>
             ))}
           </select>

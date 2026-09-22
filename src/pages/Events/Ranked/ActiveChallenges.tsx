@@ -30,14 +30,15 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const { t } = useTranslation();
   const toast = useToast();
   const { user } = useAuth();
-  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, canAdminGame, myParticipantId, communityRole, gameAdminForHere } = useCommunity();
+  const { currentCommunity, isInMyCommunity, canAdminCurrentCommunity, canAdminGame, myParticipantId, communityRole, gameAdminForHere, communityGames } = useCommunity();
   const communityId = currentCommunity?.id;
 
   // User belongs to this community (or is superadmin)
   const isAdminHere = canAdminCurrentCommunity;
-  // Admin con gameAdminFor EN esta comunidad: solo puede crear duelos de SUS juegos
+  // Admin con gameAdminFor EN esta comunidad: solo puede crear duelos de SUS juegos.
+  // Además: solo juegos habilitados en la comunidad.
   const isScopedAdmin = communityRole === 'admin' && gameAdminForHere.length > 0;
-  const creatableGames = isScopedAdmin ? GAMES.filter(g => canAdminGame(g.id)) : GAMES;
+  const creatableGames = isScopedAdmin ? communityGames.filter(g => canAdminGame(g.id)) : communityGames;
   // Regular participant in this community can create/accept challenges
   const canInteract = isInMyCommunity && user != null;
   const [allChallenges, setAllChallenges] = useState<DuelChallenge[]>([]);
@@ -185,7 +186,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
           onChange={(e) => setFilterGameId(e.target.value || null)}
         >
           <option value="">{t('ranked.challenges.allGames')}</option>
-          {GAMES.map((g) => (
+          {communityGames.map((g) => (
             <option key={g.id} value={g.id}>{g.id.toUpperCase()}</option>
           ))}
         </select>

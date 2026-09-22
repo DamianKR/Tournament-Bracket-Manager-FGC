@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import NotificationBell from '@/components/Notifications/NotificationBell';
-import { GAMES } from '@/data/games';
 import { getParticipant } from '@/services/participants/participantService';
 import './Header.css';
 
@@ -13,7 +12,7 @@ function Header() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
-  const { currentCommunity, allCommunities, myParticipantId, canAdminCurrentCommunity, communityRole } = useCommunity();
+  const { currentCommunity, allCommunities, myParticipantId, canAdminCurrentCommunity, communityRole, communityGames } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -21,7 +20,7 @@ function Header() {
   // Juegos habilitados del participant en la comunidad activa — opciones del
   // dropdown de perfil (cada una abre el perfil con ?game= preseleccionado)
   const myParticipant = myParticipantId ? getParticipant(myParticipantId) : null;
-  const myGames = GAMES.filter((g) => myParticipant?.games?.[g.id]);
+  const myGames = communityGames.filter((g) => myParticipant?.games?.[g.id]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

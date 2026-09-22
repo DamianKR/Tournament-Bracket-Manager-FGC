@@ -6,6 +6,7 @@ import type { ColoredChar } from '@/utils/matchData';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import type { HeadToHeadEntry, H2HMatchType, H2HTimeFilter } from '@/services/participants/participantService';
+import { useCommunity } from '@/contexts/CommunityContext';
 import './ParticipantH2H.css';
 
 type H2HSubTab = 'participants' | 'characters';
@@ -226,6 +227,7 @@ export default function ParticipantH2H({
   onNavigateParticipant,
 }: Props) {
   const { t } = useTranslation();
+  const { isFeatureEnabled } = useCommunity();
   const [subTab, setSubTab] = useState<H2HSubTab>('participants');
   const [myCharFilter, setMyCharFilter] = useState<string>('');
   const [oppCharFilter, setOppCharFilter] = useState<string>('');
@@ -271,7 +273,12 @@ export default function ParticipantH2H({
           <div className="h2h-filter-block h2h-filter-block--match-type">
             <span className="h2h-filter-label">{t('participantProfile.h2h.matchType', 'Match type')}</span>
             <div className="h2h-event-tabs">
-              {(['all', 'tournament', 'league', 'duel'] as H2HMatchType[]).map((mt) => (
+              {(['all', 'tournament', 'league', 'duel'] as H2HMatchType[])
+                .filter((mt) => mt === 'all' ||
+                  (mt === 'tournament' && isFeatureEnabled('tournaments')) ||
+                  (mt === 'league' && isFeatureEnabled('leagues')) ||
+                  (mt === 'duel' && (isFeatureEnabled('duels') || isFeatureEnabled('matchmaking'))))
+                .map((mt) => (
                 <button
                   key={mt}
                   className={`h2h-event-tab ${matchType === mt ? 'active' : ''}`}

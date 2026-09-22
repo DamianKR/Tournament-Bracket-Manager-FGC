@@ -1159,6 +1159,7 @@ router.get('/:id/head-to-head', async (req, res) => {
         matchId: m.id,
         date: m.createdAt || m.updatedAt,
         type: m.type === 'duel' ? 'duel' : 'ranked',
+        rawType: m.type || 'ranked',
         phase: null,
         contextName: m.type === 'duel' ? 'Duel' : 'Ranked',
         gameId: m.gameId || null,
@@ -1235,9 +1236,16 @@ router.get('/:id/head-to-head', async (req, res) => {
       ? new Date(Date.now() - monthsBack * 30 * 24 * 60 * 60 * 1000).toISOString()
       : null;
 
+    // exclude=<csv> — tipos deshabilitados por la comunidad que no deben
+    // contarse ni siquiera en la agregación 'all' (matchea type y rawType).
+    const excludeSet = new Set(
+      String(req.query.exclude ?? '').split(',').map((x) => x.trim()).filter(Boolean)
+    );
+
     const filteredSets = (!typeFilter || typeFilter === 'all'
       ? sets
       : sets.filter((s) => s.type === typeFilter || (typeFilter === 'duel' && (s.type === 'ranked' || s.type === 'duel'))))
+      .filter((s) => !excludeSet.has(s.type) && !excludeSet.has(s.rawType))
       .filter((s) => !gameFilter || gameFilter === 'all' || (s.gameId || 'ssbu') === gameFilter)
       .filter((s) => !cutoffDate || (s.date && s.date >= cutoffDate));
 
@@ -1478,9 +1486,21 @@ router.get('/:id/stats', async (req, res) => {
     const tournamentGameMap = new Map(allTournaments.map((t) => [t.id, t.gameId]));
     const leagueGameMap = new Map(allLeagues.map((l) => [l.id, l.gameId]));
 
-    const tMatches = [...p1T, ...p2T];
-    const rMatches = [...p1R, ...p2R];
-    const lMatches = [...p1L, ...p2L];
+    // Community feature flags — un módulo deshabilitado excluye sus matches
+    // de TODAS las agregaciones (records, H2H, placements, highlights).
+    const statsCommunity = p.communityId ? await communities.findById(p.communityId) : null;
+    const feats = statsCommunity?.features ?? {};
+    const rankedFullyOff = feats.duels === false && feats.matchmaking === false;
+    const rankTypeOk = (m) => {
+      const rt = m.type || 'free';
+      if (rt === 'duel') return feats.duels !== false;
+      if (rt === 'matchmaking') return feats.matchmaking !== false;
+      return !rankedFullyOff; // 'free'/legacy = ranked umbrella
+    };
+
+    const tMatches = feats.tournaments === false ? [] : [...p1T, ...p2T];
+    const rMatches = [...p1R, ...p2R].filter(rankTypeOk);
+    const lMatches = feats.leagues === false ? [] : [...p1L, ...p2L];
 
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -1978,7 +1998,7 @@ router.get('/:id/stats', async (req, res) => {
       ? Math.round((stats.allMatchWinsLast6Months / (stats.allMatchWinsLast6Months + stats.allMatchLossesLast6Months)) * 100)
       : 0;
 
-    const tournamentHighlights = allTournaments
+    const tournamentHighlights = (feats.tournaments === false ? [] : allTournaments)
       .map((t) => {
         const tp = t.participants?.find((p) => p.globalParticipantId === participantId);
         if (!tp || !tp.finalPosition) return null;

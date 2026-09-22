@@ -684,6 +684,33 @@
     "pendingRequestsNotice": "You have pending requests or invites.",
     "viewRequests": "View requests"
   },
+  "communityAdmin": {
+    "title": "Admin Control",
+    "loading": "Loading community…",
+    "deniedTitle": "Admin access required",
+    "deniedDesc": "Only community owners and unscoped admins can manage this community.",
+    "saved": "Community settings saved",
+    "noGames": "Enable at least one game.",
+    "modulesTitle": "Modules",
+    "modulesDesc": "Disabled modules disappear from navigation, event tabs and profile availability options.",
+    "modules": {
+      "tournaments": "Tournaments",
+      "tournamentsDesc": "Single and double elimination brackets",
+      "leagues": "Leagues",
+      "leaguesDesc": "Weekly leagues with standings and playoffs",
+      "duels": "Duels",
+      "duelsDesc": "Ranked 1v1 challenges between members",
+      "matchmaking": "Matchmaking",
+      "matchmakingDesc": "Seasons with automatic match pairing"
+    },
+    "gamesTitle": "Enabled games",
+    "gamesDesc": "Games offered by this community — they filter every game selector (tournaments, leagues, ranked, profiles).",
+    "generalTitle": "General",
+    "visibilityDesc": "Public communities are visible to everyone.",
+    "dangerTitle": "Danger zone",
+    "availabilityTitle": "Mass availability",
+    "availabilityDesc": "Activate or deactivate ranked/league/tournament availability for every participant of a game."
+  },
   "communityDashboard": {
     "communityHome": "Community home",
     "myCommunity": "Your community",

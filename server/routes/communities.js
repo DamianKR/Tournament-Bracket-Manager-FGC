@@ -11,7 +11,7 @@ import { randomUUID } from 'crypto';
 import { communities } from '../db/collections.js';
 import { communityShape, validateCommunity } from '../models/community.js';
 import { requireAuth, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { isInUserScope, isCommunityAdmin } from '../utils/communityScope.js';
+import { isInUserScope, isCommunityAdmin, adminLevelInCommunity } from '../utils/communityScope.js';
 
 const router = Router();
 
@@ -85,16 +85,15 @@ router.post('/', requireAuth, requireSuperAdmin, async (req, res) => {
   }
 });
 
-// PUT /api/communities/:id — superadmin o community_admin de esa comunidad
+// PUT /api/communities/:id — superadmin, community_admin o admin sin scope
+// de esa comunidad (adminLevel >= 2)
 router.put('/:id', requireAuth, async (req, res) => {
   try {
-    const { name, shortName, description, isPublic } = req.body;
+    const { name, shortName, description, isPublic, features, gameIds } = req.body;
     const community = await communities.findById(req.params.id);
     if (!community) return res.status(404).json({ error: 'Community not found' });
 
-    // Superadmin puede editar cualquier comunidad; community_admin solo la suya
-    // (community_admin de la membership correspondiente a ESTA comunidad).
-    const canEdit = isCommunityAdmin(req.user, community.id);
+    const canEdit = adminLevelInCommunity(req.user, community.id) >= 2;
 
     if (!canEdit) {
       return res.status(403).json({ error: 'Only community owners or superadmin can edit this community' });
@@ -111,6 +110,17 @@ router.put('/:id', requireAuth, async (req, res) => {
     }
     if (typeof isPublic === 'boolean') {
       community.isPublic = isPublic;
+    }
+    // Feature toggles — merge per-key, only known boolean flags
+    if (features && typeof features === 'object') {
+      community.features = community.features || {};
+      for (const key of ['tournaments', 'leagues', 'duels', 'matchmaking']) {
+        if (typeof features[key] === 'boolean') community.features[key] = features[key];
+      }
+    }
+    // Enabled games — array of strings; empty array = all games allowed
+    if (Array.isArray(gameIds)) {
+      community.gameIds = gameIds.filter((g) => typeof g === 'string' && g);
     }
     community.updatedAt = new Date().toISOString();
 

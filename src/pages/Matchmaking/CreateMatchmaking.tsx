@@ -19,9 +19,10 @@ function CreateMatchmaking() {
     { value: 'weekly',   days: 7,  icon: 'fas fa-calendar-week', label: t('ranked.mm.create.weekly'),   sub: t('ranked.mm.create.every7')  },
     { value: 'biweekly', days: 14, icon: 'fas fa-calendar-alt',  label: t('ranked.mm.create.biweekly'), sub: t('ranked.mm.create.every14') },
   ] as const;
-  const { currentCommunity, getPath, canAdminGame } = useCommunity();
+  const { currentCommunity, getPath, canAdminGame, communityGames } = useCommunity();
   const communityId = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
-  const creatableGames = GAMES.filter((g) => canAdminGame(g.id));
+  // Solo juegos habilitados en la comunidad (y administrables por este admin)
+  const creatableGames = communityGames.filter((g) => canAdminGame(g.id));
 
   const [name, setName]               = useState('');
   const [gameId, setGameId]           = useState<string>(creatableGames[0]?.id ?? GAMES[0]?.id ?? 'ssbu');

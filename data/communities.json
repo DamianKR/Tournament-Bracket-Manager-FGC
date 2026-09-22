@@ -7,7 +7,14 @@
     "ownerAdminId": "user_1787803682471_sfmycpv",
     "isPublic": true,
     "createdAt": "2026-09-01T00:00:00.000Z",
-    "updatedAt": "2026-09-06T13:23:38.865Z"
+    "updatedAt": "2026-09-22T15:30:18.984Z",
+    "features": {
+      "leagues": true,
+      "matchmaking": true,
+      "tournaments": true,
+      "duels": true
+    },
+    "gameIds": []
   },
   {
     "id": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",

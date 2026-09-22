@@ -7,7 +7,6 @@ import { getAllMatches } from '@/services/ranking/rankingService';
 import { getAllLeagueMatches, getAllLeagues } from '@/services/leagues/leagueService';
 import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
 import { MatchRecord, GlobalParticipant, LeagueMatch } from '@/models/types';
-import { GAMES } from '@/data/games';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import { charsWithColorsFromGames, parseScoreString, type ColoredChar } from '@/utils/matchData';
 import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
@@ -46,8 +45,18 @@ interface UnifiedMatch {
 function HistoryTab() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentCommunity, getPath } = useCommunity();
+  const { currentCommunity, getPath, communityGames, isFeatureEnabled } = useCommunity();
   const communityId = currentCommunity?.id;
+
+  // Tipos deshabilitados por la comunidad — se filtran de la lista entera
+  const typeDisabled = (type: string): boolean => {
+    if (type === 'tournament') return !isFeatureEnabled('tournaments');
+    if (type === 'league') return !isFeatureEnabled('leagues');
+    if (type === 'duel') return !isFeatureEnabled('duels');
+    if (type === 'matchmaking') return !isFeatureEnabled('matchmaking');
+    // 'free' = partidas rankeadas libres — solo si algún módulo ranked vive
+    return !isFeatureEnabled('duels') && !isFeatureEnabled('matchmaking');
+  };
   const [filter, setFilter] = useState<HistoryFilter>('all');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [filterGameId, setFilterGameId] = useState<string | null>(null);
@@ -180,8 +189,11 @@ function HistoryTab() {
     return p ? p.name : t('history.unknownPlayer');
   };
 
-  // Apply type, player and game filters
+  // Apply type, player and game filters (disabled community modules/games excluded)
+  const enabledGameIds = new Set(communityGames.map((g) => g.id));
   const filteredMatches = matches.filter(m => {
+    if (typeDisabled(m.type)) return false;
+    if (m.gameId && !enabledGameIds.has(m.gameId)) return false;
     const typeMatch = filter === 'all' || m.type === filter;
     const playerMatch = !selectedPlayerId || m.player1Id === selectedPlayerId || m.player2Id === selectedPlayerId;
     const gameMatch = !filterGameId || m.gameId === filterGameId;
@@ -241,7 +253,7 @@ function HistoryTab() {
           onChange={(e) => setFilterGameId(e.target.value || null)}
         >
           <option value="">{t('history.allGames')}</option>
-          {GAMES.map((g) => (
+          {communityGames.map((g) => (
             <option key={g.id} value={g.id}>{g.id.toUpperCase()}</option>
           ))}
         </select>
@@ -251,30 +263,38 @@ function HistoryTab() {
         >
           {t('history.all')} ({matches.length})
         </button>
-        <button
-          className={`filter-btn ${filter === 'tournament' ? 'active' : ''}`}
-          onClick={() => setFilter('tournament')}
-        >
-          <i className="fas fa-trophy" /> {t('history.tournaments')} ({matches.filter(m => m.type === 'tournament').length})
-        </button>
-        <button
-          className={`filter-btn ${filter === 'league' ? 'active' : ''}`}
-          onClick={() => setFilter('league')}
-        >
-          <i className="fas fa-calendar-alt" /> {t('history.leagues')} ({matches.filter(m => m.type === 'league').length})
-        </button>
-        <button
-          className={`filter-btn ${filter === 'duel' ? 'active' : ''}`}
-          onClick={() => setFilter('duel')}
-        >
-          <i className="fas fa-khanda" /> {t('history.duels')} ({matches.filter(m => m.type === 'duel').length})
-        </button>
-        <button
-          className={`filter-btn ${filter === 'matchmaking' ? 'active' : ''}`}
-          onClick={() => setFilter('matchmaking')}
-        >
-          <i className="fas fa-random" /> {t('history.matchmaking')} ({matches.filter(m => m.type === 'matchmaking').length})
-        </button>
+        {isFeatureEnabled('tournaments') && (
+          <button
+            className={`filter-btn ${filter === 'tournament' ? 'active' : ''}`}
+            onClick={() => setFilter('tournament')}
+          >
+            <i className="fas fa-trophy" /> {t('history.tournaments')} ({matches.filter(m => m.type === 'tournament').length})
+          </button>
+        )}
+        {isFeatureEnabled('leagues') && (
+          <button
+            className={`filter-btn ${filter === 'league' ? 'active' : ''}`}
+            onClick={() => setFilter('league')}
+          >
+            <i className="fas fa-calendar-alt" /> {t('history.leagues')} ({matches.filter(m => m.type === 'league').length})
+          </button>
+        )}
+        {isFeatureEnabled('duels') && (
+          <button
+            className={`filter-btn ${filter === 'duel' ? 'active' : ''}`}
+            onClick={() => setFilter('duel')}
+          >
+            <i className="fas fa-khanda" /> {t('history.duels')} ({matches.filter(m => m.type === 'duel').length})
+          </button>
+        )}
+        {isFeatureEnabled('matchmaking') && (
+          <button
+            className={`filter-btn ${filter === 'matchmaking' ? 'active' : ''}`}
+            onClick={() => setFilter('matchmaking')}
+          >
+            <i className="fas fa-random" /> {t('history.matchmaking')} ({matches.filter(m => m.type === 'matchmaking').length})
+          </button>
+        )}
       </div>
 
       {loading && <Loading message={t('history.loading')} />}
