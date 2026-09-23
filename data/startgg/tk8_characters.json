@@ -1,0 +1,188 @@
+{
+  "data": {
+    "videogame": {
+      "characters": [
+        {
+          "id": 2406,
+          "name": "Alisa"
+        },
+        {
+          "id": 2407,
+          "name": "Asuka"
+        },
+        {
+          "id": 2408,
+          "name": "Azucena"
+        },
+        {
+          "id": 2409,
+          "name": "Bryan"
+        },
+        {
+          "id": 2410,
+          "name": "Claudio"
+        },
+        {
+          "id": 2411,
+          "name": "Devil Jin"
+        },
+        {
+          "id": 2412,
+          "name": "Feng"
+        },
+        {
+          "id": 2413,
+          "name": "Hwoarang"
+        },
+        {
+          "id": 2414,
+          "name": "Jack-8"
+        },
+        {
+          "id": 2415,
+          "name": "Jin"
+        },
+        {
+          "id": 2416,
+          "name": "Jun"
+        },
+        {
+          "id": 2417,
+          "name": "Kazuya"
+        },
+        {
+          "id": 2418,
+          "name": "King"
+        },
+        {
+          "id": 2419,
+          "name": "Kuma"
+        },
+        {
+          "id": 2420,
+          "name": "Lars"
+        },
+        {
+          "id": 2421,
+          "name": "Lee"
+        },
+        {
+          "id": 2422,
+          "name": "Leo"
+        },
+        {
+          "id": 2423,
+          "name": "Leroy"
+        },
+        {
+          "id": 2424,
+          "name": "Lili"
+        },
+        {
+          "id": 2425,
+          "name": "Xiaoyu"
+        },
+        {
+          "id": 2426,
+          "name": "Law"
+        },
+        {
+          "id": 2427,
+          "name": "Nina"
+        },
+        {
+          "id": 2428,
+          "name": "Panda"
+        },
+        {
+          "id": 2429,
+          "name": "Paul"
+        },
+        {
+          "id": 2430,
+          "name": "Random"
+        },
+        {
+          "id": 2431,
+          "name": "Raven"
+        },
+        {
+          "id": 2432,
+          "name": "Reina"
+        },
+        {
+          "id": 2433,
+          "name": "Dragunov"
+        },
+        {
+          "id": 2434,
+          "name": "Shaheen"
+        },
+        {
+          "id": 2435,
+          "name": "Steve"
+        },
+        {
+          "id": 2436,
+          "name": "Victor"
+        },
+        {
+          "id": 2437,
+          "name": "Yoshimitsu"
+        },
+        {
+          "id": 2438,
+          "name": "Zafina"
+        },
+        {
+          "id": 2446,
+          "name": "Eddy"
+        },
+        {
+          "id": 2538,
+          "name": "Lidia"
+        },
+        {
+          "id": 2598,
+          "name": "Heihachi"
+        },
+        {
+          "id": 2612,
+          "name": "Clive"
+        },
+        {
+          "id": 2620,
+          "name": "Anna"
+        },
+        {
+          "id": 2700,
+          "name": "Fahkumram"
+        },
+        {
+          "id": 2804,
+          "name": "Armor King"
+        },
+        {
+          "id": 2805,
+          "name": "Miary Zo"
+        },
+        {
+          "id": 3015,
+          "name": "Kunimitsu"
+        },
+        {
+          "id": 3230,
+          "name": "Bob"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "cacheControl": {
+      "version": 1,
+      "hints": null
+    },
+    "queryComplexity": 44
+  },
+  "actionRecords": []
+}

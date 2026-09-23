@@ -1,0 +1,89 @@
+
+{
+  "data": {
+    "videogame": {
+      "characters": [
+        {
+          "id": 588,
+          "name": "Beowulf"
+        },
+        {
+          "id": 589,
+          "name": "Big Band"
+        },
+        {
+          "id": 590,
+          "name": "Cerebella"
+        },
+        {
+          "id": 591,
+          "name": "Double"
+        },
+        {
+          "id": 592,
+          "name": "Eliza"
+        },
+        {
+          "id": 593,
+          "name": "Filia"
+        },
+        {
+          "id": 594,
+          "name": "Peacock"
+        },
+        {
+          "id": 595,
+          "name": "Parasoul"
+        },
+        {
+          "id": 596,
+          "name": "Ms. Fortune"
+        },
+        {
+          "id": 597,
+          "name": "Painwheel"
+        },
+        {
+          "id": 598,
+          "name": "Valentine"
+        },
+        {
+          "id": 599,
+          "name": "Squigly"
+        },
+        {
+          "id": 600,
+          "name": "Robo-Fortune"
+        },
+        {
+          "id": 3247,
+          "name": "Marie"
+        },
+        {
+          "id": 3248,
+          "name": "Black Dahlia"
+        },
+        {
+          "id": 3249,
+          "name": "Fukua"
+        },
+        {
+          "id": 3250,
+          "name": "Umbrella"
+        },
+        {
+          "id": 3251,
+          "name": "Annie"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "cacheControl": {
+      "version": 1,
+      "hints": null
+    },
+    "queryComplexity": 19
+  },
+  "actionRecords": []
+}

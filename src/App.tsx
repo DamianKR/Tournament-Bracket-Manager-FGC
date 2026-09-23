@@ -25,6 +25,7 @@ import CommunitiesPage from './pages/Communities/CommunitiesPage';
 import CommunityDashboard from './pages/CommunityDashboard/CommunityDashboard';
 import CommunityAdminPage from './pages/CommunityAdmin/CommunityAdminPage';
 import MembershipRequestsPage from './pages/MembershipRequests/MembershipRequestsPage';
+import StartggCallbackPage from './pages/StartggCallback/StartggCallbackPage';
 
 // React Router mantiene el scroll vertical entre páginas — reset al top en
 // cada cambio de pathname (solo pathname: ?game=/?tab= no deben saltar).
@@ -56,6 +57,11 @@ function App() {
             <Routes>
               {/* Auth */}
               <Route path="/login" element={<LoginPage />} />
+
+              {/* start.gg OAuth callback */}
+              <Route path="/auth/startgg/callback" element={
+                <ProtectedRoute><StartggCallbackPage /></ProtectedRoute>
+              } />
 
               {/* Dashboard - landing page pública */}
               <Route path="/" element={<Dashboard />} />

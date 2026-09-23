@@ -42,6 +42,7 @@ import { useCommunity } from '@/contexts/CommunityContext';
 import { useToast } from '@/contexts/NotificationContext';
 import { communityRoleOf, gameAdminForOf, outranksOf } from '@/utils/membershipRole';
 import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccount } from '@/services/auth/authService';
+import { redirectToStartggOAuth, disconnectStartgg, getStartggLinkStatus, type StartggLinkStatus } from '@/services/startgg/startggService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import PasswordInput from '@/components/PasswordInput/PasswordInput';
@@ -169,6 +170,11 @@ function ParticipantProfile() {
   const [pwSaving, setPwSaving] = useState(false);
   const [pwError, setPwError] = useState('');
   const [pwSuccess, setPwSuccess] = useState(false);
+
+  // start.gg account linking
+  const [startggStatus, setStartggStatus] = useState<StartggLinkStatus | null>(null);
+  const [startggLoading, setStartggLoading] = useState(false);
+  const [startggError, setStartggError] = useState('');
 
   // Admin account management
   const [linkedUser, setLinkedUser] = useState<AuthUser | null>(null);
@@ -303,6 +309,14 @@ function ParticipantProfile() {
       loadMatches();
     }
   }, [tab, id, communityId]);
+
+  // Cargar estado start.gg cuando es propio perfil y se abre la pestaña edit
+  useEffect(() => {
+    if (!isOwnProfile || tab !== 'edit' || startggStatus !== null) return;
+    getStartggLinkStatus()
+      .then(setStartggStatus)
+      .catch(() => setStartggStatus({ linked: false, startggUserId: null, startggPlayerId: null, startggSlug: null, startggGamerTag: null }));
+  }, [isOwnProfile, tab, startggStatus]);
 
   // Load tournament results when Results tab is opened
   useEffect(() => {
@@ -601,6 +615,32 @@ function ParticipantProfile() {
       toast.error(err.message || t('participantProfile.errors.passwordChangeFailed'));
     } finally {
       setPwSaving(false);
+    }
+  }
+
+  async function handleConnectStartgg() {
+    setStartggLoading(true);
+    setStartggError('');
+    try {
+      await redirectToStartggOAuth();
+      // La página redirige a start.gg, el flujo continúa en StartggCallbackPage
+    } catch (err: any) {
+      setStartggError(err.message || 'Error al conectar con start.gg');
+      setStartggLoading(false);
+    }
+  }
+
+  async function handleDisconnectStartgg() {
+    setStartggLoading(true);
+    setStartggError('');
+    try {
+      await disconnectStartgg();
+      setStartggStatus({ linked: false, startggUserId: null, startggPlayerId: null, startggSlug: null, startggGamerTag: null });
+      toast.success('Cuenta de start.gg desconectada');
+    } catch (err: any) {
+      setStartggError(err.message || 'Error al desconectar start.gg');
+    } finally {
+      setStartggLoading(false);
     }
   }
 
@@ -1309,57 +1349,75 @@ function ParticipantProfile() {
         {tab === 'edit' && canEdit && (
           <div className="card profile-edit-form">
             <h3>{t('participantProfile.edit.title')}</h3>
-            {editError && <div className="error-message">{editError}</div>}
-            {editSuccess && <div className="success-message">{t('participantProfile.edit.success')}</div>}
-            <div className="profile-edit-grid">
-              <div className="form-group">
-                <label>{t('participantProfile.edit.nameLabel')}</label>
-                <input type="text" value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                  placeholder={t('participantProfile.edit.namePlaceholder')} />
+            {editError   && <div className="error-message edit-global-msg">{editError}</div>}
+            {editSuccess && <div className="success-message edit-global-msg">{t('participantProfile.edit.success')}</div>}
+
+            {/* ── Player Info ────────────────────────────────────── */}
+            <div className="edit-section">
+              <div className="edit-section-head">
+                <i className="fas fa-user" />
+                {/* <span>{t('participantProfile.edit.title')}</span> */}
               </div>
-              <div className="form-group">
-                <label>{t('participantProfile.edit.aliasLabel')}</label>
-                <input type="text" value={editAlias}
-                  onChange={(e) => setEditAlias(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                  placeholder={t('participantProfile.edit.aliasPlaceholder')} />
-              </div>
-            </div>
-            <div className="form-group profile-avatar-field">
-              <label>{t('participantProfile.edit.avatarLabel')}</label>
-              <div className="profile-avatar-editor">
-                <div className="profile-avatar-preview" style={{ background: avatarColor(editName || participant.name) }}>
-                  {editAvatarUrl
-                    ? <img src={editAvatarUrl} alt="" />
-                    : initials(editName || participant.name)}
+              <div className="edit-section-body">
+                <div className="profile-edit-grid">
+                  <div className="form-group">
+                    <label>{t('participantProfile.edit.nameLabel')}</label>
+                    <input type="text" value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                      placeholder={t('participantProfile.edit.namePlaceholder')} />
+                  </div>
+                  <div className="form-group">
+                    <label>{t('participantProfile.edit.aliasLabel')}</label>
+                    <input type="text" value={editAlias}
+                      onChange={(e) => setEditAlias(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                      placeholder={t('participantProfile.edit.aliasPlaceholder')} />
+                  </div>
                 </div>
-                <div className="profile-avatar-actions">
-                  <label className="btn-outline btn-sm avatar-upload-btn">
-                    <i className="fas fa-camera" />
-                    {avatarBusy ? t('participantProfile.edit.avatarProcessing') : t('participantProfile.edit.avatarUpload')}
-                    <input type="file" accept="image/*" hidden onChange={handleAvatarFile} disabled={avatarBusy} />
-                  </label>
-                  {editAvatarUrl && (
-                    <button type="button" className="btn-outline btn-sm" onClick={() => setEditAvatarUrl(null)}>
-                      <i className="fas fa-trash" /> {t('participantProfile.edit.avatarRemove')}
-                    </button>
-                  )}
+                <div className="form-group profile-avatar-field">
+                  <label>{t('participantProfile.edit.avatarLabel')}</label>
+                  <div className="profile-avatar-editor">
+                    <div className="profile-avatar-preview" style={{ background: avatarColor(editName || participant.name) }}>
+                      {editAvatarUrl
+                        ? <img src={editAvatarUrl} alt="" />
+                        : initials(editName || participant.name)}
+                    </div>
+                    <div className="profile-avatar-actions">
+                      <label className="btn-outline btn-sm avatar-upload-btn">
+                        <i className="fas fa-camera" />
+                        {avatarBusy ? t('participantProfile.edit.avatarProcessing') : t('participantProfile.edit.avatarUpload')}
+                        <input type="file" accept="image/*" hidden onChange={handleAvatarFile} disabled={avatarBusy} />
+                      </label>
+                      {editAvatarUrl && (
+                        <button type="button" className="btn-outline btn-sm" onClick={() => setEditAvatarUrl(null)}>
+                          <i className="fas fa-trash" /> {t('participantProfile.edit.avatarRemove')}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <small className="hint">{t('participantProfile.edit.avatarHint')}</small>
+                </div>
+                <div className="form-group profile-phone-field">
+                  <label>{t('participantProfile.edit.phoneLabel')}</label>
+                  <input type="tel" value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                    placeholder={t('participantProfile.edit.phonePlaceholder')} />
+                  <small className="hint">{t('participantProfile.edit.phoneHint')}</small>
                 </div>
               </div>
-              <small className="hint">{t('participantProfile.edit.avatarHint')}</small>
             </div>
-            <div className="form-group profile-phone-field">
-              <label>{t('participantProfile.edit.phoneLabel')}</label>
-              <input type="tel" value={editPhone}
-                onChange={(e) => setEditPhone(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                placeholder={t('participantProfile.edit.phonePlaceholder')} />
-              <small className="hint">{t('participantProfile.edit.phoneHint')}</small>
-            </div>
+
+            {/* ── Games ─────────────────────────────────────────── */}
+            <div className="edit-section">
+              <div className="edit-section-head">
+                <i className="fas fa-gamepad" />
+                <span>{t('participantProfile.edit.games')}</span>
+              </div>
+              <div className="edit-section-body">
             <div className="profile-game-list">
-              <h4>{t('participantProfile.edit.games')}</h4>
+              <h4 className="sr-only">{t('participantProfile.edit.games')}</h4>
               {communityGames.map((g) => {
                 // outOfScope only applies when editing SOMEONE ELSE's profile;
                 // a scoped admin editing their own profile can manage all their games
@@ -1451,150 +1509,217 @@ function ParticipantProfile() {
                 )}
               </div>
             )}
-            <div className="form-actions">
-              <button className="btn-outline" onClick={() => setTab('overview')}>{t('participantProfile.edit.cancel')}</button>
-              <button className="btn-primary" onClick={handleSave} disabled={saving}>
-                {saving ? t('participantProfile.edit.saving') : t('participantProfile.edit.save')}
-              </button>
-            </div>
+              </div>{/* end edit-section-body games */}
+              <div className="edit-section-actions">
+                <button className="btn-outline" onClick={() => setTab('overview')}>{t('participantProfile.edit.cancel')}</button>
+                <button className="btn-primary" onClick={handleSave} disabled={saving}>
+                  {saving ? t('participantProfile.edit.saving') : t('participantProfile.edit.save')}
+                </button>
+              </div>
+            </div>{/* end edit-section games */}
 
             {isOwnProfile && (
               <>
-                <hr className="profile-password-sep" />
-                <h3>{t('participantProfile.edit.securityTitle')}</h3>
-                <p className="text-secondary mb-2">{t('participantProfile.edit.changePassword')}</p>
-                {pwError && <div className="error-message">{pwError}</div>}
-                {pwSuccess && <div className="success-message">{t('participantProfile.edit.passwordSuccess')}</div>}
-                <div className="profile-edit-grid">
-                  <div className="form-group">
-                    <label>{t('participantProfile.edit.currentPassword')}</label>
-                    <PasswordInput value={pwCurrent}
-                      onChange={(e) => setPwCurrent(e.target.value)}
-                      placeholder={t('participantProfile.edit.currentPasswordPlaceholder')} autoComplete="current-password" />
+                {/* ── Security ───────────────────────────────────────── */}
+                <div className="edit-section">
+                  <div className="edit-section-head">
+                    <i className="fas fa-lock" />
+                    <span>{t('participantProfile.edit.securityTitle')}</span>
                   </div>
-                  <div className="form-group">
-                    <label>{t('participantProfile.edit.newPassword')}</label>
-                    <PasswordInput value={pwNew}
-                      onChange={(e) => setPwNew(e.target.value)}
-                      placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
+                  <p className="edit-section-desc">{t('participantProfile.edit.changePassword')}</p>
+                  {pwError   && <div className="error-message">{pwError}</div>}
+                  {pwSuccess && <div className="success-message">{t('participantProfile.edit.passwordSuccess')}</div>}
+                  <div className="profile-edit-grid">
+                    <div className="form-group">
+                      <label>{t('participantProfile.edit.currentPassword')}</label>
+                      <PasswordInput value={pwCurrent}
+                        onChange={(e) => setPwCurrent(e.target.value)}
+                        placeholder={t('participantProfile.edit.currentPasswordPlaceholder')} autoComplete="current-password" />
+                    </div>
+                    <div className="form-group">
+                      <label>{t('participantProfile.edit.newPassword')}</label>
+                      <PasswordInput value={pwNew}
+                        onChange={(e) => setPwNew(e.target.value)}
+                        placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
+                    </div>
+                    <div className="form-group">
+                      <label>{t('participantProfile.edit.confirmPassword')}</label>
+                      <PasswordInput value={pwConfirm}
+                        onChange={(e) => setPwConfirm(e.target.value)}
+                        placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label>{t('participantProfile.edit.confirmPassword')}</label>
-                    <PasswordInput value={pwConfirm}
-                      onChange={(e) => setPwConfirm(e.target.value)}
-                      placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
+                  <div className="edit-section-actions">
+                    <button className="btn-primary" onClick={handleChangePassword} disabled={pwSaving}>
+                      {pwSaving ? t('participantProfile.edit.updating') : t('participantProfile.edit.changePasswordButton')}
+                    </button>
                   </div>
                 </div>
-                <div className="form-actions">
-                  <button className="btn-primary" onClick={handleChangePassword} disabled={pwSaving}>
-                    {pwSaving ? t('participantProfile.edit.updating') : t('participantProfile.edit.changePasswordButton')}
-                  </button>
+
+                {/* ── start.gg ───────────────────────────────────────── */}
+                <div className="edit-section edit-section--startgg">
+                  <div className="edit-section-head">
+                    <i className="fas fa-link" />
+                    <span>start<span className="sgg-accent">.gg</span></span>
+                  </div>
+                  <p className="edit-section-desc">
+                    {startggStatus?.linked
+                      ? 'Tu cuenta está vinculada a start.gg. Los torneos importados te identificarán automáticamente.'
+                      : 'Vincula tu cuenta de start.gg para que los torneos importados te identifiquen automáticamente.'}
+                  </p>
+                  {startggError && <div className="error-message">{startggError}</div>}
+                  {startggStatus?.linked ? (
+                    <div className="startgg-linked-info">
+                      <div className="startgg-linked-badge">
+                        <i className="fas fa-check-circle" />
+                        <span>
+                          {startggStatus.startggGamerTag
+                            ? <>Conectado como <strong>{startggStatus.startggGamerTag}</strong></>
+                            : <>Conectado (ID: {startggStatus.startggUserId})</>}
+                        </span>
+                        {startggStatus.startggPlayerId && (
+                          <span className="startgg-player-id">Player ID: {startggStatus.startggPlayerId}</span>
+                        )}
+                      </div>
+                      <button
+                        className="btn-secondary startgg-disconnect-btn"
+                        onClick={handleDisconnectStartgg}
+                        disabled={startggLoading}
+                      >
+                        <i className="fas fa-unlink" /> Desconectar start.gg
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="edit-section-actions">
+                      <button
+                        className="btn-primary"
+                        onClick={handleConnectStartgg}
+                        disabled={startggLoading}
+                      >
+                        {startggLoading
+                          ? <><i className="fas fa-spinner fa-spin" /> Conectando…</>
+                          : <><i className="fas fa-link" /> Conectar start.gg</>}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </>
             )}
 
             {canManageAccounts && (
               <>
-                <hr className="profile-password-sep" />
-                <h3>{t('participantProfile.edit.accountManagementTitle')}</h3>
-                <p className="text-secondary mb-2">{linkedUser ? t('participantProfile.edit.accountManagementLinked') : t('participantProfile.edit.accountManagementNone')}</p>
-                {loadingUser && <Loading message={t('participantProfile.edit.loadingAccount')} />}
-                {admError && <div className="error-message">{admError}</div>}
-                {admSuccess && <div className="success-message">{t('participantProfile.edit.accountUpdated')}</div>}
-                {linkedUser ? (
-                  <>
-                    <div className="profile-edit-grid">
-                      {canEditCredentials && (
-                        <>
-                          <div className="form-group">
-                            <label>{t('participantProfile.edit.usernameLabel')}</label>
-                            <input type="text" value={admUsername}
-                              onChange={(e) => setAdmUsername(e.target.value)}
-                              placeholder={t('participantProfile.edit.usernamePlaceholder')} autoComplete="off" />
-                          </div>
-                          <div className="form-group">
-                            <label>{t('participantProfile.edit.newPasswordAdminLabel')}</label>
-                            <PasswordInput value={admPassword}
-                              onChange={(e) => setAdmPassword(e.target.value)}
-                              placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
-                          </div>
-                          {admPassword && (
+                {/* ── Account Management ─────────────────────────────── */}
+                <div className="edit-section">
+                  <div className="edit-section-head">
+                    <i className="fas fa-user-shield" />
+                    <span>{t('participantProfile.edit.accountManagementTitle')}</span>
+                  </div>
+                  <p className="edit-section-desc">
+                    {linkedUser ? t('participantProfile.edit.accountManagementLinked') : t('participantProfile.edit.accountManagementNone')}
+                  </p>
+                  {loadingUser && <Loading message={t('participantProfile.edit.loadingAccount')} />}
+                  {admError   && <div className="error-message">{admError}</div>}
+                  {admSuccess && <div className="success-message">{t('participantProfile.edit.accountUpdated')}</div>}
+                  {linkedUser ? (
+                    <>
+                      <div className="profile-edit-grid">
+                        {canEditCredentials && (
+                          <>
                             <div className="form-group">
-                              <label>{t('participantProfile.edit.confirmNewPasswordLabel')}</label>
-                              <PasswordInput value={admConfirm}
-                                onChange={(e) => setAdmConfirm(e.target.value)}
-                                placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
+                              <label>{t('participantProfile.edit.usernameLabel')}</label>
+                              <input type="text" value={admUsername}
+                                onChange={(e) => setAdmUsername(e.target.value)}
+                                placeholder={t('participantProfile.edit.usernamePlaceholder')} autoComplete="off" />
                             </div>
-                          )}
-                        </>
-                      )}
-                      {manageableRoles.length > 0 && (
-                        <div className="form-group">
-                          <label>{t('participantProfile.edit.roleLabel')}</label>
-                          <select value={admRole} onChange={e => setAdmRole(e.target.value)}>
-                            {manageableRoles.map(r => (
-                              <option key={r} value={r}>
-                                {t(`participantProfile.edit.roles.${r}`)}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {admRole === 'admin' && (
-                        <div className="form-group game-admin-scope">
-                          <label>{t('participantProfile.edit.gameAdminScopeLabel', { defaultValue: 'Juegos que puede administrar (vacío = todos)' })}</label>
-                          <div className="game-admin-games">
-                            {communityGames.map(g => {
-                              const active = admGames.includes(g.id);
-                              return (
-                                <label
-                                  key={g.id}
-                                  className={`game-admin-row ${active ? 'active' : ''}`}
-                                  style={active ? { borderColor: g.color, background: `${g.color}0d` } : undefined}
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={active}
-                                    onChange={(e) => setAdmGames(prev =>
-                                      e.target.checked ? [...prev, g.id] : prev.filter(x => x !== g.id)
-                                    )}
-                                  />
-                                  <span className="game-admin-row-name" style={{ color: active ? g.color : undefined }}>{g.name}</span>
-                                  <span className="game-admin-row-id">{g.id.toUpperCase()}</span>
-                                </label>
-                              );
-                            })}
+                            <div className="form-group">
+                              <label>{t('participantProfile.edit.newPasswordAdminLabel')}</label>
+                              <PasswordInput value={admPassword}
+                                onChange={(e) => setAdmPassword(e.target.value)}
+                                placeholder={t('participantProfile.edit.newPasswordPlaceholder')} autoComplete="new-password" />
+                            </div>
+                            {admPassword && (
+                              <div className="form-group">
+                                <label>{t('participantProfile.edit.confirmNewPasswordLabel')}</label>
+                                <PasswordInput value={admConfirm}
+                                  onChange={(e) => setAdmConfirm(e.target.value)}
+                                  placeholder={t('participantProfile.edit.confirmPlaceholder')} autoComplete="new-password" />
+                              </div>
+                            )}
+                          </>
+                        )}
+                        {manageableRoles.length > 0 && (
+                          <div className="form-group">
+                            <label>{t('participantProfile.edit.roleLabel')}</label>
+                            <select value={admRole} onChange={e => setAdmRole(e.target.value)}>
+                              {manageableRoles.map(r => (
+                                <option key={r} value={r}>
+                                  {t(`participantProfile.edit.roles.${r}`)}
+                                </option>
+                              ))}
+                            </select>
                           </div>
+                        )}
+                        {admRole === 'admin' && (
+                          <div className="form-group game-admin-scope">
+                            <label>{t('participantProfile.edit.gameAdminScopeLabel', { defaultValue: 'Juegos que puede administrar (vacío = todos)' })}</label>
+                            <div className="game-admin-games">
+                              {communityGames.map(g => {
+                                const active = admGames.includes(g.id);
+                                return (
+                                  <label
+                                    key={g.id}
+                                    className={`game-admin-row ${active ? 'active' : ''}`}
+                                    style={active ? { borderColor: g.color, background: `${g.color}0d` } : undefined}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={active}
+                                      onChange={(e) => setAdmGames(prev =>
+                                        e.target.checked ? [...prev, g.id] : prev.filter(x => x !== g.id)
+                                      )}
+                                    />
+                                    <span className="game-admin-row-name" style={{ color: active ? g.color : undefined }}>{g.name}</span>
+                                    <span className="game-admin-row-id">{g.id.toUpperCase()}</span>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                        <div className="form-group pp-account-active-toggle">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={admIsActive}
+                              onChange={e => setAdmIsActive(e.target.checked)}
+                            />
+                            <span>{t('participantProfile.edit.accountActive')}</span>
+                          </label>
                         </div>
-                      )}
-                      <div className="form-group pp-account-active-toggle">
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={admIsActive}
-                            onChange={e => setAdmIsActive(e.target.checked)}
-                          />
-                          <span>{t('participantProfile.edit.accountActive')}</span>
-                        </label>
                       </div>
-                    </div>
-                    <div className="form-actions">
-                      <button className="btn-primary" onClick={handleSaveAdminAccount} disabled={admSaving}>
-                        {admSaving ? t('participantProfile.edit.saving') : t('participantProfile.edit.save')}
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-secondary">{t('participantProfile.edit.noAccount')}</p>
-                )}
+                      <div className="edit-section-actions">
+                        <button className="btn-primary" onClick={handleSaveAdminAccount} disabled={admSaving}>
+                          {admSaving ? t('participantProfile.edit.saving') : t('participantProfile.edit.save')}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-secondary">{t('participantProfile.edit.noAccount')}</p>
+                  )}
+                </div>
 
-                <hr className="profile-password-sep" />
-                <h3>{t('participantProfile.edit.dangerZoneTitle')}</h3>
-                <p className="text-secondary mb-2">{t('participantProfile.edit.dangerZoneDesc')}</p>
-                <div className="form-actions">
-                  <button className="btn-danger" onClick={() => setShowDeleteConfirm(true)} disabled={deleteSaving}>
-                    {t('participantProfile.edit.deleteParticipant')}
-                  </button>
+                {/* ── Danger Zone ────────────────────────────────────── */}
+                <div className="edit-section edit-section--danger">
+                  <div className="edit-section-head">
+                    <i className="fas fa-skull" />
+                    <span>{t('participantProfile.edit.dangerZoneTitle')}</span>
+                  </div>
+                  <p className="edit-section-desc">{t('participantProfile.edit.dangerZoneDesc')}</p>
+                  <div className="edit-section-actions">
+                    <button className="btn-danger" onClick={() => setShowDeleteConfirm(true)} disabled={deleteSaving}>
+                      <i className="fas fa-trash" /> {t('participantProfile.edit.deleteParticipant')}
+                    </button>
+                  </div>
                 </div>
               </>
             )}

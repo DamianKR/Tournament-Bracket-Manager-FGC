@@ -1,0 +1,156 @@
+{
+  "data": {
+    "videogame": {
+      "characters": [
+        {
+          "id": 1828,
+          "name": "Anji"
+        },
+        {
+          "id": 1829,
+          "name": "Axl"
+        },
+        {
+          "id": 1830,
+          "name": "Chipp"
+        },
+        {
+          "id": 1831,
+          "name": "Faust"
+        },
+        {
+          "id": 1832,
+          "name": "Giovanna"
+        },
+        {
+          "id": 1833,
+          "name": "I-No"
+        },
+        {
+          "id": 1834,
+          "name": "Ky"
+        },
+        {
+          "id": 1835,
+          "name": "Leo"
+        },
+        {
+          "id": 1836,
+          "name": "May"
+        },
+        {
+          "id": 1837,
+          "name": "Millia"
+        },
+        {
+          "id": 1838,
+          "name": "Nagoriyuki"
+        },
+        {
+          "id": 1839,
+          "name": "Potemkin"
+        },
+        {
+          "id": 1840,
+          "name": "Ramlethal"
+        },
+        {
+          "id": 1841,
+          "name": "Sol"
+        },
+        {
+          "id": 1842,
+          "name": "Zato"
+        },
+        {
+          "id": 1849,
+          "name": "Goldlewis"
+        },
+        {
+          "id": 1872,
+          "name": "Jack-O"
+        },
+        {
+          "id": 1913,
+          "name": "Happy Chaos"
+        },
+        {
+          "id": 1951,
+          "name": "Testament"
+        },
+        {
+          "id": 1952,
+          "name": "Baiken"
+        },
+        {
+          "id": 2097,
+          "name": "Bridget"
+        },
+        {
+          "id": 2315,
+          "name": "Asuka R♯"
+        },
+        {
+          "id": 2316,
+          "name": "Sin"
+        },
+        {
+          "id": 2318,
+          "name": "Johnny"
+        },
+        {
+          "id": 2404,
+          "name": "Elphelt"
+        },
+        {
+          "id": 2445,
+          "name": "A.B.A."
+        },
+        {
+          "id": 2448,
+          "name": "Bedman?"
+        },
+        {
+          "id": 2496,
+          "name": "Slayer"
+        },
+        {
+          "id": 2613,
+          "name": "Dizzy"
+        },
+        {
+          "id": 2621,
+          "name": "Random"
+        },
+        {
+          "id": 2622,
+          "name": "Venom"
+        },
+        {
+          "id": 2744,
+          "name": "Unika"
+        },
+        {
+          "id": 2787,
+          "name": "Lucy"
+        },
+        {
+          "id": 2962,
+          "name": "Jam"
+        },
+        {
+          "id": 3228,
+          "name": "Robo-Ky"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "cacheControl": {
+      "version": 1,
+      "hints": null
+    },
+    "queryComplexity": 36
+  },
+  "actionRecords": []
+}
