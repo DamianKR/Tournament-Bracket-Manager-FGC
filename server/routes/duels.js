@@ -121,8 +121,19 @@ router.get('/:id', optionalAuth, async (req, res) => {
   }
 });
 
+// Serialize duel creation so a double-submitted POST (double click, retry,
+// second tab) sees the first insert in the duplicate check below — the JSON
+// store serializes writes but has no check-and-insert transaction.
+let duelCreateQueue = Promise.resolve();
+
 // POST /api/duels
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth, (req, res) => {
+  const run = duelCreateQueue.then(() => handleCreateDuel(req, res));
+  duelCreateQueue = run.catch(() => {});
+  return run;
+});
+
+async function handleCreateDuel(req, res) {
   try {
     const { id, challengerId, challengedId, gameId, expiresAt, type = 'normal' } = req.body;
 
@@ -181,29 +192,46 @@ router.post('/', requireAuth, async (req, res) => {
       });
     }
 
-    // Manual expiration trigger (also used by server cron)
+    // Duplicate guard — mirrors the client-side validation but enforced
+    // server-side so a double submit (double click, retry, second tab) cannot
+    // create two identical challenges.
+    const all = filterByCommunity(req.user, await duels.getAll(), communityId);
+    const now = new Date();
+    const weeklyResetDay = config.weeklyResetDay ?? 1; // Monday
+    const weeklyResetHour = config.weeklyResetHour ?? 0;
+    const weeklyResetMinute = config.weeklyResetMinute ?? 0;
+
+    const lastReset = new Date(now);
+    lastReset.setHours(weeklyResetHour, weeklyResetMinute, 0, 0);
+    const daysSinceReset = (now.getDay() - weeklyResetDay + 7) % 7;
+    lastReset.setDate(lastReset.getDate() - daysSinceReset);
+    if (now < lastReset) {
+      lastReset.setDate(lastReset.getDate() - 7);
+    }
+
+    const pendingDuplicate = all.some(
+      c => c.challengerId === challengerId && c.challengedId === challengedId && c.status === 'pending'
+    );
+    if (pendingDuplicate) {
+      return res.status(409).json({ error: 'There is already a pending challenge between these players' });
+    }
+
+    const alreadyChallengedThisWeek = all.some(
+      c =>
+        c.challengerId === challengerId &&
+        c.challengedId === challengedId &&
+        new Date(c.createdAt) >= lastReset &&
+        c.status !== 'declined' &&
+        c.status !== 'expired'
+    );
+    if (alreadyChallengedThisWeek) {
+      return res.status(409).json({ error: 'You have already challenged this player this week' });
+    }
+
     // Validate mandatory duel limits (per community)
     if (type === 'mandatory') {
-      const all = filterByCommunity(req.user, await duels.getAll(), communityId);
-      const settings = await duelSettings.getAll();
-      const config = settings.find(s => s.communityId === communityId) || duelSettingsShape(communityId);
-
       if (config.mandatoryDuelsEnabled === false) {
         return res.status(400).json({ error: 'Mandatory duels are currently disabled' });
-      }
-      const now = new Date();
-      
-      // Calculate weekly reset
-      const weeklyResetDay = config.weeklyResetDay ?? 1; // Monday
-      const weeklyResetHour = config.weeklyResetHour ?? 0;
-      const weeklyResetMinute = config.weeklyResetMinute ?? 0;
-      
-      const lastReset = new Date(now);
-      lastReset.setHours(weeklyResetHour, weeklyResetMinute, 0, 0);
-      const daysSinceReset = (now.getDay() - weeklyResetDay + 7) % 7;
-      lastReset.setDate(lastReset.getDate() - daysSinceReset);
-      if (now < lastReset) {
-        lastReset.setDate(lastReset.getDate() - 7);
       }
 
       // Check weekly mandatory limit
@@ -298,7 +326,7 @@ router.post('/', requireAuth, async (req, res) => {
     console.error('[Duels] POST / error:', err);
     res.status(500).json({ error: 'Failed to create challenge' });
   }
-});
+}
 
 // PUT /api/duels/:id/accept
 router.put('/:id/accept', requireAuth, async (req, res) => {

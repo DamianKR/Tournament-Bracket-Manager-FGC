@@ -439,15 +439,35 @@ export async function validateDuelChallenge(
 }
 
 
+// In-flight create requests keyed by challenge identity. A double click (or
+// double tap) on a slow connection must not produce two identical challenges.
+const _createInFlight = new Map<string, Promise<DuelChallenge | null>>();
+
 /**
  * Create a new duel challenge
  */
-export async function createDuelChallenge(
+export function createDuelChallenge(
   challengerId: string,
   challengedId: string,
   gameId: string,
   type: 'normal' | 'mandatory' = 'normal',
   communityId: string = DEFAULT_COMMUNITY_ID
+): Promise<DuelChallenge | null> {
+  const key = `${communityId}|${challengerId}|${challengedId}|${gameId}|${type}`;
+  const inFlight = _createInFlight.get(key);
+  if (inFlight) return inFlight;
+  const p = doCreateDuelChallenge(challengerId, challengedId, gameId, type, communityId)
+    .finally(() => { _createInFlight.delete(key); });
+  _createInFlight.set(key, p);
+  return p;
+}
+
+async function doCreateDuelChallenge(
+  challengerId: string,
+  challengedId: string,
+  gameId: string,
+  type: 'normal' | 'mandatory',
+  communityId: string
 ): Promise<DuelChallenge | null> {
   // Validate first
   const validation = await validateDuelChallenge(challengerId, challengedId, gameId, type, communityId);
