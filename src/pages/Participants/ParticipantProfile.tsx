@@ -565,8 +565,8 @@ function ParticipantProfile() {
         name: editName,
         alias: editAlias,
         gameIds: cleanGameIds,
-        // Un admin scopenado no puede cambiar el default game del participante
-        ...(!isScopedAdmin ? { primaryGameId: cleanPrimary } : {}),
+        // Scoped admins can change primary game on their OWN profile but not others'
+        ...(!isScopedAdmin || isOwnProfile ? { primaryGameId: cleanPrimary } : {}),
         gameMainCharacters: cleanMains,
         gameAvailability: cleanAvailability,
         phoneNumber: editPhone || null,
@@ -1361,7 +1361,9 @@ function ParticipantProfile() {
             <div className="profile-game-list">
               <h4>{t('participantProfile.edit.games')}</h4>
               {communityGames.map((g) => {
-                const outOfScope = isScopedAdmin && !gameAdminForHere.includes(g.id);
+                // outOfScope only applies when editing SOMEONE ELSE's profile;
+                // a scoped admin editing their own profile can manage all their games
+                const outOfScope = !isOwnProfile && isScopedAdmin && !gameAdminForHere.includes(g.id);
                 return (
                 <div key={g.id} className="profile-game-row" style={outOfScope ? { opacity: 0.45 } : undefined}
                   title={outOfScope ? t('participantProfile.edit.gameAdminNotYourGame', { defaultValue: 'You are not admin of this game' }) : undefined}>
@@ -1432,7 +1434,7 @@ function ParticipantProfile() {
             {editGameIds.length > 0 && (
               <div className="form-group">
                 <label>{t('participantProfile.edit.primaryGame')}</label>
-                {isScopedAdmin ? (
+                {isScopedAdmin && !isOwnProfile ? (
                   <div className="form-control" style={{ opacity: 0.6 }}>
                     {getGame(editPrimaryGameId ?? '')?.shortName ?? editPrimaryGameId ?? t('common.none', { defaultValue: 'None' })}
                   </div>

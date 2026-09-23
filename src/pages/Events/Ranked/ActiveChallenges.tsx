@@ -35,10 +35,12 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
 
   // User belongs to this community (or is superadmin)
   const isAdminHere = canAdminCurrentCommunity;
-  // Admin con gameAdminFor EN esta comunidad: solo puede crear duelos de SUS juegos.
-  // Además: solo juegos habilitados en la comunidad.
+  // Admin con gameAdminFor EN esta comunidad.
   const isScopedAdmin = communityRole === 'admin' && gameAdminForHere.length > 0;
-  const creatableGames = isScopedAdmin ? communityGames.filter(g => canAdminGame(g.id)) : communityGames;
+  // Scoped admins are also community players — they can challenge in any game.
+  // Server validates scope: a scoped admin can only create challenges for OTHER
+  // players in their admin games, but can challenge in any game as themselves.
+  const creatableGames = communityGames;
   // Regular participant in this community can create/accept challenges
   const canInteract = isInMyCommunity && user != null;
   const [allChallenges, setAllChallenges] = useState<DuelChallenge[]>([]);
@@ -59,11 +61,14 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   }, [communityId]);
 
   useEffect(() => {
-    // Auto-set player1 to current user's participant if not admin
-    if (!isAdminHere && myParticipantId && showCreateModal) {
+    // Auto-set player1 to the current user's participant when:
+    //   - regular user (not admin), OR
+    //   - scoped admin (they are also community players, and can override to challenge others)
+    // Full community_admin/superadmin gets blank selectors by default for admin operations.
+    if ((!isAdminHere || isScopedAdmin) && myParticipantId && showCreateModal) {
       setPlayer1Id(myParticipantId);
     }
-  }, [isAdminHere, myParticipantId, showCreateModal]);
+  }, [isAdminHere, isScopedAdmin, myParticipantId, showCreateModal]);
 
   const loadData = async () => {
     if (!communityId) return;
