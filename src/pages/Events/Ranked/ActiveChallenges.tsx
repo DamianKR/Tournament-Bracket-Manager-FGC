@@ -55,6 +55,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const [filterParticipantId, setFilterParticipantId] = useState<string | null>(null);
   const [filterGameId, setFilterGameId] = useState<string | null>(null);
   const [createError, setCreateError] = useState('');
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -87,9 +88,10 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   };
 
   const handleCreateChallenge = async () => {
-    if (!player1Id || !player2Id) return;
+    if (!player1Id || !player2Id || creating) return;
+    setCreating(true);
     setCreateError('');
-    
+
     try {
       if (!communityId) return;
       const challenge = await createDuelChallenge(player1Id, player2Id, duelGameId, duelType, communityId);
@@ -106,6 +108,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
       const msg = err.message || t('ranked.challenges.failedCreate');
       setCreateError(msg);
       toast.error(msg);
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -466,9 +470,9 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
               <button
                 className="btn-primary"
                 onClick={handleCreateChallenge}
-                disabled={!player1Id || !player2Id}
+                disabled={!player1Id || !player2Id || creating}
               >
-                <i className="fas fa-plus" /> {t('ranked.challenges.create')}
+                <i className="fas fa-plus" /> {creating ? t('common.saving') : t('ranked.challenges.create')}
               </button>
             </div>
           </div>
