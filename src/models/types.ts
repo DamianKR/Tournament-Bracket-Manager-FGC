@@ -113,6 +113,48 @@ export interface Tournament {
   }[];
   // Self-registration
   registrationDeadline?: string; // ISO datetime; after this users can't self-register
+  // ── start.gg import metadata ──────────────────────────────────────────
+  /** ID numérico del torneo en start.gg */
+  startggTournamentId?: number | null;
+  /** ID numérico del evento en start.gg (el que se importó) */
+  startggEventId?: number | null;
+  /** Slug del torneo en start.gg */
+  startggSlug?: string | null;
+  /** 'startgg' si fue importado, undefined si es local */
+  importedFrom?: 'startgg' | null;
+  /** ISO timestamp de cuando se importó */
+  importedAt?: string | null;
+  /** Total de participantes al momento del import */
+  totalParticipants?: number;
+  /** Fases importadas de start.gg (pools + bracket structure) */
+  importedPhases?: ImportedPhase[];
+}
+
+// ── start.gg imported phase structure ────────────────────────────────────
+
+export interface ImportedPhaseGroupStanding {
+  /** ID local del participante (ej: 'sgg_e_12345') */
+  participantId: string;
+  placement: number;
+  wins: number;
+  losses: number;
+}
+
+export interface ImportedPhaseGroup {
+  /** ID numérico del phaseGroup en start.gg */
+  id: string;
+  /** Identificador display: "Pool A", "Pool B", "1", etc. */
+  name: string;
+  bracketType: 'ROUND_ROBIN' | 'SINGLE_ELIMINATION' | 'DOUBLE_ELIMINATION' | string;
+  standings: ImportedPhaseGroupStanding[];
+}
+
+export interface ImportedPhase {
+  /** ID numérico de la fase en start.gg */
+  id: string;
+  name: string;
+  bracketType: 'ROUND_ROBIN' | 'SINGLE_ELIMINATION' | 'DOUBLE_ELIMINATION' | string;
+  groups: ImportedPhaseGroup[];
 }
 
 export interface TournamentHistory {
@@ -159,6 +201,11 @@ export interface GlobalParticipant {
   communityId: string;            // Community this participant belongs to
   createdAt: string;
   updatedAt: string;
+  // ── start.gg link fields (también en AuthUser) ───────────────────────
+  startggPlayerId?: number | null;
+  startggEntrantIds?: string[];
+  /** true si fue creado automáticamente durante un import (sin cuenta local) */
+  isStartggStub?: boolean;
 }
 
 // ── ELO / Ranking ──────────────────────────────────────────────────────────

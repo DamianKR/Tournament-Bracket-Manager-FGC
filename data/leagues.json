@@ -346,11 +346,12 @@
     "status": "active",
     "currentWeek": 1,
     "createdAt": "2026-09-02T21:44:25.834Z",
-    "updatedAt": "2026-09-17T04:46:06.884Z",
+    "updatedAt": "2026-09-23T22:24:11.699Z",
     "notifiedWeeks": [
       1,
       2,
-      3
+      3,
+      4
     ]
   }
 ]

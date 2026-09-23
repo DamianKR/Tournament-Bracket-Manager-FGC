@@ -7,7 +7,7 @@
  * Secciones: feature modules (toggles), juegos habilitados, datos generales
  * y danger zone. Guarda todo con un solo "Save changes".
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,6 +16,15 @@ import { useToast } from '@/contexts/NotificationContext';
 import { GAMES } from '@/data/games';
 import { adminLevelOf } from '@/utils/membershipRole';
 import { updateCommunityFields } from '@/services/communities/communityService';
+import {
+  previewStartggTournament,
+  importStartggEvent,
+  getImportedTournaments,
+  enrichTournamentCharacters,
+  type StartggTournamentPreview,
+  type ImportSummary,
+  type ImportedTournament,
+} from '@/services/startgg/startggService';
 import type { CommunityFeatures } from '@/models/community';
 import ResetAvailabilityButton from '@/components/ResetAvailabilityButton/ResetAvailabilityButton';
 import Loading from '@/components/Loading/Loading';
@@ -50,17 +59,36 @@ function CommunityAdminPage() {
   const [isPublic, setIsPublic] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // ── start.gg import state ──────────────────────────────────────────────
+  const [importSlug, setImportSlug] = useState('');
+  const [importBusy, setImportBusy] = useState(false);
+  const [importPreview, setImportPreview] = useState<StartggTournamentPreview | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importResult, setImportResult] = useState<ImportSummary | null>(null);
+  const [importedList, setImportedList] = useState<ImportedTournament[]>([]);
+  const [importingEventId, setImportingEventId] = useState<number | null>(null);
+  const [enrichingId, setEnrichingId] = useState<string | null>(null);
+  const [enrichResult, setEnrichResult] = useState<{ id: string; sets: number } | null>(null);
+
   // Init local state from the community once it loads
   useEffect(() => {
     if (!community) return;
     setFeatures(community.features ?? {});
-    // gameIds vacío = todos habilitados → pre-marcar todos
     setGameIds(new Set(community.gameIds && community.gameIds.length > 0 ? community.gameIds : GAMES.map((g) => g.id)));
     setName(community.name ?? '');
     setShortName(community.shortName ?? '');
     setDescription(community.description ?? '');
     setIsPublic(community.isPublic !== false);
   }, [community]);
+
+  // Load imported tournaments list
+  const loadImported = useCallback(async () => {
+    if (!communityId) return;
+    const list = await getImportedTournaments(communityId);
+    setImportedList(list);
+  }, [communityId]);
+
+  useEffect(() => { loadImported(); }, [loadImported]);
 
   const dirty = useMemo(() => {
     if (!community) return false;
@@ -95,6 +123,57 @@ function CommunityAdminPage() {
         </div>
       </div>
     );
+  }
+
+  // ── start.gg handlers ─────────────────────────────────────────────────
+
+  async function handlePreview() {
+    if (!importSlug.trim()) return;
+    setImportBusy(true);
+    setImportError(null);
+    setImportPreview(null);
+    setImportResult(null);
+    try {
+      const data = await previewStartggTournament(importSlug.trim());
+      setImportPreview(data);
+    } catch (err: any) {
+      setImportError(err.message ?? t('communityAdmin.startgg.sectionTitle'));
+    } finally {
+      setImportBusy(false);
+    }
+  }
+
+  async function handleEnrichCharacters(imp: ImportedTournament) {
+    if (!communityId || !imp.startggEventId || !imp.gameId) return;
+    setEnrichingId(imp.id);
+    setEnrichResult(null);
+    setImportError(null);
+    try {
+      const summary = await enrichTournamentCharacters(imp.id, imp.startggEventId, imp.gameId, communityId);
+      setEnrichResult({ id: imp.id, sets: summary.setsUpdated });
+    } catch (err: any) {
+      setImportError(err.message ?? 'Error al importar personajes');
+    } finally {
+      setEnrichingId(null);
+    }
+  }
+
+  async function handleImportEvent(eventId: number) {
+    if (!communityId || !importPreview) return;
+    setImportingEventId(eventId);
+    setImportError(null);
+    setImportResult(null);
+    try {
+      const summary = await importStartggEvent(importPreview.normalizedSlug, eventId, communityId);
+      setImportResult(summary);
+      await loadImported();
+      setImportPreview(null);
+      setImportSlug('');
+    } catch (err: any) {
+      setImportError(err.message ?? t('communityAdmin.startgg.sectionTitle'));
+    } finally {
+      setImportingEventId(null);
+    }
   }
 
   function toggleFeature(key: FeatureKey) {
@@ -260,6 +339,161 @@ function CommunityAdminPage() {
                 </span>
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* ── start.gg import ── */}
+        <section className="admin-section">
+          <h2 className="admin-section-title admin-startgg-title">
+            <i className="fas fa-file-import" /> {t('communityAdmin.startgg.sectionTitle')}
+          </h2>
+          <p className="admin-section-desc">
+            {t('communityAdmin.startgg.sectionDesc')}
+          </p>
+
+          <div className="card admin-startgg-card">
+            {/* Input + Preview */}
+            <div className="admin-startgg-input-row">
+              <input
+                className="form-control"
+                placeholder={t('communityAdmin.startgg.inputPlaceholder')}
+                value={importSlug}
+                onChange={(e) => { setImportSlug(e.target.value); setImportPreview(null); setImportError(null); setImportResult(null); }}
+                onKeyDown={(e) => e.key === 'Enter' && handlePreview()}
+                disabled={importBusy}
+              />
+              <button
+                className="btn btn-primary"
+                onClick={handlePreview}
+                disabled={importBusy || !importSlug.trim()}
+              >
+                {importBusy
+                  ? <><i className="fas fa-spinner fa-spin" /> {t('communityAdmin.startgg.searching')}</>
+                  : <><i className="fas fa-search" /> {t('communityAdmin.startgg.preview')}</>
+                }
+              </button>
+            </div>
+
+            {/* Error / result */}
+            {importError && <div className="error-message">{importError}</div>}
+            {importResult && (
+              <div className="success-message">
+                <i className="fas fa-check-circle" /> {importResult.tournamentName}
+                {' · '}{importResult.entrants} {t('communityAdmin.startgg.players')}
+                {' · '}{importResult.sets} {t('communityAdmin.startgg.sets')}
+                {importResult.linked > 0 && <> · {t('communityAdmin.startgg.linked', { count: importResult.linked })}</>}
+                {importResult.stubs  > 0 && <> · {t('communityAdmin.startgg.stubs',  { count: importResult.stubs  })}</>}
+              </div>
+            )}
+
+            {/* Preview result */}
+            {importPreview && (
+              <div className="admin-startgg-preview">
+                <div className="admin-startgg-preview-header">
+                  <i className="fas fa-trophy" />
+                  <div>
+                    <strong>{importPreview.name}</strong>
+                    <span className="admin-startgg-slug">start.gg/{importPreview.slug}</span>
+                  </div>
+                  {importPreview.numAttendees != null && (
+                    <span className="admin-startgg-attendees">
+                      {importPreview.numAttendees} {t('communityAdmin.startgg.attendees')}
+                    </span>
+                  )}
+                </div>
+
+                <p className="admin-startgg-events-label">{t('communityAdmin.startgg.selectEvent')}</p>
+                <div className="admin-startgg-events-list">
+                  {importPreview.events.length === 0 && (
+                    <p className="text-muted" style={{ padding: '0.65rem 1rem' }}>
+                      {t('communityAdmin.startgg.noEvents')}
+                    </p>
+                  )}
+                  {importPreview.events.map((ev) => {
+                    const isImporting = importingEventId === ev.id;
+                    const alreadyImported = importedList.some((i) => i.startggEventId === ev.id);
+                    return (
+                      <div key={ev.id} className={`admin-startgg-event-row ${alreadyImported ? 'imported' : ''}`}>
+                        <div className="admin-startgg-event-info">
+                          <span className="admin-startgg-event-name">{ev.name}</span>
+                          <span className="admin-startgg-event-meta">
+                            {ev.videogame?.name ?? ev.type} · {ev.numEntrants ?? '?'} {t('communityAdmin.startgg.players')}
+                          </span>
+                          {alreadyImported && (
+                            <span className="admin-startgg-imported-badge">
+                              <i className="fas fa-check" /> {t('communityAdmin.startgg.alreadyImported')}
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          className={`btn ${alreadyImported ? 'btn-outline' : 'btn-primary'} btn-sm`}
+                          onClick={() => handleImportEvent(ev.id)}
+                          disabled={isImporting}
+                        >
+                          {isImporting
+                            ? <><i className="fas fa-spinner fa-spin" /> {t('communityAdmin.startgg.importing')}</>
+                            : alreadyImported
+                              ? <><i className="fas fa-rotate" /> {t('communityAdmin.startgg.reimport')}</>
+                              : <><i className="fas fa-download" /> {t('communityAdmin.startgg.import')}</>
+                          }
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Already imported list */}
+            {importedList.length > 0 && (
+              <div className="admin-startgg-imported-list">
+                <p className="admin-startgg-events-label">{t('communityAdmin.startgg.importedListTitle')}</p>
+                <div className="admin-startgg-events-list">
+                  {importedList.map((imp) => {
+                    const isEnriching = enrichingId === imp.id;
+                    const enriched    = enrichResult?.id === imp.id;
+                    const canEnrich   = !!imp.startggEventId && !!imp.gameId;
+                    return (
+                      <div key={imp.id} className="admin-startgg-event-row imported">
+                        <div className="admin-startgg-event-info">
+                          <span className="admin-startgg-event-name">{imp.name}</span>
+                          <span className="admin-startgg-event-meta">
+                            {imp.gameId ?? '?'} · {imp.entrants} {t('communityAdmin.startgg.players')} ·{' '}
+                            {imp.importedAt
+                              ? new Date(imp.importedAt).toLocaleDateString()
+                              : t('communityAdmin.startgg.unknownDate')
+                            }
+                          </span>
+                          {enriched && (
+                            <span className="admin-startgg-imported-badge" style={{ background: '#eff6ff', borderColor: '#bfdbfe', color: '#1d4ed8' }}>
+                              <i className="fas fa-user-ninja" /> {t('communityAdmin.startgg.enrichedBadge', { sets: enrichResult!.sets })}
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
+                          <span className="admin-startgg-imported-badge">
+                            <i className="fas fa-check" /> {t('communityAdmin.startgg.importedBadge')}
+                          </span>
+                          {canEnrich && (
+                            <button
+                              className="btn btn-outline btn-sm"
+                              onClick={() => handleEnrichCharacters(imp)}
+                              disabled={isEnriching}
+                              title={t('communityAdmin.startgg.fetchCharsTitle')}
+                            >
+                              {isEnriching
+                                ? <><i className="fas fa-spinner fa-spin" /> {t('communityAdmin.startgg.fetchingChars')}</>
+                                : <><i className="fas fa-user-ninja" /> {t('communityAdmin.startgg.fetchChars')}</>
+                              }
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

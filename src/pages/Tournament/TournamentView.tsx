@@ -12,9 +12,10 @@ import Sidebar from '@/components/Sidebar/Sidebar';
 import BracketView from '@/components/Bracket/BracketView';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
 import Top8Podium from '@/components/Top8Podium/Top8Podium';
+import ImportedPhasesView from '@/components/ImportedPhases/ImportedPhasesView';
 import './TournamentView.css';
 
-type ViewMode = 'bracket' | 'participants';
+type ViewMode = 'bracket' | 'participants' | 'pools';
 
 function TournamentView() {
   const { t } = useTranslation();
@@ -138,6 +139,8 @@ function TournamentView() {
     );
   }
 
+  const hasPools = (tournament.importedPhases?.length ?? 0) > 0;
+
   const sidebarItems = [
     {
       id: 'bracket',
@@ -146,6 +149,12 @@ function TournamentView() {
       onClick: () => setViewMode('bracket'),
       disabled: tournament.status === 'setup',
     },
+    ...(hasPools ? [{
+      id: 'pools',
+      label: t('tournament.view.sidebarPools'),
+      active: viewMode === 'pools',
+      onClick: () => setViewMode('pools'),
+    }] : []),
     {
       id: 'participants',
       label: t('tournament.view.sidebarParticipants'),
@@ -253,6 +262,16 @@ function TournamentView() {
                 onRevertMatch={canAdminGame(tournament.gameId) ? handleRevertMatch : undefined}
                 readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
               />
+            )}
+
+            {viewMode === 'pools' && hasPools && (
+              <div className="pools-view">
+                <h2>{t('tournament.view.poolsTitle')}</h2>
+                <ImportedPhasesView
+                  phases={tournament.importedPhases!}
+                  participants={tournament.participants}
+                />
+              </div>
             )}
 
             {viewMode === 'participants' && (
