@@ -749,7 +749,13 @@ router.put('/:id', requireAuth, async (req, res) => {
           if (!allowed.has(g)) delete effectiveMains[g];
         }
       }
-      const effectivePrimary = existing.primaryGameId || existing.gameId;
+      // Scoped admins editing ANOTHER participant cannot change their primary game.
+      // When editing their OWN participant (or when not scoped), respect the incoming primaryGameId.
+      const isOwnParticipant = participantIdFor(req.user, existing.communityId) === existing.id;
+      const scopedEditingOther = isScopedAdmin(req.user, existing.communityId) && !isOwnParticipant;
+      const effectivePrimary = scopedEditingOther
+        ? (existing.primaryGameId || existing.gameId)
+        : (primaryGameId || existing.primaryGameId || existing.gameId);
       setParticipantGameList(updated, effectiveIds, effectivePrimary, effectiveMains);
       // Apply availability flags (per-game, per-activity) after the list is set
       if (gameAvailability && typeof gameAvailability === 'object') {
