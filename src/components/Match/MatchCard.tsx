@@ -21,6 +21,8 @@ interface MatchCardProps {
   /** Empty slot can still receive a participant (incomplete feeders) */
   slot1Awaiting?: boolean;
   slot2Awaiting?: boolean;
+  /** Override the displayed match number (e.g. sequential index per round for imported brackets) */
+  displayMatchNumber?: number;
 }
 
 function MatchCard({
@@ -36,6 +38,7 @@ function MatchCard({
   reversible = false,
   slot1Awaiting = false,
   slot2Awaiting = false,
+  displayMatchNumber,
 }: MatchCardProps) {
   const { t } = useTranslation();
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -67,8 +70,22 @@ function MatchCard({
   const isGhostMatch = match.status === 'completed' &&
     !match.participant1Id && !match.participant2Id && !match.winnerId;
 
-  const hasScore = match.participant1Score !== undefined || match.participant2Score !== undefined;
   const hasGames = match.games && match.games.length > 0;
+
+  // Si participant1Score es null pero hay games, derivar score contando game wins
+  const effectiveP1Score: number | null = match.participant1Score != null
+    ? match.participant1Score
+    : (hasGames
+        ? (match.games?.filter(g => g.winnerId === match.participant1Id).length ?? null)
+        : null);
+  const effectiveP2Score: number | null = match.participant2Score != null
+    ? match.participant2Score
+    : (hasGames
+        ? (match.games?.filter(g => g.winnerId === match.participant2Id).length ?? null)
+        : null);
+
+  // Solo mostramos scores si al menos uno es un número (no null/undefined)
+  const hasScore = effectiveP1Score != null || effectiveP2Score != null;
 
   const p1GameChars = hasGames
     ? charsWithColorsFromGames(match.games, 1)
@@ -85,7 +102,7 @@ function MatchCard({
         className={`match-header ${(canSelect || canView) ? 'clickable' : ''}`}
         onClick={() => { if (canSelect || canView) setShowDetailModal(true); }}
       >
-        <span className="match-id">{t('tournament.matchCard.match', { number: match.matchNumber })}</span>
+        <span className="match-id">{t('tournament.matchCard.match', { number: displayMatchNumber ?? match.matchNumber })}</span>
         {match.status === 'completed' && !isGhostMatch && (
           <span className="match-status completed"><i className="fas fa-check" /></span>
         )}
@@ -137,7 +154,7 @@ function MatchCard({
               </span>
             </div>
             <div className="participant-right">
-              {hasScore && <span className="participant-score">{match.participant1Score ?? 0}</span>}
+              {hasScore && <span className="participant-score">{effectiveP1Score ?? 0}</span>}
               {isWinner(match.participant1Id) && !hasScore && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
             </div>
           </div>
@@ -181,7 +198,7 @@ function MatchCard({
               </span>
             </div>
             <div className="participant-right">
-              {hasScore && <span className="participant-score">{match.participant2Score ?? 0}</span>}
+              {hasScore && <span className="participant-score">{effectiveP2Score ?? 0}</span>}
               {isWinner(match.participant2Id) && !hasScore && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
             </div>
           </div>

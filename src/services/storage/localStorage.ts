@@ -825,7 +825,13 @@ function lsWriteMatchRecords(data: StoredMatchRecord[]): void {
   }
 }
 
-async function pushMatchRecord(record: StoredMatchRecord): Promise<boolean> {
+/**
+ * Intenta enviar un match record al servidor.
+ * Retorna true si fue aceptado (2xx).
+ * Retorna 'permanent' si el torneo no existe (404) o acceso denegado (403/404)
+ * para que el caller pueda marcarlo como synced y no reintentarlo.
+ */
+async function pushMatchRecord(record: StoredMatchRecord): Promise<boolean | 'permanent'> {
   if (!(await isServerAvailable())) return false;
   try {
     const res = await fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(record.tournamentId)}/matches`, {
@@ -837,6 +843,8 @@ async function pushMatchRecord(record: StoredMatchRecord): Promise<boolean> {
       dispatchAuthExpired();
       return false;
     }
+    // 404 = torneo no existe en server, 403 = sin acceso → no tiene sentido reintentar
+    if (res.status === 404 || res.status === 403) return 'permanent';
     return res.ok;
   } catch (err) {
     console.warn('[Storage] Match record push failed:', err);
@@ -855,7 +863,9 @@ export async function queueTournamentMatchRecord(record: StoredMatchRecord): Pro
   const entry: StoredMatchRecord = { ...record, synced: false };
   all.push(entry);
   lsWriteMatchRecords(all);
-  if (await pushMatchRecord(entry)) {
+  const result = await pushMatchRecord(entry);
+  if (result) {
+    // true = confirmado; 'permanent' = torneo desaparecido → igual lo marcamos synced
     entry.synced = true;
     lsWriteMatchRecords(all);
   }
@@ -867,7 +877,9 @@ export async function syncPendingMatchRecords(): Promise<number> {
   let synced = 0;
   for (const r of all) {
     if (r.synced) continue;
-    if (await pushMatchRecord(r)) {
+    const result = await pushMatchRecord(r);
+    if (result) {
+      // true = aceptado, 'permanent' = torneo no existe → no reintentar más
       r.synced = true;
       synced++;
     }

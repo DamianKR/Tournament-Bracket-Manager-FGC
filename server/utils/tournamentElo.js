@@ -46,8 +46,12 @@ function resolveGlobalParticipant(entity, byId, byName) {
 export async function applyTournamentElo(tournament) {
   const allParticipants = (await participants.getAll()).map(migrateParticipantGames);
   const byId = new Map(allParticipants.map((p) => [p.id, p]));
+  // Scope name-fallback to the tournament's community — without this, a name
+  // collision across communities can award points to the wrong participant.
   const byName = new Map(
-    allParticipants.map((p) => [p.name.trim().toLowerCase(), p])
+    allParticipants
+      .filter((p) => !tournament.communityId || p.communityId === tournament.communityId)
+      .map((p) => [p.name.trim().toLowerCase(), p])
   );
 
   const applied = [];
@@ -115,4 +119,56 @@ export async function applyTournamentElo(tournament) {
   }
 
   return applied;
+}
+
+/**
+ * Awards ELO to ONE specific participant for their placement in a tournament.
+ *
+ * Used during participant merges so only the merged participant gets the ELO
+ * delta — all other participants in the tournament already received their ELO
+ * when the tournament was originally completed/imported.
+ *
+ * @param {object} tournament
+ * @param {string} participantId - global participant ID of the survivor
+ * @returns {Promise<object|null>} result object or null if no points awarded
+ */
+export async function applyTournamentEloForOne(tournament, participantId) {
+  const p = await participants.findById(participantId);
+  if (!p) return null;
+
+  migrateParticipantGames(p);
+
+  const gameId     = tournament.gameId || 'ssbu';
+  const pointsDepth = [8, 16, 32].includes(tournament.pointsDepth) ? tournament.pointsDepth : 8;
+
+  // Find this participant's tournament entry
+  const tp = (tournament.participants ?? []).find(
+    (entry) => entry.globalParticipantId === participantId
+  );
+  if (!tp) return null;
+
+  const position = tp.finalPosition;
+  if (!position || position > pointsDepth) return null;
+
+  const teamMembers = Array.isArray(tp.members) ? tp.members : [];
+
+  let earned;
+  const ptsBefore = getParticipantEffectiveElo(p, gameId);
+
+  if (teamMembers.length > 0) {
+    const base = getTournamentPoints(position, ptsBefore, pointsDepth);
+    earned = Math.round(base / teamMembers.length);
+  } else {
+    earned = getTournamentPoints(position, ptsBefore, pointsDepth);
+  }
+
+  if (earned <= 0) return null;
+
+  const ptsAfter = ptsBefore + earned;
+  setParticipantGameElo(p, gameId, ptsAfter, getRankName(ptsAfter));
+  p.updatedAt = new Date().toISOString();
+  await participants.upsert(p);
+
+  console.log(`[eloForOne] ${p.name} | tournament=${tournament.id} | pos=${position} | ${ptsBefore} → ${ptsAfter} (+${earned})`);
+  return { participantId, pointsBefore: ptsBefore, pointsEarned: earned, pointsAfter: ptsAfter };
 }

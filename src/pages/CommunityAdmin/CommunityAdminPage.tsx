@@ -21,6 +21,7 @@ import {
   importStartggEvent,
   getImportedTournaments,
   enrichTournamentCharacters,
+  enableTournamentPoints,
   type StartggTournamentPreview,
   type ImportSummary,
   type ImportedTournament,
@@ -69,6 +70,10 @@ function CommunityAdminPage() {
   const [importingEventId, setImportingEventId] = useState<number | null>(null);
   const [enrichingId, setEnrichingId] = useState<string | null>(null);
   const [enrichResult, setEnrichResult] = useState<{ id: string; sets: number } | null>(null);
+  const [importGivesPoints, setImportGivesPoints] = useState(true);
+  const [importPointsDepth, setImportPointsDepth] = useState<8 | 16 | 32>(8);
+  const [applyingPointsId, setApplyingPointsId] = useState<string | null>(null);
+  const [applyPointsDepth, setApplyPointsDepth] = useState<8 | 16 | 32>(8);
 
   // Init local state from the community once it loads
   useEffect(() => {
@@ -89,6 +94,18 @@ function CommunityAdminPage() {
   }, [communityId]);
 
   useEffect(() => { loadImported(); }, [loadImported]);
+
+  // Aviso al salir de la página si hay una importación o enriquecimiento en curso
+  const isBusyImporting = importingEventId !== null || enrichingId !== null;
+  useEffect(() => {
+    if (!isBusyImporting) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isBusyImporting]);
 
   const dirty = useMemo(() => {
     if (!community) return false;
@@ -158,13 +175,32 @@ function CommunityAdminPage() {
     }
   }
 
+  async function handleApplyPoints(tournamentId: string) {
+    setApplyingPointsId(tournamentId);
+    try {
+      const awarded = await enableTournamentPoints(tournamentId, applyPointsDepth);
+      toast?.success?.(t('communityAdmin.startgg.pointsApplied', { count: awarded }));
+      await loadImported();
+    } catch (err: any) {
+      toast?.error?.(err.message ?? t('communityAdmin.startgg.pointsError'));
+    } finally {
+      setApplyingPointsId(null);
+    }
+  }
+
   async function handleImportEvent(eventId: number) {
     if (!communityId || !importPreview) return;
     setImportingEventId(eventId);
     setImportError(null);
     setImportResult(null);
     try {
-      const summary = await importStartggEvent(importPreview.normalizedSlug, eventId, communityId);
+      const summary = await importStartggEvent(
+        importPreview.normalizedSlug,
+        eventId,
+        communityId,
+        importGivesPoints,
+        importPointsDepth
+      );
       setImportResult(summary);
       await loadImported();
       setImportPreview(null);
@@ -402,6 +438,44 @@ function CommunityAdminPage() {
                   )}
                 </div>
 
+                {/* Points option */}
+                <div className="admin-startgg-points-option">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={importGivesPoints}
+                      onChange={(e) => setImportGivesPoints(e.target.checked)}
+                      disabled={importingEventId !== null}
+                    />
+                    <span>{t('communityAdmin.startgg.awardPoints')}</span>
+                  </label>
+                  {importGivesPoints && (
+                    <div className="admin-startgg-depth-row">
+                      <label htmlFor="importPointsDepth" className="admin-startgg-depth-label">
+                        {t('communityAdmin.startgg.pointsDepth')}
+                      </label>
+                      <select
+                        id="importPointsDepth"
+                        className="admin-startgg-depth-select"
+                        value={importPointsDepth}
+                        onChange={(e) => setImportPointsDepth(Number(e.target.value) as 8 | 16 | 32)}
+                        disabled={importingEventId !== null}
+                      >
+                        {[8, 16, 32].map((n) => (
+                          <option key={n} value={n}>
+                            {t('communityAdmin.startgg.topN', { n })}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  <p className="admin-startgg-points-hint">
+                    {importGivesPoints
+                      ? t('communityAdmin.startgg.awardPointsHintYes', { n: importPointsDepth })
+                      : t('communityAdmin.startgg.awardPointsHintNo')}
+                  </p>
+                </div>
+
                 <p className="admin-startgg-events-label">{t('communityAdmin.startgg.selectEvent')}</p>
                 <div className="admin-startgg-events-list">
                   {importPreview.events.length === 0 && (
@@ -470,10 +544,40 @@ function CommunityAdminPage() {
                             </span>
                           )}
                         </div>
-                        <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
+                        <div className="admin-startgg-event-actions">
                           <span className="admin-startgg-imported-badge">
                             <i className="fas fa-check" /> {t('communityAdmin.startgg.importedBadge')}
                           </span>
+                          {imp.eloApplied ? (
+                            <span className="admin-startgg-imported-badge" style={{ background: '#f0fdf4', borderColor: '#bbf7d0', color: '#15803d' }}>
+                              <i className="fas fa-star" /> {t('communityAdmin.startgg.pointsAppliedBadge')}
+                            </span>
+                          ) : (
+                            <div className="admin-startgg-apply-points-group">
+                              <select
+                                className="admin-startgg-depth-select admin-startgg-depth-select--sm"
+                                value={applyPointsDepth}
+                                onChange={(e) => setApplyPointsDepth(Number(e.target.value) as 8 | 16 | 32)}
+                                disabled={applyingPointsId !== null}
+                                title={t('communityAdmin.startgg.pointsDepth')}
+                              >
+                                {[8, 16, 32].map((n) => (
+                                  <option key={n} value={n}>Top {n}</option>
+                                ))}
+                              </select>
+                              <button
+                                className="btn btn-outline btn-sm"
+                                onClick={() => handleApplyPoints(imp.id)}
+                                disabled={applyingPointsId === imp.id}
+                                title={t('communityAdmin.startgg.applyPointsTitle')}
+                              >
+                                {applyingPointsId === imp.id
+                                  ? <><i className="fas fa-spinner fa-spin" /> {t('communityAdmin.startgg.applyingPoints')}</>
+                                  : <><i className="fas fa-star" /> {t('communityAdmin.startgg.applyPoints')}</>
+                                }
+                              </button>
+                            </div>
+                          )}
                           {canEnrich && (
                             <button
                               className="btn btn-outline btn-sm"
@@ -515,6 +619,23 @@ function CommunityAdminPage() {
           </div>
         </section>
       </div>
+
+      {/* ── Overlay bloqueante durante importación ── */}
+      {isBusyImporting && (
+        <div className="import-overlay" role="status" aria-live="polite">
+          <div className="import-overlay-content">
+            <i className="fas fa-spinner fa-spin import-overlay-icon" />
+            <p className="import-overlay-title">
+              {importingEventId !== null
+                ? t('communityAdmin.startgg.importingOverlay')
+                : t('communityAdmin.startgg.enrichingOverlay')}
+            </p>
+            <p className="import-overlay-desc">
+              {t('communityAdmin.startgg.importingOverlayDesc')}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

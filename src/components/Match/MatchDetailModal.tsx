@@ -51,8 +51,14 @@ function MatchDetailModal({
 }: MatchDetailModalProps) {
   const { t } = useTranslation();
   
-  const [score1, setScore1] = useState(data.participant1Score ?? 0);
-  const [score2, setScore2] = useState(data.participant2Score ?? 0);
+  // Si los scores explícitos son null pero hay games, derivarlos contando wins por jugador
+  const initScore = (explicit: number | undefined, playerId: string, games?: MatchGame[]) => {
+    if (explicit != null) return explicit;
+    if (games && games.length > 0) return games.filter(g => g.winnerId === playerId).length;
+    return 0;
+  };
+  const [score1, setScore1] = useState(() => initScore(data.participant1Score, participant1Id, data.games));
+  const [score2, setScore2] = useState(() => initScore(data.participant2Score, participant2Id, data.games));
   const [chars1, setChars1] = useState<string[]>(data.participant1Characters ?? []);
   const [chars2, setChars2] = useState<string[]>(data.participant2Characters ?? []);
   const [games, setGames] = useState<MatchGame[]>(data.games ?? []);

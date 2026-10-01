@@ -15,7 +15,7 @@ import Top8Podium from '@/components/Top8Podium/Top8Podium';
 import ImportedPhasesView from '@/components/ImportedPhases/ImportedPhasesView';
 import './TournamentView.css';
 
-type ViewMode = 'bracket' | 'participants' | 'pools';
+type ViewMode = 'bracket' | 'participants';
 
 function TournamentView() {
   const { t } = useTranslation();
@@ -149,12 +149,6 @@ function TournamentView() {
       onClick: () => setViewMode('bracket'),
       disabled: tournament.status === 'setup',
     },
-    ...(hasPools ? [{
-      id: 'pools',
-      label: t('tournament.view.sidebarPools'),
-      active: viewMode === 'pools',
-      onClick: () => setViewMode('pools'),
-    }] : []),
     {
       id: 'participants',
       label: t('tournament.view.sidebarParticipants'),
@@ -252,26 +246,34 @@ function TournamentView() {
           </div>
         ) : (
           <>
-            {viewMode === 'bracket' && tournament.bracket && (
-              <BracketView
-                bracket={tournament.bracket}
-                participants={tournament.participants}
-                gameId={tournament.gameId ?? undefined}
-                onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
-                onMatchGames={canAdminGame(tournament.gameId) ? handleMatchGames : undefined}
-                onRevertMatch={canAdminGame(tournament.gameId) ? handleRevertMatch : undefined}
-                readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
-              />
-            )}
-
-            {viewMode === 'pools' && hasPools && (
-              <div className="pools-view">
-                <h2>{t('tournament.view.poolsTitle')}</h2>
+            {viewMode === 'bracket' && (
+              hasPools ? (
                 <ImportedPhasesView
                   phases={tournament.importedPhases!}
                   participants={tournament.participants}
+                  bracketMatches={[
+                    ...(tournament.bracket?.winnerBracket ?? []),
+                    ...(tournament.bracket?.loserBracket ?? []),
+                    ...(tournament.bracket?.grandFinal ? [tournament.bracket.grandFinal] : []),
+                  ]}
+                  gameId={tournament.gameId}
+                  bracket={tournament.bracket ?? undefined}
+                  onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
+                  onMatchGames={canAdminGame(tournament.gameId) ? handleMatchGames : undefined}
+                  onRevertMatch={canAdminGame(tournament.gameId) ? handleRevertMatch : undefined}
+                  readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
                 />
-              </div>
+              ) : tournament.bracket ? (
+                <BracketView
+                  bracket={tournament.bracket}
+                  participants={tournament.participants}
+                  gameId={tournament.gameId ?? undefined}
+                  onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
+                  onMatchGames={canAdminGame(tournament.gameId) ? handleMatchGames : undefined}
+                  onRevertMatch={canAdminGame(tournament.gameId) ? handleRevertMatch : undefined}
+                  readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
+                />
+              ) : null
             )}
 
             {viewMode === 'participants' && (

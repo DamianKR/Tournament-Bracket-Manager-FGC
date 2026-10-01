@@ -121,19 +121,22 @@ router.post('/', requireAuth, async (req, res) => {
           });
         }
       }
-      const becomesCompleted = t.status === 'completed' && (!prev || prev.status !== 'completed');
-      const alreadyApplied   = t.eloApplied || (prev && prev.eloApplied);
+      const alreadyApplied = t.eloApplied || (prev && prev.eloApplied);
+      // Apply ELO only when givesPoints is EXPLICITLY true — undefined means
+      // the field was never set and must not be treated as a consent to apply.
+      const shouldApplyElo = t.status === 'completed' && !alreadyApplied && t.givesPoints === true;
 
-      if (becomesCompleted && !alreadyApplied && t.givesPoints !== false) {
+      if (shouldApplyElo) {
         const updates = await applyTournamentElo(t);
         t.eloApplied = true;
         t.eloUpdates = updates;
         eloAppliedIds.push(t.id);
         console.log(`[Tournaments] ELO applied for ${t.id}: ${updates.length} participants`);
-      } else if (becomesCompleted && !alreadyApplied) {
+      } else if (t.status === 'completed' && !alreadyApplied && t.givesPoints !== true) {
+        // Mark as processed so we never accidentally apply ELO in a future save.
         t.eloApplied = true;
         t.eloUpdates = [];
-        console.log(`[Tournaments] ELO skipped for ${t.id}: givesPoints=false`);
+        console.log(`[Tournaments] ELO skipped for ${t.id}: givesPoints not enabled`);
       }
 
       updatedBody.push(t);
@@ -205,20 +208,22 @@ router.put('/:id', requireAuth, async (req, res) => {
       }
     }
 
-    // When a tournament transitions to 'completed', award ELO points for placements once.
-    const becomesCompleted = body.status === 'completed' && (!existing || existing.status !== 'completed');
-    const alreadyApplied   = body.eloApplied || (existing && existing.eloApplied);
+    // Award ELO only when givesPoints is EXPLICITLY true — undefined means
+    // the field was never set and must not be treated as a consent to apply.
+    const alreadyApplied = body.eloApplied || (existing && existing.eloApplied);
+    const shouldApplyElo = body.status === 'completed' && !alreadyApplied && body.givesPoints === true;
 
-    if (becomesCompleted && !alreadyApplied && body.givesPoints !== false) {
+    if (shouldApplyElo) {
       const tournamentToApply = { ...body, status: 'completed' };
       const eloUpdates = await applyTournamentElo(tournamentToApply);
       body.eloApplied = true;
       body.eloUpdates = eloUpdates;
       console.log(`[Tournaments] ELO applied for ${req.params.id}: ${eloUpdates.length} participants`);
-    } else if (becomesCompleted && !alreadyApplied) {
+    } else if (body.status === 'completed' && !alreadyApplied && body.givesPoints !== true) {
+      // Mark as processed so we never accidentally apply ELO in a future save.
       body.eloApplied = true;
       body.eloUpdates = [];
-      console.log(`[Tournaments] ELO skipped for ${req.params.id}: givesPoints=false`);
+      console.log(`[Tournaments] ELO skipped for ${req.params.id}: givesPoints not enabled`);
     }
 
     const saved = await tournaments.upsert(body);
@@ -325,8 +330,14 @@ router.delete('/', requireAuth, requireSuperAdmin, async (_req, res) => {
 });
 
 // GET /api/tournaments/:id/matches
-router.get('/:id/matches', async (req, res) => {
+router.get('/:id/matches', optionalAuth, async (req, res) => {
   try {
+    // Verificar que el torneo pertenece a la comunidad del solicitante
+    const tournament = await tournaments.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+    if (!isInUserScope(req.user, tournament.communityId)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
     const all = await tournamentMatches.getAll();
     const filtered = all.filter(m => m.tournamentId === req.params.id);
     res.json(filtered);

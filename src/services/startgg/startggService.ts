@@ -143,6 +143,8 @@ export interface ImportedTournament {
   gameId: string | null;
   status: string;
   completedAt: string | null;
+  givesPoints: boolean;
+  eloApplied: boolean;
 }
 
 /**
@@ -170,12 +172,14 @@ export async function previewStartggTournament(slug: string): Promise<StartggTou
 export async function importStartggEvent(
   slug: string,
   eventId: number,
-  communityId: string
+  communityId: string,
+  givesPoints: boolean = false,
+  pointsDepth: number = 8
 ): Promise<ImportSummary> {
   const res = await fetch(`${SERVER_URL}/api/startgg/import/event`, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ slug, eventId, communityId }),
+    body: JSON.stringify({ slug, eventId, communityId, givesPoints, pointsDepth }),
   });
 
   if (!res.ok) {
@@ -255,4 +259,33 @@ export async function enrichTournamentCharacters(
     throw new Error(err.error ?? 'Error al importar personajes');
   }
   return res.json();
+}
+
+/**
+ * Habilita givesPoints en un torneo ya importado y dispara el cálculo de ELO
+ * en el servidor (que detecta status=completed + eloApplied=false y lo aplica).
+ * Devuelve el número de participantes que recibieron puntos.
+ */
+export async function enableTournamentPoints(
+  tournamentId: string,
+  pointsDepth: number = 8
+): Promise<number> {
+  // Fetch the current tournament record so the PUT body is complete
+  const getRes = await fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournamentId)}`, {
+    headers: getAuthHeader(),
+  });
+  if (!getRes.ok) throw new Error('No se pudo cargar el torneo');
+  const tournament = await getRes.json();
+
+  const putRes = await fetch(`${SERVER_URL}/api/tournaments/${encodeURIComponent(tournamentId)}`, {
+    method:  'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ ...tournament, givesPoints: true, pointsDepth }),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(err.error ?? 'Error al aplicar puntos');
+  }
+  const saved = await putRes.json();
+  return Array.isArray(saved.eloUpdates) ? saved.eloUpdates.length : 0;
 }

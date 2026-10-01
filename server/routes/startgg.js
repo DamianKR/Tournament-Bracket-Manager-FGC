@@ -12,6 +12,7 @@ import { requireAuth } from '../utils/jwtMiddleware.js';
 import { requireAdmin } from '../utils/jwtMiddleware.js';
 import { isAdminInCommunity } from '../utils/communityScope.js';
 import { users } from '../db/collections.js';
+import { propagateStartggLink } from '../utils/participantMerge.js';
 import {
   previewTournament,
   importEvent,
@@ -116,22 +117,41 @@ router.post('/auth/callback', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'Could not fetch start.gg user profile' });
     }
 
-    // 3. Guardar IDs en el usuario local
+    // 3. Cargar usuario local y validar unicidad del startggPlayerId
     const user = await users.findById(req.user.id);
     if (!user) return res.status(404).json({ error: 'Local user not found' });
 
+    const incomingPlayerId = startggUser.player?.id ?? null;
+    if (incomingPlayerId) {
+      const allUsers = await users.getAll();
+      const conflict = allUsers.find(
+        (u) => u.id !== user.id && String(u.startggPlayerId) === String(incomingPlayerId)
+      );
+      if (conflict) {
+        return res.status(409).json({
+          error: 'Esta cuenta de start.gg ya está vinculada a otro usuario del sistema.',
+        });
+      }
+    }
+
+    // 4. Guardar IDs en el usuario local
     user.startggUserId   = startggUser.id ?? null;
-    user.startggPlayerId = startggUser.player?.id ?? null;
+    user.startggPlayerId = incomingPlayerId;
     user.startggSlug     = startggUser.slug ?? null;
     user.startggGamerTag = startggUser.player?.gamerTag ?? null;
 
     await users.upsert(user);
+
+    // 5. Propagar el link a participants y adoptar/mergear stubs
+    const mergeResult = await propagateStartggLink(user.id);
+    console.log(`[startgg] Link propagation result for user ${user.username}:`, mergeResult);
 
     res.json({
       startggUserId:   user.startggUserId,
       startggPlayerId: user.startggPlayerId,
       startggSlug:     user.startggSlug,
       startggGamerTag: user.startggGamerTag,
+      mergeResult,
     });
   } catch (err) {
     console.error('[startgg] OAuth callback error:', err);
@@ -208,7 +228,7 @@ router.post('/import/preview', requireAuth, requireAdmin, async (req, res) => {
 // Requiere ser admin de la comunidad destino.
 
 router.post('/import/event', requireAuth, requireAdmin, async (req, res) => {
-  const { slug, eventId, communityId } = req.body;
+  const { slug, eventId, communityId, givesPoints, pointsDepth } = req.body;
   if (!slug || !eventId || !communityId) {
     return res.status(400).json({ error: 'Faltan campos: slug, eventId, communityId' });
   }
@@ -220,7 +240,7 @@ router.post('/import/event', requireAuth, requireAdmin, async (req, res) => {
   }
 
   try {
-    const summary = await importEvent(slug, eventId, communityId);
+    const summary = await importEvent(slug, eventId, communityId, givesPoints ?? false, pointsDepth ?? 8);
     res.json({ ok: true, ...summary });
   } catch (err) {
     console.error('[startgg] Import error:', err.message);
@@ -300,6 +320,8 @@ router.get('/imported', requireAuth, async (req, res) => {
       gameId:          t.gameId,
       status:          t.status,
       completedAt:     t.completedAt,
+      givesPoints:     t.givesPoints ?? false,
+      eloApplied:      t.eloApplied  ?? false,
     }));
     res.json(imported);
   } catch (err) {

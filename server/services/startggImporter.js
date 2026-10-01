@@ -20,7 +20,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { tournaments, tournamentMatches, participants } from '../db/collections.js';
+import { tournaments, tournamentMatches, participants, users } from '../db/collections.js';
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR   = path.join(__dirname, '..', '..', 'data');
@@ -197,6 +197,9 @@ const SETS_QUERY = `
             entrant { id name }
             prereqType
             prereqId
+            standing {
+              stats { score { value } }
+            }
           }
         }
       }
@@ -330,17 +333,81 @@ function buildImportedPhases(sets, entrantToLocalId) {
       const standings = group.bracketType === 'ROUND_ROBIN'
         ? computeRRStandings(group.sets, entrantToLocalId)
         : [];
-      groups.push({ id: group.id, name: group.name, bracketType: group.bracketType, standings });
+
+      // Construir sets para TODOS los tipos de grupo (RR + DE/SE).
+      // Para RR: formato plano sin round info.
+      // Para DE/SE: incluir roundLabel y round para mostrar brackets por pool.
+      const poolSets = group.sets
+        .map((set) => {
+          const s0 = set.slots?.[0];
+          const s1 = set.slots?.[1];
+          if (!s0?.entrant || !s1?.entrant) return null;
+
+          const id0 = entrantToLocalId.get(String(s0.entrant.id)) ?? null;
+          const id1 = entrantToLocalId.get(String(s1.entrant.id)) ?? null;
+          if (!id0 || !id1) return null;
+
+          const winnerSggId = set.winnerId ? String(set.winnerId) : null;
+          const winnerId = winnerSggId === String(s0.entrant.id) ? id0
+            : winnerSggId === String(s1.entrant.id) ? id1
+            : null;
+
+          // Usar score directo del slot cuando está disponible
+          const slot0Score = s0.standing?.stats?.score?.value;
+          const slot1Score = s1.standing?.stats?.score?.value;
+
+          let player1Score = (slot0Score != null && slot0Score >= 0) ? slot0Score : null;
+          let player2Score = (slot1Score != null && slot1Score >= 0) ? slot1Score : null;
+          if (player1Score == null || player2Score == null) {
+            const parsed = parseSetScores(
+              set.displayScore, s0.entrant.id, s1.entrant.id, set.winnerId, set.slots
+            );
+            if (player1Score == null) player1Score = parsed.score1;
+            if (player2Score == null) player2Score = parsed.score2;
+          }
+
+          const entry = {
+            id:           `sgg_s_${set.id}`,
+            player1Id:    id0,
+            player2Id:    id1,
+            winnerId,
+            player1Score,
+            player2Score,
+          };
+
+          // Para grupos DE/SE: añadir round info para que el frontend pueda
+          // reconstruir el bracket por pool (Winners R1, Losers R2, etc.)
+          if (group.bracketType !== 'ROUND_ROBIN') {
+            entry.roundLabel = set.fullRoundText ?? undefined;
+            entry.round      = set.round ?? undefined;
+          }
+
+          return entry;
+        })
+        .filter(Boolean);
+
+      groups.push({
+        id: group.id, name: group.name, bracketType: group.bracketType,
+        standings,
+        sets: poolSets,
+      });
     }
-    // Ordenar grupos por nombre
-    groups.sort((a, b) => a.name.localeCompare(b.name));
+    // Ordenar grupos por nombre numérico
+    groups.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
     importedPhases.push({ id: phase.id, name: phase.name, bracketType: phase.bracketType, groups });
   }
 
-  // Poner round-robin primero, luego bracket
+  // Orden de fases:
+  // 1. RR antes que DE/SE (pools round-robin siempre son la primera fase)
+  // 2. Dentro del mismo tipo: más grupos primero (Pools > Top32 > Top8)
+  // 3. Desempate por phase ID numérico ascendente (fases más tempranas primero)
   importedPhases.sort((a, b) => {
-    const order = { ROUND_ROBIN: 0, SINGLE_ELIMINATION: 1, DOUBLE_ELIMINATION: 2 };
-    return (order[a.bracketType] ?? 3) - (order[b.bracketType] ?? 3);
+    const typeOrder = { ROUND_ROBIN: 0, SINGLE_ELIMINATION: 1, DOUBLE_ELIMINATION: 2 };
+    const typeDiff = (typeOrder[a.bracketType] ?? 3) - (typeOrder[b.bracketType] ?? 3);
+    if (typeDiff !== 0) return typeDiff;
+    const groupDiff = b.groups.length - a.groups.length; // más grupos primero
+    if (groupDiff !== 0) return groupDiff;
+    return Number(a.id) - Number(b.id); // phase ID ascendente
   });
 
   return importedPhases;
@@ -349,9 +416,10 @@ function buildImportedPhases(sets, entrantToLocalId) {
 /**
  * Calcula standings de un pool round-robin a partir de sus sets.
  * Retorna array ordenado por placement (wins desc, losses asc).
+ * Incluye gameWins/gameLosses usando slot scores directos cuando estén disponibles.
  */
 function computeRRStandings(groupSets, entrantToLocalId) {
-  const record = new Map(); // localId → { wins, losses }
+  const record = new Map(); // localId → { wins, losses, gameWins, gameLosses }
 
   for (const set of groupSets) {
     const s0 = set.slots?.[0];
@@ -362,14 +430,18 @@ function computeRRStandings(groupSets, entrantToLocalId) {
     const id1 = entrantToLocalId.get(String(s1.entrant.id));
     if (!id0 || !id1) continue;
 
-    if (!record.has(id0)) record.set(id0, { wins: 0, losses: 0 });
-    if (!record.has(id1)) record.set(id1, { wins: 0, losses: 0 });
+    if (!record.has(id0)) record.set(id0, { wins: 0, losses: 0, gameWins: 0, gameLosses: 0 });
+    if (!record.has(id1)) record.set(id1, { wins: 0, losses: 0, gameWins: 0, gameLosses: 0 });
 
     const winnerSggId = set.winnerId ? String(set.winnerId) : null;
-    // slot0 y slot1 tienen el entrant, no el winnerId directamente —
-    // comparamos con las entrant IDs de los slots
     const slot0Id = String(s0.entrant.id);
     const slot1Id = String(s1.entrant.id);
+
+    // Scores de juegos (preferir slot score directo sobre regex de displayScore)
+    const s0GameScore = s0.standing?.stats?.score?.value;
+    const s1GameScore = s1.standing?.stats?.score?.value;
+    const g0 = (s0GameScore != null && s0GameScore >= 0) ? s0GameScore : null;
+    const g1 = (s1GameScore != null && s1GameScore >= 0) ? s1GameScore : null;
 
     if (winnerSggId === slot0Id) {
       record.get(id0).wins++;
@@ -378,12 +450,22 @@ function computeRRStandings(groupSets, entrantToLocalId) {
       record.get(id1).wins++;
       record.get(id0).losses++;
     }
+
+    if (g0 != null) { record.get(id0).gameWins   += g0; record.get(id0).gameLosses += (g1 ?? 0); }
+    if (g1 != null) { record.get(id1).gameWins   += g1; record.get(id1).gameLosses += (g0 ?? 0); }
   }
 
   // Construir standings ordenados
   const standings = [];
   for (const [participantId, rec] of record) {
-    standings.push({ participantId, wins: rec.wins, losses: rec.losses, placement: 0 });
+    standings.push({
+      participantId,
+      wins:        rec.wins,
+      losses:      rec.losses,
+      gameWins:    rec.gameWins,
+      gameLosses:  rec.gameLosses,
+      placement:   0,
+    });
   }
   standings.sort((a, b) => b.wins - a.wins || a.losses - b.losses);
   standings.forEach((s, i) => { s.placement = i + 1; });
@@ -442,7 +524,9 @@ function reconstructBracketLinks(matches, sets) {
 function bracketTypeFromText(fullRoundText) {
   if (!fullRoundText) return 'winner';
   const t = fullRoundText.toLowerCase();
-  if (t.includes('grand final') || t.includes('true final')) return 'grand_final';
+  if (t.includes('grand final') || t.includes('true final')) {
+    return t.includes('reset') ? 'grand_final_reset' : 'grand_final';
+  }
   if (t.includes('losers') || t.includes('loser')) return 'loser';
   return 'winner';
 }
@@ -454,15 +538,34 @@ function bracketTypeFromText(fullRoundText) {
 //   "DQ"
 //   null
 
+/**
+ * Extrae scores de los slots del set como fallback cuando displayScore no parsea.
+ * slots[0] contiene el entrant correspondiente a entrant1Id (por convención del importer).
+ */
+function slotScores(slots, entrant1Id) {
+  if (!slots || slots.length < 2) return { score1: null, score2: null };
+  const s0 = slots[0];
+  const s1 = slots[1];
+  const v0 = s0?.standing?.stats?.score?.value;
+  const v1 = s1?.standing?.stats?.score?.value;
+  if (v0 == null || v0 < 0 || v1 == null || v1 < 0) return { score1: null, score2: null };
+  // Verificar que slots[0] corresponde a entrant1 (siempre cierto en este importer, pero por seguridad)
+  const e0IsEntrant1 = !entrant1Id || String(s0?.entrant?.id) === String(entrant1Id);
+  return e0IsEntrant1
+    ? { score1: v0, score2: v1 }
+    : { score1: v1, score2: v0 };
+}
+
 function parseSetScores(displayScore, entrant1Id, entrant2Id, winnerId, slots) {
   if (!displayScore || displayScore === 'DQ' || displayScore === 'W/O') {
-    return { score1: null, score2: null };
+    // Intentar con slot standings como fallback
+    return slotScores(slots, entrant1Id);
   }
 
   // "Name X - Y Name" or "X - Y"
   const pattern = /(\d+)\s*-\s*(\d+)/;
   const match = displayScore.match(pattern);
-  if (!match) return { score1: null, score2: null };
+  if (!match) return slotScores(slots, entrant1Id);
 
   const [, a, b] = match;
   const scoreA = parseInt(a), scoreB = parseInt(b);
@@ -495,9 +598,11 @@ function parseSetScores(displayScore, entrant1Id, entrant2Id, winnerId, slots) {
  * @param {string} slug         - Tournament slug (or full URL)
  * @param {string|number} eventId - start.gg event ID to import
  * @param {string} communityId  - Local community ID
+ * @param {boolean} givesPoints - Whether to award ELO/ranking points on import (default false)
+ * @param {number} pointsDepth  - How deep placement payouts go: 8 | 16 | 32 (default 8)
  * @returns {object} Import summary
  */
-export async function importEvent(slug, eventId, communityId) {
+export async function importEvent(slug, eventId, communityId, givesPoints = false, pointsDepth = 8) {
   const normalSlug = normalizeTournamentSlug(slug);
   const sggEventId = String(eventId);
 
@@ -524,13 +629,37 @@ export async function importEvent(slug, eventId, communityId) {
 
   console.log(`[startgg] ${sggEntrants.length} entrants, ${sggSets.length} sets, ${sggStandings.length} standings`);
 
-  // 3. Load local participants to match by startggPlayerId
-  const allLocalParticipants = await participants.getAll();
+  // 3. Load local participants + users to match by startggPlayerId
+  const [allLocalParticipants, allUsers] = await Promise.all([
+    participants.getAll(),
+    users.getAll(),
+  ]);
+
+  // Map: sggPlayerId → participant (from participants that have startggPlayerId in this community)
   const byStartggPlayerId = new Map();
   for (const lp of allLocalParticipants) {
     if (lp.communityId === communityId && lp.startggPlayerId) {
       byStartggPlayerId.set(String(lp.startggPlayerId), lp);
     }
+  }
+
+  // Map: sggPlayerId → user (from users that have linked their start.gg account)
+  const userBySggPlayerId = new Map();
+  for (const u of allUsers) {
+    if (u.startggPlayerId) {
+      userBySggPlayerId.set(String(u.startggPlayerId), u);
+    }
+  }
+
+  /**
+   * Returns the participantId a user has in a community (root or membership).
+   */
+  function getParticipantForCommunity(user, cid) {
+    if (user.communityId === cid && user.participantId) return user.participantId;
+    const m = (user.memberships ?? []).find(
+      (mem) => mem.communityId === cid && mem.isActive !== false
+    );
+    return m?.participantId ?? null;
   }
 
   // 4. Map / create GlobalParticipants for each start.gg entrant
@@ -548,10 +677,90 @@ export async function importEvent(slug, eventId, communityId) {
     // Tournament-local participant ID (stable within this import)
     const localTpId = `sgg_e_${sggEntrantId}`;
 
+    // Resolution order:
+    //   a) Participant in this community that already has this startggPlayerId
+    //   b) Linked user whose startggPlayerId matches → use/create their participant
+    //   c) Stub from a previous import (same entrantId or same generated stub ID)
+    //   d) Create new stub
     let globalParticipant = sggPlayerId ? byStartggPlayerId.get(sggPlayerId) : null;
 
+    if (!globalParticipant && sggPlayerId) {
+      // b) Check if a user has this startggPlayerId linked
+      const linkedUser = userBySggPlayerId.get(sggPlayerId);
+      if (linkedUser) {
+        const existingPid = getParticipantForCommunity(linkedUser, communityId);
+        if (existingPid) {
+          // Use the user's real participant — ensure startggPlayerId + entrantId are set
+          const existingP = allLocalParticipants.find((lp) => lp.id === existingPid);
+          if (existingP) {
+            let dirty = false;
+            if (!existingP.startggPlayerId) {
+              existingP.startggPlayerId = Number(sggPlayerId);
+              dirty = true;
+            }
+            if (!existingP.startggEntrantIds?.includes(sggEntrantId)) {
+              existingP.startggEntrantIds = [
+                ...new Set([...(existingP.startggEntrantIds ?? []), sggEntrantId]),
+              ];
+              dirty = true;
+            }
+            // Ensure game profile exists
+            if (localGameId && !existingP.games?.[localGameId]) {
+              existingP.games = { ...(existingP.games ?? {}), [localGameId]: buildGameProfile(localGameId) };
+              dirty = true;
+            }
+            if (dirty) {
+              existingP.updatedAt = now;
+              await participants.upsert(existingP);
+              // Keep maps up to date for subsequent entrants
+              byStartggPlayerId.set(sggPlayerId, existingP);
+              allLocalParticipants.push(existingP); // avoid double-create
+            }
+            globalParticipant = existingP;
+            console.log(`[startgg] Matched entrant ${name} to linked user ${linkedUser.username}'s participant ${existingPid}`);
+          }
+        } else {
+          // User is linked but has no participant in this community yet.
+          // Create a real (non-stub) participant and add the membership to the user.
+          const newPart = {
+            id:              `gp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+            name,
+            alias:           name,
+            avatarUrl:       null,
+            tournamentIds:   [],
+            gameId:          localGameId,
+            mainCharacterId: null,
+            games:           localGameId ? { [localGameId]: buildGameProfile(localGameId) } : {},
+            communityId,
+            startggPlayerId:   Number(sggPlayerId),
+            startggEntrantIds: [sggEntrantId],
+            isStartggStub:     false,
+            createdAt:         now,
+            updatedAt:         now,
+          };
+          await participants.upsert(newPart);
+          // Add membership to the user for this community
+          if (!Array.isArray(linkedUser.memberships)) linkedUser.memberships = [];
+          if (!linkedUser.memberships.find((m) => m.communityId === communityId)) {
+            linkedUser.memberships.push({
+              participantId: newPart.id,
+              communityId,
+              isActive:      true,
+              role:          'user',
+              gameAdminFor:  [],
+            });
+            await users.upsert(linkedUser);
+          }
+          byStartggPlayerId.set(sggPlayerId, newPart);
+          allLocalParticipants.push(newPart);
+          globalParticipant = newPart;
+          console.log(`[startgg] Created real participant ${newPart.id} for linked user ${linkedUser.username} in community ${communityId}`);
+        }
+      }
+    }
+
     if (!globalParticipant) {
-      // Check if stub already exists (from a previous import)
+      // c) Check if stub already exists (from a previous import)
       const existing = allLocalParticipants.find(
         (lp) => lp.communityId === communityId && lp.startggEntrantIds?.includes(sggEntrantId)
       );
@@ -642,13 +851,18 @@ export async function importEvent(slug, eventId, communityId) {
   const championSggId = championEntry ? String(championEntry.entrant.id) : null;
   const championLocalId = championSggId ? entrantMap.get(championSggId)?.tournamentLocalId ?? null : null;
 
-  // 8. Build bracket from sets
+  // 8. Build bracket from sets (solo fases de eliminación, no round-robin)
   const winnerBracket  = [];
   const loserBracket   = [];
-  let   grandFinalMatch = null;
+  let   grandFinalMatch      = null;
+  let   grandFinalResetMatch = null;
 
   for (const set of sggSets) {
     if (!set.slots || set.slots.length < 2) continue;
+
+    // Los sets de pools round-robin NO van al bracket de eliminación
+    const phaseType = set.phaseGroup?.phase?.bracketType;
+    if (phaseType === 'ROUND_ROBIN') continue;
 
     const slot1Entrant = set.slots[0]?.entrant;
     const slot2Entrant = set.slots[1]?.entrant;
@@ -675,13 +889,15 @@ export async function importEvent(slug, eventId, communityId) {
     );
 
     const bType = bracketTypeFromText(set.fullRoundText);
-    const roundNum = set.round ?? 1;
+    // start.gg usa valores negativos para el loser bracket (-1, -2…); usamos abs
+    const roundNum = Math.abs(set.round ?? 1);
     const matchId  = `sgg_s_${set.id}`;
 
     const match = {
       id:                matchId,
       roundNumber:       roundNum,
       matchNumber:       set.id,
+      roundLabel:        set.fullRoundText ?? undefined,
       bracketType:       bType,
       participant1Id:    e1.tournamentLocalId,
       participant2Id:    e2.tournamentLocalId,
@@ -693,9 +909,14 @@ export async function importEvent(slug, eventId, communityId) {
       participant1Score: score1,
       participant2Score: score2,
       games:             [],
+      // phaseGroupId permite filtrar qué matches pertenecen a cada pool DE/SE
+      phaseGroupId:      set.phaseGroup?.id ? String(set.phaseGroup.id) : undefined,
+      phaseId:           set.phaseGroup?.phase?.id ? String(set.phaseGroup.phase.id) : undefined,
     };
 
-    if (bType === 'grand_final') {
+    if (bType === 'grand_final_reset') {
+      grandFinalResetMatch = match;
+    } else if (bType === 'grand_final') {
       grandFinalMatch = match;
     } else if (bType === 'loser') {
       loserBracket.push(match);
@@ -705,7 +926,12 @@ export async function importEvent(slug, eventId, communityId) {
   }
 
   // 9. Reconstruct bracket navigation links (nextWinnerMatchId / nextLoserMatchId)
-  const allBracketMatches = [...winnerBracket, ...loserBracket, ...(grandFinalMatch ? [grandFinalMatch] : [])];
+  const allBracketMatches = [
+    ...winnerBracket,
+    ...loserBracket,
+    ...(grandFinalMatch ? [grandFinalMatch] : []),
+    ...(grandFinalResetMatch ? [grandFinalResetMatch] : []),
+  ];
   reconstructBracketLinks(allBracketMatches, sggSets);
 
   // 9b. Build importedPhases (pool standings + phase structure)
@@ -740,7 +966,7 @@ export async function importEvent(slug, eventId, communityId) {
       winnerBracket,
       loserBracket,
       grandFinal:      grandFinalMatch,
-      grandFinalReset: null,
+      grandFinalReset: grandFinalResetMatch,
     },
     championId:     championLocalId,
     communityId,
@@ -748,8 +974,8 @@ export async function importEvent(slug, eventId, communityId) {
     updatedAt:      now,
     startedAt:      tournamentDate,
     completedAt:    tournamentDate,
-    givesPoints:    false,   // el admin activa puntos manualmente si lo desea
-    pointsDepth:    8,       // default; ajustable por el admin tras el import
+    givesPoints:    givesPoints ?? false,
+    pointsDepth:    [8, 16, 32].includes(Number(pointsDepth)) ? Number(pointsDepth) : 8,
     seedingMode:    'none',  // los seeds de start.gg no se mapean al sistema local
     manualStandings,
     totalParticipants: sggEntrants.length,
@@ -764,7 +990,8 @@ export async function importEvent(slug, eventId, communityId) {
 
   await tournaments.upsert(tournamentRecord);
 
-  // 12. Update GlobalParticipant.tournamentIds
+  // 12. Update GlobalParticipant.tournamentIds (must run BEFORE applyTournamentElo
+  // so that applyTournamentElo fetches the final participant objects, not stale copies)
   for (const entry of entrantMap.values()) {
     const gp = entry.globalParticipant;
     if (!gp.tournamentIds.includes(tournamentId)) {
@@ -772,6 +999,17 @@ export async function importEvent(slug, eventId, communityId) {
       gp.updatedAt = now;
       await participants.upsert(gp);
     }
+  }
+
+  // 11b. Apply ELO if requested (tournament is already 'completed')
+  if (givesPoints) {
+    const { applyTournamentElo } = await import('../utils/tournamentElo.js');
+    const eloUpdates = await applyTournamentElo(tournamentRecord);
+    tournamentRecord.eloApplied = true;
+    tournamentRecord.eloUpdates = eloUpdates;
+    // Persist the eloApplied flag on the tournament record
+    await tournaments.upsert(tournamentRecord);
+    console.log(`[startgg] ELO applied for imported tournament ${tournamentId}: ${eloUpdates.length} participants`);
   }
 
   // 13. Build tournamentMatches (for H2H and stats) — one record per set
@@ -803,9 +1041,18 @@ export async function importEvent(slug, eventId, communityId) {
         ? new Date(set.startedAt * 1000).toISOString()
         : tournamentDate;
 
+    const sggPhaseType = set.phaseGroup?.phase?.bracketType; // ROUND_ROBIN | SINGLE_ELIMINATION | DOUBLE_ELIMINATION
     const tmRecord = {
       id:               `tm_sgg_${set.id}`,
       round:            set.round ?? 1,
+      roundLabel:       set.fullRoundText ?? null,
+      bracketType:      sggPhaseType === 'ROUND_ROBIN'
+                          ? 'round_robin'
+                          : bracketTypeFromText(set.fullRoundText),
+      poolName:         sggPhaseType === 'ROUND_ROBIN' && set.phaseGroup?.displayIdentifier
+                          ? `Pool ${set.phaseGroup.displayIdentifier}`
+                          : null,
+      phaseGroupId:     set.phaseGroup?.id ? String(set.phaseGroup.id) : null,
       matchNumber:      set.id,
       gameId:           localGameId,
       winnerId:         e1.tournamentLocalId === winnerEntry.tournamentLocalId
@@ -896,12 +1143,13 @@ export async function enrichWithCharacters(localTournamentId, sggEventId, localG
   const tournament = allTournaments.find((t) => t.id === localTournamentId);
   if (!tournament) throw new Error(`Torneo no encontrado: ${localTournamentId}`);
 
-  // Índice bracket: matchId → match object
+  // Índice bracket: matchId → match object (incluye grandFinalReset)
   const bracketById = new Map();
   for (const m of [
-    ...(tournament.bracket?.winnerBracket ?? []),
-    ...(tournament.bracket?.loserBracket  ?? []),
-    ...(tournament.bracket?.grandFinal    ? [tournament.bracket.grandFinal] : []),
+    ...(tournament.bracket?.winnerBracket    ?? []),
+    ...(tournament.bracket?.loserBracket     ?? []),
+    ...(tournament.bracket?.grandFinal       ? [tournament.bracket.grandFinal]      : []),
+    ...(tournament.bracket?.grandFinalReset  ? [tournament.bracket.grandFinalReset] : []),
   ]) {
     bracketById.set(m.id, m);
   }
@@ -960,7 +1208,7 @@ export async function enrichWithCharacters(localTournamentId, sggEventId, localG
 
           return {
             winnerId:          g.winnerId ? entrantToLocalId.get(String(g.winnerId)) ?? null : null,
-            orderNum:          g.orderNum ?? null,
+            gameNumber:        g.orderNum ?? null,
             player1Character:  charFor(localP1Id),
             player2Character:  charFor(localP2Id),
           };
@@ -968,23 +1216,50 @@ export async function enrichWithCharacters(localTournamentId, sggEventId, localG
 
       const sggSetId = String(set.id);
 
+      // Derivar scores contando wins por jugador en el game log
+      const p1GameWins = gamesData.filter((g) => g.winnerId && g.winnerId === localP1Id).length;
+      const p2GameWins = gamesData.filter((g) => g.winnerId && g.winnerId === localP2Id).length;
+
       // Actualizar tournament_match
       const tm = tmBySetId.get(sggSetId);
       if (tm) {
         tm.games        = gamesData;
         tm.player1Characters = [...new Set(gamesData.map((g) => g.player1Character).filter(Boolean))];
         tm.player2Characters = [...new Set(gamesData.map((g) => g.player2Character).filter(Boolean))];
+        // Sobreescribir scores con el conteo real de game wins si hay games
+        if (gamesData.length > 0) {
+          tm.player1Score = p1GameWins;
+          tm.player2Score = p2GameWins;
+        }
         tm.updatedAt    = now;
         await tournamentMatches.upsert(tm);
         setsUpdated++;
       }
 
-      // Actualizar bracket match
+      // Actualizar bracket match (fase de eliminación)
       const bracketMatch = bracketById.get(`sgg_s_${sggSetId}`);
       if (bracketMatch) {
         bracketMatch.games = gamesData;
         bracketMatch.participant1Characters = [...new Set(gamesData.map((g) => g.player1Character).filter(Boolean))];
         bracketMatch.participant2Characters = [...new Set(gamesData.map((g) => g.player2Character).filter(Boolean))];
+        if (gamesData.length > 0) {
+          bracketMatch.participant1Score = p1GameWins;
+          bracketMatch.participant2Score = p2GameWins;
+        }
+      }
+
+      // Actualizar pool set en importedPhases (si es un set de pool round-robin)
+      const p1Chars = [...new Set(gamesData.map((g) => g.player1Character).filter(Boolean))];
+      const p2Chars = [...new Set(gamesData.map((g) => g.player2Character).filter(Boolean))];
+      for (const phase of tournament.importedPhases ?? []) {
+        for (const group of phase.groups ?? []) {
+          if (!group.sets) continue;
+          const poolSet = group.sets.find((s) => s.id === `sgg_s_${sggSetId}`);
+          if (poolSet) {
+            poolSet.player1Characters = p1Chars;
+            poolSet.player2Characters = p2Chars;
+          }
+        }
       }
     }
 

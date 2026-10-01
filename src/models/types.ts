@@ -61,6 +61,8 @@ export interface Match {
   roundNumber: number;
   matchNumber: number;
   bracketType: BracketType;
+  /** Human-readable round label from the source (e.g. start.gg fullRoundText). Used as column header in bracket view. */
+  roundLabel?: string;
   participant1Id: string | null; // null means BYE or TBD
   participant2Id: string | null;
   winnerId: string | null;
@@ -68,6 +70,10 @@ export interface Match {
   status: MatchStatus;
   nextWinnerMatchId: string | null; // Where winner advances
   nextLoserMatchId: string | null; // Where loser goes (only in winner bracket)
+  /** ID del phaseGroup de start.gg al que pertenece este match (permite filtrar por pool/fase) */
+  phaseGroupId?: string;
+  /** ID de la phase de start.gg a la que pertenece este match */
+  phaseId?: string;
   // Detailed match result data (optional, set when reporting result)
   participant1Score?: number;
   participant2Score?: number;
@@ -138,6 +144,31 @@ export interface ImportedPhaseGroupStanding {
   placement: number;
   wins: number;
   losses: number;
+  /** Total de juegos ganados en el pool (para el record de games) */
+  gameWins?: number;
+  /** Total de juegos perdidos en el pool */
+  gameLosses?: number;
+}
+
+/** Un set individual dentro de un pool importado (Round Robin o Double/Single Elimination) */
+export interface ImportedPoolSet {
+  /** ID local del set (ej: 'sgg_s_123456') */
+  id: string;
+  player1Id: string;
+  player2Id: string;
+  winnerId: string | null;
+  /** Juegos ganados por player1 en este set */
+  player1Score: number | null;
+  /** Juegos ganados por player2 en este set */
+  player2Score: number | null;
+  /** Personajes usados por player1 (añadidos tras enrichment) */
+  player1Characters?: string[];
+  /** Personajes usados por player2 (añadidos tras enrichment) */
+  player2Characters?: string[];
+  /** Etiqueta de ronda para pools DE/SE (ej: 'Winners Round 1', 'Losers Semi-Final') */
+  roundLabel?: string;
+  /** Número de ronda de start.gg (positivo = winners, negativo = losers) */
+  round?: number;
 }
 
 export interface ImportedPhaseGroup {
@@ -147,6 +178,8 @@ export interface ImportedPhaseGroup {
   name: string;
   bracketType: 'ROUND_ROBIN' | 'SINGLE_ELIMINATION' | 'DOUBLE_ELIMINATION' | string;
   standings: ImportedPhaseGroupStanding[];
+  /** Sets del grupo. Para RR: todos los enfrentamientos. Para DE/SE: sets del bracket del pool. */
+  sets?: ImportedPoolSet[];
 }
 
 export interface ImportedPhase {

@@ -871,13 +871,25 @@ router.get('/:id/tournaments', async (req, res) => {
 // ── helpers for tournament-results ──────────────────────────────────────────
 
 /**
- * Given a match id like "tm_..._r1_m5_winner" or "tm_..._grand_final" derive
- * the bracket phase string.
+ * Derive the bracket phase for a tournament_match record.
+ *
+ * Resolution order:
+ *   1. m.bracketType — stored on imported start.gg records ('round_robin',
+ *      'winner', 'loser', 'grand_final')
+ *   2. Local match ids ("tm_..._r1_m5_winner", "tm_..._grand_final") via regex
+ *   3. Legacy imported tm_sgg_* records: negative round = loser bracket
  */
-function phaseFromMatchId(id = '') {
+function phaseFromMatch(m) {
+  if (m?.bracketType === 'round_robin') return 'pool';
+  if (m?.bracketType === 'grand_final_reset') return 'grand_final_reset';
+  if (m?.bracketType === 'grand_final') return 'grand_final';
+  if (m?.bracketType === 'loser' || m?.bracketType === 'winner') return m.bracketType;
+
+  const id = m?.id ?? '';
   if (/grand.?final.?reset/i.test(id)) return 'grand_final_reset';
   if (/grand.?final/i.test(id)) return 'grand_final';
   if (/loser/i.test(id)) return 'loser';
+  if (/^tm_sgg_/.test(id)) return (m?.round ?? 0) < 0 ? 'loser' : 'winner';
   return 'winner';
 }
 
@@ -895,29 +907,31 @@ function bracketSizeFor(n) {
  * Build a short human-readable round label, always snapping to bracket-standard
  * power-of-2 values: T64, T32, T16, T8, T4 — never T26 or T13.
  *
- * Winner bracket: bracketSize shrinks by half each round.
- *   WR1 of a 32-bracket → T32, WR2 → T16, etc.
+ * minRound/maxRound are the phase's actual min/max round numbers so imported
+ * brackets (whose rounds may start at an offset like 7) normalize correctly.
  *
- * Loser bracket: LR1 starts at bracketSize/2 players;
- *   the pool roughly halves every TWO loser rounds.
- *   LR1 → T(bracketSize/2), LR2 → T(bracketSize/2), LR3 → T(bracketSize/4), …
+ * Winner bracket: bracketSize shrinks by half each round.
+ *   First winner round → T{bracket}, next → T{bracket/2}, …
+ *
+ * Loser bracket: rounds normalize to R1, R2…; last two = Semifinal / Final.
  */
-function roundLabel(phase, roundNumber, totalEntrants, _maxWinnerRound, maxLoserRound) {
+function roundLabel(phase, roundNumber, totalEntrants, minRound, maxRound) {
   if (phase === 'grand_final_reset') return 'GF Reset';
   if (phase === 'grand_final') return 'Grand Final';
+  if (phase === 'pool') return 'Pool';
 
   const bracket = bracketSizeFor(Math.max(totalEntrants, 4));
 
   if (phase === 'winner') {
-    // bracketSize >> (r-1) gives 64→32→16→8→4→2 as roundNumber increases
-    const topX = bracket >> (roundNumber - 1);
+    const topX = bracket >> (roundNumber - minRound);
     if (topX <= 2) return 'W. Final';
     return `W. T${topX}`;
   }
 
   if (phase === 'loser') {
-    if (roundNumber >= maxLoserRound) return 'L. Final';
-    return `L. R${roundNumber}`;
+    if (roundNumber >= maxRound) return 'L. Final';
+    if (roundNumber === maxRound - 1) return 'L. Semifinal';
+    return `L. R${roundNumber - minRound + 1}`;
   }
 
   return `R${roundNumber}`;
@@ -956,17 +970,30 @@ router.get('/:id/tournament-results', async (req, res) => {
 
       const tMatches = matchesByTournament.get(t.id) ?? [];
 
-      // Compute max rounds for label helper
+      // Compute min/max rounds for label helper (imported brackets may not start at 1)
       const allBracketMatches = [
         ...(t.bracket?.winnerBracket ?? []),
         ...(t.bracket?.loserBracket ?? []),
       ];
-      const maxWinnerRound = Math.max(0, ...allBracketMatches
+      const winnerRoundNums = allBracketMatches
         .filter((m) => m.bracketType === 'winner')
-        .map((m) => m.roundNumber));
-      const maxLoserRound = Math.max(0, ...allBracketMatches
+        .map((m) => m.roundNumber);
+      const loserRoundNums = allBracketMatches
         .filter((m) => m.bracketType === 'loser')
-        .map((m) => m.roundNumber));
+        .map((m) => m.roundNumber);
+      const minWinnerRound = winnerRoundNums.length ? Math.min(...winnerRoundNums) : 1;
+      const maxWinnerRound = Math.max(0, ...winnerRoundNums);
+      const minLoserRound  = loserRoundNums.length  ? Math.min(...loserRoundNums)  : 1;
+      const maxLoserRound  = Math.max(0, ...loserRoundNums);
+
+      // start.gg pool sets: sgg_s_<setId> → pool name (e.g. "Pool A1")
+      const poolSetNames = new Map();
+      for (const ph of t.importedPhases ?? []) {
+        if (ph.bracketType !== 'ROUND_ROBIN') continue;
+        for (const g of ph.groups ?? []) {
+          for (const s of g.sets ?? []) poolSetNames.set(s.id, g.name);
+        }
+      }
 
       const totalEntrants = Math.max(t.totalParticipants ?? 0, t.participants?.length ?? 0);
 
@@ -1014,9 +1041,39 @@ router.get('/:id/tournament-results', async (req, res) => {
             opponentCharacterIds = uniqueOrdered(opponentCharKey);
           }
 
-          // Phase from match ID
-          const phase = phaseFromMatchId(m.id);
-          const label = roundLabel(phase, m.round ?? 1, totalEntrants, maxWinnerRound, maxLoserRound);
+          // Phase + label resolution.
+          // Imported start.gg matches have ids like tm_sgg_<setId> — cross-ref
+          // the bracket match (sgg_s_<setId>) for bracketType/roundNumber, and
+          // importedPhases pool sets for round-robin matches.
+          const sggSetId = m.id?.startsWith('tm_sgg_')
+            ? m.id.replace(/^tm_sgg_/, 'sgg_s_')
+            : null;
+          const poolName   = (sggSetId ? poolSetNames.get(sggSetId) : null) ?? m.poolName ?? null;
+          const bracketEntry = sggSetId ? bracketEntryById.get(sggSetId) : null;
+
+          let phase;
+          let label;
+          if (poolName || m.bracketType === 'round_robin') {
+            phase = 'pool';
+            label = poolName ?? 'Pool';
+          } else {
+            phase = bracketEntry?.bracketType ?? phaseFromMatch(m);
+            const effectiveRound = bracketEntry?.roundNumber ?? Math.abs(m.round ?? 1);
+            // Grand-final edge cases:
+            // - the stored bracket entry may actually be the reset match
+            //   (roundLabel text says "Grand Final Reset")
+            // - legacy imported GF sets dropped from the bracket sit beyond the
+            //   last winner round
+            const roundText = bracketEntry?.roundLabel ?? m.roundLabel ?? '';
+            if (phase === 'grand_final' && /reset/i.test(roundText)) {
+              phase = 'grand_final_reset';
+            } else if (phase === 'winner' && maxWinnerRound > 0 && effectiveRound > maxWinnerRound) {
+              phase = 'grand_final';
+            }
+            const minR = phase === 'loser' ? minLoserRound : minWinnerRound;
+            const maxR = phase === 'loser' ? maxLoserRound : maxWinnerRound;
+            label = roundLabel(phase, effectiveRound, totalEntrants, minR, maxR);
+          }
 
           return {
             matchId: m.id,
@@ -1121,7 +1178,7 @@ router.get('/:id/head-to-head', async (req, res) => {
         matchId: m.id,
         date: m.createdAt || m.updatedAt,
         type: 'tournament',
-        phase: phaseFromMatchId(m.id),
+        phase: phaseFromMatch(m),
         contextName: m.tournamentName || null,
         gameId: m.gameId || null,
         opponentId: isP1 ? m.player2GlobalId : m.player1GlobalId,

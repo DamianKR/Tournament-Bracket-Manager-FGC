@@ -59,10 +59,10 @@
         "tournamentAvailable": true
       }
     },
-    "gameId": "sg",
+    "gameId": "ssbu",
     "avatarUrl": "data:image/webp;base64,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",
     "createdAt": "2026-08-10T18:38:07.046Z",
-    "updatedAt": "2026-09-22T00:47:18.287Z",
+    "updatedAt": "2026-10-01T18:26:14.479Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -90,7 +90,43 @@
       "1789957278840-7xsoskngu",
       "1789957743805-hluxlgzjd"
     ],
-    "mainCharacterId": "marie"
+    "mainCharacterId": "samus",
+    "startggPlayerId": 522166
+  },
+  {
+    "id": "gp_1786387087046_wnwtdas",
+    "name": "Damian",
+    "alias": "KruZ",
+    "games": {
+      "ggst": {
+        "gameId": "ggst",
+        "eloRank": "Sin puntos",
+        "eloPoints": null,
+        "mainCharacterId": "zato",
+        "available": true,
+        "leagueAvailable": true,
+        "tournamentAvailable": true
+      },
+      "ssbu": {
+        "gameId": "ssbu",
+        "eloRank": "Diamante",
+        "eloPoints": 1506,
+        "mainCharacterId": "samus",
+        "available": true,
+        "leagueAvailable": true,
+        "tournamentAvailable": true
+      }
+    },
+    "gameId": "ssbu",
+    "avatarUrl": "data:image/webp;base64,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",
+    "createdAt": "2026-08-10T18:38:07.046Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z",
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "mainCharacterId": "samus",
+    "startggPlayerId": 522166
   },
   {
     "id": "gp_1786387234567_aoe1z95",
@@ -108,7 +144,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:34.567Z",
-    "updatedAt": "2026-09-21T02:29:10.593Z",
+    "updatedAt": "2026-10-01T18:26:04.141Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -158,7 +194,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:43.524Z",
-    "updatedAt": "2026-09-21T02:29:11.968Z",
+    "updatedAt": "2026-10-01T18:26:04.141Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -209,7 +245,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T18:40:50.178Z",
-    "updatedAt": "2026-09-21T02:29:13.030Z",
+    "updatedAt": "2026-10-01T18:26:04.145Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786387227586-8u2hb04zk",
@@ -255,7 +291,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T19:06:30.209Z",
-    "updatedAt": "2026-09-18T02:28:22.656Z",
+    "updatedAt": "2026-10-01T18:26:04.151Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786388748055-8yrbvigzm",
@@ -497,7 +533,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T20:30:34.683Z",
-    "updatedAt": "2026-09-21T02:31:09.361Z",
+    "updatedAt": "2026-10-01T18:26:04.157Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786394988044-sb88chetv",
@@ -626,7 +662,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-10T22:12:58.250Z",
-    "updatedAt": "2026-09-20T15:23:18.989Z",
+    "updatedAt": "2026-10-01T18:26:04.178Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786759219748-qzufrr9ky",
@@ -957,7 +993,7 @@
     "gameId": "ssbu",
     "avatarUrl": null,
     "createdAt": "2026-08-15T02:46:21.144Z",
-    "updatedAt": "2026-09-21T02:21:52.427Z",
+    "updatedAt": "2026-10-01T18:26:04.179Z",
     "communityId": "community_fgc_santa_clara",
     "tournamentIds": [
       "1786759219748-qzufrr9ky",
@@ -1653,5 +1689,3978 @@
       "matchWins": 0,
       "matchLosses": 0
     }
+  },
+  {
+    "id": "gp_sgg_10027859",
+    "name": "Chag",
+    "alias": "Chag",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1566,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 70916,
+    "startggEntrantIds": [
+      "10027859"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:59.871Z"
+  },
+  {
+    "id": "gp_sgg_10067035",
+    "name": "EKING",
+    "alias": "EKING",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1540,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 39038,
+    "startggEntrantIds": [
+      "10067035"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:59.873Z"
+  },
+  {
+    "id": "gp_sgg_9992636",
+    "name": "Triple A",
+    "alias": "Triple A",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 341914,
+    "startggEntrantIds": [
+      "9992636"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10049937",
+    "name": "Irregular",
+    "alias": "Irregular",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1507,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1511821,
+    "startggEntrantIds": [
+      "10049937"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:59.875Z"
+  },
+  {
+    "id": "gp_sgg_9865736",
+    "name": "Ame Cuba",
+    "alias": "Ame Cuba",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1664,
+        "eloRank": "Vanquisher",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1150348,
+    "startggEntrantIds": [
+      "9865736"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:56:59.151Z"
+  },
+  {
+    "id": "gp_sgg_10049353",
+    "name": "Lord ZED",
+    "alias": "Lord ZED",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1653556,
+    "startggEntrantIds": [
+      "10049353"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10049342",
+    "name": "Madao",
+    "alias": "Madao",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1653516,
+    "startggEntrantIds": [
+      "10049342"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10038777",
+    "name": "Dan",
+    "alias": "Dan",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1518,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2738298,
+    "startggEntrantIds": [
+      "10038777"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:59.877Z"
+  },
+  {
+    "id": "gp_sgg_10050458",
+    "name": "Igni",
+    "alias": "Igni",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2793562,
+    "startggEntrantIds": [
+      "10050458"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10049315",
+    "name": "Geo",
+    "alias": "Geo",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 339650,
+    "startggEntrantIds": [
+      "10049315"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10045268",
+    "name": "Fox95",
+    "alias": "Fox95",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1655476,
+    "startggEntrantIds": [
+      "10045268"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10024377",
+    "name": "Miloldo",
+    "alias": "Miloldo",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1518,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2532496,
+    "startggEntrantIds": [
+      "10024377"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:59.879Z"
+  },
+  {
+    "id": "gp_sgg_10024346",
+    "name": "LinkS.",
+    "alias": "LinkS.",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453",
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1694,
+        "eloRank": "Vanquisher",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1651390,
+    "startggEntrantIds": [
+      "10024346"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:56:59.154Z"
+  },
+  {
+    "id": "gp_sgg_9984159",
+    "name": "Mina",
+    "alias": "Mina",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1507,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2545962,
+    "startggEntrantIds": [
+      "9984159"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:59.882Z"
+  },
+  {
+    "id": "gp_sgg_9984141",
+    "name": "Renex",
+    "alias": "Renex",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2544602,
+    "startggEntrantIds": [
+      "9984141"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9984114",
+    "name": "roguelike",
+    "alias": "roguelike",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2767207,
+    "startggEntrantIds": [
+      "9984114"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10039635",
+    "name": "Chars",
+    "alias": "Chars",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2546948,
+    "startggEntrantIds": [
+      "10039635"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865820",
+    "name": "Givih",
+    "alias": "Givih",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1666146,
+    "startggEntrantIds": [
+      "9865820"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865731",
+    "name": "Jäger",
+    "alias": "Jäger",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1653928,
+    "startggEntrantIds": [
+      "9865731"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9774655",
+    "name": "Enix",
+    "alias": "Enix",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2530678,
+    "startggEntrantIds": [
+      "9774655"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10024355",
+    "name": "HighCC",
+    "alias": "HighCC",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2547072,
+    "startggEntrantIds": [
+      "10024355"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10024338",
+    "name": "CapricOrly",
+    "alias": "CapricOrly",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1652040,
+    "startggEntrantIds": [
+      "10024338"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9984172",
+    "name": "Kanhell",
+    "alias": "Kanhell",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2738270,
+    "startggEntrantIds": [
+      "9984172"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9984064",
+    "name": "Dr.Nero",
+    "alias": "Dr.Nero",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1651118,
+    "startggEntrantIds": [
+      "9984064"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865811",
+    "name": "Gsus",
+    "alias": "Gsus",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2538562,
+    "startggEntrantIds": [
+      "9865811"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9774652",
+    "name": "Shiropaprikus",
+    "alias": "Shiropaprikus",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1651178,
+    "startggEntrantIds": [
+      "9774652"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10077723",
+    "name": "KEY_WIELDER",
+    "alias": "KEY_WIELDER",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2787435,
+    "startggEntrantIds": [
+      "10077723"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10077709",
+    "name": "Katsuki_Z",
+    "alias": "Katsuki_Z",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2789619,
+    "startggEntrantIds": [
+      "10077709"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10077704",
+    "name": "Leicen",
+    "alias": "Leicen",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2790325,
+    "startggEntrantIds": [
+      "10077704"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10064939",
+    "name": "Rafael",
+    "alias": "Rafael",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2788915,
+    "startggEntrantIds": [
+      "10064939"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10064485",
+    "name": "Eliashazyflame",
+    "alias": "Eliashazyflame",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2787598,
+    "startggEntrantIds": [
+      "10064485"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10055243",
+    "name": "América Campeón",
+    "alias": "América Campeón",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2787390,
+    "startggEntrantIds": [
+      "10055243"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10054568",
+    "name": "sondaxki",
+    "alias": "sondaxki",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2545998,
+    "startggEntrantIds": [
+      "10054568"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10054496",
+    "name": "Yeschadxd",
+    "alias": "Yeschadxd",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786620,
+    "startggEntrantIds": [
+      "10054496"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10053186",
+    "name": "Pankurasio-sama",
+    "alias": "Pankurasio-sama",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786844,
+    "startggEntrantIds": [
+      "10053186"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10051658",
+    "name": "Grizz",
+    "alias": "Grizz",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786690,
+    "startggEntrantIds": [
+      "10051658"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10051657",
+    "name": "Hero",
+    "alias": "Hero",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1651259,
+    "startggEntrantIds": [
+      "10051657"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10051539",
+    "name": "NaTSuDarK",
+    "alias": "NaTSuDarK",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786623,
+    "startggEntrantIds": [
+      "10051539"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10051502",
+    "name": "SASIN",
+    "alias": "SASIN",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786830,
+    "startggEntrantIds": [
+      "10051502"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10051500",
+    "name": "Oniyaga",
+    "alias": "Oniyaga",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786682,
+    "startggEntrantIds": [
+      "10051500"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10051495",
+    "name": "Mr.S",
+    "alias": "Mr.S",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786689,
+    "startggEntrantIds": [
+      "10051495"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10051494",
+    "name": "Howl",
+    "alias": "Howl",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786712,
+    "startggEntrantIds": [
+      "10051494"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10050061",
+    "name": "Membry",
+    "alias": "Membry",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786267,
+    "startggEntrantIds": [
+      "10050061"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10050058",
+    "name": "Jerry08",
+    "alias": "Jerry08",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786277,
+    "startggEntrantIds": [
+      "10050058"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10050039",
+    "name": "DanielRz",
+    "alias": "DanielRz",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2786276,
+    "startggEntrantIds": [
+      "10050039"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10041573",
+    "name": "Hyakki98",
+    "alias": "Hyakki98",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2547725,
+    "startggEntrantIds": [
+      "10041573"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10041426",
+    "name": "Kavuto",
+    "alias": "Kavuto",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2777058,
+    "startggEntrantIds": [
+      "10041426"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10039631",
+    "name": "Grizz",
+    "alias": "Grizz",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2546693,
+    "startggEntrantIds": [
+      "10039631"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10039628",
+    "name": "DETLINK",
+    "alias": "DETLINK",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2546692,
+    "startggEntrantIds": [
+      "10039628"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10038913",
+    "name": "Hache",
+    "alias": "Hache",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2749212,
+    "startggEntrantIds": [
+      "10038913"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10038845",
+    "name": "GameOver",
+    "alias": "GameOver",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2784327,
+    "startggEntrantIds": [
+      "10038845"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10038781",
+    "name": "S",
+    "alias": "S",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2531489,
+    "startggEntrantIds": [
+      "10038781"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10024378",
+    "name": "DiegoA",
+    "alias": "DiegoA",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2778853,
+    "startggEntrantIds": [
+      "10024378"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10024357",
+    "name": "Dani ayk",
+    "alias": "Dani ayk",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2735171,
+    "startggEntrantIds": [
+      "10024357"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10024334",
+    "name": "Zex",
+    "alias": "Zex",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2778848,
+    "startggEntrantIds": [
+      "10024334"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_10021919",
+    "name": "MkLeo",
+    "alias": "MkLeo",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1548,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 222927,
+    "startggEntrantIds": [
+      "10021919"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:59.884Z"
+  },
+  {
+    "id": "gp_sgg_9984207",
+    "name": "Boliche",
+    "alias": "Boliche",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2530683,
+    "startggEntrantIds": [
+      "9984207"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9984110",
+    "name": "Tótem",
+    "alias": "Tótem",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1658057,
+    "startggEntrantIds": [
+      "9984110"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9984058",
+    "name": "Yair17",
+    "alias": "Yair17",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2547549,
+    "startggEntrantIds": [
+      "9984058"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9984052",
+    "name": "PixelMan",
+    "alias": "PixelMan",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 1663016,
+    "startggEntrantIds": [
+      "9984052"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865813",
+    "name": "Kuhaku",
+    "alias": "Kuhaku",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2546553,
+    "startggEntrantIds": [
+      "9865813"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865807",
+    "name": "YOKO",
+    "alias": "YOKO",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2547269,
+    "startggEntrantIds": [
+      "9865807"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865801",
+    "name": "Xellos",
+    "alias": "Xellos",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2547443,
+    "startggEntrantIds": [
+      "9865801"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865793",
+    "name": "Chichi89",
+    "alias": "Chichi89",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2733577,
+    "startggEntrantIds": [
+      "9865793"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865786",
+    "name": "Zephyr",
+    "alias": "Zephyr",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2738400,
+    "startggEntrantIds": [
+      "9865786"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865765",
+    "name": "Axcel",
+    "alias": "Axcel",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2732698,
+    "startggEntrantIds": [
+      "9865765"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_9865746",
+    "name": "Zunik",
+    "alias": "Zunik",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_690453"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2530685,
+    "startggEntrantIds": [
+      "9865746"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:17:54.327Z",
+    "updatedAt": "2026-10-01T20:17:54.327Z"
+  },
+  {
+    "id": "gp_sgg_23976301",
+    "name": "Killua",
+    "alias": "Killua",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4593959,
+    "startggEntrantIds": [
+      "23976301"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:26:52.115Z"
+  },
+  {
+    "id": "gp_sgg_23976270",
+    "name": "Ivanovich",
+    "alias": "Ivanovich",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1509,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4925623,
+    "startggEntrantIds": [
+      "23976270"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_23976261",
+    "name": "Meruem",
+    "alias": "Meruem",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1560,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 3339859,
+    "startggEntrantIds": [
+      "23976261"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:59.169Z"
+  },
+  {
+    "id": "gp_sgg_23977855",
+    "name": "Pik",
+    "alias": "Pik",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1502,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2939251,
+    "startggEntrantIds": [
+      "23977855"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_23977827",
+    "name": "PIKO!!!",
+    "alias": "PIKO!!!",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 3565696,
+    "startggEntrantIds": [
+      "23977827"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_23977824",
+    "name": "Odelaixis",
+    "alias": "Odelaixis",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1502,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5148163,
+    "startggEntrantIds": [
+      "23977824"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:29:26.983Z"
+  },
+  {
+    "id": "gp_sgg_23977794",
+    "name": "buongiorno",
+    "alias": "buongiorno",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5438358,
+    "startggEntrantIds": [
+      "23977794"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_23976306",
+    "name": "ShoWty23",
+    "alias": "ShoWty23",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4922428,
+    "startggEntrantIds": [
+      "23976306"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:26:52.115Z"
+  },
+  {
+    "id": "gp_sgg_23976303",
+    "name": "Kansei",
+    "alias": "Kansei",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1514,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4572256,
+    "startggEntrantIds": [
+      "23976303"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:45:47.418Z"
+  },
+  {
+    "id": "gp_sgg_23976296",
+    "name": "Yokay",
+    "alias": "Yokay",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1507,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 3561053,
+    "startggEntrantIds": [
+      "23976296"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_23976294",
+    "name": "Edg",
+    "alias": "Edg",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1525,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 3354551,
+    "startggEntrantIds": [
+      "23976294"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:59.162Z"
+  },
+  {
+    "id": "gp_sgg_23976291",
+    "name": "CyChars",
+    "alias": "CyChars",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1650,
+        "eloRank": "Vanquisher",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4923482,
+    "startggEntrantIds": [
+      "23976291"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:59.165Z"
+  },
+  {
+    "id": "gp_sgg_23976286",
+    "name": "RolySparda",
+    "alias": "RolySparda",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4573127,
+    "startggEntrantIds": [
+      "23976286"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_23976281",
+    "name": "Illuminati",
+    "alias": "Illuminati",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1531,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4988428,
+    "startggEntrantIds": [
+      "23976281"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_23976275",
+    "name": "RelámpagoAzuldeFuringan",
+    "alias": "RelámpagoAzuldeFuringan",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1657110",
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1532,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4593712,
+    "startggEntrantIds": [
+      "23976275"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:26:52.115Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24752926",
+    "name": "mOndOngO",
+    "alias": "mOndOngO",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1502,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4939977,
+    "startggEntrantIds": [
+      "24752926"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24752923",
+    "name": "Osvaldometemano",
+    "alias": "Osvaldometemano",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4938770,
+    "startggEntrantIds": [
+      "24752923"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24751416",
+    "name": "@maxom6306",
+    "alias": "@maxom6306",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4992494,
+    "startggEntrantIds": [
+      "24751416"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24751391",
+    "name": "Clxws",
+    "alias": "Clxws",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5205660,
+    "startggEntrantIds": [
+      "24751391"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24750913",
+    "name": "NoName",
+    "alias": "NoName",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 3401971,
+    "startggEntrantIds": [
+      "24750913"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24749265",
+    "name": "Ender M",
+    "alias": "Ender M",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5587209,
+    "startggEntrantIds": [
+      "24749265"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24749258",
+    "name": "Fabio777",
+    "alias": "Fabio777",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5587207,
+    "startggEntrantIds": [
+      "24749258"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24748981",
+    "name": "Yumanji",
+    "alias": "Yumanji",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5290552,
+    "startggEntrantIds": [
+      "24748981"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24748853",
+    "name": "SAIKO",
+    "alias": "SAIKO",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5587124,
+    "startggEntrantIds": [
+      "24748853"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24748827",
+    "name": "Electro-xrd",
+    "alias": "Electro-xrd",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5587119,
+    "startggEntrantIds": [
+      "24748827"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24748805",
+    "name": "Xadex734_x",
+    "alias": "Xadex734_x",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5160507,
+    "startggEntrantIds": [
+      "24748805"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24748801",
+    "name": "Tortica",
+    "alias": "Tortica",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5587113,
+    "startggEntrantIds": [
+      "24748801"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24748793",
+    "name": "Odinator",
+    "alias": "Odinator",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4926027,
+    "startggEntrantIds": [
+      "24748793"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24748780",
+    "name": "Just me",
+    "alias": "Just me",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5587110,
+    "startggEntrantIds": [
+      "24748780"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24748769",
+    "name": "Blitzkrieg",
+    "alias": "Blitzkrieg",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5587108,
+    "startggEntrantIds": [
+      "24748769"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24748760",
+    "name": "Riluk06",
+    "alias": "Riluk06",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5587106,
+    "startggEntrantIds": [
+      "24748760"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24748751",
+    "name": "Daw",
+    "alias": "Daw",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1502,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5059881,
+    "startggEntrantIds": [
+      "24748751"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:26.969Z"
+  },
+  {
+    "id": "gp_sgg_24747668",
+    "name": "NeoMako",
+    "alias": "NeoMako",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5370344,
+    "startggEntrantIds": [
+      "24747668"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24745208",
+    "name": "Del Carmen",
+    "alias": "Del Carmen",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5018871,
+    "startggEntrantIds": [
+      "24745208"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24743003",
+    "name": "MAINE",
+    "alias": "MAINE",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5269552,
+    "startggEntrantIds": [
+      "24743003"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24742933",
+    "name": "π",
+    "alias": "π",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1536,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4992595,
+    "startggEntrantIds": [
+      "24742933"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:45:47.421Z"
+  },
+  {
+    "id": "gp_sgg_24742836",
+    "name": "Rrediert",
+    "alias": "Rrediert",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5370317,
+    "startggEntrantIds": [
+      "24742836"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24731665",
+    "name": "Zero EXE",
+    "alias": "Zero EXE",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5359198,
+    "startggEntrantIds": [
+      "24731665"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24729849",
+    "name": "Terriyaki",
+    "alias": "Terriyaki",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1596,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 2854311,
+    "startggEntrantIds": [
+      "24729849"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:45:47.424Z"
+  },
+  {
+    "id": "gp_sgg_24727582",
+    "name": "SpeedMetalHead",
+    "alias": "SpeedMetalHead",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5604245,
+    "startggEntrantIds": [
+      "24727582"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24727130",
+    "name": "Yoshino",
+    "alias": "Yoshino",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5582871,
+    "startggEntrantIds": [
+      "24727130"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24723997",
+    "name": "Punto",
+    "alias": "Punto",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5582496,
+    "startggEntrantIds": [
+      "24723997"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24722281",
+    "name": "Pikavoltio3097",
+    "alias": "Pikavoltio3097",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5277272,
+    "startggEntrantIds": [
+      "24722281"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24722279",
+    "name": "StormBlade",
+    "alias": "StormBlade",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5319624,
+    "startggEntrantIds": [
+      "24722279"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24722195",
+    "name": "Clain",
+    "alias": "Clain",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 3562166,
+    "startggEntrantIds": [
+      "24722195"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24720872",
+    "name": "Yuuta",
+    "alias": "Yuuta",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1502,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4897645,
+    "startggEntrantIds": [
+      "24720872"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24720496",
+    "name": "WIFITO_VII",
+    "alias": "WIFITO_VII",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5582064,
+    "startggEntrantIds": [
+      "24720496"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24711866",
+    "name": "Eduardo Eduardo",
+    "alias": "Eduardo Eduardo",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5018417,
+    "startggEntrantIds": [
+      "24711866"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24710310",
+    "name": "Killua",
+    "alias": "Killua",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1518,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4939316,
+    "startggEntrantIds": [
+      "24710310"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:59.167Z"
+  },
+  {
+    "id": "gp_sgg_24710299",
+    "name": "Arlequín",
+    "alias": "Arlequín",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5032732,
+    "startggEntrantIds": [
+      "24710299"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24710296",
+    "name": "Kyros",
+    "alias": "Kyros",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5580840,
+    "startggEntrantIds": [
+      "24710296"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24710295",
+    "name": "DamzitO",
+    "alias": "DamzitO",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5580839,
+    "startggEntrantIds": [
+      "24710295"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:29:20.108Z"
+  },
+  {
+    "id": "gp_sgg_24710284",
+    "name": "Gowter",
+    "alias": "Gowter",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5476365,
+    "startggEntrantIds": [
+      "24710284"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24710283",
+    "name": "BARACK OBAMA",
+    "alias": "BARACK OBAMA",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1610,
+        "eloRank": "Vanquisher",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 3352459,
+    "startggEntrantIds": [
+      "24710283"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:59.159Z"
+  },
+  {
+    "id": "gp_sgg_24690550",
+    "name": "Trun_AA",
+    "alias": "Trun_AA",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1710147",
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1502,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 4572530,
+    "startggEntrantIds": [
+      "24690550"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:29:20.108Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24605785",
+    "name": "Jkl",
+    "alias": "Jkl",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5563844,
+    "startggEntrantIds": [
+      "24605785"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:56:55.668Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24598372",
+    "name": "JugGernauT",
+    "alias": "JugGernauT",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": 1507,
+        "eloRank": "Diamante",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 3561426,
+    "startggEntrantIds": [
+      "24598372"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:56:55.668Z",
+    "updatedAt": "2026-10-01T20:56:59.156Z"
+  },
+  {
+    "id": "gp_sgg_24598357",
+    "name": "Triple Z",
+    "alias": "Triple Z",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 3353178,
+    "startggEntrantIds": [
+      "24598357"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:56:55.668Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24598276",
+    "name": "Brutth",
+    "alias": "Brutth",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5438566,
+    "startggEntrantIds": [
+      "24598276"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:56:55.668Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24597172",
+    "name": "AL3X",
+    "alias": "AL3X",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5545541,
+    "startggEntrantIds": [
+      "24597172"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:56:55.668Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24581821",
+    "name": "Just a regular player",
+    "alias": "Just a regular player",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5557614,
+    "startggEntrantIds": [
+      "24581821"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:56:55.668Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24581820",
+    "name": "SCRAP347",
+    "alias": "SCRAP347",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5557613,
+    "startggEntrantIds": [
+      "24581820"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:56:55.668Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24572496",
+    "name": "Laplantita01",
+    "alias": "Laplantita01",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5556356,
+    "startggEntrantIds": [
+      "24572496"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:56:55.668Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
+  },
+  {
+    "id": "gp_sgg_24572460",
+    "name": "ClayPlay23",
+    "alias": "ClayPlay23",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "sgg_event_1700553"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": false
+      }
+    },
+    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+    "startggPlayerId": 5394711,
+    "startggEntrantIds": [
+      "24572460"
+    ],
+    "isStartggStub": true,
+    "createdAt": "2026-10-01T20:56:55.668Z",
+    "updatedAt": "2026-10-01T20:56:55.668Z"
   }
 ]

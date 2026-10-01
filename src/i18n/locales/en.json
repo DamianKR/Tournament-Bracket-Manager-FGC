@@ -733,7 +733,21 @@
       "fetchChars": "Characters",
       "fetchCharsTitle": "Import character data for this tournament",
       "fetchingChars": "Importing…",
-      "enrichedBadge": "{{sets}} sets with characters"
+      "enrichedBadge": "{{sets}} sets with characters",
+      "awardPoints": "Award ranking points",
+      "awardPointsHintYes": "Players up to Top {{n}} will receive ELO points based on their final placement.",
+      "awardPointsHintNo": "The tournament will be imported without awarding ranking points.",
+      "pointsDepth": "Points up to",
+      "topN": "Top {{n}}",
+      "applyPoints": "Points",
+      "applyPointsTitle": "Apply ranking points to participants of this tournament",
+      "applyingPoints": "Applying…",
+      "pointsAppliedBadge": "Points applied",
+      "pointsApplied": "Points applied to {{count}} participants",
+      "pointsError": "Error applying points",
+      "importingOverlay": "Importing tournament…",
+      "enrichingOverlay": "Importing characters…",
+      "importingOverlayDesc": "Please wait, do not close or navigate away from this page."
     }
   },
   "importedPhases": {
@@ -742,7 +756,13 @@
     "losses": "L",
     "noPhases": "This tournament has no phase data available.",
     "rrDesc": "{{count}} round-robin pools. Top 2 from each pool advance to the bracket.",
-    "bracketPhaseDesc": "This phase is displayed in the Bracket view."
+    "bracketPhaseDesc": "This phase is displayed in the Bracket view.",
+    "setRecord": "Record",
+    "standings": "Standings",
+    "reimportForMatches": "Re-import the tournament to see detailed pool matches.",
+    "advances": "Advances",
+    "dePoolsDesc": "{{count}} Double Elimination pools. Select a pool to see its bracket.",
+    "dePhaseDesc": "Double Elimination bracket phase."
   },
   "communityDashboard": {
     "communityHome": "Community home",

@@ -57,19 +57,21 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
     return participant.alias?.trim() || participant.name;
   };
 
-  const getWinnerRoundName = (roundNum: number, totalRounds: number): string => {
+  const getWinnerRoundName = (roundNum: number, totalRounds: number, minRound: number): string => {
     const fromEnd = totalRounds - roundNum;
+    const displayNum = roundNum - minRound + 1;
     if (fromEnd === 0) return t('tournament.bracket.winnerFinals');
     if (fromEnd === 1) return t('tournament.bracket.winnerSemifinals');
     if (fromEnd === 2) return t('tournament.bracket.winnerQuarterfinals');
-    return t('tournament.bracket.round', { number: roundNum });
+    return t('tournament.bracket.round', { number: displayNum });
   };
 
-  const getLoserRoundName = (roundNum: number, totalRounds: number): string => {
+  const getLoserRoundName = (roundNum: number, totalRounds: number, minRound: number): string => {
     const fromEnd = totalRounds - roundNum;
+    const displayNum = roundNum - minRound + 1;
     if (fromEnd === 0) return t('tournament.bracket.loserFinals');
     if (fromEnd === 1) return t('tournament.bracket.loserSemifinals');
-    return t('tournament.bracket.loserRound', { number: roundNum });
+    return t('tournament.bracket.loserRound', { number: displayNum });
   };
 
   const groupMatchesByRound = (matches: Match[]) => {
@@ -83,8 +85,16 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
 
   const winnerRounds = groupMatchesByRound(bracket.winnerBracket);
   const loserRounds  = groupMatchesByRound(bracket.loserBracket);
-  const totalWinnerRounds = Object.keys(winnerRounds).length;
-  const totalLoserRounds  = Object.keys(loserRounds).length;
+
+  const winnerRoundNums = Object.keys(winnerRounds).map(Number);
+  const loserRoundNums  = Object.keys(loserRounds).map(Number);
+  // Use the MAX round number (not count) so that fromEnd = max - roundNum
+  // correctly identifies the last rounds as Finals/Semifinals regardless of
+  // whether round numbers start at 1 or at some higher global offset (e.g. 7).
+  const totalWinnerRounds = winnerRoundNums.length > 0 ? Math.max(...winnerRoundNums) : 0;
+  const totalLoserRounds  = loserRoundNums.length > 0  ? Math.max(...loserRoundNums)  : 0;
+  const minWinnerRound    = winnerRoundNums.length > 0 ? Math.min(...winnerRoundNums) : 1;
+  const minLoserRound     = loserRoundNums.length > 0  ? Math.min(...loserRoundNums)  : 1;
 
   const renderSection = (
     roundsMap: { [key: number]: Match[] },
@@ -103,9 +113,10 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
           ref={headerRef}
           onScroll={() => syncScroll(headerRef, scrollRef)}
         >
-          {entries.map(([roundNum]) => (
+          {entries.map(([roundNum, roundMatches]) => (
             <div key={`${keyPrefix}-hdr-${roundNum}`} className="round-header-cell">
-              {getRoundName(Number(roundNum), totalRounds)}
+              {/* Use the label from start.gg (fullRoundText) when available; fall back to computed name */}
+              {roundMatches[0]?.roundLabel ?? getRoundName(Number(roundNum), totalRounds)}
             </div>
           ))}
         </div>
@@ -120,10 +131,11 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
             {entries.map(([roundNum, matches]) => (
               <div key={`${keyPrefix}-${roundNum}`} className="bracket-round">
                 <div className="round-matches">
-                  {matches.map(match => (
+                  {matches.map((match, idx) => (
                     <MatchCard
                       key={match.id}
                       match={match}
+                      displayMatchNumber={idx + 1}
                       participant1Name={getParticipantName(match.participant1Id)}
                       participant2Name={getParticipantName(match.participant2Id)}
                       gameId={gameId}
@@ -150,14 +162,14 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
       {/* Winner Bracket */}
       <div className="bracket-section">
         <h2 className="bracket-title">{t('tournament.bracket.winnerBracket')}</h2>
-        {renderSection(winnerRounds, getWinnerRoundName, totalWinnerRounds, 'winner', winnerHeaderRef, winnerScrollRef)}
+        {renderSection(winnerRounds, (n, total) => getWinnerRoundName(n, total, minWinnerRound), totalWinnerRounds, 'winner', winnerHeaderRef, winnerScrollRef)}
       </div>
 
       {/* Loser Bracket */}
       {bracket.loserBracket.length > 0 && (
         <div className="bracket-section loser-bracket">
           <h2 className="bracket-title">{t('tournament.bracket.loserBracket')}</h2>
-          {renderSection(loserRounds, getLoserRoundName, totalLoserRounds, 'loser', loserHeaderRef, loserScrollRef)}
+          {renderSection(loserRounds, (n, total) => getLoserRoundName(n, total, minLoserRound), totalLoserRounds, 'loser', loserHeaderRef, loserScrollRef)}
         </div>
       )}
 
@@ -176,6 +188,7 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
               onRevertMatch={onRevertMatch}
               readOnly={readOnly}
               isGrandFinal={true}
+              displayMatchNumber={1}
               slot1Awaiting={!bracket.grandFinal.participant1Id && isSlotAwaitingParticipant(bracket, bracket.grandFinal, 1)}
               slot2Awaiting={!bracket.grandFinal.participant2Id && isSlotAwaitingParticipant(bracket, bracket.grandFinal, 2)}
               reversible={onRevertMatch ? canRevertMatch(bracket, bracket.grandFinal.id) : false}
@@ -193,6 +206,7 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
                   onRevertMatch={onRevertMatch}
                   readOnly={readOnly}
                   isGrandFinal={true}
+                  displayMatchNumber={1}
                   slot1Awaiting={!bracket.grandFinalReset.participant1Id && isSlotAwaitingParticipant(bracket, bracket.grandFinalReset, 1)}
                   slot2Awaiting={!bracket.grandFinalReset.participant2Id && isSlotAwaitingParticipant(bracket, bracket.grandFinalReset, 2)}
                   reversible={onRevertMatch ? canRevertMatch(bracket, bracket.grandFinalReset.id) : false}

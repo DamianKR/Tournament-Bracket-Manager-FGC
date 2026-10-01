@@ -733,7 +733,21 @@
       "fetchChars": "Personajes",
       "fetchCharsTitle": "Importar datos de personajes para este torneo",
       "fetchingChars": "Importando…",
-      "enrichedBadge": "{{sets}} sets con personajes"
+      "enrichedBadge": "{{sets}} sets con personajes",
+      "awardPoints": "Otorgar puntos de ranking",
+      "awardPointsHintYes": "Los jugadores hasta Top {{n}} recibirán puntos ELO según su placement final.",
+      "awardPointsHintNo": "El torneo se importará sin asignar puntos de ranking.",
+      "pointsDepth": "Puntos hasta",
+      "topN": "Top {{n}}",
+      "applyPoints": "Puntos",
+      "applyPointsTitle": "Aplicar puntos de ranking a los participantes de este torneo",
+      "applyingPoints": "Aplicando…",
+      "pointsAppliedBadge": "Puntos aplicados",
+      "pointsApplied": "Puntos aplicados a {{count}} participantes",
+      "pointsError": "Error al aplicar puntos",
+      "importingOverlay": "Importando torneo…",
+      "enrichingOverlay": "Importando personajes…",
+      "importingOverlayDesc": "Por favor espera, no cierres ni abandones esta página."
     }
   },
   "importedPhases": {
@@ -744,7 +758,15 @@
     "rrDesc_one": "{{count}} pool round-robin. Los primeros 2 de cada pool avanzan al bracket.",
     "rrDesc_other": "{{count}} pools round-robin. Los primeros 2 de cada pool avanzan al bracket.",
     "rrDesc": "{{count}} pools round-robin. Los primeros 2 de cada pool avanzan al bracket.",
-    "bracketPhaseDesc": "Esta fase se muestra en la vista de Bracket."
+    "bracketPhaseDesc": "Esta fase se muestra en la vista de Bracket.",
+    "setRecord": "Record",
+    "standings": "Clasificación",
+    "reimportForMatches": "Re-importa el torneo para ver los matches detallados del pool.",
+    "advances": "Avanza",
+    "dePoolsDesc_one": "{{count}} pool de Double Elimination. Selecciona un pool para ver su bracket.",
+    "dePoolsDesc_other": "{{count}} pools de Double Elimination. Selecciona un pool para ver su bracket.",
+    "dePoolsDesc": "{{count}} pools de Double Elimination. Selecciona un pool para ver su bracket.",
+    "dePhaseDesc": "Fase de bracket de Double Elimination."
   },
   "communityDashboard": {
     "communityHome": "Home de la comunidad",

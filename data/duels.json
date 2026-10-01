@@ -1713,7 +1713,7 @@
     "gameId": "ssbu",
     "communityId": "community_fgc_santa_clara",
     "type": "normal",
-    "status": "accepted",
+    "status": "expired",
     "createdAt": "2026-09-22T00:37:40.726Z",
     "expiresAt": "2026-09-29T00:37:40.723Z",
     "acceptedAt": "2026-09-22T00:37:42.696Z",
@@ -1722,7 +1722,8 @@
     "matchId": null,
     "challengerResult": null,
     "challengedResult": null,
-    "metadata": null
+    "metadata": null,
+    "expiredAt": "2026-09-29T13:15:08.819Z"
   },
   {
     "id": "duel_1790202288165_ik77egevv",
@@ -1731,7 +1732,7 @@
     "gameId": "ssbu",
     "communityId": "community_fgc_santa_clara",
     "type": "normal",
-    "status": "pending",
+    "status": "expired",
     "createdAt": "2026-09-23T22:24:48.168Z",
     "expiresAt": "2026-09-30T22:24:48.165Z",
     "acceptedAt": null,
@@ -1740,6 +1741,7 @@
     "matchId": null,
     "challengerResult": null,
     "challengedResult": null,
-    "metadata": null
+    "metadata": null,
+    "expiredAt": "2026-10-01T16:30:17.445Z"
   }
 ]
