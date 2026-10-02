@@ -20,6 +20,7 @@ import {
   enrichWithCharacters,
   loadCharMap,
   saveCharMap,
+  tryAcquireSggOp,
 } from '../services/startggImporter.js';
 
 const router = Router();
@@ -239,12 +240,21 @@ router.post('/import/event', requireAuth, requireAdmin, async (req, res) => {
     return res.status(403).json({ error: 'No tienes permisos sobre esta comunidad' });
   }
 
+  // Lock global: una sola operación start.gg a la vez (evita lost-updates
+  // entre import y enrich sobre los mismos ficheros/objetos).
+  const release = tryAcquireSggOp(`import:${eventId}`);
+  if (!release) {
+    return res.status(409).json({ error: 'Ya hay una operación de start.gg en curso. Espera a que termine.' });
+  }
+
   try {
     const summary = await importEvent(slug, eventId, communityId, givesPoints ?? false, pointsDepth ?? 8);
     res.json({ ok: true, ...summary });
   } catch (err) {
     console.error('[startgg] Import error:', err.message);
     res.status(500).json({ error: err.message });
+  } finally {
+    release();
   }
 });
 
@@ -289,12 +299,19 @@ router.post('/import/characters', requireAuth, requireAdmin, async (req, res) =>
   const isAdmin = req.user.role === 'superadmin' || isAdminInCommunity(req.user, communityId);
   if (!isAdmin) return res.status(403).json({ error: 'Sin permisos' });
 
+  const release = tryAcquireSggOp(`enrich:${tournamentId}`);
+  if (!release) {
+    return res.status(409).json({ error: 'Ya hay una operación de start.gg en curso. Espera a que termine.' });
+  }
+
   try {
     const summary = await enrichWithCharacters(tournamentId, eventId, gameId);
     res.json({ ok: true, ...summary });
   } catch (err) {
     console.error('[startgg] Char enrichment error:', err.message);
     res.status(500).json({ error: err.message });
+  } finally {
+    release();
   }
 });
 

@@ -122,6 +122,47 @@ export async function applyTournamentElo(tournament) {
 }
 
 /**
+ * Reverts the ELO payout stored in `tournament.eloUpdates`.
+ *
+ * Used when (a) re-importing a tournament that already paid out, so the fresh
+ * calculation doesn't stack on top of the old one, and (b) deleting a
+ * completed tournament to undo its ranking effect.
+ *
+ * Each stored update carries the participant's global id + _pointsEarned, so
+ * the revert subtracts exactly what was awarded. Participants that no longer
+ * exist (merged/deleted) are skipped with a warning.
+ *
+ * @param {object} tournament - the PREVIOUS tournament record (with eloUpdates)
+ * @returns {Promise<Array>} list of reverted entries
+ */
+export async function revertTournamentElo(tournament) {
+  const updates = Array.isArray(tournament?.eloUpdates) ? tournament.eloUpdates : [];
+  if (updates.length === 0) return [];
+
+  const gameId = tournament.gameId || 'ssbu';
+  const reverted = [];
+
+  for (const u of updates) {
+    const p = await participants.findById(u.id);
+    if (!p) {
+      console.warn(`[eloRevert] participant ${u.id} (${u.name}) not found — skipping`);
+      continue;
+    }
+    migrateParticipantGames(p);
+    const cur     = getParticipantEffectiveElo(p, gameId);
+    const earned  = u._pointsEarned ?? 0;
+    const ptsAfter = Math.max(0, cur - earned);
+    setParticipantGameElo(p, gameId, ptsAfter, getRankName(ptsAfter));
+    p.updatedAt = new Date().toISOString();
+    await participants.upsert(p);
+    reverted.push({ id: u.id, name: u.name, reverted: earned, before: cur, after: ptsAfter });
+    console.log(`[eloRevert] ${p.name} | ${cur} → ${ptsAfter} (-${earned})`);
+  }
+
+  return reverted;
+}
+
+/**
  * Awards ELO to ONE specific participant for their placement in a tournament.
  *
  * Used during participant merges so only the merged participant gets the ELO

@@ -327,6 +327,33 @@ export async function propagateStartggLink(userId) {
     }
   }
 
-  console.log(`[propagateStartggLink] user=${user.username} propagated=${propagated} merged=${merged} adopted=${adopted}`);
-  return { propagated, merged, adopted };
+  // 3. Fallback por nombre: stubs SIN startggPlayerId (entrants sin cuenta
+  //    start.gg vinculada) jamás podrán matchear por playerId. Los unimos al
+  //    participant del user SOLO en comunidades donde el user ya tiene uno —
+  //    nunca adoptamos en comunidades extrañas por nombre solo (gamertags
+  //    comunes harían merges incorrectos e irreversibles).
+  const gamerTag = (user.startggGamerTag ?? '').trim().toLowerCase();
+  let nameMatched = 0;
+  if (gamerTag) {
+    freshUser = await users.findById(userId);
+    const nameCandidates = allParticipants.filter(
+      (p) => p.isStartggStub
+          && !p.startggPlayerId
+          && (p.name ?? '').trim().toLowerCase() === gamerTag
+    );
+    for (const stub of nameCandidates) {
+      freshUser = await users.findById(userId);
+      const existingPid = getParticipantForCommunity(freshUser, stub.communityId);
+      // Solo merge cuando el user ya tiene participant en esa comunidad
+      if (existingPid && existingPid !== stub.id) {
+        console.log(`[propagateStartggLink] name-match merge: stub ${stub.id} (${stub.name}) → ${existingPid} en ${stub.communityId}`);
+        await mergeParticipants(existingPid, stub.id);
+        nameMatched++;
+        merged++;
+      }
+    }
+  }
+
+  console.log(`[propagateStartggLink] user=${user.username} propagated=${propagated} merged=${merged} adopted=${adopted} nameMatched=${nameMatched}`);
+  return { propagated, merged, adopted, nameMatched };
 }

@@ -12,7 +12,7 @@
 import { Router } from 'express';
 import { tournaments, tournamentMatches, participants } from '../db/collections.js';
 import { validateTournament } from '../models/tournament.js';
-import { applyTournamentElo } from '../utils/tournamentElo.js';
+import { applyTournamentElo, revertTournamentElo } from '../utils/tournamentElo.js';
 import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
 import { filterByCommunity, getTargetCommunityId, isInUserScope, canAdminGame, communityRole, participantIdFor } from '../utils/communityScope.js';
 
@@ -309,9 +309,41 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!canAdminGame(req.user, tournament.communityId, tournament.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
-    const deleted = await tournaments.remove(req.params.id);
+
+    const tid = req.params.id;
+    const cleanup = { matchesRemoved: 0, participantsUpdated: 0, eloReverted: 0 };
+
+    // 1. Revert ELO payout if the tournament had applied points.
+    //    eloUpdates stores {id, _pointsEarned} per participant → revert exact.
+    if (tournament.eloApplied && Array.isArray(tournament.eloUpdates) && tournament.eloUpdates.length) {
+      const reverted = await revertTournamentElo(tournament);
+      cleanup.eloReverted = reverted.length;
+    }
+
+    // 2. Remove orphan tournament_matches (they would keep feeding H2H/stats)
+    const allTM = await tournamentMatches.getAll();
+    const remainingTM = allTM.filter((m) => m.tournamentId !== tid);
+    if (remainingTM.length !== allTM.length) {
+      cleanup.matchesRemoved = allTM.length - remainingTM.length;
+      await tournamentMatches.replaceAll(remainingTM);
+    }
+
+    // 3. Remove dangling tournamentId references from participants
+    //    (stubs se quedan — representan gente real que puede aparecer en otros eventos)
+    const allP = await participants.getAll();
+    for (const p of allP) {
+      if (p.tournamentIds?.includes(tid)) {
+        p.tournamentIds = p.tournamentIds.filter((id) => id !== tid);
+        p.updatedAt = new Date().toISOString();
+        await participants.upsert(p);
+        cleanup.participantsUpdated++;
+      }
+    }
+
+    const deleted = await tournaments.remove(tid);
     if (!deleted) return res.status(404).json({ error: 'Tournament not found' });
-    res.json({ ok: true });
+    console.log(`[Tournaments] DELETE ${tid} cleanup:`, cleanup);
+    res.json({ ok: true, cleanup });
   } catch (err) {
     console.error('[Tournaments] DELETE /:id error:', err);
     res.status(500).json({ error: 'Failed to delete tournament' });
