@@ -1,0 +1,148 @@
+{
+  "data": {
+    "videogame": {
+      "characters": [
+        {
+          "id": 2271,
+          "name": "Blanka"
+        },
+        {
+          "id": 2272,
+          "name": "Cammy"
+        },
+        {
+          "id": 2273,
+          "name": "Chun-Li"
+        },
+        {
+          "id": 2274,
+          "name": "Dee Jay"
+        },
+        {
+          "id": 2275,
+          "name": "Dhalsim"
+        },
+        {
+          "id": 2276,
+          "name": "E. Honda"
+        },
+        {
+          "id": 2277,
+          "name": "Guile"
+        },
+        {
+          "id": 2278,
+          "name": "Jamie"
+        },
+        {
+          "id": 2279,
+          "name": "JP"
+        },
+        {
+          "id": 2280,
+          "name": "Juri"
+        },
+        {
+          "id": 2281,
+          "name": "Ken"
+        },
+        {
+          "id": 2282,
+          "name": "Kimberly"
+        },
+        {
+          "id": 2283,
+          "name": "Lily"
+        },
+        {
+          "id": 2284,
+          "name": "Luke"
+        },
+        {
+          "id": 2285,
+          "name": "Manon"
+        },
+        {
+          "id": 2286,
+          "name": "Marisa"
+        },
+        {
+          "id": 2287,
+          "name": "Ryu"
+        },
+        {
+          "id": 2288,
+          "name": "Zangief"
+        },
+        {
+          "id": 2314,
+          "name": "Rashid"
+        },
+        {
+          "id": 2342,
+          "name": "A.K.I."
+        },
+        {
+          "id": 2442,
+          "name": "Ed"
+        },
+        {
+          "id": 2495,
+          "name": "Akuma"
+        },
+        {
+          "id": 2506,
+          "name": "M. Bison"
+        },
+        {
+          "id": 2596,
+          "name": "Terry"
+        },
+        {
+          "id": 2602,
+          "name": "Random"
+        },
+        {
+          "id": 2616,
+          "name": "Mai"
+        },
+        {
+          "id": 2699,
+          "name": "Elena"
+        },
+        {
+          "id": 2745,
+          "name": "Sagat"
+        },
+        {
+          "id": 2798,
+          "name": "C. Viper"
+        },
+        {
+          "id": 2946,
+          "name": "Alex"
+        },
+        {
+          "id": 3014,
+          "name": "Ingrid"
+        },
+        {
+          "id": 3229,
+          "name": "Yasmine"
+        },
+        {
+          "id": 3464,
+          "name": "Arjun"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "cacheControl": {
+      "version": 1,
+      "hints": null
+    },
+    "queryComplexity": 34
+  },
+  "actionRecords": []
+}

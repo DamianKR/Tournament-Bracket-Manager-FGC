@@ -46,8 +46,12 @@ function resolveGlobalParticipant(entity, byId, byName) {
 export async function applyTournamentElo(tournament) {
   const allParticipants = (await participants.getAll()).map(migrateParticipantGames);
   const byId = new Map(allParticipants.map((p) => [p.id, p]));
+  // Scope name-fallback to the tournament's community — without this, a name
+  // collision across communities can award points to the wrong participant.
   const byName = new Map(
-    allParticipants.map((p) => [p.name.trim().toLowerCase(), p])
+    allParticipants
+      .filter((p) => !tournament.communityId || p.communityId === tournament.communityId)
+      .map((p) => [p.name.trim().toLowerCase(), p])
   );
 
   const applied = [];
@@ -115,4 +119,97 @@ export async function applyTournamentElo(tournament) {
   }
 
   return applied;
+}
+
+/**
+ * Reverts the ELO payout stored in `tournament.eloUpdates`.
+ *
+ * Used when (a) re-importing a tournament that already paid out, so the fresh
+ * calculation doesn't stack on top of the old one, and (b) deleting a
+ * completed tournament to undo its ranking effect.
+ *
+ * Each stored update carries the participant's global id + _pointsEarned, so
+ * the revert subtracts exactly what was awarded. Participants that no longer
+ * exist (merged/deleted) are skipped with a warning.
+ *
+ * @param {object} tournament - the PREVIOUS tournament record (with eloUpdates)
+ * @returns {Promise<Array>} list of reverted entries
+ */
+export async function revertTournamentElo(tournament) {
+  const updates = Array.isArray(tournament?.eloUpdates) ? tournament.eloUpdates : [];
+  if (updates.length === 0) return [];
+
+  const gameId = tournament.gameId || 'ssbu';
+  const reverted = [];
+
+  for (const u of updates) {
+    const p = await participants.findById(u.id);
+    if (!p) {
+      console.warn(`[eloRevert] participant ${u.id} (${u.name}) not found — skipping`);
+      continue;
+    }
+    migrateParticipantGames(p);
+    const cur     = getParticipantEffectiveElo(p, gameId);
+    const earned  = u._pointsEarned ?? 0;
+    const ptsAfter = Math.max(0, cur - earned);
+    setParticipantGameElo(p, gameId, ptsAfter, getRankName(ptsAfter));
+    p.updatedAt = new Date().toISOString();
+    await participants.upsert(p);
+    reverted.push({ id: u.id, name: u.name, reverted: earned, before: cur, after: ptsAfter });
+    console.log(`[eloRevert] ${p.name} | ${cur} → ${ptsAfter} (-${earned})`);
+  }
+
+  return reverted;
+}
+
+/**
+ * Awards ELO to ONE specific participant for their placement in a tournament.
+ *
+ * Used during participant merges so only the merged participant gets the ELO
+ * delta — all other participants in the tournament already received their ELO
+ * when the tournament was originally completed/imported.
+ *
+ * @param {object} tournament
+ * @param {string} participantId - global participant ID of the survivor
+ * @returns {Promise<object|null>} result object or null if no points awarded
+ */
+export async function applyTournamentEloForOne(tournament, participantId) {
+  const p = await participants.findById(participantId);
+  if (!p) return null;
+
+  migrateParticipantGames(p);
+
+  const gameId     = tournament.gameId || 'ssbu';
+  const pointsDepth = [8, 16, 32].includes(tournament.pointsDepth) ? tournament.pointsDepth : 8;
+
+  // Find this participant's tournament entry
+  const tp = (tournament.participants ?? []).find(
+    (entry) => entry.globalParticipantId === participantId
+  );
+  if (!tp) return null;
+
+  const position = tp.finalPosition;
+  if (!position || position > pointsDepth) return null;
+
+  const teamMembers = Array.isArray(tp.members) ? tp.members : [];
+
+  let earned;
+  const ptsBefore = getParticipantEffectiveElo(p, gameId);
+
+  if (teamMembers.length > 0) {
+    const base = getTournamentPoints(position, ptsBefore, pointsDepth);
+    earned = Math.round(base / teamMembers.length);
+  } else {
+    earned = getTournamentPoints(position, ptsBefore, pointsDepth);
+  }
+
+  if (earned <= 0) return null;
+
+  const ptsAfter = ptsBefore + earned;
+  setParticipantGameElo(p, gameId, ptsAfter, getRankName(ptsAfter));
+  p.updatedAt = new Date().toISOString();
+  await participants.upsert(p);
+
+  console.log(`[eloForOne] ${p.name} | tournament=${tournament.id} | pos=${position} | ${ptsBefore} → ${ptsAfter} (+${earned})`);
+  return { participantId, pointsBefore: ptsBefore, pointsEarned: earned, pointsAfter: ptsAfter };
 }

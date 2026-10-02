@@ -38,6 +38,11 @@ export interface AuthUser {
   isActive: boolean;
   createdAt: string;
   lastLoginAt: string | null;
+  /** start.gg linked account data (optional) */
+  startggUserId?: number | null;
+  startggPlayerId?: number | null;
+  startggSlug?: string | null;
+  startggGamerTag?: string | null;
 }
 
 /** Lo que devuelve POST /api/auth/login y POST /api/auth/setup */
@@ -63,4 +68,9 @@ export interface SessionUser {
   participantByCommunity?: Record<string, string>;
   /** @deprecated Usar memberships. */
   gameAdminFor?: string[];
+  /** start.gg linked account data (optional) */
+  startggUserId?: number | null;
+  startggPlayerId?: number | null;
+  startggSlug?: string | null;
+  startggGamerTag?: string | null;
 }

@@ -1,0 +1,716 @@
+/* ── ImportedPhasesView ───────────────────────────────────────────────── */
+
+.ip-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Phase tabs ────────────────────────────────────────────────────────── */
+.ip-phase-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.ip-phase-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1.1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.ip-phase-tab:hover {
+  border-color: var(--primary-light);
+  color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.15);
+}
+
+.ip-phase-tab.active {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+  border-color: var(--primary-color);
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  box-shadow: 0 0 14px rgba(124, 58, 237, 0.4);
+}
+
+/* ── Phase description ─────────────────────────────────────────────────── */
+.ip-phase-desc {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 0.35rem 0.75rem;
+  background: rgba(124, 58, 237, 0.06);
+  border-left: 3px solid var(--primary-color);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  margin-bottom: 0;
+}
+
+/* ── Round-robin phase wrapper ─────────────────────────────────────────── */
+.ip-rr-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+/* ── Pool dropdown ─────────────────────────────────────────────────────── */
+.ip-pool-dropdown-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ip-pool-dropdown-label {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.ip-pool-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ip-pool-dropdown {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.4rem 2.2rem 0.4rem 0.9rem;
+  border: 1.5px solid var(--primary-light);
+  border-radius: var(--border-radius);
+  background: var(--bg-primary);
+  color: var(--primary-color);
+  cursor: pointer;
+  min-width: 140px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ip-pool-dropdown:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.18);
+}
+
+.ip-pool-dropdown:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
+}
+
+.ip-pool-dropdown-icon {
+  position: absolute;
+  right: 0.65rem;
+  font-size: 0.6rem;
+  color: var(--primary-color);
+  pointer-events: none;
+}
+
+/* ── Pool detail card ──────────────────────────────────────────────────── */
+.ip-pool-detail {
+  padding: 0;
+  overflow: hidden;
+  border-top: 2px solid var(--primary-color);
+}
+
+/* Card header — dark purple gradient like match-header */
+.ip-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-night) 60%, var(--primary-dark) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.ip-group-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.ip-bracket-badge {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+  border-radius: 99px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.ip-bracket-badge.rr {
+  background: rgba(167, 139, 250, 0.18);
+  color: var(--primary-light);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  text-shadow: 0 0 6px rgba(167, 139, 250, 0.4);
+}
+
+.ip-bracket-badge.elim {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.ip-bracket-badge.de {
+  background: rgba(99, 179, 237, 0.15);
+  color: #63b3ed;
+  border: 1px solid rgba(99, 179, 237, 0.35);
+  text-shadow: 0 0 6px rgba(99, 179, 237, 0.35);
+}
+
+/* ── Matrix wrapper ────────────────────────────────────────────────────── */
+.ip-matrix-wrapper {
+  padding: 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ip-matrix-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ip-matrix-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.82rem;
+}
+
+/* Column headers — match .round-header-cell style */
+.ip-matrix-col-header {
+  padding: 0.4rem 0.75rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.65rem;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+  border-right: 1px solid rgba(255,255,255,0.1);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  white-space: nowrap;
+  min-width: 90px;
+}
+
+.ip-matrix-label-cell {
+  background: var(--primary-void);
+  border-right: 2px solid var(--primary-color);
+  min-width: 120px;
+}
+
+.ip-matrix-record-col {
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-night) 100%);
+  border-left: 2px solid rgba(255,255,255,0.15);
+  min-width: 68px;
+}
+
+.ip-matrix-seed {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.6rem;
+  margin-right: 0.2rem;
+}
+
+.ip-matrix-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 88px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Row labels */
+.ip-matrix-row-label {
+  padding: 0.45rem 0.75rem 0.45rem 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  background: var(--bg-secondary);
+  border-right: 2px solid var(--primary-light);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  font-size: 0.8rem;
+  min-width: 110px;
+}
+
+.ip-matrix-table tbody tr:last-child .ip-matrix-row-label {
+  border-bottom: none;
+}
+
+.ip-matrix-rank {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  min-width: 18px;
+}
+
+/* Cells */
+.ip-matrix-cell {
+  padding: 0.4rem 0.6rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+  min-width: 72px;
+  vertical-align: middle;
+  background: var(--bg-primary);
+}
+
+.ip-matrix-cell-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.ip-matrix-score {
+  white-space: nowrap;
+  font-family: var(--font-body);
+}
+
+.ip-matrix-chars {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.ip-matrix-char-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.04);
+}
+
+/* Win cell — neon green */
+.ip-matrix-win {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border-color: rgba(16, 185, 129, 0.28);
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.35);
+}
+
+.ip-matrix-win:hover {
+  background: rgba(16, 185, 129, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.4);
+}
+
+/* Loss cell — neon red */
+.ip-matrix-loss {
+  background: rgba(239, 68, 68, 0.07);
+  color: var(--danger-color);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+
+.ip-matrix-loss:hover {
+  background: rgba(239, 68, 68, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.3);
+}
+
+/* Self cell — dark diagonal */
+.ip-matrix-self {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  position: relative;
+}
+
+.ip-matrix-self::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(0,0,0,0.04) 4px,
+    rgba(0,0,0,0.04) 8px
+  );
+}
+
+.ip-matrix-empty {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+/* Record column */
+.ip-matrix-record {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  border-left: 2px solid var(--border-color);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  min-width: 68px;
+}
+
+.ip-matrix-record-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  line-height: 1.2;
+}
+
+.ip-record-sets {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ip-record-games {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: 0.02em;
+}
+
+.ip-record-w { color: var(--success-color); }
+.ip-record-l { color: var(--danger-color); }
+
+.ip-matrix-empty-msg {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Standings section ─────────────────────────────────────────────────── */
+.ip-pool-standings-section {
+  border-top: 1px solid var(--border-color);
+}
+
+.ip-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin: 0;
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-night) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* Standings table */
+.ip-standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.ip-standings-table thead tr {
+  background: var(--bg-tertiary);
+}
+
+.ip-standings-table th {
+  padding: 0.35rem 0.75rem;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.ip-standings-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.ip-standings-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ip-standings-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.ip-standings-table tbody tr:hover td {
+  background: var(--bg-tertiary);
+}
+
+/* Advancing rows — purple left-bar + tint */
+.ip-standings-table tbody tr.ip-advance td {
+  background: rgba(124, 58, 237, 0.055);
+}
+
+.ip-standings-table tbody tr.ip-advance td.ip-col-rank {
+  border-left: 3px solid var(--primary-color);
+  padding-left: calc(0.75rem - 3px);
+}
+
+.ip-standings-table tbody tr.ip-advance:hover td {
+  background: rgba(124, 58, 237, 0.1);
+}
+
+/* Rank badge — circular number chip */
+.ip-rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 900;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.ip-rank-badge.ip-rank-adv {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+  color: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.35);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Player name */
+.ip-player-name {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* W/L pill badges */
+.ip-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 0.45rem;
+  border-radius: 99px;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ip-pill-win {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--success-color);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.25);
+}
+
+.ip-pill-loss {
+  background: rgba(239, 68, 68, 0.07);
+  color: var(--danger-color);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* "Advances" tag — qualifier indicator */
+.ip-adv-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--primary-color);
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  padding: 0.15rem 0.55rem;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.ip-col-rank { width: 52px; padding-left: 1rem; }
+.ip-col-w, .ip-col-l { width: 52px; text-align: center; }
+.ip-col-name { flex: 1; }
+.ip-col-adv { width: 90px; text-align: right; padding-right: 1rem; }
+
+/* Bracket phase notice */
+.ip-bracket-notice {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.ip-bracket-icon {
+  font-size: 2rem;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.ip-bracket-notice p {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+}
+
+/* ── Double Elimination pool phase ────────────────────────────────────── */
+.ip-de-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.ip-de-rounds {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.ip-de-round-group {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ip-de-round-title {
+  padding: 0.4rem 1rem;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: rgba(255,255,255,0.65);
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-night) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.ip-de-matches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+}
+
+.ip-de-match-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  max-width: 240px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
+  flex: 1 0 180px;
+}
+
+.ip-de-match-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.8rem;
+  min-height: 32px;
+  transition: background 0.1s ease;
+}
+
+.ip-de-match-row:last-child {
+  border-bottom: none;
+}
+
+.ip-de-winner {
+  background: rgba(16, 185, 129, 0.08);
+  color: var(--text-primary);
+}
+
+.ip-de-loser {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.ip-de-match-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.ip-de-loser .ip-de-match-name {
+  opacity: 0.65;
+}
+
+.ip-de-match-score {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 16px;
+  text-align: right;
+}
+
+.ip-de-winner .ip-de-match-score {
+  color: var(--success-color);
+}
+
+.ip-de-loser .ip-de-match-score {
+  color: var(--text-tertiary);
+}
+
+.ip-de-win-icon {
+  font-size: 0.62rem;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+/* Empty state */
+.ip-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.ip-empty i {
+  font-size: 2rem;
+  color: var(--text-tertiary);
+}

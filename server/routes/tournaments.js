@@ -12,7 +12,7 @@
 import { Router } from 'express';
 import { tournaments, tournamentMatches, participants } from '../db/collections.js';
 import { validateTournament } from '../models/tournament.js';
-import { applyTournamentElo } from '../utils/tournamentElo.js';
+import { applyTournamentElo, revertTournamentElo } from '../utils/tournamentElo.js';
 import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
 import { filterByCommunity, getTargetCommunityId, isInUserScope, canAdminGame, communityRole, participantIdFor } from '../utils/communityScope.js';
 
@@ -121,19 +121,22 @@ router.post('/', requireAuth, async (req, res) => {
           });
         }
       }
-      const becomesCompleted = t.status === 'completed' && (!prev || prev.status !== 'completed');
-      const alreadyApplied   = t.eloApplied || (prev && prev.eloApplied);
+      const alreadyApplied = t.eloApplied || (prev && prev.eloApplied);
+      // Apply ELO only when givesPoints is EXPLICITLY true — undefined means
+      // the field was never set and must not be treated as a consent to apply.
+      const shouldApplyElo = t.status === 'completed' && !alreadyApplied && t.givesPoints === true;
 
-      if (becomesCompleted && !alreadyApplied && t.givesPoints !== false) {
+      if (shouldApplyElo) {
         const updates = await applyTournamentElo(t);
         t.eloApplied = true;
         t.eloUpdates = updates;
         eloAppliedIds.push(t.id);
         console.log(`[Tournaments] ELO applied for ${t.id}: ${updates.length} participants`);
-      } else if (becomesCompleted && !alreadyApplied) {
+      } else if (t.status === 'completed' && !alreadyApplied && t.givesPoints !== true) {
+        // Mark as processed so we never accidentally apply ELO in a future save.
         t.eloApplied = true;
         t.eloUpdates = [];
-        console.log(`[Tournaments] ELO skipped for ${t.id}: givesPoints=false`);
+        console.log(`[Tournaments] ELO skipped for ${t.id}: givesPoints not enabled`);
       }
 
       updatedBody.push(t);
@@ -205,20 +208,22 @@ router.put('/:id', requireAuth, async (req, res) => {
       }
     }
 
-    // When a tournament transitions to 'completed', award ELO points for placements once.
-    const becomesCompleted = body.status === 'completed' && (!existing || existing.status !== 'completed');
-    const alreadyApplied   = body.eloApplied || (existing && existing.eloApplied);
+    // Award ELO only when givesPoints is EXPLICITLY true — undefined means
+    // the field was never set and must not be treated as a consent to apply.
+    const alreadyApplied = body.eloApplied || (existing && existing.eloApplied);
+    const shouldApplyElo = body.status === 'completed' && !alreadyApplied && body.givesPoints === true;
 
-    if (becomesCompleted && !alreadyApplied && body.givesPoints !== false) {
+    if (shouldApplyElo) {
       const tournamentToApply = { ...body, status: 'completed' };
       const eloUpdates = await applyTournamentElo(tournamentToApply);
       body.eloApplied = true;
       body.eloUpdates = eloUpdates;
       console.log(`[Tournaments] ELO applied for ${req.params.id}: ${eloUpdates.length} participants`);
-    } else if (becomesCompleted && !alreadyApplied) {
+    } else if (body.status === 'completed' && !alreadyApplied && body.givesPoints !== true) {
+      // Mark as processed so we never accidentally apply ELO in a future save.
       body.eloApplied = true;
       body.eloUpdates = [];
-      console.log(`[Tournaments] ELO skipped for ${req.params.id}: givesPoints=false`);
+      console.log(`[Tournaments] ELO skipped for ${req.params.id}: givesPoints not enabled`);
     }
 
     const saved = await tournaments.upsert(body);
@@ -304,9 +309,41 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!canAdminGame(req.user, tournament.communityId, tournament.gameId)) {
       return res.status(403).json({ error: 'You are not admin of this game' });
     }
-    const deleted = await tournaments.remove(req.params.id);
+
+    const tid = req.params.id;
+    const cleanup = { matchesRemoved: 0, participantsUpdated: 0, eloReverted: 0 };
+
+    // 1. Revert ELO payout if the tournament had applied points.
+    //    eloUpdates stores {id, _pointsEarned} per participant → revert exact.
+    if (tournament.eloApplied && Array.isArray(tournament.eloUpdates) && tournament.eloUpdates.length) {
+      const reverted = await revertTournamentElo(tournament);
+      cleanup.eloReverted = reverted.length;
+    }
+
+    // 2. Remove orphan tournament_matches (they would keep feeding H2H/stats)
+    const allTM = await tournamentMatches.getAll();
+    const remainingTM = allTM.filter((m) => m.tournamentId !== tid);
+    if (remainingTM.length !== allTM.length) {
+      cleanup.matchesRemoved = allTM.length - remainingTM.length;
+      await tournamentMatches.replaceAll(remainingTM);
+    }
+
+    // 3. Remove dangling tournamentId references from participants
+    //    (stubs se quedan — representan gente real que puede aparecer en otros eventos)
+    const allP = await participants.getAll();
+    for (const p of allP) {
+      if (p.tournamentIds?.includes(tid)) {
+        p.tournamentIds = p.tournamentIds.filter((id) => id !== tid);
+        p.updatedAt = new Date().toISOString();
+        await participants.upsert(p);
+        cleanup.participantsUpdated++;
+      }
+    }
+
+    const deleted = await tournaments.remove(tid);
     if (!deleted) return res.status(404).json({ error: 'Tournament not found' });
-    res.json({ ok: true });
+    console.log(`[Tournaments] DELETE ${tid} cleanup:`, cleanup);
+    res.json({ ok: true, cleanup });
   } catch (err) {
     console.error('[Tournaments] DELETE /:id error:', err);
     res.status(500).json({ error: 'Failed to delete tournament' });
@@ -325,8 +362,14 @@ router.delete('/', requireAuth, requireSuperAdmin, async (_req, res) => {
 });
 
 // GET /api/tournaments/:id/matches
-router.get('/:id/matches', async (req, res) => {
+router.get('/:id/matches', optionalAuth, async (req, res) => {
   try {
+    // Verificar que el torneo pertenece a la comunidad del solicitante
+    const tournament = await tournaments.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+    if (!isInUserScope(req.user, tournament.communityId)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
     const all = await tournamentMatches.getAll();
     const filtered = all.filter(m => m.tournamentId === req.params.id);
     res.json(filtered);

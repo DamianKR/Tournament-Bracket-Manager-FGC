@@ -1,0 +1,164 @@
+{
+  "data": {
+    "videogame": {
+      "characters": [
+        {
+          "id": 1456,
+          "name": "Jade"
+        },
+        {
+          "id": 1457,
+          "name": "Baraka"
+        },
+        {
+          "id": 1458,
+          "name": "Cassie Cage"
+        },
+        {
+          "id": 1459,
+          "name": "D'Vorah"
+        },
+        {
+          "id": 1460,
+          "name": "Erron Black"
+        },
+        {
+          "id": 1461,
+          "name": "Geras"
+        },
+        {
+          "id": 1462,
+          "name": "Jacqui Briggs"
+        },
+        {
+          "id": 1463,
+          "name": "Jax Briggs"
+        },
+        {
+          "id": 1464,
+          "name": "Johnny Cage"
+        },
+        {
+          "id": 1465,
+          "name": "Kabal"
+        },
+        {
+          "id": 1466,
+          "name": "Kano"
+        },
+        {
+          "id": 1467,
+          "name": "Kotal Kahn"
+        },
+        {
+          "id": 1468,
+          "name": "Kung Lao"
+        },
+        {
+          "id": 1469,
+          "name": "Liu Kang"
+        },
+        {
+          "id": 1470,
+          "name": "Noob Saibot"
+        },
+        {
+          "id": 1471,
+          "name": "Raiden"
+        },
+        {
+          "id": 1472,
+          "name": "Scorpion"
+        },
+        {
+          "id": 1473,
+          "name": "Shao Kahn"
+        },
+        {
+          "id": 1474,
+          "name": "Skarlet"
+        },
+        {
+          "id": 1475,
+          "name": "Sonya Blade"
+        },
+        {
+          "id": 1476,
+          "name": "Sub Zero"
+        },
+        {
+          "id": 1477,
+          "name": "Cetrion"
+        },
+        {
+          "id": 1478,
+          "name": "Kitana"
+        },
+        {
+          "id": 1479,
+          "name": "Kollector"
+        },
+        {
+          "id": 1480,
+          "name": "Frost"
+        },
+        {
+          "id": 1497,
+          "name": "Shang Tsung"
+        },
+        {
+          "id": 1531,
+          "name": "Nightwolf"
+        },
+        {
+          "id": 1541,
+          "name": "Joker"
+        },
+        {
+          "id": 1542,
+          "name": "Sindel"
+        },
+        {
+          "id": 1670,
+          "name": "Spawn"
+        },
+        {
+          "id": 1671,
+          "name": "Terminator"
+        },
+        {
+          "id": 1768,
+          "name": "RoboCop"
+        },
+        {
+          "id": 1769,
+          "name": "Rambo"
+        },
+        {
+          "id": 1770,
+          "name": "Rain"
+        },
+        {
+          "id": 1771,
+          "name": "Mileena"
+        },
+        {
+          "id": 1772,
+          "name": "Fujin"
+        },
+        {
+          "id": 1773,
+          "name": "Sheeva"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "cacheControl": {
+      "version": 1,
+      "hints": null
+    },
+    "queryComplexity": 38
+  },
+  "actionRecords": []
+}

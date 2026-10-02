@@ -12,6 +12,7 @@ import Sidebar from '@/components/Sidebar/Sidebar';
 import BracketView from '@/components/Bracket/BracketView';
 import ParticipantsList from '@/components/Participants/ParticipantsList';
 import Top8Podium from '@/components/Top8Podium/Top8Podium';
+import ImportedPhasesView from '@/components/ImportedPhases/ImportedPhasesView';
 import './TournamentView.css';
 
 type ViewMode = 'bracket' | 'participants';
@@ -138,6 +139,8 @@ function TournamentView() {
     );
   }
 
+  const hasPools = (tournament.importedPhases?.length ?? 0) > 0;
+
   const sidebarItems = [
     {
       id: 'bracket',
@@ -243,16 +246,34 @@ function TournamentView() {
           </div>
         ) : (
           <>
-            {viewMode === 'bracket' && tournament.bracket && (
-              <BracketView
-                bracket={tournament.bracket}
-                participants={tournament.participants}
-                gameId={tournament.gameId ?? undefined}
-                onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
-                onMatchGames={canAdminGame(tournament.gameId) ? handleMatchGames : undefined}
-                onRevertMatch={canAdminGame(tournament.gameId) ? handleRevertMatch : undefined}
-                readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
-              />
+            {viewMode === 'bracket' && (
+              hasPools ? (
+                <ImportedPhasesView
+                  phases={tournament.importedPhases!}
+                  participants={tournament.participants}
+                  bracketMatches={[
+                    ...(tournament.bracket?.winnerBracket ?? []),
+                    ...(tournament.bracket?.loserBracket ?? []),
+                    ...(tournament.bracket?.grandFinal ? [tournament.bracket.grandFinal] : []),
+                  ]}
+                  gameId={tournament.gameId}
+                  bracket={tournament.bracket ?? undefined}
+                  onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
+                  onMatchGames={canAdminGame(tournament.gameId) ? handleMatchGames : undefined}
+                  onRevertMatch={canAdminGame(tournament.gameId) ? handleRevertMatch : undefined}
+                  readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
+                />
+              ) : tournament.bracket ? (
+                <BracketView
+                  bracket={tournament.bracket}
+                  participants={tournament.participants}
+                  gameId={tournament.gameId ?? undefined}
+                  onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
+                  onMatchGames={canAdminGame(tournament.gameId) ? handleMatchGames : undefined}
+                  onRevertMatch={canAdminGame(tournament.gameId) ? handleRevertMatch : undefined}
+                  readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
+                />
+              ) : null
             )}
 
             {viewMode === 'participants' && (

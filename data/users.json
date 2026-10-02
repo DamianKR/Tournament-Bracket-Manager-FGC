@@ -7,7 +7,7 @@
     "role": "superadmin",
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.682Z",
-    "lastLoginAt": "2026-09-21T03:07:31.134Z",
+    "lastLoginAt": "2026-10-02T15:02:15.405Z",
     "communityId": null,
     "updatedAt": "2026-09-02T15:00:00.000Z",
     "memberships": []
@@ -20,7 +20,7 @@
     "role": null,
     "isActive": true,
     "createdAt": "2026-08-27T04:08:02.892Z",
-    "lastLoginAt": "2026-09-22T05:15:42.641Z",
+    "lastLoginAt": "2026-10-01T17:22:50.309Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-14T01:56:22.857Z",
     "memberships": [
@@ -30,9 +30,20 @@
         "isActive": true,
         "role": "community_admin",
         "gameAdminFor": []
+      },
+      {
+        "participantId": "gp_1786387087046_wnwtdas",
+        "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
+        "isActive": true,
+        "role": "user",
+        "gameAdminFor": []
       }
     ],
-    "gameAdminFor": []
+    "gameAdminFor": [],
+    "startggUserId": 369960,
+    "startggPlayerId": 522166,
+    "startggSlug": "user/53cfafc0",
+    "startggGamerTag": "KruX"
   },
   {
     "id": "user_1787803682892_c3ay3q8",
@@ -436,7 +447,7 @@
     "role": null,
     "isActive": true,
     "createdAt": "2026-08-27T04:08:06.690Z",
-    "lastLoginAt": "2026-09-22T05:04:18.017Z",
+    "lastLoginAt": "2026-10-01T16:31:30.167Z",
     "communityId": "community_fgc_santa_clara",
     "updatedAt": "2026-09-01T22:11:59.964Z",
     "memberships": [
