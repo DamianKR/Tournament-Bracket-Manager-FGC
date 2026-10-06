@@ -523,37 +523,41 @@ router.put('/users/:id', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // ── DELETE /api/auth/users/:id ────────────────────────────────────────────
-// Borra la cuenta permanentemente (conserva historial en los brackets).
+// Borra la cuenta permanentemente incluyendo TODOS sus participantes asociados.
+// Solo superadmin puede ejecutar esta operación.
 
 router.delete('/users/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { id } = req.params;
-  const user = await users.findById(id);
-  if (!user) return res.status(404).json({ error: 'User not found' });
+  try {
+    // Only superadmin may permanently delete a user account.
+    if (req.user.role !== 'superadmin') {
+      return res.status(403).json({ error: 'Only superadmin can permanently delete user accounts' });
+    }
 
-  const targetCommunityIds = new Set();
-  if (user.communityId) targetCommunityIds.add(user.communityId);
-  for (const m of user.memberships ?? []) {
-    if (m.isActive !== false) targetCommunityIds.add(m.communityId);
-  }
-  const inScope = [...targetCommunityIds].some(cid => isInUserScope(req.user, cid));
-  if (targetCommunityIds.size > 0 && !inScope) {
-    return res.status(403).json({ error: 'Cannot delete user outside your community scope' });
-  }
+    const { id } = req.params;
+    const user = await users.findById(id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-  if (!(await adminSharesGameWithUserAnyCommunity(req.user, user))) {
-    return res.status(403).json({ error: 'You are not admin of any of this user\'s games' });
-  }
+    // Superadmin cannot delete another superadmin account (safety guard).
+    if (user.role === 'superadmin' && user.id !== req.user.userId) {
+      return res.status(403).json({ error: 'Cannot delete another superadmin account' });
+    }
 
-  if (!canManageUserAnyCommunity(req.user, user)) {
-    return res.status(403).json({ error: 'You cannot delete a user with equal or higher admin level' });
-  }
+    // Cascade: remove all participant records linked to this user across all communities.
+    const linkedParticipantIds = [
+      user.participantId,
+      ...(user.memberships ?? []).map(m => m.participantId),
+    ].filter(Boolean);
 
-  if (user.role === 'superadmin' && req.user.role !== 'superadmin') {
-    return res.status(403).json({ error: 'Only superadmin can delete superadmin accounts' });
-  }
+    for (const pid of linkedParticipantIds) {
+      try { await participants.remove(pid); } catch {}
+    }
 
-  await users.remove(id);
-  res.json({ ok: true });
+    await users.remove(id);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[Auth] DELETE /users/:id error:', err);
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
 });
 
 export default router;

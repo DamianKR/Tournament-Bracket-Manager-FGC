@@ -69,7 +69,9 @@ export async function applyTournamentElo(tournament) {
       // ── Team tournament: distribute points to each member ────────────────
       for (const member of teamMembers) {
         const gp = resolveGlobalParticipant(member, byId, byName);
-        if (!gp) continue;
+        // Exclude name-only imports (no startggPlayerId) — no account to follow up with.
+        // Stubs WITH a startggPlayerId are real recurring players (just not linked yet).
+        if (!gp || (gp.isStartggStub && !gp.startggPlayerId)) continue;
 
         const ptsBefore = getParticipantEffectiveElo(gp, gameId);
         const baseEarned = getTournamentPoints(position, ptsBefore, pointsDepth);
@@ -96,7 +98,10 @@ export async function applyTournamentElo(tournament) {
     } else {
       // ── Singles tournament ───────────────────────────────────────────────
       const gp = resolveGlobalParticipant(tp, byId, byName);
-      if (!gp) continue;
+      // Exclude name-only imports (isStartggStub && no startggPlayerId) — no account
+      // to follow up with. Stubs WITH a startggPlayerId are real Start.gg players
+      // (just haven't linked a local account yet) and should earn ELO normally.
+      if (!gp || (gp.isStartggStub && !gp.startggPlayerId)) continue;
 
       const ptsBefore = getParticipantEffectiveElo(gp, gameId);
       const earned = getTournamentPoints(position, ptsBefore, pointsDepth);
@@ -175,7 +180,10 @@ export async function revertTournamentElo(tournament) {
  */
 export async function applyTournamentEloForOne(tournament, participantId) {
   const p = await participants.findById(participantId);
-  if (!p) return null;
+  // Name-only imports (no startggPlayerId) can't receive ELO — no account to
+  // follow up with. This is called after a merge/claim so isStartggStub should
+  // already be false, but guard just in case.
+  if (!p || (p.isStartggStub && !p.startggPlayerId)) return null;
 
   migrateParticipantGames(p);
 

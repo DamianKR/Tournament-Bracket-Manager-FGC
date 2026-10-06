@@ -498,11 +498,21 @@ router.delete('/:id/communities/:cid', requireAuth, async (req, res) => {
 // ── Routes ────────────────────────────────────────────────────────────────
 
 // GET /api/participants?communityId=...
+// Name-only imports (isStartggStub: true AND no startggPlayerId) are excluded
+// from the community roster — they have no real Start.gg account so there's no
+// way to follow them across tournaments or confirm their identity.
+// Stubs WITH a startggPlayerId are real recurring players (just not linked
+// locally yet) and appear normally.
+// Pass includeStubs=true (admin only) to expose name-only stubs for the
+// admin merge/link UI.
 router.get('/', optionalAuth, async (req, res) => {
   try {
-    const { communityId } = req.query;
+    const { communityId, includeStubs } = req.query;
     const data = await participants.getAll();
     let filtered = filterByCommunity(req.user, data, communityId);
+    if (includeStubs !== 'true' || !req.user) {
+      filtered = filtered.filter((p) => !(p.isStartggStub && !p.startggPlayerId));
+    }
     res.json(filtered);
   } catch (err) {
     console.error('[Participants] GET / error:', err);
@@ -804,16 +814,36 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!isInUserScope(req.user, p.communityId)) {
       return res.status(403).json({ error: 'Participant is not in your community scope' });
     }
-    // Game-scoped admin: solo puede borrar si el primary game del participante
-    // está en su scope (no basta con compartir cualquier juego).
-    if (isScopedAdmin(req.user, p.communityId) && (!p.gameId || !gameAdminForInCommunity(req.user, p.communityId).includes(p.gameId))) {
-      return res.status(403).json({ error: 'You can only delete participants whose primary game you administer' });
+    // Scoped admins have no delete privileges at all.
+    if (isScopedAdmin(req.user, p.communityId)) {
+      return res.status(403).json({ error: 'Scoped admins cannot delete participants' });
     }
     if (!(await callerOutranksParticipantUser(req.user, p))) {
       return res.status(403).json({ error: 'You cannot delete a participant linked to an equal or higher admin' });
     }
     const deleted = await participants.remove(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Participant not found' });
+
+    // Clean up the linked user's membership for this community so the account
+    // stays consistent even after the participant record is gone.
+    try {
+      const allUsers = await users.getAll();
+      const linkedUser = allUsers.find(u =>
+        u.participantId === req.params.id ||
+        (u.memberships ?? []).some(m => m.participantId === req.params.id)
+      );
+      if (linkedUser) {
+        const updated = { ...linkedUser };
+        if (updated.participantId === req.params.id) updated.participantId = null;
+        if (Array.isArray(updated.memberships)) {
+          updated.memberships = updated.memberships.filter(m => m.participantId !== req.params.id);
+        }
+        await users.upsert(updated);
+      }
+    } catch (cleanupErr) {
+      console.warn('[Participants] Membership cleanup after delete failed:', cleanupErr);
+    }
+
     res.json({ ok: true });
   } catch (err) {
     console.error('[Participants] DELETE /:id error:', err);

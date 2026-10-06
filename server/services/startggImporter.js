@@ -907,6 +907,29 @@ export async function importEvent(slug, eventId, communityId, givesPoints = fals
     //   d) Create new stub
     let globalParticipant = sggPlayerId ? byStartggPlayerId.get(sggPlayerId) : null;
 
+    // Step a) found by startggPlayerId — merge the new entrantId so future
+    // lookups by entrantId (step c) also work, and update the name if it changed.
+    if (globalParticipant && sggPlayerId) {
+      let dirty = false;
+      if (!globalParticipant.startggEntrantIds?.includes(sggEntrantId)) {
+        globalParticipant.startggEntrantIds = [
+          ...new Set([...(globalParticipant.startggEntrantIds ?? []), sggEntrantId]),
+        ];
+        dirty = true;
+      }
+      if (localGameId && !globalParticipant.games?.[localGameId]) {
+        globalParticipant.games = {
+          ...(globalParticipant.games ?? {}),
+          [localGameId]: buildGameProfile(localGameId),
+        };
+        dirty = true;
+      }
+      if (dirty) {
+        globalParticipant.updatedAt = now;
+        await participants.upsert(globalParticipant);
+      }
+    }
+
     if (!globalParticipant && sggPlayerId) {
       // b) Check if a user has this startggPlayerId linked
       const linkedUser = userBySggPlayerId.get(sggPlayerId);
@@ -1326,9 +1349,17 @@ export async function importEvent(slug, eventId, communityId, givesPoints = fals
   await tournaments.upsert(tournamentRecord);
 
   // 12. Update GlobalParticipant.tournamentIds (must run BEFORE applyTournamentElo
-  // so that applyTournamentElo fetches the final participant objects, not stale copies)
+  // so that applyTournamentElo fetches the final participant objects, not stale copies).
+  // Stubs (isStartggStub: true) are excluded — they live only inside the imported
+  // tournament and must not appear in community participants/ranking until a real
+  // user claims them via propagateStartggLink / participantMerge.
   for (const entry of entrantMap.values()) {
     const gp = entry.globalParticipant;
+    // Skip name-only imports (no startggPlayerId) — they have no real Start.gg
+    // account so there's no way to follow them across tournaments. Stubs WITH a
+    // startggPlayerId are real recurring players (just not linked locally yet)
+    // and should have a normal tournamentIds record.
+    if (gp.isStartggStub && !gp.startggPlayerId) continue;
     if (!gp.tournamentIds.includes(tournamentId)) {
       gp.tournamentIds = [...(gp.tournamentIds ?? []), tournamentId];
       gp.updatedAt = now;

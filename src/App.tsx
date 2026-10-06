@@ -26,6 +26,7 @@ import CommunityDashboard from './pages/CommunityDashboard/CommunityDashboard';
 import CommunityAdminPage from './pages/CommunityAdmin/CommunityAdminPage';
 import MembershipRequestsPage from './pages/MembershipRequests/MembershipRequestsPage';
 import StartggCallbackPage from './pages/StartggCallback/StartggCallbackPage';
+import UsersAdminPage from './pages/SuperAdmin/UsersAdminPage';
 
 // React Router mantiene el scroll vertical entre páginas — reset al top en
 // cada cambio de pathname (solo pathname: ?game=/?tab= no deben saltar).
@@ -72,6 +73,11 @@ function App() {
               {/* Membership requests */}
               <Route path="/membership-requests" element={
                 <ProtectedRoute><MembershipRequestsPage /></ProtectedRoute>
+              } />
+
+              {/* Superadmin — global user management */}
+              <Route path="/superadmin/users" element={
+                <ProtectedRoute><UsersAdminPage /></ProtectedRoute>
               } />
 
               {/* Community-scoped routes */}

@@ -125,28 +125,6 @@
     ]
   },
   {
-    "id": "user_1787803683524_2wfml2k",
-    "participantId": "gp_1786388790209_sr4ldku",
-    "username": "brian",
-    "passwordHash": "$2b$12$VyRG4WbcRfsTW5yBZyzve.l7J3JThnmnTFLvS2KHX4fGtdYY.jsLO",
-    "role": null,
-    "isActive": true,
-    "createdAt": "2026-08-27T04:08:03.731Z",
-    "lastLoginAt": null,
-    "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:11:59.953Z",
-    "memberships": [
-      {
-        "participantId": "gp_1786388790209_sr4ldku",
-        "communityId": "community_fgc_santa_clara",
-        "isActive": true,
-        "role": "user",
-        "gameAdminFor": []
-      }
-    ],
-    "gameAdminFor": []
-  },
-  {
     "id": "user_1787803683731_y5kanik",
     "participantId": "gp_1786391754729_ma3zmky",
     "username": "oby",
@@ -990,28 +968,6 @@
     "gameAdminFor": []
   },
   {
-    "id": "user_1787803691701_p0v7qs0",
-    "participantId": "gp_1787176726649_m106rr7",
-    "username": "ev",
-    "passwordHash": "$2b$12$r4O/g7fhOO5HRaIBLNp0bubEmPU362maHbD9UnjoLAfj56uL4.R0O",
-    "role": null,
-    "isActive": true,
-    "createdAt": "2026-08-27T04:08:11.910Z",
-    "lastLoginAt": null,
-    "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:11:59.982Z",
-    "memberships": [
-      {
-        "participantId": "gp_1787176726649_m106rr7",
-        "communityId": "community_fgc_santa_clara",
-        "isActive": true,
-        "role": "user",
-        "gameAdminFor": []
-      }
-    ],
-    "gameAdminFor": []
-  },
-  {
     "id": "user_1787803691910_qgnqp3l",
     "participantId": "gp_1787176804167_dgzm0z9",
     "username": "viruticajr",
@@ -1122,28 +1078,6 @@
     "gameAdminFor": []
   },
   {
-    "id": "user_1787803693021_mt3ylhn",
-    "participantId": "gp_1787409902362_3u9f0qr",
-    "username": "rhadam",
-    "passwordHash": "$2b$12$hC2dg8Tjv4UunxW0nvfFS.7Bl8.R8eUGU0LsCJT6CqjK6u.FE6SWa",
-    "role": null,
-    "isActive": true,
-    "createdAt": "2026-08-27T04:08:13.233Z",
-    "lastLoginAt": null,
-    "communityId": "community_fgc_santa_clara",
-    "updatedAt": "2026-09-01T22:11:59.986Z",
-    "memberships": [
-      {
-        "participantId": "gp_1787409902362_3u9f0qr",
-        "communityId": "community_fgc_santa_clara",
-        "isActive": true,
-        "role": "user",
-        "gameAdminFor": []
-      }
-    ],
-    "gameAdminFor": []
-  },
-  {
     "id": "user_1787803693233_xtjbgnp",
     "participantId": "gp_1787798635187_v9qifdf",
     "username": "wolfcatsilence",
@@ -1193,56 +1127,6 @@
       }
     ],
     "gameAdminFor": []
-  },
-  {
-    "id": "user_1788379061578_oni8u0o",
-    "participantId": "gp_1788379061334_fbsbbjo",
-    "username": "usp2",
-    "passwordHash": "$2b$12$KKdM7frO8N.yMfsd37HC.uWEndImy0tRbv635mDlYCDqWDqfCqaBa",
-    "role": null,
-    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "isActive": true,
-    "createdAt": "2026-09-02T19:57:41.578Z",
-    "lastLoginAt": "2026-09-02T20:32:33.661Z",
-    "memberships": [
-      {
-        "participantId": "gp_1788379061334_fbsbbjo",
-        "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-        "isActive": true,
-        "role": "admin",
-        "gameAdminFor": []
-      }
-    ],
-    "gameAdminFor": []
-  },
-  {
-    "id": "user_1788380302555_h6q998v",
-    "participantId": "gp_1788380302327_fa06m7d",
-    "username": "usp3",
-    "passwordHash": "$2b$12$2aZo04o46E1h90gYoNytQ.gLMOU8BE1IIYXmKFeWhzBEBuziT/eWS",
-    "role": null,
-    "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-    "isActive": true,
-    "createdAt": "2026-09-02T20:18:22.555Z",
-    "lastLoginAt": "2026-09-06T14:01:23.297Z",
-    "memberships": [
-      {
-        "participantId": "gp_1788380302327_fa06m7d",
-        "communityId": "community_c84b03a7-e5d2-4c0e-9a42-4229a4c1a1e8",
-        "isActive": true,
-        "role": "user",
-        "gameAdminFor": []
-      },
-      {
-        "participantId": "gp_1788702987883_tp3grlj",
-        "communityId": "community_fgc_santa_clara",
-        "isActive": true,
-        "role": "user",
-        "gameAdminFor": []
-      }
-    ],
-    "gameAdminFor": [],
-    "updatedAt": "2026-09-06T13:56:27.885Z"
   },
   {
     "id": "user_1788380327223_3hd8n6f",
@@ -1408,27 +1292,6 @@
     "isActive": true,
     "createdAt": "2026-09-20T15:24:48.312Z",
     "lastLoginAt": null
-  },
-  {
-    "id": "user_1789918016165_ej77nyy",
-    "participantId": "gp_1789918015924_bpo9r2z",
-    "username": "eddykill",
-    "passwordHash": "$2b$12$2Mb.5VntlE/UoiZQ6vmms.wKdsoEwV3tKCuKG8aqeq8nPZQGD/L/.",
-    "role": null,
-    "communityId": "community_fgc_santa_clara",
-    "memberships": [
-      {
-        "participantId": "gp_1789918015924_bpo9r2z",
-        "communityId": "community_fgc_santa_clara",
-        "isActive": true,
-        "role": "user",
-        "gameAdminFor": []
-      }
-    ],
-    "isActive": true,
-    "createdAt": "2026-09-20T15:26:56.165Z",
-    "lastLoginAt": null,
-    "updatedAt": "2026-09-21T00:55:04.226Z"
   },
   {
     "id": "user_1789918036393_tz7vbx4",

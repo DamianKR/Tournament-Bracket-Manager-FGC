@@ -16,7 +16,6 @@ import {
 import {
   listUsers,
   createUserAccount,
-  deleteUserAccount,
 } from '@/services/auth/authService';
 import { saveGlobalParticipants } from '@/services/storage/localStorage';
 import { useAuth } from '@/contexts/AuthContext';
@@ -43,12 +42,12 @@ function ParticipantsPage() {
   const isScopedAdmin = communityRole === 'admin' && gameAdminForHere.length > 0;
   const communityIdForChecks = currentCommunity?.id ?? DEFAULT_COMMUNITY_ID;
   const canManageParticipant = (p: GlobalParticipant): boolean => {
-    // Jerarquía: nadie gestiona el participant de un usuario de nivel igual o superior
+    // Scoped admins have no delete privileges at all.
+    if (isScopedAdmin) return false;
+    // Hierarchy: nobody manages a participant linked to an equal/higher admin.
     const linked = usersMap.get(p.id);
     if (linked && linked.id !== user?.id && !outranksOf(user, linked, communityIdForChecks)) return false;
-    // Borrar: solo si el "default/primary game" del participante está en su scope
-    if (!isScopedAdmin) return true;
-    return !!p.gameId && gameAdminForHere.includes(p.gameId);
+    return true;
   };
   // Al crear un participante solo se pueden asignar los juegos que administra
   const creatableGames = isScopedAdmin
@@ -244,18 +243,27 @@ function ParticipantsPage() {
   async function confirmDelete() {
     if (!deleteTarget) return;
     const name = deleteTarget.name;
+    const id = deleteTarget.id;
+
+    // Step 1: delete the participant record. If this fails the operation is aborted.
     try {
-      await removeParticipant(deleteTarget.id);
-      const user = usersMap.get(deleteTarget.id);
-      if (user) await deleteUserAccount(user.id);
-      const next = participants.filter((p) => p.id !== deleteTarget.id);
-      const nextUsers = new Map(usersMap);
-      nextUsers.delete(deleteTarget.id);
-      setParticipants(next); refreshStats(next);
-      setUsersMap(nextUsers);
-      toast.info(t('participants.deleteSuccess', { name }));
-    } catch (err: any) { toast.error(err.message); }
+      await removeParticipant(id);
+    } catch (err: any) {
+      toast.error(err.message);
+      setDeleteTarget(null);
+      return;
+    }
+
+    // Step 2: update UI state immediately.
+    // Note: this page only removes the community membership (participant record).
+    // Full user-account deletion is a superadmin-only action from the profile page.
+    const next = participants.filter((p) => p.id !== id);
+    const nextUsers = new Map(usersMap);
+    nextUsers.delete(id);
+    setParticipants(next); refreshStats(next);
+    setUsersMap(nextUsers);
     setDeleteTarget(null);
+    toast.info(t('participants.deleteSuccess', { name }));
   }
 
   // ── Account management ahora vive en el perfil ────────────────────────

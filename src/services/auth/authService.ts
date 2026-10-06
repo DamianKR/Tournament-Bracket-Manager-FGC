@@ -12,8 +12,9 @@
  *   updateUser()  → supabase.auth.admin.updateUserById()
  */
 
-import { SERVER_URL } from '@/services/api/apiClient';
+import { SERVER_URL, isServerAvailable } from '@/services/api/apiClient';
 import type { AuthSession, AuthUser, SessionUser } from '@/models/auth';
+import { queueUserDelete } from '@/services/storage/userDeleteQueue';
 
 const TOKEN_KEY = 'bracket_auth_token';
 
@@ -217,4 +218,26 @@ export async function deleteUserAccount(userId: string): Promise<void> {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || 'Failed to delete user');
   }
+}
+
+/**
+ * Borra una cuenta de usuario con soporte offline.
+ * - Si el servidor está disponible: ejecuta el borrado inmediatamente.
+ * - Si está offline: encola el userId; se reintentará al reconectar.
+ * Solo debe llamarse con rol superadmin.
+ */
+export async function deleteUserAccountOffline(userId: string): Promise<void> {
+  const online = await isServerAvailable().catch(() => false);
+  if (online) {
+    const res = await fetch(`${SERVER_URL}/api/auth/users/${encodeURIComponent(userId)}`, {
+      method: 'DELETE',
+      headers: getAuthHeader(),
+    });
+    // 404 means already deleted — treat as success.
+    if (res.ok || res.status === 404) return;
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to delete user account');
+  }
+  // Offline: queue for reconnect replay.
+  queueUserDelete(userId);
 }
