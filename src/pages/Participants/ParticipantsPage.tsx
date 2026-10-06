@@ -17,7 +17,6 @@ import {
   listUsers,
   createUserAccount,
 } from '@/services/auth/authService';
-import { saveGlobalParticipants } from '@/services/storage/localStorage';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { outranksOf, isCommunityAdminOf, communityRoleOf } from '@/utils/membershipRole';
@@ -125,16 +124,13 @@ function ParticipantsPage() {
       ]);
 
       const scoped = serverData;
-      console.log('[ParticipantsPage] communityId:', communityId, 'serverData:', serverData.map(p => ({ id: p.id, name: p.name, communityId: p.communityId })));
 
-      if (scoped.length === 0 && cached.length > 0) {
-        saveGlobalParticipants(cached);
-        setParticipants(cached);
-        refreshStats(cached);
-      } else {
-        setParticipants(scoped);
-        refreshStats(scoped);
-      }
+      // The merge inside getAllParticipantsAsync already re-pushes genuine
+      // offline-created records (pending / never-synced). Anything left in the
+      // cache but absent from the merged result was deleted elsewhere —
+      // re-pushing the raw cache here would resurrect them.
+      setParticipants(scoped);
+      refreshStats(scoped);
 
       const participantIds = new Set(scoped.length > 0 ? scoped.map((p) => p.id) : cached.map((p) => p.id));
       const map = new Map<string, AuthUser>();
