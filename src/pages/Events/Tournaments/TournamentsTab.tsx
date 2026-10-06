@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Tournament } from '@/models/types';
 import { getAllTournaments, removeTournament } from '@/services/tournament/tournamentService';
-import { loadTournamentsAsync, saveTournaments } from '@/services/storage/localStorage';
+import { loadTournamentsAsync } from '@/services/storage/localStorage';
 
 import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
@@ -25,13 +25,10 @@ function TournamentsTab() {
     const cached = getAllTournaments(communityId);
     applySort(cached);
     loadTournamentsAsync(communityId).then((serverData) => {
-      // If server returned empty but localStorage has data → push localStorage to server
-      if (serverData.length === 0 && cached.length > 0) {
-        saveTournaments(cached);
-        applySort(cached);
-      } else {
-        applySort(serverData);
-      }
+      // The merge inside loadTournamentsAsync already re-pushes genuine
+      // offline-created records. Cache-only leftovers missing from the merged
+      // result were deleted on another device — don't resurrect them.
+      applySort(serverData);
     });
   }, [communityId]);
 

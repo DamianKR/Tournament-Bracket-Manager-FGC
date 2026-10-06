@@ -306,10 +306,29 @@ async function readAllTournaments(communityId?: string): Promise<Tournament[]> {
             foundConflict = true;
             continue;
           }
-          const localIsNewer = !!st &&
+          if (!st) {
+            // Not on the server. Baseline present = it was confirmed before,
+            // so its absence means another device deleted it → drop the stale
+            // copy instead of resurrecting it. Pending or no baseline =
+            // genuine offline create → push.
+            if (isPending || baseline[lt.id] === undefined) {
+              merged.push(lt);
+              writeOneTournament(lt)
+                .then((ok) => {
+                  if (ok) clearPendingId(STORAGE_KEYS.PENDING_TOURNAMENTS, lt.id);
+                })
+                .catch((err) =>
+                  console.warn('[Storage] Re-sync of local tournament failed:', err)
+                );
+            } else {
+              removeBaseline(STORAGE_KEYS.SYNCED_TOURNAMENTS, lt.id);
+            }
+            continue;
+          }
+          const localIsNewer =
             new Date(lt.updatedAt ?? 0).getTime() > new Date(st.updatedAt ?? 0).getTime();
-          if (!st || isPending || localIsNewer) {
-            if (st) merged[merged.indexOf(st)] = lt; else merged.push(lt);
+          if (isPending || localIsNewer) {
+            merged[merged.indexOf(st)] = lt;
             writeOneTournament(lt)
               .then((ok) => {
                 if (ok) clearPendingId(STORAGE_KEYS.PENDING_TOURNAMENTS, lt.id);
@@ -317,7 +336,7 @@ async function readAllTournaments(communityId?: string): Promise<Tournament[]> {
               .catch((err) =>
                 console.warn('[Storage] Re-sync of local tournament failed:', err)
               );
-          } else if (st) {
+          } else {
             // Server version adopted — record it as the new baseline.
             setBaseline(STORAGE_KEYS.SYNCED_TOURNAMENTS, lt.id, st.updatedAt);
           }
@@ -653,14 +672,29 @@ async function readAllParticipants(communityId?: string): Promise<GlobalParticip
             foundConflict = true;
             continue;
           }
-          const localIsNewer = !!sp &&
+          if (!sp) {
+            // Not on the server. If we have a sync baseline for this id it
+            // means the record WAS confirmed on the server before — its
+            // absence now = deleted on another device → drop the stale copy.
+            // No baseline or still pending = genuine offline create → push.
+            if (isPending || baseline[lp.id] === undefined) {
+              merged.set(lp.id, lp);
+              putParticipant(lp)
+                .then((ok) => { if (ok) clearPendingId(STORAGE_KEYS.PENDING_PARTICIPANTS, lp.id); })
+                .catch((err) => console.warn('[Storage] Re-sync of local participant failed:', err));
+            } else {
+              removeBaseline(STORAGE_KEYS.SYNCED_PARTICIPANTS, lp.id);
+            }
+            continue;
+          }
+          const localIsNewer =
             new Date(lp.updatedAt ?? 0).getTime() > new Date(sp.updatedAt ?? 0).getTime();
-          if (!sp || isPending || localIsNewer) {
+          if (isPending || localIsNewer) {
             merged.set(lp.id, lp);
             putParticipant(lp)
               .then((ok) => { if (ok) clearPendingId(STORAGE_KEYS.PENDING_PARTICIPANTS, lp.id); })
               .catch((err) => console.warn('[Storage] Re-sync of local participant failed:', err));
-          } else if (sp) {
+          } else {
             setBaseline(STORAGE_KEYS.SYNCED_PARTICIPANTS, lp.id, sp.updatedAt);
           }
         }
@@ -759,7 +793,10 @@ export async function deleteGlobalParticipant(id: string): Promise<void> {
   if (await isServerAvailable()) {
     const ok = await deleteOnServer(`/api/participants/${encodeURIComponent(id)}`);
     // On failure the tombstone stays — the delete is retried on next sync.
-    if (ok) clearPendingId(STORAGE_KEYS.DELETED_PARTICIPANTS, id);
+    if (ok) {
+      clearPendingId(STORAGE_KEYS.DELETED_PARTICIPANTS, id);
+      removeBaseline(STORAGE_KEYS.SYNCED_PARTICIPANTS, id);
+    }
   }
   if (hasSupabase()) {
     _supabaseSyncParticipants(filtered).catch((err) =>
