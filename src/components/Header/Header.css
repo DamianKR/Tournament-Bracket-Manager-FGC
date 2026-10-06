@@ -92,6 +92,28 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
+/* Superadmin nav item: amber tint to stand out */
+.header-nav-item--super {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #f59e0b !important;
+  border: 1px solid #f59e0b44 !important;
+  border-radius: 6px !important;
+}
+
+.header-nav-item--super:hover {
+  background-color: #f59e0b22 !important;
+  color: #fbbf24 !important;
+}
+
+.header-nav-item--super.active {
+  background-color: #f59e0b !important;
+  color: #000 !important;
+  box-shadow: 0 2px 8px #f59e0b44 !important;
+  border-color: transparent !important;
+}
+
 /* ── Auth section ──────────────────────────────────────────────────────── */
 
 .header-divider {

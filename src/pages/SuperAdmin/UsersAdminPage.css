@@ -1,0 +1,573 @@
+/* ── UsersAdminPage ── superadmin user-management view ─────────────────────
+   Matches the site's gaming aesthetic:
+   • Dark purple gradient hero (same as Dashboard / CommunityDashboard)
+   • Orbitron display font for the page title
+   • Glass-morphism pill buttons inside the hero
+   • Light content area with purple-tinted user cards
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.ua-page {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+}
+
+/* ── Hero ────────────────────────────────────────────────────────────────── */
+
+.ua-hero {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #0f0a1a 100%);
+  padding: 3rem 0 2.5rem;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.25);
+}
+
+.ua-hero-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.ua-hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ua-hero-badges {
+  margin-bottom: 0.25rem;
+}
+
+.ua-superadmin-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.ua-hero-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin: 0;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+}
+
+.ua-hero-title i {
+  color: var(--primary-light);
+  font-size: 1.6rem;
+}
+
+.ua-hero-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 0.55rem;
+  border-radius: 999px;
+  background: rgba(167, 139, 250, 0.25);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  color: var(--primary-light);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  vertical-align: middle;
+  margin-left: 0.2rem;
+}
+
+.ua-hero-sub {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Hero action buttons — glass-morphism pill style (matches cd-hero-edit-btn) */
+.ua-hero-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-top: 0.4rem;
+}
+
+.ua-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.88);
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.ua-hero-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.ua-hero-btn--icon {
+  padding: 0.45rem 0.7rem;
+}
+
+/* ── Hero filters (search + community select inside dark hero) ──────────── */
+
+.ua-hero-filters {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ua-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+}
+
+.ua-search-icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+  font-size: 0.8rem;
+}
+
+.ua-hero-search {
+  width: 100%;
+  padding: 0.55rem 0.9rem 0.55rem 2.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-sizing: border-box;
+}
+
+.ua-hero-search::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.ua-hero-search:focus {
+  border-color: rgba(167, 139, 250, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+}
+
+.ua-hero-select {
+  padding: 0.55rem 2rem 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  min-width: 190px;
+  transition: border-color 0.2s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a78bfa' d='M6 9 1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+}
+
+.ua-hero-select:focus {
+  border-color: rgba(167, 139, 250, 0.6);
+}
+
+/* Native select dropdown items on dark bg — keep readable */
+.ua-hero-select option {
+  background: var(--primary-deep);
+  color: #fff;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+
+.ua-body {
+  padding-top: 1.75rem;
+  padding-bottom: 3rem;
+}
+
+/* ── User cards ──────────────────────────────────────────────────────────── */
+
+.pp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ua-user-card {
+  background: var(--bg-primary);
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+
+.ua-user-card:hover {
+  border-color: rgba(124, 58, 237, 0.35);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.1);
+}
+
+.ua-user-card--inactive {
+  opacity: 0.55;
+}
+
+/* ── User row ────────────────────────────────────────────────────────────── */
+
+.ua-user-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.ua-user-row:hover {
+  background: rgba(124, 58, 237, 0.04);
+}
+
+.ua-user-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.ua-chevron {
+  color: var(--text-tertiary);
+  font-size: 0.7rem;
+  width: 14px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.ua-user-row:hover .ua-chevron {
+  color: var(--primary-color);
+}
+
+.ua-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.ua-inactive {
+  font-size: 0.62rem;
+  padding: 0.075rem 0.35rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.ua-member-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+}
+
+/* ── Delete user button (user row) ──────────────────────────────────────── */
+
+.ua-btn-danger-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.07);
+  color: #ef4444;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.ua-btn-danger-row:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+.ua-btn-danger-row:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Membership sub-rows ─────────────────────────────────────────────────── */
+
+.ua-memberships {
+  border-top: 1px solid rgba(124, 58, 237, 0.08);
+  background: rgba(124, 58, 237, 0.025);
+}
+
+.ua-member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 1.125rem 0.5rem 3.5rem;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.07);
+  transition: background 0.1s;
+}
+
+.ua-member-row:last-child {
+  border-bottom: none;
+}
+
+.ua-member-row:hover {
+  background: rgba(124, 58, 237, 0.05);
+}
+
+.ua-member-left {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.ua-member-icon {
+  color: var(--text-tertiary);
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.ua-member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.ua-community-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.ua-home-icon {
+  color: #f59e0b;
+  font-size: 0.68rem;
+}
+
+.ua-participant-name {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.ua-member-action {
+  flex-shrink: 0;
+}
+
+/* Delete membership icon button */
+.ua-btn-danger-member {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.06);
+  color: #ef4444;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.ua-btn-danger-member:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+.ua-btn-danger-member:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Role badges ─────────────────────────────────────────────────────────── */
+
+.ua-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.14rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ua-badge--owner {
+  background: rgba(124, 58, 237, 0.12);
+  color: var(--primary-color);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+}
+
+.ua-badge--admin {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.ua-badge--user {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* ── Empty / error states ────────────────────────────────────────────────── */
+
+.ua-empty {
+  text-align: center;
+  padding: 3.5rem 1rem;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ua-empty i {
+  font-size: 2.5rem;
+  opacity: 0.3;
+  color: var(--primary-color);
+}
+
+.ua-no-memberships {
+  padding: 0.55rem 3.5rem;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-style: italic;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .ua-hero {
+    padding: 2rem 0 1.75rem;
+  }
+
+  .ua-hero-title {
+    font-size: 1.35rem;
+  }
+
+  .ua-hero-inner {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .ua-hero-right {
+    padding-top: 0;
+    width: 100%;
+  }
+
+  .ua-hero-filters {
+    flex-direction: column;
+  }
+
+  .ua-hero-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Stack user row — hide label on delete btn, keep icon */
+  .ua-user-row {
+    padding: 0.75rem;
+  }
+
+  .ua-btn-label {
+    display: none;
+  }
+
+  .ua-btn-danger-row {
+    padding: 0.3rem 0.55rem;
+  }
+
+  /* Membership: shallower indent, wrap */
+  .ua-member-row {
+    padding-left: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .ua-member-left {
+    flex: 1 1 100%;
+  }
+
+  .ua-member-action {
+    align-self: flex-end;
+  }
+
+  .ua-no-memberships {
+    padding-left: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ua-member-row {
+    padding-left: 1rem;
+  }
+}

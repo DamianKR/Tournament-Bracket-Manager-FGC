@@ -31,6 +31,8 @@ import {
 } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
 import { migrateParticipantGames } from '@/utils/participantGames';
+import { runOfflineSyncs } from '@/services/storage/syncRegistry';
+import { readQueuedUserDeletes, removeQueuedUserDelete } from '@/services/storage/userDeleteQueue';
 
 // ── Auth expiry helper ──────────────────────────────────────────────────
 // Si un write autenticado recibe 401, notificamos al contexto de auth para
@@ -47,7 +49,9 @@ function dispatchAuthExpired(): void {
 // Tombstones track ids deleted locally so the deletion propagates instead
 // of the record resurrecting on the next sync.
 
-function lsReadIdMap(key: string): Record<string, string> {
+// Exported: other collection services (rankedMatches, duels) reuse the same
+// outbox primitives so every collection syncs with identical semantics.
+export function lsReadIdMap(key: string): Record<string, string> {
   try {
     return JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, string>;
   } catch {
@@ -55,7 +59,7 @@ function lsReadIdMap(key: string): Record<string, string> {
   }
 }
 
-function lsWriteIdMap(key: string, map: Record<string, string>): void {
+export function lsWriteIdMap(key: string, map: Record<string, string>): void {
   try {
     localStorage.setItem(key, JSON.stringify(map));
   } catch (err) {
@@ -63,13 +67,13 @@ function lsWriteIdMap(key: string, map: Record<string, string>): void {
   }
 }
 
-function markPendingId(key: string, id: string): void {
+export function markPendingId(key: string, id: string): void {
   const m = lsReadIdMap(key);
   m[id] = new Date().toISOString();
   lsWriteIdMap(key, m);
 }
 
-function clearPendingId(key: string, id: string): void {
+export function clearPendingId(key: string, id: string): void {
   const m = lsReadIdMap(key);
   if (id in m) {
     delete m[id];
@@ -888,6 +892,32 @@ export async function syncPendingMatchRecords(): Promise<number> {
   return synced;
 }
 
+// ── User-account delete outbox ───────────────────────────────────────────
+// Superadmin user deletions queued while offline are replayed here.
+
+export async function syncPendingUserDeletes(): Promise<number> {
+  const ids = readQueuedUserDeletes();
+  if (!ids.length) return 0;
+  if (!(await isServerAvailable())) return 0;
+  let synced = 0;
+  for (const id of ids) {
+    try {
+      const res = await fetch(`${SERVER_URL}/api/auth/users/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers: getAuthHeader(),
+      });
+      // 200 OK or 404 (already gone) both mean success.
+      if (res.ok || res.status === 404) {
+        removeQueuedUserDelete(id);
+        synced++;
+      }
+    } catch {
+      // Network error — will retry on next reconnect.
+    }
+  }
+  return synced;
+}
+
 // ── Reconnect hook ──────────────────────────────────────────────────────
 // When the browser reports connectivity back, re-ping the server and push
 // every pending local change without waiting for a page reload/navigation.
@@ -897,5 +927,9 @@ if (typeof window !== 'undefined') {
     readAllTournaments().catch(() => {});
     readAllParticipants().catch(() => {});
     syncPendingMatchRecords().catch(() => {});
+    syncPendingUserDeletes().catch(() => {});
+    // Per-collection syncs self-register in syncRegistry (duels, ranked
+    // matches, ...). Registry keeps this module free of circular imports.
+    runOfflineSyncs().catch(() => {});
   });
 }

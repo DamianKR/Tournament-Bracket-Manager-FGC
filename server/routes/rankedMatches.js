@@ -40,15 +40,47 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/ranked-matches
+// Accepts both field conventions: server-style (matchType, playerAId,
+// eloData{playerAElo*}) and client-style (type, player1Id, flat player1Elo*).
+// Optional detail fields (score, games, characters, duelChallengeId, notes)
+// are passed through onto the stored record.
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { id, matchType, gameId, playerAId, playerBId, winnerId, eloData, communityId } = req.body;
+    const b = req.body;
+    const id = b.id;
+    const matchType = b.matchType ?? b.type;
+    const gameId = b.gameId;
+    const playerAId = b.playerAId ?? b.player1Id;
+    const playerBId = b.playerBId ?? b.player2Id;
+    const winnerId = b.winnerId;
+    const communityId = b.communityId;
+    const eloData = b.eloData ?? (
+      b.player1EloBefore !== undefined ? {
+        playerAEloBefore: b.player1EloBefore,
+        playerBEloBefore: b.player2EloBefore,
+        playerAEloAfter: b.player1EloAfter,
+        playerBEloAfter: b.player2EloAfter,
+        playerAEloChange: b.player1EloChange,
+        playerBEloChange: b.player2EloChange,
+      } : undefined
+    );
 
     if (!id || !matchType || !gameId || !playerAId || !playerBId || !winnerId || !eloData) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const match = rankedMatchShape(id, matchType, gameId, playerAId, playerBId, winnerId, eloData, communityId);
+    const match = {
+      ...rankedMatchShape(id, matchType, gameId, playerAId, playerBId, winnerId, eloData, communityId),
+      ...(b.score !== undefined && { score: b.score }),
+      ...(b.player1Score !== undefined && { player1Score: b.player1Score }),
+      ...(b.player2Score !== undefined && { player2Score: b.player2Score }),
+      ...(Array.isArray(b.games) && { games: b.games }),
+      ...(Array.isArray(b.player1Characters) && { player1Characters: b.player1Characters }),
+      ...(Array.isArray(b.player2Characters) && { player2Characters: b.player2Characters }),
+      ...(b.duelChallengeId && { duelChallengeId: b.duelChallengeId }),
+      ...(b.notes && { notes: b.notes }),
+      ...(b.createdAt && { createdAt: b.createdAt }),
+    };
 
     // Autorización: jugador del match o admin de ese juego
     const myPid = participantIdFor(req.user, communityId);

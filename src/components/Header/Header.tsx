@@ -11,7 +11,7 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isSuperAdmin } = useAuth();
   const { currentCommunity, allCommunities, myParticipantId, canAdminCurrentCommunity, communityRole, communityGames } = useCommunity();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -133,6 +133,16 @@ function Header() {
                     onClick={() => handleNav(`/c/${effectiveCommunityId}/participants`)}
                   >
                     {t('header.participants')}
+                  </button>
+                )}
+                {isSuperAdmin && (
+                  <button
+                    className={`header-nav-item header-nav-item--super ${isActive('/superadmin') ? 'active' : ''}`}
+                    onClick={() => handleNav('/superadmin/users')}
+                    title={t('header.usersAdmin', { defaultValue: 'Gestión de Usuarios' })}
+                  >
+                    <i className="fas fa-users-cog" />
+                    {t('header.usersAdmin', { defaultValue: 'Usuarios' })}
                   </button>
                 )}
 

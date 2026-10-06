@@ -41,7 +41,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { useToast } from '@/contexts/NotificationContext';
 import { communityRoleOf, gameAdminForOf, outranksOf } from '@/utils/membershipRole';
-import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccount } from '@/services/auth/authService';
+import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccountOffline } from '@/services/auth/authService';
 import { redirectToStartggOAuth, disconnectStartgg, getStartggLinkStatus, type StartggLinkStatus } from '@/services/startgg/startggService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
@@ -195,10 +195,16 @@ function ParticipantProfile() {
   const outranksLinkedUser = outranksOf(user, linkedUser, communityId);
   // Can edit profile fields only if in own community AND has admin rights, or is own profile
   const canEdit = (canAdminCurrentCommunity && outranksLinkedUser) || isOwnProfile;
+  // Can delete the membership (participant record) from this community:
+  //   community_admin, or non-scoped admin — but NOT a scoped admin.
+  const canDeleteFromCommunity = canAdminCurrentCommunity && !isScopedAdmin && outranksLinkedUser;
   const [admSaving, setAdmSaving] = useState(false);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteSaving, setDeleteSaving] = useState(false);
+  // "Delete user completely" (superadmin only)
+  const [showDeleteUserConfirm, setShowDeleteUserConfirm] = useState(false);
+  const [deleteUserSaving, setDeleteUserSaving] = useState(false);
 
   // Multi-community invite
   const [inviteSaving, setInviteSaving] = useState(false);
@@ -718,17 +724,60 @@ function ParticipantProfile() {
   async function handleDeleteParticipant() {
     if (!participant) return;
     setDeleteSaving(true);
+
+    // Step 1: delete the participant record. If this fails abort visibly.
     try {
       await removeParticipant(participant.id);
-      if (linkedUser) await deleteUserAccount(linkedUser.id);
-      setShowDeleteConfirm(false);
-      navigate(getPath('participants'));
-      toast.success(t('participants.deleted', { defaultValue: 'Participante eliminado' }));
     } catch (err: any) {
       setEditError(err.message || t('participantProfile.errors.deleteFailed'));
       toast.error(err.message || t('participantProfile.errors.deleteFailed'));
-    } finally {
       setDeleteSaving(false);
+      return;
+    }
+
+    // Step 2: navigate away immediately — participant is gone.
+    setShowDeleteConfirm(false);
+    setDeleteSaving(false);
+    navigate(getPath('participants'));
+    toast.success(t('participants.deleted', { defaultValue: 'Participante eliminado' }));
+    // User account is left intact; full deletion is a separate superadmin action.
+  }
+
+  /**
+   * handleDeleteUserCompletely — superadmin only.
+   * Deletes the user account AND every participant linked to it across all
+   * communities. Participant removes use tombstones so they work offline.
+   * The user-account deletion is queued if the server is unavailable.
+   */
+  async function handleDeleteUserCompletely() {
+    if (!participant || !linkedUser) return;
+    setDeleteUserSaving(true);
+
+    try {
+      // Collect all participant IDs for this user across every community.
+      const allPids: string[] = [
+        linkedUser.participantId,
+        ...(linkedUser.memberships ?? []).map((m) => m.participantId),
+      ].filter((pid): pid is string => !!pid);
+      if (!allPids.includes(participant.id)) allPids.push(participant.id);
+
+      // Delete each participant (offline-capable with tombstones).
+      for (const pid of allPids) {
+        try { await removeParticipant(pid); } catch {}
+      }
+
+      // Delete the user account (queued if offline).
+      await deleteUserAccountOffline(linkedUser.id);
+
+      setShowDeleteUserConfirm(false);
+      setDeleteUserSaving(false);
+      navigate(getPath('participants'));
+      toast.success(t('participantProfile.edit.deleteUserSuccess', { defaultValue: 'Usuario eliminado completamente' }));
+    } catch (err: any) {
+      const msg = err.message || t('participantProfile.errors.deleteFailed');
+      setEditError(msg);
+      toast.error(msg);
+      setDeleteUserSaving(false);
     }
   }
 
@@ -1708,24 +1757,37 @@ function ParticipantProfile() {
                   )}
                 </div>
 
-                {/* ── Danger Zone ────────────────────────────────────── */}
-                <div className="edit-section edit-section--danger">
-                  <div className="edit-section-head">
-                    <i className="fas fa-skull" />
-                    <span>{t('participantProfile.edit.dangerZoneTitle')}</span>
-                  </div>
-                  <p className="edit-section-desc">{t('participantProfile.edit.dangerZoneDesc')}</p>
-                  <div className="edit-section-actions">
-                    <button className="btn-danger" onClick={() => setShowDeleteConfirm(true)} disabled={deleteSaving}>
-                      <i className="fas fa-trash" /> {t('participantProfile.edit.deleteParticipant')}
-                    </button>
-                  </div>
-                </div>
               </>
+            )}
+
+            {/* ── Danger Zone — visible to any qualifying admin ────── */}
+            {(canDeleteFromCommunity || isSuperAdmin) && (
+              <div className="edit-section edit-section--danger">
+                <div className="edit-section-head">
+                  <i className="fas fa-skull" />
+                  <span>{t('participantProfile.edit.dangerZoneTitle')}</span>
+                </div>
+                <p className="edit-section-desc">{t('participantProfile.edit.dangerZoneDesc')}</p>
+                <div className="edit-section-actions">
+                  {/* Delete from community: community_admin + non-scoped admin */}
+                  {canDeleteFromCommunity && (
+                    <button className="btn-danger" onClick={() => setShowDeleteConfirm(true)} disabled={deleteSaving}>
+                      <i className="fas fa-user-minus" /> {t('participantProfile.edit.deleteParticipant')}
+                    </button>
+                  )}
+                  {/* Delete user completely: superadmin only, only when linked account exists */}
+                  {isSuperAdmin && linkedUser && (
+                    <button className="btn-danger" onClick={() => setShowDeleteUserConfirm(true)} disabled={deleteUserSaving}>
+                      <i className="fas fa-trash-alt" /> {t('participantProfile.edit.deleteUserCompletely', { defaultValue: 'Eliminar usuario completamente' })}
+                    </button>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         )}
 
+        {/* Delete membership from this community */}
         <ConfirmModal
           isOpen={showDeleteConfirm}
           title={t('participantProfile.edit.deleteConfirmTitle')}
@@ -1733,6 +1795,20 @@ function ParticipantProfile() {
           onCancel={() => setShowDeleteConfirm(false)}
           onConfirm={handleDeleteParticipant}
           confirmText={t('common.delete')}
+        />
+
+        {/* Delete user account completely (superadmin only) */}
+        <ConfirmModal
+          isOpen={showDeleteUserConfirm}
+          title={t('participantProfile.edit.deleteUserConfirmTitle', { defaultValue: 'Eliminar usuario completamente' })}
+          message={linkedUser ? t('participantProfile.edit.deleteUserConfirmMessage', {
+            name: participant?.name ?? '',
+            username: linkedUser.username,
+            defaultValue: `¿Seguro que quieres eliminar la cuenta "${linkedUser.username}" y todos sus participantes de todas las comunidades? Esta acción no se puede deshacer.`,
+          }) : ''}
+          onCancel={() => setShowDeleteUserConfirm(false)}
+          onConfirm={handleDeleteUserCompletely}
+          confirmText={t('participantProfile.edit.deleteUserConfirmButton', { defaultValue: 'Sí, eliminar todo' })}
         />
       </div>
     </div>

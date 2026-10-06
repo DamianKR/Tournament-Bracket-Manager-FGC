@@ -17,10 +17,14 @@ import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/
 import { getAuthHeader } from '@/services/auth/authService';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { getEffectiveElo } from '@/utils/participantGames';
+import { lsReadIdMap, lsWriteIdMap, markPendingId, clearPendingId } from '@/services/storage/localStorage';
+import { registerOfflineSync } from '@/services/storage/syncRegistry';
 
 const API_BASE = `${SERVER_URL}/api/duels`;
 const LS_KEY_CHALLENGES = 'bracket_duel_challenges';
 const LS_KEY_SETTINGS_PREFIX = 'bracket_duel_settings_';
+const LS_KEY_DUEL_OPS = 'bracket_pending_duel_ops';
+const LS_KEY_PENDING_SETTINGS = 'bracket_pending_duel_settings';
 
 // ── localStorage helpers ──────────────────────────────────────────────────
 
@@ -69,6 +73,167 @@ function lsWriteSettings(communityId: string, data: DuelSettings): void {
   }
 }
 
+// ── Pending-ops outbox ────────────────────────────────────────────────────
+// Duel lifecycle actions hit dedicated endpoints (/accept, /complete, ...)
+// instead of a document PUT, so the outbox stores OPERATIONS, not records.
+// On reconnect they are replayed in order and the server re-validates each
+// transition (stays authoritative). A 4xx means the op is no longer valid
+// (e.g. challenge expired meanwhile) → dropped, server state wins on merge.
+
+type DuelOpAction =
+  | 'create'
+  | 'accept'
+  | 'decline'
+  | 'complete'
+  | 'expire'
+  | 'report-result'
+  | 'resolve-conflict';
+
+interface PendingDuelOp {
+  challengeId: string;
+  action: DuelOpAction;
+  payload?: Record<string, unknown>;
+  queuedAt: string;
+}
+
+function lsReadDuelOps(): PendingDuelOp[] {
+  try {
+    const raw = localStorage.getItem(LS_KEY_DUEL_OPS);
+    return raw ? (JSON.parse(raw) as PendingDuelOp[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function lsWriteDuelOps(ops: PendingDuelOp[]): void {
+  try {
+    localStorage.setItem(LS_KEY_DUEL_OPS, JSON.stringify(ops));
+  } catch (err) {
+    console.error('[Duels] pending ops write failed:', err);
+  }
+}
+
+function enqueueDuelOp(challengeId: string, action: DuelOpAction, payload?: Record<string, unknown>): void {
+  const ops = lsReadDuelOps();
+  ops.push({ challengeId, action, payload, queuedAt: new Date().toISOString() });
+  lsWriteDuelOps(ops);
+}
+
+/** Ids of challenges with at least one op still waiting for the server. */
+function pendingChallengeIds(): Set<string> {
+  return new Set(lsReadDuelOps().map((o) => o.challengeId));
+}
+
+/**
+ * Executes one queued op against the server.
+ *   'ok'      → applied
+ *   'reject'  → 4xx, the op is permanently invalid — drop it
+ *   'network' → unreachable/5xx — keep it queued for the next sync
+ */
+async function replayDuelOp(op: PendingDuelOp): Promise<'ok' | 'reject' | 'network'> {
+  try {
+    let res: Response;
+    if (op.action === 'create') {
+      res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(op.payload),
+      });
+    } else {
+      const hasBody = op.action === 'complete' || op.action === 'report-result' || op.action === 'resolve-conflict';
+      res = await fetch(`${API_BASE}/${encodeURIComponent(op.challengeId)}/${op.action}`, {
+        method: 'PUT',
+        headers: { ...(hasBody ? { 'Content-Type': 'application/json' } : {}), ...getAuthHeader() },
+        ...(hasBody ? { body: JSON.stringify(op.payload ?? {}) } : {}),
+      });
+    }
+    if (res.ok) return 'ok';
+    if (res.status >= 400 && res.status < 500) return 'reject';
+    return 'network';
+  } catch {
+    resetServerCache();
+    return 'network';
+  }
+}
+
+/**
+ * Replays queued duel ops in order + pending settings writes.
+ * Stops at the first network failure (later ops would fail anyway and
+ * order matters within a challenge). 4xx ops are dropped — the next
+ * merge adopts the server-side state for those challenges.
+ */
+export async function syncPendingDuels(): Promise<number> {
+  const ops = lsReadDuelOps();
+  const pendingSettings = lsReadIdMap(LS_KEY_PENDING_SETTINGS);
+  if (!ops.length && !Object.keys(pendingSettings).length) return 0;
+  if (!(await isServerAvailable())) return 0;
+
+  let synced = 0;
+  const remaining: PendingDuelOp[] = [];
+
+  for (let i = 0; i < ops.length; i++) {
+    const op = ops[i];
+    const result = await replayDuelOp(op);
+    if (result === 'ok') {
+      synced++;
+    } else if (result === 'reject') {
+      console.warn('[Duels] Pending op rejected by server, dropping:', op.action, op.challengeId);
+      if (op.action === 'create') {
+        // Server never accepted this challenge — remove the phantom record
+        lsWriteChallenges(lsReadChallenges().filter((c) => c.id !== op.challengeId));
+      }
+    } else {
+      // Network failure — keep this and every later op in order
+      remaining.push(...ops.slice(i));
+      break;
+    }
+  }
+  lsWriteDuelOps(remaining);
+
+  // Pending settings writes (last-write-wins per community)
+  for (const communityId of Object.keys(pendingSettings)) {
+    try {
+      const res = await fetch(`${API_BASE}/settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(lsReadSettings(communityId)),
+      });
+      if (res.ok) {
+        const m = lsReadIdMap(LS_KEY_PENDING_SETTINGS);
+        delete m[communityId];
+        lsWriteIdMap(LS_KEY_PENDING_SETTINGS, m);
+        synced++;
+      }
+    } catch (err) {
+      console.warn('[Duels] Pending settings sync failed:', err);
+      resetServerCache();
+      break;
+    }
+  }
+
+  return synced;
+}
+
+registerOfflineSync(syncPendingDuels);
+
+/**
+ * Attempts an action op immediately; on network failure it is queued and
+ * replayed by syncPendingDuels. A 4xx is NOT queued — the server rejected
+ * the transition, so its state wins on the next merge.
+ */
+async function pushDuelOp(
+  challengeId: string,
+  action: DuelOpAction,
+  payload?: Record<string, unknown>
+): Promise<void> {
+  if (!(await isServerAvailable())) {
+    enqueueDuelOp(challengeId, action, payload);
+    return;
+  }
+  const result = await replayDuelOp({ challengeId, action, payload, queuedAt: '' });
+  if (result === 'network') enqueueDuelOp(challengeId, action, payload);
+}
+
 // ── Settings ──────────────────────────────────────────────────────────────
 
 /**
@@ -82,14 +247,21 @@ export function getDuelSettings(communityId: string = DEFAULT_COMMUNITY_ID): Due
  * Get duel settings (async from server, fallback to localStorage)
  */
 export async function getDuelSettingsAsync(communityId: string = DEFAULT_COMMUNITY_ID): Promise<DuelSettings> {
+  const pendingSettings = lsReadIdMap(LS_KEY_PENDING_SETTINGS);
+  const hasPendingSettings = !!pendingSettings[communityId];
   if (await isServerAvailable()) {
     try {
       const query = `?communityId=${encodeURIComponent(communityId)}`;
       const res = await fetch(`${API_BASE}/settings${query}`);
       if (res.ok) {
         const data = { ...DEFAULT_DUEL_SETTINGS, ...(await res.json()), communityId };
-        lsWriteSettings(communityId, data);
-        return data;
+        // A pending local write beats the server copy — keep ours and
+        // schedule the re-push instead of adopting the stale server data.
+        if (!hasPendingSettings) {
+          lsWriteSettings(communityId, data);
+          return data;
+        }
+        syncPendingDuels().catch(() => {});
       }
     } catch (err) {
       console.warn('[Duels] Server settings read failed:', err);
@@ -112,16 +284,26 @@ export async function updateDuelSettings(
   // Write to localStorage first (instant)
   lsWriteSettings(communityId, updated);
 
-  // Sync to server (fire-and-forget)
+  // Mark pending so a failed/offline push is retried on next sync instead
+  // of silently reverting to the server's old settings on the next read.
+  markPendingId(LS_KEY_PENDING_SETTINGS, communityId);
+
   if (await isServerAvailable()) {
-    fetch(`${API_BASE}/settings`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-      body: JSON.stringify(updated),
-    }).catch((err) => {
+    try {
+      const res = await fetch(`${API_BASE}/settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(updated),
+      });
+      if (res.ok) {
+        clearPendingId(LS_KEY_PENDING_SETTINGS, communityId);
+      } else {
+        console.warn('[Duels] Server settings write failed:', res.status);
+      }
+    } catch (err) {
       console.warn('[Duels] Server settings write failed:', err);
       resetServerCache();
-    });
+    }
   }
 
   return updated;
@@ -146,13 +328,40 @@ export async function getAllChallengesAsync(communityId?: string): Promise<DuelC
       const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
       const res = await fetch(`${API_BASE}${query}`);
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as DuelChallenge[];
         const existing = lsReadChallenges();
         const targetCommunity = communityId || DEFAULT_COMMUNITY_ID;
-        const others = existing.filter(c => c.communityId && c.communityId !== targetCommunity);
-        const merged = [...others, ...data];
-        lsWriteChallenges(merged);
-        return data;
+        const pendingIds = pendingChallengeIds();
+        const localById = new Map(existing.map((c) => [c.id, c]));
+        const serverIds = new Set(data.map((c) => c.id));
+
+        // Challenges with queued ops keep the local version — the local
+        // status already reflects the action waiting to be replayed.
+        const mergedSlice = data.map((sc) =>
+          pendingIds.has(sc.id) ? localById.get(sc.id) ?? sc : sc
+        );
+
+        // Offline-created challenges (pending 'create' op) aren't on the
+        // server yet — keep them visible instead of letting them vanish.
+        for (const lc of existing) {
+          const inScope = communityId
+            ? (lc.communityId || DEFAULT_COMMUNITY_ID) === targetCommunity
+            : true;
+          if (inScope && !serverIds.has(lc.id) && pendingIds.has(lc.id)) {
+            mergedSlice.push(lc);
+          }
+        }
+
+        // Preserve the cache slice of other communities untouched.
+        const others = communityId
+          ? existing.filter((c) => (c.communityId || DEFAULT_COMMUNITY_ID) !== targetCommunity)
+          : [];
+        lsWriteChallenges([...others, ...mergedSlice]);
+
+        // Background: flush queued ops so offline actions reach the server.
+        if (pendingIds.size) syncPendingDuels().catch(() => {});
+
+        return mergedSlice;
       }
     } catch (err) {
       console.warn('[Duels] Server challenges read failed:', err);
@@ -493,20 +702,35 @@ async function doCreateDuelChallenge(
   };
 
   // Sync to server FIRST — the server is authoritative for validation
-  // (availability, ELO restriction, admin scope). Only cache on success.
+  // (availability, ELO restriction, admin scope). A server REJECTION throws
+  // and the challenge is not cached. A network failure / offline mode
+  // caches the challenge and queues a 'create' op for replay — the server
+  // re-runs the same validation when it lands.
   if (await isServerAvailable()) {
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-      body: JSON.stringify(challenge),
-    });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || `Server rejected challenge (${res.status})`);
+    try {
+      const res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(challenge),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `Server rejected challenge (${res.status})`);
+      }
+    } catch (err) {
+      if (err instanceof TypeError) {
+        // fetch network error — treat like offline instead of losing it
+        resetServerCache();
+        enqueueDuelOp(challenge.id, 'create', challenge as unknown as Record<string, unknown>);
+      } else {
+        throw err;
+      }
     }
+  } else {
+    enqueueDuelOp(challenge.id, 'create', challenge as unknown as Record<string, unknown>);
   }
 
-  // Add to localStorage cache only after the server accepted it
+  // Cache locally — either confirmed by server or pending the queued op
   const all = lsReadChallenges();
   all.push(challenge);
   lsWriteChallenges(all);
@@ -528,16 +752,8 @@ export async function acceptDuelChallenge(challengeId: string): Promise<DuelChal
   // Update localStorage
   lsWriteChallenges(all);
 
-  // Sync to server
-  if (await isServerAvailable()) {
-    fetch(`${API_BASE}/${challengeId}/accept`, {
-      method: 'PUT',
-      headers: getAuthHeader(),
-    }).catch((err) => {
-      console.warn('[Duels] Server accept failed:', err);
-      resetServerCache();
-    });
-  }
+  // Sync to server — queued for replay if offline/unreachable
+  await pushDuelOp(challengeId, 'accept');
 
   return challenge;
 }
@@ -556,16 +772,8 @@ export async function declineDuelChallenge(challengeId: string): Promise<DuelCha
   // Update localStorage
   lsWriteChallenges(all);
 
-  // Sync to server
-  if (await isServerAvailable()) {
-    fetch(`${API_BASE}/${challengeId}/decline`, {
-      method: 'PUT',
-      headers: getAuthHeader(),
-    }).catch((err) => {
-      console.warn('[Duels] Server decline failed:', err);
-      resetServerCache();
-    });
-  }
+  // Sync to server — queued for replay if offline/unreachable
+  await pushDuelOp(challengeId, 'decline');
 
   return challenge;
 }
@@ -585,17 +793,8 @@ export async function completeDuelChallenge(challengeId: string, matchId: string
   // Update localStorage
   lsWriteChallenges(all);
 
-  // Sync to server
-  if (await isServerAvailable()) {
-    fetch(`${API_BASE}/${challengeId}/complete`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-      body: JSON.stringify({ matchId }),
-    }).catch((err) => {
-      console.warn('[Duels] Server complete failed:', err);
-      resetServerCache();
-    });
-  }
+  // Sync to server — queued for replay if offline/unreachable
+  await pushDuelOp(challengeId, 'complete', { matchId });
 
   return challenge;
 }
@@ -608,11 +807,14 @@ export async function completeDuelChallenge(challengeId: string, matchId: string
 export async function expireOldChallenges(communityId?: string): Promise<void> {
   const targetCommunity = communityId || DEFAULT_COMMUNITY_ID;
   const settings = await getDuelSettingsAsync(targetCommunity);
-  const all = lsReadChallenges().filter(c => !communityId || c.communityId === targetCommunity);
+  // Iterate the FULL cache — writing back a community-filtered list would
+  // wipe every other community's challenges from localStorage.
+  const all = lsReadChallenges();
   const now = new Date();
   const expiredIds: string[] = [];
 
   all.forEach(challenge => {
+    if (communityId && (challenge.communityId || DEFAULT_COMMUNITY_ID) !== targetCommunity) return;
     if (challenge.status === 'pending' && new Date(challenge.expiresAt) < now) {
       challenge.status = 'expired';
       expiredIds.push(challenge.id);
@@ -638,31 +840,29 @@ export async function expireOldChallenges(communityId?: string): Promise<void> {
   if (expiredIds.length > 0) {
     lsWriteChallenges(all);
 
-    if (await isServerAvailable()) {
-      await Promise.all(expiredIds.map(async (id) => {
-        try {
-          const res = await fetch(`${API_BASE}/${id}/expire`, {
-            method: 'PUT',
-            headers: getAuthHeader(),
-          });
-          if (!res.ok) {
-            const body = await res.text().catch(() => '');
-            console.warn(`[Duels] Server expire for ${id} failed:`, res.status, body);
-          }
-        } catch (err) {
-          console.warn(`[Duels] Network expire for ${id} failed:`, err);
-        }
-      }));
+    // Queue an expire op per challenge — replays on reconnect if offline
+    for (const id of expiredIds) {
+      await pushDuelOp(id, 'expire');
+    }
 
-      // Reload from server after expiring to get updated ELO penalties
+    if (await isServerAvailable()) {
+      // Reload from server after expiring to get updated ELO penalties.
+      // Keep challenges with pending ops on their local version.
       try {
         const query = `?communityId=${encodeURIComponent(targetCommunity)}`;
         const res = await fetch(`${API_BASE}${query}`);
         if (res.ok) {
-          const serverData = await res.json();
+          const serverData = (await res.json()) as DuelChallenge[];
+          const pendingIds = pendingChallengeIds();
           const existing = lsReadChallenges();
-          const others = existing.filter(c => c.communityId !== targetCommunity);
-          lsWriteChallenges([...others, ...serverData]);
+          const localById = new Map(existing.map((c) => [c.id, c]));
+          const mergedSlice = serverData.map((sc) =>
+            pendingIds.has(sc.id) ? localById.get(sc.id) ?? sc : sc
+          );
+          const others = existing.filter(
+            (c) => (c.communityId || DEFAULT_COMMUNITY_ID) !== targetCommunity
+          );
+          lsWriteChallenges([...others, ...mergedSlice]);
         }
       } catch (err) {
         console.warn('[Duels] Failed to reload after expiration:', err);
@@ -700,11 +900,29 @@ export async function reportDuelResult(
       const error = await res.json();
       throw new Error(error.error || 'Failed to report result');
     } catch (err) {
-      console.error('[Duels] Report result failed:', err);
-      throw err;
+      // TypeError = network died — fall through to the offline queue;
+      // real HTTP/validation errors still propagate to the caller.
+      if (!(err instanceof TypeError)) {
+        console.error('[Duels] Report result failed:', err);
+        throw err;
+      }
+      resetServerCache();
     }
   }
-  return null;
+
+  // Offline: mark the report locally and queue the op. The server runs
+  // the real consensus logic on replay; _pendingReport is a local-only
+  // flag so the UI knows this challenge has a report in flight.
+  const all = lsReadChallenges();
+  const index = all.findIndex(c => c.id === challengeId);
+  if (index < 0) return null;
+  all[index] = {
+    ...all[index],
+    _pendingReport: { winnerId, reportedAt: new Date().toISOString() },
+  } as DuelChallenge;
+  lsWriteChallenges(all);
+  enqueueDuelOp(challengeId, 'report-result', { winnerId, ...(evidence && { evidence }) });
+  return all[index];
 }
 
 /**
@@ -735,9 +953,28 @@ export async function resolveConflict(
       const error = await res.json();
       throw new Error(error.error || 'Failed to resolve conflict');
     } catch (err) {
-      console.error('[Duels] Resolve conflict failed:', err);
-      throw err;
+      if (!(err instanceof TypeError)) {
+        console.error('[Duels] Resolve conflict failed:', err);
+        throw err;
+      }
+      resetServerCache();
     }
   }
-  return null;
+
+  // Offline: mirror the server's resolution locally (both results set to
+  // the admin's pick + completed) and queue the op for replay.
+  const all = lsReadChallenges();
+  const index = all.findIndex(c => c.id === challengeId);
+  if (index < 0) return null;
+  const resolvedResult = { winnerId, reportedAt: new Date().toISOString(), evidence: null };
+  all[index] = {
+    ...all[index],
+    challengerResult: resolvedResult,
+    challengedResult: resolvedResult,
+    status: 'completed',
+    completedAt: resolvedResult.reportedAt,
+  };
+  lsWriteChallenges(all);
+  enqueueDuelOp(challengeId, 'resolve-conflict', { winnerId });
+  return all[index];
 }

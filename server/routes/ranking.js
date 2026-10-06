@@ -52,7 +52,7 @@ router.get('/', optionalAuth, async (req, res) => {
       req.user,
       (await participants.getAll()).map(normalizeParticipant),
       communityId
-    );
+    ).filter((p) => !(p.isStartggStub && !p.startggPlayerId)); // name-only imports excluded
 
     // Only show participants who have this game in their profile
     const eligible = all.filter((p) => getGameProfile(p, targetGameId) != null);
