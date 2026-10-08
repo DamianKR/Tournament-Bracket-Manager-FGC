@@ -120,9 +120,11 @@ function ReportMatchModal({ league, match, participants, onClose, onSuccess }: R
     }
 
     toast.success(
-      canAdminLeague && match.status === 'pending_review'
-        ? t('league.reportMatch.resolveSuccess')
-        : t('league.reportMatch.submitSuccess')
+      result.queued
+        ? t('league.reportMatch.queuedSuccess')
+        : canAdminLeague && match.status === 'pending_review'
+          ? t('league.reportMatch.resolveSuccess')
+          : t('league.reportMatch.submitSuccess')
     );
     onSuccess();
   }

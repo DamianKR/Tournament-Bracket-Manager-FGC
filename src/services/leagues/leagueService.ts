@@ -6,8 +6,9 @@
 
 import { League, LeagueMatch, LeagueStanding } from '@/models/league';
 import type { MatchGame } from '@/models/rankedMatch';
-import { SERVER_URL } from '@/services/api/apiClient';
+import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
+import { enqueueMatchOp } from '@/services/storage/matchOpsQueue';
 import { isDateInTimeZonePassed } from '@/utils/timeZone';
 
 // ── API Calls ─────────────────────────────────────────────────────────────
@@ -157,6 +158,52 @@ export async function getLeagueStandings(leagueId: string): Promise<LeagueStandi
   }
 }
 
+export interface LeagueReportResult {
+  match: LeagueMatch;
+  eloChanges: Record<string, number> | null;
+  /** true when the op was queued offline — the server applies ELO on replay. */
+  queued?: boolean;
+}
+
+/**
+ * Posts a league op, or queues it for ordered replay when the server is
+ * unreachable / returns 5xx. 4xx responses still throw (permanent errors).
+ */
+async function postLeagueOp(
+  path: string,
+  body: Record<string, unknown>,
+  fallbackMatchId: string,
+): Promise<LeagueReportResult> {
+  let res: Response | null = null;
+  if (await isServerAvailable()) {
+    try {
+      res = await fetch(`${SERVER_URL}${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(body),
+      });
+    } catch {
+      resetServerCache();
+      res = null;
+    }
+  }
+
+  if (res?.ok) return (await res.json()) as LeagueReportResult;
+
+  if (res && res.status >= 400 && res.status < 500) {
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody.error || `League op failed (${res.status})`);
+  }
+
+  // Offline / transient failure → ordered queue replay applies it later.
+  enqueueMatchOp({ id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`, method: 'POST', path, body });
+  return {
+    match: { id: fallbackMatchId } as LeagueMatch,
+    eloChanges: null,
+    queued: true,
+  };
+}
+
 export async function reportMatchResult(
   leagueId: string,
   matchId: string,
@@ -168,18 +215,9 @@ export async function reportMatchResult(
     evidence?: string;
     games?: MatchGame[];
   }
-): Promise<{ match: LeagueMatch; eloChanges: Record<string, number> | null } | null> {
+): Promise<LeagueReportResult | null> {
   try {
-    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/report`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-      body: JSON.stringify(result),
-    });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || `Failed to report match result (${res.status})`);
-    }
-    return await res.json();
+    return await postLeagueOp(`/api/leagues/${leagueId}/matches/${matchId}/report`, result, matchId);
   } catch (err) {
     console.error('[LeagueService] reportMatchResult error:', err);
     throw err;
@@ -196,18 +234,9 @@ export async function resolveLeagueMatch(
     noShowParticipantId?: string;
     games?: MatchGame[];
   }
-): Promise<{ match: LeagueMatch; eloChanges: Record<string, number> } | null> {
+): Promise<LeagueReportResult | null> {
   try {
-    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches/${matchId}/resolve`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-      body: JSON.stringify(result),
-    });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || `Failed to resolve match dispute (${res.status})`);
-    }
-    return await res.json();
+    return await postLeagueOp(`/api/leagues/${leagueId}/matches/${matchId}/resolve`, result, matchId);
   } catch (err) {
     console.error('[LeagueService] resolveLeagueMatch error:', err);
     throw err;

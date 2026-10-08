@@ -31,10 +31,12 @@ import { RankedMatch } from '@/models/rankedMatch';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
+import { readMatchOps } from '@/services/storage/matchOpsQueue';
 import {
   lsReadIdMap,
   markPendingId,
   clearPendingId,
+  syncPendingMatchOps,
 } from '@/services/storage/localStorage';
 import { registerOfflineSync } from '@/services/storage/syncRegistry';
 
@@ -217,10 +219,54 @@ registerOfflineSync(syncPendingRankedMatches);
 
 // ── Public API ────────────────────────────────────────────────────────────
 
-/** Obtiene todas las partidas ranked (sync desde localStorage). */
+/**
+ * Queued /api/ranking/match ops rendered as pending RankedMatch records so a
+ * match recorded offline is immediately visible in lists/history. Read-time
+ * only — never persisted into the matches cache, so they vanish as soon as
+ * the op drains and the real server record arrives.
+ */
+function queuedOpsAsMatches(communityId?: string, excludeIds?: Set<string>): RankedMatch[] {
+  return readMatchOps()
+    .filter((op) => op.path === '/api/ranking/match')
+    .map((op) => {
+      const b = op.body as Record<string, unknown>;
+      const scoreA = b.player1Score as number | undefined;
+      const scoreB = b.player2Score as number | undefined;
+      const games = b.games as RankedMatch['games'] | undefined;
+      return {
+        id: (b.id as string) ?? op.id,
+        type: (b.matchType as RankedMatch['type']) ?? 'free',
+        gameId: (b.gameId as string) ?? '',
+        player1Id: (b.playerAId as string) ?? '',
+        player2Id: (b.playerBId as string) ?? '',
+        winnerId: (b.winnerId as string) ?? '',
+        score: scoreA !== undefined && scoreB !== undefined ? `${scoreA}-${scoreB}` : '',
+        ...(scoreA !== undefined && { player1Score: scoreA }),
+        ...(scoreB !== undefined && { player2Score: scoreB }),
+        ...(games && { games }),
+        player1EloBefore: 0,
+        player2EloBefore: 0,
+        player1EloAfter: 0,
+        player2EloAfter: 0,
+        player1EloChange: 0,
+        player2EloChange: 0,
+        communityId: (b.communityId as string) || DEFAULT_COMMUNITY_ID,
+        date: op.queuedAt,
+        pendingSync: true,
+      } satisfies RankedMatch;
+    })
+    .filter((m) =>
+      (!communityId || m.communityId === communityId) &&
+      !excludeIds?.has(m.id)
+    );
+}
+
+/** Obtiene todas las partidas ranked (sync desde localStorage + ops encoladas). */
 export function getAllRankedMatches(communityId?: string): RankedMatch[] {
   const all = lsReadMatches();
-  return communityId ? all.filter(m => m.communityId === communityId) : all;
+  const filtered = communityId ? all.filter(m => m.communityId === communityId) : all;
+  const ids = new Set(filtered.map((m) => m.id));
+  return [...filtered, ...queuedOpsAsMatches(communityId, ids)];
 }
 
 /** Obtiene todas las partidas ranked (async desde servidor, fallback a localStorage). */
@@ -251,6 +297,10 @@ export async function getAllRankedMatchesAsync(communityId?: string): Promise<Ra
         );
         const mergedSlice = [...serverSlice, ...localOnlyPending];
 
+        // Queued recordMatch ops — visible immediately, never written to cache.
+        const mergedIds = new Set(mergedSlice.map((m) => m.id));
+        const withQueued = [...mergedSlice, ...queuedOpsAsMatches(communityId, mergedIds)];
+
         // Merge this community slice into cache instead of overwriting all.
         if (communityId) {
           const others = lsReadMatches().filter((m) => m.communityId !== communityId);
@@ -260,10 +310,12 @@ export async function getAllRankedMatchesAsync(communityId?: string): Promise<Ra
           lsWriteMatches(mergedSlice);
         }
 
-        // Background: flush the outbox (pending creates + tombstoned deletes)
+        // Background: flush the outboxes (pending creates/deletes + queued
+        // ELO ops) so reconnect replays them without waiting for 'online'.
         syncPendingRankedMatches().catch(() => {});
+        syncPendingMatchOps().catch(() => {});
 
-        return mergedSlice.length > 0 ? mergedSlice : cached;
+        return withQueued.length > 0 ? withQueued : cached;
       }
     } catch (err) {
       console.warn('[RankedMatches] Server read failed:', err);

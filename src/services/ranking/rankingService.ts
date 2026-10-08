@@ -10,8 +10,12 @@
  */
 
 import type { MatchRecord, GlobalParticipant, MatchGame } from '../../models/types';
-import { SERVER_URL } from '@/services/api/apiClient';
+import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
+import { enqueueMatchOp } from '@/services/storage/matchOpsQueue';
+import { getEffectiveElo } from '@/utils/participantGames';
+import { getRankName } from '@/utils/rank';
+import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 
 // ── localStorage sync helpers ─────────────────────────────────────────────
 
@@ -69,6 +73,8 @@ export interface MatchResult {
     rankBefore: string;
     rankAfter: string;
   };
+  /** true when the match was queued offline — the server computes ELO on delivery. */
+  queued?: boolean;
 }
 
 // ── Rank color helper (mirrors server-side) ───────────────────────────────
@@ -140,6 +146,14 @@ export async function getMatchesForParticipant(participantId: string, communityI
 /**
  * Records a match and updates per-game ELO for both players.
  * Also patches localStorage so both sources stay in sync.
+ *
+ * OFFLINE: when the server is unreachable the operation is appended to the
+ * ordered match-ops queue (bracket_pending_match_ops) and replayed by
+ * syncPendingMatchOps on reconnect — the server computes the real ELO on
+ * delivery, so queued matches stay correct even when other results land
+ * first. The returned MatchResult has `queued: true` and placeholder ELO
+ * fields (current local values, delta 0) — the UI should show it as
+ * "recorded, pending sync" rather than an error.
  */
 export async function recordMatch(
   playerAId: string,
@@ -151,37 +165,123 @@ export async function recordMatch(
   scoreA?: number,
   scoreB?: number,
   games?: MatchGame[],
-  extra?: { seasonId?: string; periodIndex?: number }
+  extra?: { seasonId?: string; periodIndex?: number; duelChallengeId?: string }
 ): Promise<MatchResult> {
-  const res = await fetch(`${API_BASE}/match`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({
-      playerAId,
-      playerBId,
-      winnerId,
-      gameId,
-      matchType,
-      communityId,
-      player1Score: scoreA,
-      player2Score: scoreB,
-      games,
-      ...(extra?.seasonId && { seasonId: extra.seasonId }),
-      ...(extra?.periodIndex !== undefined && { periodIndex: extra.periodIndex }),
-    }),
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? `Failed to record match: ${res.status}`);
+  // Client-generated id — the server honors it and dedupes on it, so a
+  // queued op retried after a lost response never applies ELO twice.
+  const matchId = `m_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+  const body: Record<string, unknown> = {
+    id: matchId,
+    playerAId,
+    playerBId,
+    winnerId,
+    gameId,
+    matchType,
+    communityId,
+    player1Score: scoreA,
+    player2Score: scoreB,
+    games,
+    ...(extra?.seasonId && { seasonId: extra.seasonId }),
+    ...(extra?.periodIndex !== undefined && { periodIndex: extra.periodIndex }),
+    ...(extra?.duelChallengeId && { duelChallengeId: extra.duelChallengeId }),
+  };
+
+  let res: Response | null = null;
+  if (await isServerAvailable()) {
+    try {
+      res = await fetch(`${API_BASE}/match`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(body),
+      });
+    } catch {
+      resetServerCache();
+      res = null;
+    }
   }
-  const data = await res.json();
-  // Patch localStorage with the updated ELO values from the server
-  const toSync: GlobalParticipant[] = [
-    data.updatedParticipantA,
-    data.updatedParticipantB,
-  ].filter(Boolean) as GlobalParticipant[];
-  if (toSync.length) lsPatchParticipants(toSync);
-  return data as MatchResult;
+
+  if (res?.ok) {
+    const data = await res.json();
+    // Patch localStorage with the updated ELO values from the server
+    const toSync: GlobalParticipant[] = [
+      data.updatedParticipantA,
+      data.updatedParticipantB,
+    ].filter(Boolean) as GlobalParticipant[];
+    if (toSync.length) lsPatchParticipants(toSync);
+    return data as MatchResult;
+  }
+
+  // Permanent server rejection (validation/auth) — don't queue, surface it.
+  if (res && res.status >= 400 && res.status < 500) {
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody.error ?? `Failed to record match: ${res.status}`);
+  }
+
+  // Offline or transient 5xx → enqueue for ordered replay on reconnect.
+  enqueueMatchOp({ id: `op_${matchId}`, method: 'POST', path: '/api/ranking/match', body });
+
+  // Build a placeholder result from local participant state so callers can
+  // show "recorded — pending sync" and link the match id to duels/assignments.
+  const locals = lsReadParticipants();
+  const pA = locals.find((p) => p.id === playerAId);
+  const pB = locals.find((p) => p.id === playerBId);
+  const eloA = pA ? getEffectiveElo(pA, gameId) : 1500;
+  const eloB = pB ? getEffectiveElo(pB, gameId) : 1500;
+  const queuedMatch: MatchRecord = {
+    id: matchId,
+    playerAId,
+    playerBId,
+    winnerId,
+    loserId: winnerId === playerAId ? playerBId : playerAId,
+    type: matchType,
+    gameId,
+    playerAPointsBefore: eloA,
+    playerBPointsBefore: eloB,
+    playerAPointsAfter: eloA,
+    playerBPointsAfter: eloB,
+    playerADelta: 0,
+    playerBDelta: 0,
+    playerARankBefore: getRankName(eloA),
+    playerBRankBefore: getRankName(eloB),
+    playerARankAfter: getRankName(eloA),
+    playerBRankAfter: getRankName(eloB),
+    ...(scoreA !== undefined && { player1Score: scoreA }),
+    ...(scoreB !== undefined && { player2Score: scoreB }),
+    ...(games && { games }),
+    communityId: communityId || DEFAULT_COMMUNITY_ID,
+    createdAt: new Date().toISOString(),
+  };
+  return {
+    queued: true,
+    match: queuedMatch,
+    playerA: {
+      id: playerAId,
+      name: pA?.name ?? playerAId,
+      pointsBefore: eloA,
+      pointsAfter: eloA,
+      delta: 0,
+      rankBefore: getRankName(eloA),
+      rankAfter: getRankName(eloA),
+    },
+    playerB: {
+      id: playerBId,
+      name: pB?.name ?? playerBId,
+      pointsBefore: eloB,
+      pointsAfter: eloB,
+      delta: 0,
+      rankBefore: getRankName(eloB),
+      rankAfter: getRankName(eloB),
+    },
+  };
+}
+
+function lsReadParticipants(): GlobalParticipant[] {
+  try {
+    const raw = localStorage.getItem(LS_PARTICIPANTS_KEY);
+    return raw ? (JSON.parse(raw) as GlobalParticipant[]) : [];
+  } catch {
+    return [];
+  }
 }
 
 /** Deletes a match record. Does NOT revert ELO. */
