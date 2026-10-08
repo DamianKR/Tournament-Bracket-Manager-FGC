@@ -1462,6 +1462,9 @@
       "weekNumber": "Semana {{week}}",
       "startsSoon": "Empieza pronto",
       "startsAt": "Empieza {{date}}",
+      "completedPill": "Completado",
+      "pendingPill": "Pendiente",
+      "lockedPill": "Bloqueado",
       "noMatches": "No se encontraron partidos."
     },
     "myMatches": {
@@ -1477,6 +1480,7 @@
       "completed": "Completados ({{count}})",
       "remainingOpponents": "Oponentes restantes ({{count}})",
       "noPlayerSelected": "Selecciona un jugador para ver sus partidos.",
+      "noMatchesThisWeek": "No hay partidos esta semana.",
       "noShow": "No-show",
       "walkover": "W (walkover)",
       "win": "W {{score}}",

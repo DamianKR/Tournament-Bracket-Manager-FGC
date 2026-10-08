@@ -96,13 +96,14 @@
     "status": "active",
     "currentWeek": 1,
     "createdAt": "2026-09-01T18:12:33.719Z",
-    "updatedAt": "2026-09-29T19:45:35.000Z",
+    "updatedAt": "2026-10-08T15:16:30.158Z",
     "notifiedWeeks": [
       1,
       2,
       3,
       4,
-      5
+      5,
+      6
     ],
     "communityId": "community_fgc_santa_clara"
   },
@@ -230,13 +231,14 @@
     "status": "active",
     "currentWeek": 1,
     "createdAt": "2026-09-01T20:19:18.929Z",
-    "updatedAt": "2026-09-29T20:25:28.015Z",
+    "updatedAt": "2026-10-08T15:16:30.449Z",
     "notifiedWeeks": [
       1,
       2,
       3,
       4,
-      5
+      5,
+      6
     ],
     "communityId": "community_fgc_santa_clara"
   },
@@ -348,13 +350,14 @@
     "status": "active",
     "currentWeek": 1,
     "createdAt": "2026-09-02T21:44:25.834Z",
-    "updatedAt": "2026-10-01T16:30:17.751Z",
+    "updatedAt": "2026-10-08T15:16:30.746Z",
     "notifiedWeeks": [
       1,
       2,
       3,
       4,
-      5
+      5,
+      6
     ]
   }
 ]

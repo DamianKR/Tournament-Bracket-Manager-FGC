@@ -71,37 +71,221 @@
   gap: 0.75rem;
 }
 
-.match-row {
+/* ── Match row — shared structure on all viewports ─────────────────────── */
+/* All rules scoped under .schedule-tab so global classes with the same
+   names (HistoryTab, ActiveChallenges) cannot interfere. */
+.schedule-tab .match-row {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.875rem;
+  padding: 0.875rem 1rem;
   border-radius: var(--border-radius);
   border: 1px solid var(--border-color);
+  border-left: 4px solid transparent;
   background-color: var(--bg-secondary);
   transition: transform 0.1s, box-shadow 0.1s;
 }
 
-.match-row:hover {
+.schedule-tab .match-row:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.match-row.completed {
+.schedule-tab .match-row.completed {
+  border-left-color: #8b5cf6;
   background-color: rgba(16, 185, 129, 0.05);
   border-color: rgba(16, 185, 129, 0.3);
 }
 
-.match-row.pending {
-  background-color: var(--bg-secondary);
+.schedule-tab .match-row.pending {
+  border-left-color: #f59e0b;
 }
 
-.match-row.future {
-  opacity: 0.7;
+.schedule-tab .match-row.future {
+  border-left-color: var(--border-color);
+  opacity: 0.75;
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.match-locked {
+/* Game badge — leftmost item on desktop, full-width top row on mobile */
+.schedule-tab .match-game-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  min-width: 3.2rem;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* Players: name block | vs/score | name block */
+.schedule-tab .match-players {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+}
+
+.schedule-tab .match-player {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.schedule-tab .match-player.winner {
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.schedule-tab .match-player .participant-link {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.schedule-tab .match-player .pdn {
+  width: 100%;
+  max-width: 100%;
+}
+
+.schedule-tab .match-player .pdn-alias,
+.schedule-tab .match-player .pdn-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ELO + delta always on one line: "1739 ELO (+5)" */
+.schedule-tab .player-elo {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  white-space: nowrap;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.schedule-tab .player-elo-delta {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.schedule-tab .elo-positive {
+  color: #10b981;
+}
+
+.schedule-tab .elo-negative {
+  color: #ef4444;
+}
+
+/* Center slot: score for completed, khanda for pending */
+.schedule-tab .match-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.schedule-tab .match-vs .fa-khanda {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--primary-color);
+  font-size: 0.85rem;
+}
+
+.schedule-tab .match-vs .vs-score {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+.schedule-tab .no-show-tag {
+  font-size: 0.7rem;
+  color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+/* Meta: status pill + date */
+.schedule-tab .match-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.schedule-tab .match-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.schedule-tab .match-status-pill.status-completed {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.schedule-tab .match-status-pill.status-pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.schedule-tab .match-status-pill.status-locked {
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.schedule-tab .match-date {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.schedule-tab .match-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.schedule-tab .match-locked {
   font-size: 0.8rem;
   color: var(--text-tertiary);
   font-weight: 600;
@@ -111,77 +295,7 @@
   white-space: nowrap;
 }
 
-.match-status-icon {
-  font-size: 1.2rem;
-  flex-shrink: 0;
-}
-
-.match-players {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.match-player {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.match-player.winner {
-  font-weight: 700;
-  color: var(--primary-color);
-}
-
-.match-vs {
-  font-size: 0.8rem;
-  color: var(--text-tertiary);
-  font-weight: 600;
-}
-
-.no-show-tag {
-  font-size: 0.7rem;
-  color: #f59e0b;
-  background-color: rgba(245, 158, 11, 0.1);
-  padding: 0.15rem 0.4rem;
-  border-radius: 3px;
-  font-weight: 600;
-}
-
-.match-score {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  padding: 0.25rem 0.75rem;
-  background-color: var(--bg-tertiary);
-  border-radius: 4px;
-}
-
-.match-elo-changes {
-  display: flex;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.elo-positive {
-  color: #10b981;
-}
-
-.elo-negative {
-  color: #ef4444;
-}
-
-.match-date {
-  font-size: 0.8rem;
-  color: var(--text-tertiary);
-  white-space: nowrap;
-}
-
+/* ── Mobile ────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .week-header {
     flex-wrap: wrap;
@@ -203,59 +317,78 @@
     font-size: 0.8rem;
   }
 
-  .match-row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem;
+  .schedule-tab .match-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 1rem 1.125rem;
   }
 
-  .match-status-icon {
-    font-size: 1rem;
-    flex: 0 0 auto;
-  }
-
-  .match-players {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem 0.5rem;
-    min-width: 0;
-  }
-
-  .match-player {
-    font-size: 0.9rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-  }
-
-  .match-vs {
-    font-size: 0.75rem;
-    color: var(--text-tertiary);
-    font-weight: 600;
-    text-transform: lowercase;
-  }
-
-  .match-score,
-  .match-elo-changes,
-  
-  .match-row .btn-sm {
-    flex: 0 0 auto;
-    margin-left: auto;
-    align-self: center;
-  }
-
-  .match-date {
+  /* Badge becomes a full-width top row */
+  .schedule-tab .match-game-badge {
+    align-self: stretch;
     width: 100%;
-    order: 1;
-    font-size: 0.75rem;
-    text-align: left;
-    margin-top: 0.25rem;
+  }
+
+  /* Players stacked — each row: name left, elo + delta right */
+  .schedule-tab .match-players {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+
+  .schedule-tab .match-player {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .schedule-tab .match-player .participant-link {
+    flex: 1;
+  }
+
+  .schedule-tab .player-elo {
+    flex-shrink: 0;
+    font-size: 0.82rem;
+  }
+
+  .schedule-tab .match-vs {
+    margin: 0.15rem 0;
+  }
+
+  .schedule-tab .match-vs .vs-score {
+    font-size: 1.2rem;
+  }
+
+  .schedule-tab .match-meta {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .schedule-tab .match-date {
+    margin-left: auto;
+    font-size: 0.78rem;
+  }
+
+  .schedule-tab .match-actions {
+    width: 100%;
+  }
+
+  .schedule-tab .match-actions .btn-primary {
+    flex: 1;
+    justify-content: center;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .schedule-tab .match-actions .match-locked {
+    flex: 1;
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
   }
 }

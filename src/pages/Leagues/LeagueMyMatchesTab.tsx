@@ -54,7 +54,16 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
   const diffDays = (now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
   const effectiveCurrentWeek = diffDays < 0 ? 0 : Math.floor(diffDays / league.periodDays) + 1;
 
-  const thisWeekMatches = myMatches.filter(m => m.week === effectiveCurrentWeek);
+  const availableWeeks = useMemo(
+    () => [...new Set(myMatches.map(m => m.week))].sort((a, b) => a - b),
+    [myMatches]
+  );
+  const defaultWeek = availableWeeks.includes(effectiveCurrentWeek)
+    ? effectiveCurrentWeek
+    : (availableWeeks.find(w => w >= effectiveCurrentWeek) ?? availableWeeks[availableWeeks.length - 1]);
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const weekToShow = selectedWeek ?? defaultWeek;
+  const weekMatches = myMatches.filter(m => m.week === weekToShow);
   const upcomingMatches = myMatches.filter(m => m.status === 'scheduled' && m.week > effectiveCurrentWeek);
   const completedMatches = myMatches.filter(m => m.status === 'completed' || m.status === 'no_show');
   const remainingOpponents = league.participantIds.filter(pid => {
@@ -80,29 +89,35 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
           <ParticipantName id={opponentId} name={getParticipant(opponentId)?.name ?? getParticipantName(opponentId)} alias={getParticipant(opponentId)?.alias} className="opponent-name" gameId={league.gameId} />
         </div>
 
-        {isCompleted ? (
-          <>
-            <div className={`my-match-result ${didWin ? 'win' : 'loss'}`}>
-              {isNoShow ? (
-                match.noShowParticipantId === selectedParticipantId ? t('league.myMatches.noShow') : t('league.myMatches.walkover')
-              ) : (
-                didWin ? t('league.myMatches.win', { score: match.score }) : t('league.myMatches.loss', { score: match.score })
+        <div className="my-match-info">
+          <span className="my-match-week">{t('league.myMatches.weekNumber', { week: match.week })}</span>
+          {isCompleted ? (
+            <>
+              <div className={`my-match-result ${didWin ? 'win' : 'loss'}`}>
+                {isNoShow ? (
+                  match.noShowParticipantId === selectedParticipantId ? t('league.myMatches.noShow') : t('league.myMatches.walkover')
+                ) : (
+                  didWin ? t('league.myMatches.win', { score: match.score }) : t('league.myMatches.loss', { score: match.score })
+                )}
+              </div>
+              {myEloChange !== undefined && (
+                <div className={`my-match-elo ${myEloChange >= 0 ? 'elo-positive' : 'elo-negative'}`}>
+                  {myEloChange >= 0 ? '+' : ''}{myEloChange} {t('league.myMatches.elo')}
+                </div>
               )}
-            </div>
-            {myEloChange !== undefined && (
-              <div className={`my-match-elo ${myEloChange >= 0 ? 'elo-positive' : 'elo-negative'}`}>
-                {myEloChange >= 0 ? '+' : ''}{myEloChange} {t('league.myMatches.elo')}
-              </div>
-            )}
-            {match.completedDate && (
-              <div className="my-match-date">
-                {new Date(match.completedDate).toLocaleDateString()}
-              </div>
-            )}
-          </>
-        ) : (
-          <>
+              {match.completedDate && (
+                <div className="my-match-date">
+                  {new Date(match.completedDate).toLocaleDateString()}
+                </div>
+              )}
+            </>
+          ) : (
             <div className="my-match-status">{t('league.myMatches.pending')}</div>
+          )}
+        </div>
+
+        {!isCompleted && (
+          <div className="my-match-action">
             {match.week <= effectiveCurrentWeek && (!match.scheduledDate || new Date(match.scheduledDate) <= new Date()) ? (
               canReportSelected && (
                 <button
@@ -117,7 +132,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
                 <i className="fas fa-lock" /> {match.week <= effectiveCurrentWeek ? t('league.myMatches.startsSoon') : t('league.myMatches.weekNumber', { week: match.week })}
               </span>
             )}
-          </>
+          </div>
         )}
       </div>
     );
@@ -172,11 +187,37 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
             </div>
           </div>
 
-          {thisWeekMatches.length > 0 && (
+          {availableWeeks.length > 0 && (
             <div className="my-matches-section card">
-              <h3>{t('league.myMatches.thisWeek', { week: effectiveCurrentWeek })}</h3>
+              <div className="my-week-header">
+                <h3>
+                  {weekToShow === effectiveCurrentWeek
+                    ? t('league.myMatches.thisWeek', { week: weekToShow })
+                    : t('league.schedule.weekNumber', { week: weekToShow })}
+                </h3>
+                <select
+                  className="my-week-select"
+                  value={weekToShow}
+                  onChange={(e) => setSelectedWeek(Number(e.target.value))}
+                >
+                  {availableWeeks.map((w) => {
+                    const suffix = w > effectiveCurrentWeek
+                      ? t('league.schedule.futureSuffix')
+                      : w === effectiveCurrentWeek
+                        ? t('league.schedule.currentSuffix')
+                        : t('league.schedule.pastSuffix');
+                    return (
+                      <option key={w} value={w}>
+                        {t('league.schedule.weekOption', { week: w })}{suffix}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
               <div className="my-matches-list">
-                {thisWeekMatches.map(renderMatch)}
+                {weekMatches.length > 0
+                  ? weekMatches.map(renderMatch)
+                  : <p className="text-secondary">{t('league.myMatches.noMatchesThisWeek')}</p>}
               </div>
             </div>
           )}
