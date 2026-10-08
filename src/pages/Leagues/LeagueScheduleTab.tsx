@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, GlobalParticipant } from '@/models/types';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { formatInTimeZone } from '@/utils/timeZone';
+import { gameBadgeStyle } from '@/utils/gameColor';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
 import ReportMatchModal from './ReportMatchModal';
 import './LeagueScheduleTab.css';
@@ -32,6 +33,11 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
 
   function formatDate(dateStr: string | undefined): string {
     return formatInTimeZone(dateStr, league.timeZone || 'America/Havana');
+  }
+
+  function getPlayerElo(id: string): number | null {
+    const p = participants.get(id);
+    return p?.games?.[league.gameId]?.eloPoints ?? null;
   }
 
   // Calculate the actual current week based on startDate and today
@@ -104,11 +110,13 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                 const isFutureWeek = match.week > effectiveCurrentWeek;
                 const matchStarted = !match.scheduledDate || new Date(match.scheduledDate) <= new Date();
 
+                const statusKey = isCompleted ? 'completed' : isFutureWeek ? 'locked' : 'pending';
+
                 return (
                   <div key={match.id} className={`match-row ${isCompleted ? 'completed' : isFutureWeek ? 'pending future' : 'pending'}`}>
-                    <div className="match-status-icon">
-                      {isCompleted ? <i className="fas fa-check" /> : <i className="fas fa-clock" />}
-                    </div>
+                    <span className="match-game-badge" style={gameBadgeStyle(league.gameId)}>
+                      {league.gameId?.toUpperCase()}
+                    </span>
 
                     <div className="match-players">
                       <div className={`match-player ${winner === match.participant1Id ? 'winner' : ''}`}>
@@ -116,56 +124,71 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                         {isNoShow && match.noShowParticipantId === match.participant1Id && (
                           <span className="no-show-tag">{t('league.schedule.noShowTag')}</span>
                         )}
+                        <span className="player-elo">
+                          {getPlayerElo(match.participant1Id) ?? '—'} ELO
+                          {isCompleted && match.participant1EloChange != null && (
+                            <span className={`player-elo-delta ${match.participant1EloChange >= 0 ? 'elo-positive' : 'elo-negative'}`}>
+                              ({match.participant1EloChange >= 0 ? '+' : ''}{match.participant1EloChange})
+                            </span>
+                          )}
+                        </span>
                       </div>
-                      <span className="match-vs">{t('league.schedule.vs')}</span>
+                      <span className="match-vs">
+                        {isCompleted && match.score
+                          ? <span className="vs-score">{match.score}</span>
+                          : <i className="fas fa-khanda" />}
+                      </span>
                       <div className={`match-player ${winner === match.participant2Id ? 'winner' : ''}`}>
                         <ParticipantName id={match.participant2Id} name={getParticipant(match.participant2Id)?.name ?? getParticipantName(match.participant2Id)} alias={getParticipant(match.participant2Id)?.alias} className="match-player-name" gameId={league.gameId} />
                         {isNoShow && match.noShowParticipantId === match.participant2Id && (
                           <span className="no-show-tag">{t('league.schedule.noShowTag')}</span>
                         )}
+                        <span className="player-elo">
+                          {getPlayerElo(match.participant2Id) ?? '—'} ELO
+                          {isCompleted && match.participant2EloChange != null && (
+                            <span className={`player-elo-delta ${match.participant2EloChange >= 0 ? 'elo-positive' : 'elo-negative'}`}>
+                              ({match.participant2EloChange >= 0 ? '+' : ''}{match.participant2EloChange})
+                            </span>
+                          )}
+                        </span>
                       </div>
                     </div>
 
-                    {isCompleted && match.score && (
-                      <div className="match-score">{match.score}</div>
-                    )}
-
-                    {isCompleted && (match.participant1EloChange || match.participant2EloChange) && (
-                      <div className="match-elo-changes">
-                        <span className={match.participant1EloChange! >= 0 ? 'elo-positive' : 'elo-negative'}>
-                          {match.participant1EloChange! >= 0 ? '+' : ''}{match.participant1EloChange}
-                        </span>
-                        <span className={match.participant2EloChange! >= 0 ? 'elo-positive' : 'elo-negative'}>
-                          {match.participant2EloChange! >= 0 ? '+' : ''}{match.participant2EloChange}
-                        </span>
-                      </div>
-                    )}
-
-                    {!isCompleted && isFutureWeek && (
-                      <span className="match-locked" title={t('league.schedule.lockedUntil', { week: match.week })}>
-                        <i className="fas fa-lock" /> {t('league.schedule.weekNumber', { week: match.week })}
+                    {/* Meta row: status pill + date */}
+                    <div className="match-meta">
+                      <span className={`match-status-pill status-${statusKey}`}>
+                        {isCompleted ? <i className="fas fa-check-circle" /> : isFutureWeek ? <i className="fas fa-lock" /> : <i className="fas fa-clock" />}
+                        {' '}{t(`league.schedule.${statusKey}Pill`)}
                       </span>
-                    )}
+                      {(isCompleted || matchStarted) && match.scheduledDate && (
+                        <span className="match-date">{formatDate(match.scheduledDate)}</span>
+                      )}
+                    </div>
 
-                    {!isCompleted && !isFutureWeek && matchStarted && isInMyCommunity && (canAdminLeague ||
-                      (myParticipantId && (match.participant1Id === myParticipantId || match.participant2Id === myParticipantId))) && (
-                      <button
-                        className="btn-primary btn-sm"
-                        onClick={() => setSelectedMatch(match)}
-                      >
-                        {t('league.schedule.reportResult')}
-                      </button>
-                    )}
+                    {/* Actions */}
+                    <div className="match-actions">
+                      {!isCompleted && isFutureWeek && (
+                        <span className="match-locked" title={t('league.schedule.lockedUntil', { week: match.week })}>
+                          <i className="fas fa-lock" /> {t('league.schedule.weekNumber', { week: match.week })}
+                        </span>
+                      )}
 
-                    {!isCompleted && !isFutureWeek && !matchStarted && (
-                      <span className="match-locked" title={formatDate(match.scheduledDate)}>
-                        <i className="fas fa-lock" /> {t('league.schedule.startsAt', { date: formatDate(match.scheduledDate) })}
-                      </span>
-                    )}
+                      {!isCompleted && !isFutureWeek && matchStarted && isInMyCommunity && (canAdminLeague ||
+                        (myParticipantId && (match.participant1Id === myParticipantId || match.participant2Id === myParticipantId))) && (
+                        <button
+                          className="btn-primary btn-sm"
+                          onClick={() => setSelectedMatch(match)}
+                        >
+                          {t('league.schedule.reportResult')}
+                        </button>
+                      )}
 
-                    {(isCompleted || matchStarted) && match.scheduledDate && (
-                      <div className="match-date">{formatDate(match.scheduledDate)}</div>
-                    )}
+                      {!isCompleted && !isFutureWeek && !matchStarted && (
+                        <span className="match-locked" title={formatDate(match.scheduledDate)}>
+                          <i className="fas fa-lock" /> {t('league.schedule.startsAt', { date: formatDate(match.scheduledDate) })}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               })}

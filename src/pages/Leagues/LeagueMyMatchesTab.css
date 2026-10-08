@@ -76,6 +76,30 @@
   color: var(--text-primary);
 }
 
+.my-week-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.my-week-header h3 {
+  margin: 0;
+}
+
+.my-week-select {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .my-matches-list {
   display: flex;
   flex-direction: column;
@@ -99,9 +123,33 @@
 
 .my-match-opponent {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.my-match-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.my-match-action {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.my-match-week {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  white-space: nowrap;
 }
 
 .my-match-vs {
@@ -139,12 +187,20 @@
 }
 
 .my-match-status {
-  font-size: 0.85rem;
-  color: var(--text-tertiary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 0.25rem 0.6rem;
+  border-radius: 1rem;
+  white-space: nowrap;
 }
 
-.match-locked {
+.my-matches-tab .match-locked {
   font-size: 0.8rem;
   color: var(--text-tertiary);
   font-weight: 600;
@@ -179,10 +235,42 @@
   .my-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
+  /* Card: opponent + info on the first row (info pushed top-right),
+     action takes the full width on the second row */
   .my-match-row {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.5rem 0.75rem;
+    padding: 0.875rem 1rem;
+  }
+
+  .my-match-opponent {
+    flex: 1 1 auto;
+  }
+
+  .my-match-info {
+    margin-left: auto;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3rem;
+  }
+
+  .my-match-action {
+    flex: 1 1 100%;
+    display: flex;
+  }
+
+  .my-match-action .btn-primary {
+    flex: 1;
+    justify-content: center;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .my-match-action .match-locked {
+    flex: 1;
+    text-align: center;
+    white-space: normal;
   }
 }
