@@ -423,6 +423,7 @@
         "closed": "Season closed. {{count}} pending matches cancelled.",
         "deleted": "Season deleted",
         "forfeit": "Forfeit applied",
+        "forfeitQueued": "Forfeit saved — will apply on reconnect",
         "cancelled": "Match cancelled without penalty",
         "reset_one": "{{count}} participant set to inactive. They must re-enable themselves.",
         "reset_other": "{{count}} participants set to inactive. They must re-enable themselves.",
@@ -596,6 +597,8 @@
         "resultReported": "Result reported. Waiting for other participant to report.",
         "alreadyReported": "You have already reported your result. Waiting for {{player}} to report.",
         "resultRecorded": "Result recorded!",
+        "resultQueued": "Result saved!",
+        "resultQueuedDesc": "No server connection — ELO will be applied automatically on reconnect.",
         "selectBoth": "Select both participants.",
         "sameParticipant": "A participant cannot face itself.",
         "errorRecord": "Error reporting result.",
@@ -1621,7 +1624,8 @@
       "submitting": "Submitting...",
       "absentHint": "Select the player who did not show up.",
       "submitSuccess": "Result submitted successfully",
-      "resolveSuccess": "Match resolved successfully"
+      "resolveSuccess": "Match resolved successfully",
+      "queuedSuccess": "Result saved — will apply on reconnect"
     },
     "create": {
       "title": "Create New League",

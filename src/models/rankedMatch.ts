@@ -56,6 +56,8 @@ export interface RankedMatch {
   date: string;
   notes?: string;
   recordedBy?: string; // Admin/TO who recorded the match
+  /** True while the match sits in the offline op queue — ELO applied on sync. */
+  pendingSync?: boolean;
 }
 
 export interface RankedMatchResult {

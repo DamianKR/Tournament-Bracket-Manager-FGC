@@ -166,7 +166,7 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
       );
       await forfeitAssignment(assignment.id, forfeitPlayerId, forfeitNote || undefined, result.match.id);
       setForfeitModal(null); setForfeitNote('');
-      flash(t('ranked.mm.flash.forfeit'));
+      flash(t(result.queued ? 'ranked.mm.flash.forfeitQueued' : 'ranked.mm.flash.forfeit'));
       if (selected) await loadDetail(selected.id);
     } catch (e: any) { toast.error(e.message); } finally { setForfeitLoading(false); }
   }

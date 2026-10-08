@@ -111,10 +111,18 @@ export async function mergeParticipants(survivorId, absorbedId) {
     ]),
   ];
 
-  // Merge game profiles — survivor's ELO wins; copy game profiles that survivor lacks
+  // Merge game profiles — copy availability metadata from absorbed for games survivor lacks.
+  // We deliberately do NOT copy eloPoints/eloRank: ELO is always built from scratch by
+  // applyTournamentEloForOne (step 5) so it correctly accumulates on top of whatever ELO
+  // the survivor already has from their own activities (ranked matches, etc.).
   for (const [gameId, profile] of Object.entries(absorbed.games ?? {})) {
     if (!survivor.games?.[gameId]) {
-      survivor.games = { ...(survivor.games ?? {}), [gameId]: profile };
+      // eslint-disable-next-line no-unused-vars
+      const { eloPoints: _ep, eloRank: _er, ...metaOnly } = profile;
+      survivor.games = {
+        ...(survivor.games ?? {}),
+        [gameId]: { ...metaOnly, eloPoints: null, eloRank: 'Sin puntos' },
+      };
     }
   }
 
@@ -127,87 +135,144 @@ export async function mergeParticipants(survivorId, absorbedId) {
   await participants.upsert(survivor);
 
   // 3. Rewrite all references: absorbedId → survivorId
+  //
+  // Each collection is processed independently. If an individual record fails
+  // to persist (network blip, Supabase timeout) it is retried once; if it
+  // still fails it is logged and skipped — the merge continues rather than
+  // aborting partway through. Failures are collected and reported at the end.
 
-  // tournament_matches
-  const allTM = await tournamentMatches.getAll();
-  for (const m of allTM) {
-    let dirty = false;
-    if (m.player1GlobalId === absorbedId) { m.player1GlobalId = survivorId; dirty = true; }
-    if (m.player2GlobalId === absorbedId) { m.player2GlobalId = survivorId; dirty = true; }
-    if (m.winnerGlobalId  === absorbedId) { m.winnerGlobalId  = survivorId; dirty = true; }
-    if (dirty) await tournamentMatches.upsert(m);
-  }
+  const rewriteFailures = [];
 
-  // tournaments → participants[].globalParticipantId
-  const allT = await tournaments.getAll();
-  for (const t of allT) {
-    let dirty = false;
-    for (const tp of t.participants ?? []) {
-      if (tp.globalParticipantId === absorbedId) {
-        tp.globalParticipantId = survivorId;
-        dirty = true;
+  /** Try to upsert a record; on error retry once, then log and continue. */
+  async function safeUpsert(collection, record, label) {
+    try {
+      await collection.upsert(record);
+    } catch {
+      try {
+        await new Promise((r) => setTimeout(r, 500));
+        await collection.upsert(record);
+      } catch (retryErr) {
+        const id = record.id ?? '?';
+        console.error(`[merge] rewrite failed (${label} ${id}): ${retryErr.message}`);
+        rewriteFailures.push({ collection: label, id, error: retryErr.message });
       }
     }
-    if (dirty) await tournaments.upsert(t);
+  }
+
+  // tournament_matches
+  {
+    const all = await tournamentMatches.getAll();
+    let n = 0;
+    for (const m of all) {
+      let dirty = false;
+      if (m.player1GlobalId === absorbedId) { m.player1GlobalId = survivorId; dirty = true; }
+      if (m.player2GlobalId === absorbedId) { m.player2GlobalId = survivorId; dirty = true; }
+      if (m.winnerGlobalId  === absorbedId) { m.winnerGlobalId  = survivorId; dirty = true; }
+      if (dirty) { await safeUpsert(tournamentMatches, m, 'tournament_match'); n++; }
+    }
+    if (n) console.log(`[merge] tournament_matches: ${n} updated`);
+  }
+
+  // tournaments → participants[].globalParticipantId + eloUpdates[].id
+  // eloUpdates must be rewritten so revertTournamentElo can find the survivor if
+  // a tournament is later deleted or re-imported.
+  {
+    const all = await tournaments.getAll();
+    let n = 0;
+    for (const t of all) {
+      let dirty = false;
+      for (const tp of t.participants ?? []) {
+        if (tp.globalParticipantId === absorbedId) { tp.globalParticipantId = survivorId; dirty = true; }
+      }
+      for (const u of t.eloUpdates ?? []) {
+        if (u.id === absorbedId) { u.id = survivorId; dirty = true; }
+      }
+      if (dirty) { await safeUpsert(tournaments, t, 'tournament'); n++; }
+    }
+    if (n) console.log(`[merge] tournaments: ${n} updated`);
   }
 
   // ranked_matches
-  const allRM = await rankedMatches.getAll();
-  for (const m of allRM) {
-    let dirty = false;
-    if (m.playerAId === absorbedId) { m.playerAId = survivorId; dirty = true; }
-    if (m.playerBId === absorbedId) { m.playerBId = survivorId; dirty = true; }
-    if (m.winnerId  === absorbedId) { m.winnerId  = survivorId; dirty = true; }
-    if (m.loserId   === absorbedId) { m.loserId   = survivorId; dirty = true; }
-    if (dirty) await rankedMatches.upsert(m);
+  {
+    const all = await rankedMatches.getAll();
+    let n = 0;
+    for (const m of all) {
+      let dirty = false;
+      if (m.playerAId === absorbedId) { m.playerAId = survivorId; dirty = true; }
+      if (m.playerBId === absorbedId) { m.playerBId = survivorId; dirty = true; }
+      if (m.winnerId  === absorbedId) { m.winnerId  = survivorId; dirty = true; }
+      if (m.loserId   === absorbedId) { m.loserId   = survivorId; dirty = true; }
+      if (dirty) { await safeUpsert(rankedMatches, m, 'ranked_match'); n++; }
+    }
+    if (n) console.log(`[merge] ranked_matches: ${n} updated`);
   }
 
   // league_matches
-  const allLM = await leagueMatches.getAll();
-  for (const m of allLM) {
-    let dirty = false;
-    if (m.participant1Id === absorbedId) { m.participant1Id = survivorId; dirty = true; }
-    if (m.participant2Id === absorbedId) { m.participant2Id = survivorId; dirty = true; }
-    if (m.winnerId       === absorbedId) { m.winnerId       = survivorId; dirty = true; }
-    if (dirty) await leagueMatches.upsert(m);
+  {
+    const all = await leagueMatches.getAll();
+    let n = 0;
+    for (const m of all) {
+      let dirty = false;
+      if (m.participant1Id === absorbedId) { m.participant1Id = survivorId; dirty = true; }
+      if (m.participant2Id === absorbedId) { m.participant2Id = survivorId; dirty = true; }
+      if (m.winnerId       === absorbedId) { m.winnerId       = survivorId; dirty = true; }
+      if (dirty) { await safeUpsert(leagueMatches, m, 'league_match'); n++; }
+    }
+    if (n) console.log(`[merge] league_matches: ${n} updated`);
   }
 
   // duels
-  const allDuels = await duels.getAll();
-  for (const d of allDuels) {
-    let dirty = false;
-    if (d.challengerId  === absorbedId) { d.challengerId  = survivorId; dirty = true; }
-    if (d.challengedId  === absorbedId) { d.challengedId  = survivorId; dirty = true; }
-    if (dirty) await duels.upsert(d);
+  {
+    const all = await duels.getAll();
+    let n = 0;
+    for (const d of all) {
+      let dirty = false;
+      if (d.challengerId === absorbedId) { d.challengerId = survivorId; dirty = true; }
+      if (d.challengedId === absorbedId) { d.challengedId = survivorId; dirty = true; }
+      if (dirty) { await safeUpsert(duels, d, 'duel'); n++; }
+    }
+    if (n) console.log(`[merge] duels: ${n} updated`);
   }
 
   // notifications
-  const allN = await notifications.getAll();
-  for (const n of allN) {
-    if (n.recipientId === absorbedId) {
-      n.recipientId = survivorId;
-      await notifications.upsert(n);
+  {
+    const all = await notifications.getAll();
+    let n = 0;
+    for (const item of all) {
+      if (item.recipientId === absorbedId) {
+        item.recipientId = survivorId;
+        await safeUpsert(notifications, item, 'notification');
+        n++;
+      }
     }
+    if (n) console.log(`[merge] notifications: ${n} updated`);
   }
 
   // matchmaking_assignments
-  const allMA = await matchmakingAssignments.getAll();
-  for (const a of allMA) {
-    let dirty = false;
-    if (a.player1Id === absorbedId) { a.player1Id = survivorId; dirty = true; }
-    if (a.player2Id === absorbedId) { a.player2Id = survivorId; dirty = true; }
-    if (a.winnerId  === absorbedId) { a.winnerId  = survivorId; dirty = true; }
-    if (dirty) await matchmakingAssignments.upsert(a);
+  {
+    const all = await matchmakingAssignments.getAll();
+    let n = 0;
+    for (const a of all) {
+      let dirty = false;
+      if (a.player1Id === absorbedId) { a.player1Id = survivorId; dirty = true; }
+      if (a.player2Id === absorbedId) { a.player2Id = survivorId; dirty = true; }
+      if (a.winnerId  === absorbedId) { a.winnerId  = survivorId; dirty = true; }
+      if (dirty) { await safeUpsert(matchmakingAssignments, a, 'matchmaking_assignment'); n++; }
+    }
+    if (n) console.log(`[merge] matchmaking_assignments: ${n} updated`);
   }
 
-  // 4. Delete absorbed participant
-  await participants.remove(absorbedId);
-  console.log(`[merge] Removed absorbed participant ${absorbedId}`);
+  if (rewriteFailures.length > 0) {
+    console.error(`[merge] WARNING: ${rewriteFailures.length} rewrite(s) failed — merge will continue. Check logs above for details.`);
+  } else {
+    console.log(`[merge] All reference rewrites completed.`);
+  }
 
-  // 5. Re-apply ELO ONLY for the survivor in tournaments that were exclusively
-  //    the absorbed participant's. Other participants in those tournaments already
-  //    received their ELO when the tournament was originally completed/imported —
-  //    we must not touch them again.
+  // 4. Re-apply ELO for the survivor in tournaments that were exclusively the absorbed
+  //    participant's. All other participants already received their ELO when the tournament
+  //    was originally completed/imported — do not touch them again.
+  //    This runs BEFORE deleting the absorbed so that, if ELO application throws, the
+  //    absorbed is still alive and the state remains recoverable.
   if (absorbedOnlyTournamentIds.length > 0) {
     console.log(`[merge] Re-applying ELO for survivor ${survivorId} across ${absorbedOnlyTournamentIds.length} absorbed tournaments`);
     const allTournaments = await tournaments.getAll();
@@ -224,6 +289,11 @@ export async function mergeParticipants(survivorId, absorbedId) {
       await applyTournamentEloForOne(t, survivorId);
     }
   }
+
+  // 5. Delete absorbed participant — last step so the data stays in a recoverable state
+  //    if any earlier step throws.
+  await participants.remove(absorbedId);
+  console.log(`[merge] Removed absorbed participant ${absorbedId}`);
 
   // Reload and return updated survivor
   return participants.findById(survivorId);

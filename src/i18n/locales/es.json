@@ -423,6 +423,7 @@
         "closed": "Temporada cerrada. {{count}} partidas pendientes canceladas.",
         "deleted": "Temporada eliminada",
         "forfeit": "Forfeit aplicado",
+        "forfeitQueued": "Forfeit guardado — se aplicará al reconectar",
         "cancelled": "Partida cancelada sin penalización",
         "reset_one": "{{count}} participante puesto en inactivo. Debe activarse él mismo.",
         "reset_other": "{{count}} participantes puestos en inactivo. Deben activarse ellos mismos.",
@@ -596,6 +597,8 @@
         "resultReported": "Resultado reportado. Esperando a que el otro participante reporte.",
         "alreadyReported": "Ya reportaste tu resultado. Esperando a que {{player}} reporte.",
         "resultRecorded": "¡Resultado registrado!",
+        "resultQueued": "¡Resultado guardado!",
+        "resultQueuedDesc": "Sin conexión con el servidor — el ELO se aplicará automáticamente al reconectar.",
         "selectBoth": "Selecciona ambos participantes.",
         "sameParticipant": "Un participante no puede enfrentarse a sí mismo.",
         "errorRecord": "Error al reportar resultado.",
@@ -1625,7 +1628,8 @@
       "submitting": "Enviando...",
       "absentHint": "Selecciona el jugador que no se presentó.",
       "submitSuccess": "Resultado enviado correctamente",
-      "resolveSuccess": "Partido resuelto correctamente"
+      "resolveSuccess": "Partido resuelto correctamente",
+      "queuedSuccess": "Resultado guardado — se aplicará al reconectar"
     },
     "create": {
       "title": "Crear nueva liga",

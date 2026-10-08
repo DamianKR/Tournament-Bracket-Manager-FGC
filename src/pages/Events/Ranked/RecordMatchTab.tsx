@@ -377,16 +377,7 @@ function RecordMatchTab({ selectedChallengeId, mmAssignment, onMatchRecorded }: 
           </button>
 
           {/* Result feedback — same ResultCard as duels */}
-          {lastResult && (
-            <div className="rk-result-box">
-              <h4>{t('ranked.duelInfo.record.resultRecorded')}</h4>
-              <div className="rk-result-row">
-                <ResultCard r={lastResult.playerA} isWinner={lastResult.playerA.id === lastResult.match.winnerId} />
-                <span className="rk-result-vs">{t('ranked.duelInfo.record.vs')}</span>
-                <ResultCard r={lastResult.playerB} isWinner={lastResult.playerB.id === lastResult.match.winnerId} />
-              </div>
-            </div>
-          )}
+          {lastResult && <ResultBox result={lastResult} />}
         </div>
       </div>
     );
@@ -615,16 +606,7 @@ function RecordMatchTab({ selectedChallengeId, mmAssignment, onMatchRecorded }: 
             ) : null}
 
             {/* Result feedback */}
-            {lastResult && (
-              <div className="rk-result-box">
-                <h4>{t('ranked.duelInfo.record.resultRecorded')}</h4>
-                <div className="rk-result-row">
-                  <ResultCard r={lastResult.playerA} isWinner={lastResult.playerA.id === lastResult.match.winnerId} />
-                  <span className="rk-result-vs">{t('ranked.duelInfo.record.vs')}</span>
-                  <ResultCard r={lastResult.playerB} isWinner={lastResult.playerB.id === lastResult.match.winnerId} />
-                </div>
-              </div>
-            )}
+            {lastResult && <ResultBox result={lastResult} />}
           </>
         )}
       </div>
@@ -850,16 +832,7 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
             </div>
 
             {/* Result feedback */}
-            {lastResult && (
-              <div className="rk-result-box">
-                <h4>{t('ranked.duelInfo.record.resultRecorded')}</h4>
-                <div className="rk-result-row">
-                  <ResultCard r={lastResult.playerA} isWinner={lastResult.playerA.id === lastResult.match.winnerId} />
-                  <span className="rk-result-vs">{t('ranked.duelInfo.record.vs')}</span>
-                  <ResultCard r={lastResult.playerB} isWinner={lastResult.playerB.id === lastResult.match.winnerId} />
-                </div>
-              </div>
-            )}
+            {lastResult && <ResultBox result={lastResult} />}
           </>
         )}
       </div>
@@ -868,6 +841,29 @@ function AdminFreeMatchRecording({ allParticipants, communityId }: { allParticip
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────
+
+/** Result feedback box — queued offline results show a pending state. */
+function ResultBox({ result }: { result: MatchResult }) {
+  const { t } = useTranslation();
+  if (result.queued) {
+    return (
+      <div className="rk-result-box rk-result-queued">
+        <h4><i className="fas fa-cloud-upload-alt" /> {t('ranked.duelInfo.record.resultQueued')}</h4>
+        <p className="rk-result-queued-note">{t('ranked.duelInfo.record.resultQueuedDesc')}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="rk-result-box">
+      <h4>{t('ranked.duelInfo.record.resultRecorded')}</h4>
+      <div className="rk-result-row">
+        <ResultCard r={result.playerA} isWinner={result.playerA.id === result.match.winnerId} />
+        <span className="rk-result-vs">{t('ranked.duelInfo.record.vs')}</span>
+        <ResultCard r={result.playerB} isWinner={result.playerB.id === result.match.winnerId} />
+      </div>
+    </div>
+  );
+}
 
 function EloPreview({
   participant,

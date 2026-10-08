@@ -33,6 +33,14 @@ import { getAuthHeader } from '@/services/auth/authService';
 import { migrateParticipantGames } from '@/utils/participantGames';
 import { runOfflineSyncs } from '@/services/storage/syncRegistry';
 import { readQueuedUserDeletes, removeQueuedUserDelete } from '@/services/storage/userDeleteQueue';
+import {
+  readMatchOps,
+  writeMatchOps,
+  bumpMatchOpAttempts,
+  MATCH_OP_MAX_ATTEMPTS,
+  acquireMatchOpLock,
+  releaseMatchOpLock,
+} from '@/services/storage/matchOpsQueue';
 
 // ── Auth expiry helper ──────────────────────────────────────────────────
 // Si un write autenticado recibe 401, notificamos al contexto de auth para
@@ -955,18 +963,160 @@ export async function syncPendingUserDeletes(): Promise<number> {
   return synced;
 }
 
-// ── Reconnect hook ──────────────────────────────────────────────────────
-// When the browser reports connectivity back, re-ping the server and push
-// every pending local change without waiting for a page reload/navigation.
+// ── ELO match-ops outbox ────────────────────────────────────────────────
+// recordMatch / league report / assignment ops queued while offline are
+// replayed here IN ORDER — later ELO calculations depend on earlier ones,
+// so a network failure halts the drain and the rest stay queued.
+
+/**
+ * Patches the local participant cache after a successful op sync.
+ *
+ * Ranked match response  → contains full `updatedParticipantA/B` objects;
+ *   applied immediately.
+ * League / matchmaking   → contains `eloChanges: { participantId: delta }`;
+ *   we don't know which game field to patch without the full record, so we
+ *   trigger a background participant refresh instead.
+ */
+function patchParticipantsFromMatchResponse(data: unknown): void {
+  const d = data as {
+    updatedParticipantA?: GlobalParticipant;
+    updatedParticipantB?: GlobalParticipant;
+    eloChanges?: Record<string, number>;
+  } | null;
+  if (!d) return;
+
+  // Ranked match format: full participant objects with new ELO included.
+  const updates = [d.updatedParticipantA, d.updatedParticipantB].filter(Boolean) as GlobalParticipant[];
+  if (updates.length) {
+    const all = lsReadParticipants();
+    for (const u of updates) {
+      const idx = all.findIndex((p) => p.id === u.id);
+      if (idx >= 0) all[idx] = { ...all[idx], ...u };
+      else all.push(u);
+    }
+    lsWriteParticipants(all);
+    return;
+  }
+
+  // League / matchmaking format: only per-participant ELO deltas are returned,
+  // not the full participant objects. We don't know which game-specific field
+  // to update from a delta alone, so refresh the participant list in the
+  // background so the cache reflects the server state on the next render.
+  if (d.eloChanges && Object.keys(d.eloChanges).length > 0) {
+    readAllParticipants().catch(() => {});
+  }
+}
+
+/**
+ * Replays queued ELO-affecting ops FIFO against the server.
+ *   ok            → patch local cache, remove op, continue
+ *   404           → bump attempts; if under MAX_ATTEMPTS stop the drain
+ *                   (FIFO: later ops may depend on this one); drop after MAX
+ *   other 4xx     → permanent rejection, drop op, continue
+ *   network / 5xx → stop the drain; keep this and every later op in order
+ *
+ * A localStorage lock prevents two browser tabs from running this concurrently.
+ */
+export async function syncPendingMatchOps(): Promise<number> {
+  let ops = readMatchOps();
+  if (!ops.length) return 0;
+  if (!(await isServerAvailable())) return 0;
+  if (!acquireMatchOpLock()) return 0; // another tab is already draining
+
+  let synced = 0;
+  try {
+    for (const op of ops) {
+      let res: Response;
+      try {
+        res = await fetch(`${SERVER_URL}${op.path}`, {
+          method: op.method,
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+          body: JSON.stringify(op.body),
+        });
+      } catch {
+        resetServerCache();
+        break; // network gone — stop, preserve order
+      }
+
+      if (res.status === 401) {
+        dispatchAuthExpired();
+        break;
+      }
+
+      if (res.ok) {
+        const data = await res.json().catch(() => null);
+        patchParticipantsFromMatchResponse(data);
+        ops = ops.filter((o) => o.id !== op.id);
+        synced++;
+        continue;
+      }
+
+      if (res.status === 404) {
+        // The referenced resource (participant, league match…) may not have
+        // reached the server yet. Bump the counter and stop the drain so that
+        // later ops — which may depend on this one — are not processed out of
+        // order. After MAX_ATTEMPTS the op is a dead-end and is dropped so the
+        // rest of the queue can proceed.
+        bumpMatchOpAttempts(op.id);
+        ops = readMatchOps();
+        const fresh = ops.find((o) => o.id === op.id);
+        if (!fresh || fresh.attempts >= MATCH_OP_MAX_ATTEMPTS) {
+          console.warn('[MatchOps] Dropping op after repeated 404s:', op.path);
+          ops = ops.filter((o) => o.id !== op.id);
+          continue; // dead op removed — safe to proceed to next
+        }
+        break; // still retryable — halt drain to preserve FIFO ordering
+      }
+
+      if (res.status >= 400 && res.status < 500) {
+        // Permanent client-side rejection (bad request, forbidden, etc.) —
+        // the op will never succeed; drop it and continue with the rest.
+        console.warn('[MatchOps] Op permanently rejected:', op.path, res.status);
+        ops = ops.filter((o) => o.id !== op.id);
+        continue;
+      }
+
+      // 5xx — transient server error; stop and keep order for next sync.
+      break;
+    }
+  } finally {
+    writeMatchOps(ops);
+    releaseMatchOpLock();
+  }
+  return synced;
+}
+
+// ── Reconnect + startup hooks ────────────────────────────────────────────
+// Push all pending local changes when connectivity is recovered.
+// The startup path handles the case where the app launches while already
+// online after a previous offline session left ops in the queue.
+
+function drainAllPendingOps(): void {
+  readAllTournaments().catch(() => {});
+  // Match ops may reference participants created offline — push participants
+  // first so that the ordered op queue finds them on the server.
+  readAllParticipants()
+    .then(() => syncPendingMatchOps())
+    .catch(() => {});
+  syncPendingMatchRecords().catch(() => {});
+  syncPendingUserDeletes().catch(() => {});
+  // Per-collection syncs self-register in syncRegistry (duels, ranked
+  // matches, ...). Registry keeps this module free of circular imports.
+  runOfflineSyncs().catch(() => {});
+}
+
 if (typeof window !== 'undefined') {
+  // Reconnect: fire when the browser regains network access.
   window.addEventListener('online', () => {
     resetServerCache();
-    readAllTournaments().catch(() => {});
-    readAllParticipants().catch(() => {});
-    syncPendingMatchRecords().catch(() => {});
-    syncPendingUserDeletes().catch(() => {});
-    // Per-collection syncs self-register in syncRegistry (duels, ranked
-    // matches, ...). Registry keeps this module free of circular imports.
-    runOfflineSyncs().catch(() => {});
+    drainAllPendingOps();
   });
+
+  // Startup: if the page loads while already online, drain immediately so
+  // that ops queued in a previous offline session are not lost until the
+  // next disconnect/reconnect cycle.
+  if (navigator.onLine) {
+    // Small delay to let the React tree mount and auth state restore first.
+    setTimeout(drainAllPendingOps, 2000);
+  }
 }

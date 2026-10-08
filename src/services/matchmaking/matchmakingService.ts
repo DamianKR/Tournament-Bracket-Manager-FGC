@@ -2,8 +2,9 @@
  * Matchmaking Service — recurring season model
  */
 
-import { SERVER_URL } from '@/services/api/apiClient';
+import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
+import { enqueueMatchOp } from '@/services/storage/matchOpsQueue';
 
 const BASE = `${SERVER_URL}/api/matchmaking`;
 
@@ -175,18 +176,54 @@ export async function getAssignments(params: {
   return res.json();
 }
 
+/**
+ * PUTs an assignment op, or queues it for ordered replay when the server is
+ * unreachable / returns 5xx. Queued ops land in the same FIFO queue as
+ * recordMatch — so the match they link always reaches the server first.
+ * 4xx responses still throw (permanent errors).
+ */
+async function putAssignmentOp(
+  assignmentId: string,
+  action: 'result' | 'forfeit',
+  body: Record<string, unknown>
+): Promise<{ assignment: MatchmakingAssignment }> {
+  const path = `/api/matchmaking/assignments/${assignmentId}/${action}`;
+  let res: Response | null = null;
+  if (await isServerAvailable()) {
+    try {
+      res = await fetch(`${SERVER_URL}${path}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(body),
+      });
+    } catch {
+      resetServerCache();
+      res = null;
+    }
+  }
+
+  if (res?.ok) return res.json();
+
+  if (res && res.status >= 400 && res.status < 500) {
+    throw new Error(await res.text());
+  }
+
+  // Offline / transient failure → replay on reconnect.
+  enqueueMatchOp({
+    id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    method: 'PUT',
+    path,
+    body,
+  });
+  return { assignment: { id: assignmentId } as MatchmakingAssignment };
+}
+
 /** Links an assignment to a ranked match already recorded via recordMatch(). */
 export async function recordAssignmentResult(
   assignmentId: string,
   payload: { winnerId: string; matchId?: string }
 ): Promise<{ assignment: MatchmakingAssignment }> {
-  const res = await fetch(`${BASE}/assignments/${assignmentId}/result`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return putAssignmentOp(assignmentId, 'result', payload);
 }
 
 export async function forfeitAssignment(
@@ -195,13 +232,7 @@ export async function forfeitAssignment(
   note?: string,
   matchId?: string
 ): Promise<{ assignment: MatchmakingAssignment }> {
-  const res = await fetch(`${BASE}/assignments/${assignmentId}/forfeit`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    body: JSON.stringify({ forfeitPlayerId, note, matchId }),
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return putAssignmentOp(assignmentId, 'forfeit', { forfeitPlayerId, note, matchId });
 }
 
 export async function cancelAssignment(

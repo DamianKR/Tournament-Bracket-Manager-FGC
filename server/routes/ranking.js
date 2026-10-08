@@ -139,6 +139,42 @@ router.post('/match', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'winnerId must be either playerAId or playerBId' });
     }
 
+    // Idempotency: offline queues send a client-generated id and may retry
+    // after a lost response. If the record already exists, return the stored
+    // result WITHOUT reapplying ELO.
+    if (req.body.id) {
+      const existing = await rankedMatches.findById(req.body.id);
+      if (existing) {
+        const [rawEA, rawEB] = await Promise.all([
+          participants.findById(existing.playerAId),
+          participants.findById(existing.playerBId),
+        ]);
+        return res.status(200).json({
+          match: existing,
+          playerA: {
+            id: existing.playerAId,
+            name: rawEA?.name ?? existing.playerAId,
+            pointsBefore: existing.playerAPointsBefore,
+            pointsAfter: existing.playerAPointsAfter,
+            delta: existing.playerADelta,
+            rankBefore: existing.playerARankBefore,
+            rankAfter: existing.playerARankAfter,
+          },
+          playerB: {
+            id: existing.playerBId,
+            name: rawEB?.name ?? existing.playerBId,
+            pointsBefore: existing.playerBPointsBefore,
+            pointsAfter: existing.playerBPointsAfter,
+            delta: existing.playerBDelta,
+            rankBefore: existing.playerBRankBefore,
+            rankAfter: existing.playerBRankAfter,
+          },
+          updatedParticipantA: normalizeParticipant(rawEA),
+          updatedParticipantB: normalizeParticipant(rawEB),
+        });
+      }
+    }
+
     const [rawA, rawB] = await Promise.all([
       participants.findById(playerAId),
       participants.findById(playerBId),
@@ -205,7 +241,9 @@ router.post('/match', requireAuth, async (req, res) => {
     setParticipantGameElo(pB, matchGameId, newRB, newRankB);
 
     const matchRecord = {
-      id: generateId('m'),
+      // Client-supplied ids keep offline-queued replays idempotent and let
+      // duel/matchmaking linkage ops reference the match before it exists.
+      id: req.body.id || generateId('m'),
       playerAId,
       playerBId,
       winnerId,
