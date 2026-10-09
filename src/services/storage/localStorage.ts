@@ -45,8 +45,19 @@ import {
 // ── Auth expiry helper ──────────────────────────────────────────────────
 // Si un write autenticado recibe 401, notificamos al contexto de auth para
 // que muestre el banner de "sesión expirada" sin bloquear el flujo.
+// Debounced: fires at most once per 10 s and only when there was an active
+// token (prevents spurious toasts on F5 when the user was already logged out).
+let _authExpiredFiredAt = 0;
 function dispatchAuthExpired(): void {
-  try { window.dispatchEvent(new Event('auth:expired')); } catch {}
+  const now = Date.now();
+  if (now - _authExpiredFiredAt < 10_000) return; // already fired recently
+  // Only notify if there was actually a session to expire
+  try {
+    const hasToken = !!localStorage.getItem('bracket_auth_token');
+    if (!hasToken) return;
+    _authExpiredFiredAt = now;
+    window.dispatchEvent(new Event('auth:expired'));
+  } catch {}
 }
 
 // ── Outbox helpers (pending-sync flags + tombstones) ────────────────────
