@@ -21,6 +21,59 @@ import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 
 const LS_PARTICIPANTS_KEY = 'bracket_global_participants';
 
+// ── Leaderboard + history cache ───────────────────────────────────────────
+// Keyed by communityId+gameId so multiple communities/games are independent.
+
+const LS_LEADERBOARD_KEY = 'bracket_leaderboard_cache';
+const LS_HISTORY_KEY     = 'bracket_history_cache';
+
+interface LeaderboardCache {
+  entries: LeaderboardEntry[];
+  cachedAt: string;
+}
+interface HistoryCache {
+  entries: MatchRecord[];
+  cachedAt: string;
+}
+
+function _cacheKey(communityId = '', gameId = ''): string {
+  return `${communityId}::${gameId}`;
+}
+
+function _readCache<T>(lsKey: string, ck: string): (T & { cachedAt: string }) | null {
+  try {
+    const raw = localStorage.getItem(lsKey);
+    if (!raw) return null;
+    const map: Record<string, T & { cachedAt: string }> = JSON.parse(raw);
+    return map[ck] ?? null;
+  } catch { return null; }
+}
+
+function _writeCache<T>(lsKey: string, ck: string, payload: T): void {
+  try {
+    const raw = localStorage.getItem(lsKey);
+    const map: Record<string, T & { cachedAt: string }> = raw ? JSON.parse(raw) : {};
+    map[ck] = { ...payload, cachedAt: new Date().toISOString() };
+    localStorage.setItem(lsKey, JSON.stringify(map));
+  } catch {}
+}
+
+/** Read leaderboard from cache synchronously — returns null if not cached yet. */
+export function getLeaderboardSync(
+  communityId?: string,
+  gameId?: string,
+): { entries: LeaderboardEntry[]; cachedAt: string } | null {
+  return _readCache<LeaderboardCache>(LS_LEADERBOARD_KEY, _cacheKey(communityId, gameId));
+}
+
+/** Read match history from cache synchronously — returns null if not cached yet. */
+export function getAllMatchesSync(
+  communityId?: string,
+  gameId?: string,
+): { entries: MatchRecord[]; cachedAt: string } | null {
+  return _readCache<HistoryCache>(LS_HISTORY_KEY, _cacheKey(communityId, gameId));
+}
+
 function lsPatchParticipants(updated: GlobalParticipant[]): void {
   try {
     const raw = localStorage.getItem(LS_PARTICIPANTS_KEY);
@@ -119,20 +172,50 @@ function buildQuery(params: Record<string, string | undefined>): string {
   return parts.length > 0 ? `?${parts.join('&')}` : '';
 }
 
-/** Fetches the leaderboard for a specific game sorted by ELO descending. */
+/** Fetches the leaderboard for a specific game sorted by ELO descending.
+ *  Saves result to localStorage on success; falls back to cached data when
+ *  the server is unreachable (offline). Throws only when offline AND no cache. */
 export async function getLeaderboard(communityId?: string, gameId?: string): Promise<LeaderboardEntry[]> {
-  const query = buildQuery({ communityId, gameId: gameId ?? '' });
-  const res = await fetch(`${API_BASE}${query}`);
-  if (!res.ok) throw new Error(`Failed to load leaderboard: ${res.status}`);
-  return res.json();
+  const ck = _cacheKey(communityId, gameId);
+  if (await isServerAvailable()) {
+    try {
+      const query = buildQuery({ communityId, gameId: gameId ?? '' });
+      const res = await fetch(`${API_BASE}${query}`);
+      if (res.ok) {
+        const data: LeaderboardEntry[] = await res.json();
+        _writeCache<LeaderboardCache>(LS_LEADERBOARD_KEY, ck, { entries: data, cachedAt: '' });
+        return data;
+      }
+    } catch {
+      resetServerCache();
+    }
+  }
+  // Offline or request failed — return cache if available
+  const cached = _readCache<LeaderboardCache>(LS_LEADERBOARD_KEY, ck);
+  if (cached) return cached.entries;
+  throw new Error('No leaderboard data available offline');
 }
 
-/** Fetches full match history (newest first). */
+/** Fetches full match history (newest first).
+ *  Saves result to localStorage on success; falls back to cached data offline. */
 export async function getAllMatches(communityId?: string, gameId?: string): Promise<MatchRecord[]> {
-  const query = buildQuery({ communityId, gameId: gameId ?? '' });
-  const res = await fetch(`${API_BASE}/matches${query}`);
-  if (!res.ok) throw new Error(`Failed to load matches: ${res.status}`);
-  return res.json();
+  const ck = _cacheKey(communityId, gameId);
+  if (await isServerAvailable()) {
+    try {
+      const query = buildQuery({ communityId, gameId: gameId ?? '' });
+      const res = await fetch(`${API_BASE}/matches${query}`);
+      if (res.ok) {
+        const data: MatchRecord[] = await res.json();
+        _writeCache<HistoryCache>(LS_HISTORY_KEY, ck, { entries: data, cachedAt: '' });
+        return data;
+      }
+    } catch {
+      resetServerCache();
+    }
+  }
+  const cached = _readCache<HistoryCache>(LS_HISTORY_KEY, ck);
+  if (cached) return cached.entries;
+  throw new Error('No match history available offline');
 }
 
 /** Fetches match history for a single participant. */

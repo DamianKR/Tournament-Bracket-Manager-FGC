@@ -23,6 +23,10 @@ export function generateSingleEliminationBracket(
 /**
  * Distribute players across bracket slots preserving order, with BYEs spread.
  * Used when NO bracket seeding is applied (manual order).
+ *
+ * Byes are placed at evenly spaced match indices so they spread across both
+ * halves of the bracket instead of clustering. Match 0 is always a real
+ * match. Every match keeps at least one real player — no null-vs-null slots.
  */
 function distributeByes(
   players: Participant[],
@@ -30,27 +34,22 @@ function distributeByes(
 ): (Participant | null)[] {
   const numMatches = bracketSize / 2;
   const numByes = bracketSize - players.length;
-  const slots: (Participant | null)[] = [];
 
+  // Evenly spaced bye positions (+1 keeps match 0 as a real match).
+  // Strictly increasing — guaranteed unique while numByes < numMatches.
+  const byeMatches = new Set<number>();
+  for (let i = 0; i < numByes; i++) {
+    byeMatches.add(Math.floor((i * numMatches) / numByes) + 1);
+  }
+
+  const slots: (Participant | null)[] = [];
   let playerIdx = 0;
-  let byesLeft = numByes;
 
   for (let match = 0; match < numMatches; match++) {
     const p1 = playerIdx < players.length ? players[playerIdx++] : null;
-
-    let p2: Participant | null;
-    if (match === 0) {
-      // First match: always pair two players together
-      p2 = playerIdx < players.length ? players[playerIdx++] : null;
-    } else if (byesLeft > 0 && playerIdx < players.length) {
-      // Has byes remaining: give this player a BYE
-      p2 = null;
-      byesLeft--;
-    } else {
-      // No byes left (or no player for p1): pair normally
-      p2 = playerIdx < players.length ? players[playerIdx++] : null;
-    }
-
+    const p2 = !byeMatches.has(match) && playerIdx < players.length
+      ? players[playerIdx++]
+      : null;
     slots.push(p1, p2);
   }
 

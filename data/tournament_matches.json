@@ -13999,5 +13999,625 @@
     "games": [],
     "createdAt": "2026-08-30T16:19:57.000Z",
     "updatedAt": "2026-10-02T16:20:59.840Z"
+  },
+  {
+    "id": "tm_1791635119822_vhtxl7lgu",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635065433-msd4qkikw",
+    "player2Id": "1791635078275-fwon8e0g5",
+    "player1GlobalId": "gp_1786756661811_fa5pg74",
+    "player2GlobalId": "gp_1786396304199_u7v6gsb",
+    "player1Name": "Brayan",
+    "player2Name": "Dianger",
+    "winnerId": "1791635078275-fwon8e0g5",
+    "winnerGlobalId": "gp_1786396304199_u7v6gsb",
+    "round": 1,
+    "matchNumber": 1,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635078275-fwon8e0g5"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635078275-fwon8e0g5"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:25:19.822Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635170904_vn12irib3",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635071321-wtofd4h2v",
+    "player2Id": "1791635056678-55qj6cbi0",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1787409813244_ymqkq1e",
+    "player1Name": "Ale",
+    "player2Name": "Alexs",
+    "winnerId": "1791635071321-wtofd4h2v",
+    "winnerGlobalId": "gp_1786387243524_6er0c9u",
+    "round": 1,
+    "matchNumber": 5,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635071321-wtofd4h2v"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635071321-wtofd4h2v"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:26:10.904Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635188319_1weh4vvwe",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635069300-he5wft1ns",
+    "player2Id": "1791635078275-fwon8e0g5",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786396304199_u7v6gsb",
+    "player1Name": "Alexis",
+    "player2Name": "Dianger",
+    "winnerId": "1791635069300-he5wft1ns",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635069300-he5wft1ns"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635069300-he5wft1ns"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:26:28.319Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635194302_kye4wby5n",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635051070-noqob960a",
+    "player2Id": "1791635073063-pqol006t9",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "Damiam",
+    "player2Name": "Gino",
+    "winnerId": "1791635051070-noqob960a",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 2,
+    "matchNumber": 2,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635051070-noqob960a"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635051070-noqob960a"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:26:34.302Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635203252_rz1f4npyc",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635083044-vcuf7qs5t",
+    "player2Id": "1791635071321-wtofd4h2v",
+    "player1GlobalId": "gp_1786648984526_6yyg6ao",
+    "player2GlobalId": "gp_1786387243524_6er0c9u",
+    "player1Name": "Fabio",
+    "player2Name": "Ale",
+    "winnerId": "1791635071321-wtofd4h2v",
+    "winnerGlobalId": "gp_1786387243524_6er0c9u",
+    "round": 2,
+    "matchNumber": 3,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635071321-wtofd4h2v"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635071321-wtofd4h2v"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:26:43.252Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635210303_cp9ge4ec6",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635059316-o6p22aoaw",
+    "player2Id": "1791635047648-poun4mywp",
+    "player1GlobalId": "gp_1787060569919_ov80gcy",
+    "player2GlobalId": "gp_1787202786652_4bme4ih",
+    "player1Name": "DeathFrost",
+    "player2Name": "Pokred",
+    "winnerId": "1791635059316-o6p22aoaw",
+    "winnerGlobalId": "gp_1787060569919_ov80gcy",
+    "round": 2,
+    "matchNumber": 4,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635059316-o6p22aoaw"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635059316-o6p22aoaw"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:26:50.303Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635220552_e6msdm7uj",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635065433-msd4qkikw",
+    "player2Id": "1791635047648-poun4mywp",
+    "player1GlobalId": "gp_1786756661811_fa5pg74",
+    "player2GlobalId": "gp_1787202786652_4bme4ih",
+    "player1Name": "Brayan",
+    "player2Name": "Pokred",
+    "winnerId": "1791635065433-msd4qkikw",
+    "winnerGlobalId": "gp_1786756661811_fa5pg74",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635065433-msd4qkikw"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635065433-msd4qkikw"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:27:00.552Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635229111_1rtica7h7",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635056678-55qj6cbi0",
+    "player2Id": "1791635073063-pqol006t9",
+    "player1GlobalId": "gp_1787409813244_ymqkq1e",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "Alexs",
+    "player2Name": "Gino",
+    "winnerId": "1791635073063-pqol006t9",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 2,
+    "matchNumber": 3,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635073063-pqol006t9"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635073063-pqol006t9"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:27:09.111Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635239902_0qo44rept",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635083044-vcuf7qs5t",
+    "player2Id": "1791635065433-msd4qkikw",
+    "player1GlobalId": "gp_1786648984526_6yyg6ao",
+    "player2GlobalId": "gp_1786756661811_fa5pg74",
+    "player1Name": "Fabio",
+    "player2Name": "Brayan",
+    "winnerId": "1791635083044-vcuf7qs5t",
+    "winnerGlobalId": "gp_1786648984526_6yyg6ao",
+    "round": 3,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635083044-vcuf7qs5t"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635083044-vcuf7qs5t"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:27:19.902Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635256903_qpdeokw9x",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635069300-he5wft1ns",
+    "player2Id": "1791635051070-noqob960a",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786387087046_wnwtadb",
+    "player1Name": "Alexis",
+    "player2Name": "Damiam",
+    "winnerId": "1791635069300-he5wft1ns",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 3,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635069300-he5wft1ns",
+        "player1Character": "mario",
+        "player2Character": "samus"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635069300-he5wft1ns",
+        "player1Character": "mario",
+        "player1Color": 0,
+        "player2Character": "samus",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:27:36.903Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635272869_grm7rruir",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635071321-wtofd4h2v",
+    "player2Id": "1791635059316-o6p22aoaw",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1787060569919_ov80gcy",
+    "player1Name": "Ale",
+    "player2Name": "DeathFrost",
+    "winnerId": "1791635071321-wtofd4h2v",
+    "winnerGlobalId": "gp_1786387243524_6er0c9u",
+    "round": 3,
+    "matchNumber": 2,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635071321-wtofd4h2v",
+        "player1Character": "mario",
+        "player2Character": "bayonetta"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635071321-wtofd4h2v",
+        "player1Character": "mario",
+        "player1Color": 0,
+        "player2Character": "bayonetta",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:27:52.869Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635285729_dl0q110cu",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635069300-he5wft1ns",
+    "player2Id": "1791635071321-wtofd4h2v",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786387243524_6er0c9u",
+    "player1Name": "Alexis",
+    "player2Name": "Ale",
+    "winnerId": "1791635069300-he5wft1ns",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 4,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635069300-he5wft1ns",
+        "player1Character": "luigi",
+        "player2Character": "mario"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635069300-he5wft1ns",
+        "player1Character": "luigi",
+        "player1Color": 0,
+        "player2Character": "mario",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:28:05.729Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635306919_o5r11ftvu",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635078275-fwon8e0g5",
+    "player2Id": "1791635073063-pqol006t9",
+    "player1GlobalId": "gp_1786396304199_u7v6gsb",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "Dianger",
+    "player2Name": "Gino",
+    "winnerId": "1791635073063-pqol006t9",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 3,
+    "matchNumber": 2,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635073063-pqol006t9",
+        "player2Character": "link",
+        "player2Color": 0,
+        "player1Character": "sephiroth"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635073063-pqol006t9",
+        "player1Character": "sephiroth",
+        "player1Color": 0,
+        "player2Character": "link"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:28:26.919Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635327818_dns9v7z7s",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635083044-vcuf7qs5t",
+    "player2Id": "1791635051070-noqob960a",
+    "player1GlobalId": "gp_1786648984526_6yyg6ao",
+    "player2GlobalId": "gp_1786387087046_wnwtadb",
+    "player1Name": "Fabio",
+    "player2Name": "Damiam",
+    "winnerId": "1791635051070-noqob960a",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 4,
+    "matchNumber": 1,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635051070-noqob960a",
+        "player2Character": "ganondorf",
+        "player1Character": "sora"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635051070-noqob960a",
+        "player1Character": "sora",
+        "player1Color": 0,
+        "player2Character": "ganondorf",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:28:47.818Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635343508_7bgngsrcr",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635073063-pqol006t9",
+    "player2Id": "1791635059316-o6p22aoaw",
+    "player1GlobalId": "gp_1786387234567_aoe1z95",
+    "player2GlobalId": "gp_1787060569919_ov80gcy",
+    "player1Name": "Gino",
+    "player2Name": "DeathFrost",
+    "winnerId": "1791635073063-pqol006t9",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 4,
+    "matchNumber": 2,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635073063-pqol006t9",
+        "player1Character": "sonic",
+        "player2Character": "bayonetta"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635073063-pqol006t9",
+        "player1Character": "sonic",
+        "player1Color": 0,
+        "player2Character": "bayonetta",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:29:03.508Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635362985_vkcnndzbs",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635051070-noqob960a",
+    "player2Id": "1791635073063-pqol006t9",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "Damiam",
+    "player2Name": "Gino",
+    "winnerId": "1791635073063-pqol006t9",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 5,
+    "matchNumber": 1,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635073063-pqol006t9",
+        "player1Character": "samus",
+        "player2Character": "link"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635073063-pqol006t9",
+        "player1Character": "samus",
+        "player1Color": 0,
+        "player2Character": "link",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:29:22.985Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635397500_n14zohxao",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635073063-pqol006t9",
+    "player2Id": "1791635071321-wtofd4h2v",
+    "player1GlobalId": "gp_1786387234567_aoe1z95",
+    "player2GlobalId": "gp_1786387243524_6er0c9u",
+    "player1Name": "Gino",
+    "player2Name": "Ale",
+    "winnerId": "1791635073063-pqol006t9",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 6,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635073063-pqol006t9",
+        "player1Character": "link",
+        "player2Character": "mario"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635073063-pqol006t9",
+        "player1Character": "link",
+        "player1Color": 0,
+        "player2Character": "mario",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:29:57.500Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635422856_y6if0nyoy",
+    "tournamentId": "1791635042686-gg4jmw00c",
+    "tournamentName": "Manual order Tournament",
+    "gameId": "ssbu",
+    "player1Id": "1791635069300-he5wft1ns",
+    "player2Id": "1791635073063-pqol006t9",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "Alexis",
+    "player2Name": "Gino",
+    "winnerId": "1791635069300-he5wft1ns",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 1,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 1,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635069300-he5wft1ns",
+        "player1Character": "luigi",
+        "player2Character": "link"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635073063-pqol006t9",
+        "player1Character": "luigi",
+        "player1Color": 0,
+        "player2Character": "link",
+        "player2Color": 0
+      },
+      {
+        "gameNumber": 3,
+        "winnerId": "1791635069300-he5wft1ns",
+        "player1Character": "luigi",
+        "player1Color": 0,
+        "player2Character": "sonic",
+        "player2Color": 0
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:30:22.856Z",
+    "synced": false
   }
 ]

@@ -27,19 +27,14 @@ export function generateDoubleEliminationBracket(
 /**
  * Distribute players across bracket slots preserving order, with BYEs spread.
  *
- * Strategy: fill matches one by one. The first match always gets 2 players
- * (they face each other). Each subsequent match gets 1 player + 1 BYE until
- * byes run out, then pairs remaining players.
+ * Byes are placed at evenly spaced match indices so they spread across both
+ * halves of the bracket instead of clustering. Match 0 is always a real
+ * match. Every match keeps at least one real player — no null-vs-null slots.
  *
  * Examples (brackets of 8):
- *   5 players → [P1,P2, P3,null, P4,null, P5,null]
- *     M1: P1vP2  M2: P3vBYE  M3: P4vBYE  M4: P5vBYE
- *
- *   6 players → [P1,P2, P3,null, P4,null, P5,P6]
- *     M1: P1vP2  M2: P3vBYE  M3: P4vBYE  M4: P5vP6
- *
- *   7 players → [P1,P2, P3,null, P4,P5, P6,P7]
- *     M1: P1vP2  M2: P3vBYE  M3: P4vP5  M4: P6vP7
+ *   5 players → M1: P1vP2  M2: P3vBYE  M3: P4vBYE  M4: P5vBYE
+ *   6 players → M1: P1vP2  M2: P3vBYE  M3: P4vP5   M4: P6vBYE
+ *   7 players → M1: P1vP2  M2: P3vBYE  M3: P4vP5   M4: P6vP7
  */
 function distributeByes(
   players: Participant[],
@@ -47,27 +42,22 @@ function distributeByes(
 ): (Participant | null)[] {
   const numMatches = bracketSize / 2;
   const numByes = bracketSize - players.length;
-  const slots: (Participant | null)[] = [];
 
+  // Evenly spaced bye positions (+1 keeps match 0 as a real match).
+  // Strictly increasing — guaranteed unique while numByes < numMatches.
+  const byeMatches = new Set<number>();
+  for (let i = 0; i < numByes; i++) {
+    byeMatches.add(Math.floor((i * numMatches) / numByes) + 1);
+  }
+
+  const slots: (Participant | null)[] = [];
   let playerIdx = 0;
-  let byesLeft = numByes;
 
   for (let match = 0; match < numMatches; match++) {
     const p1 = playerIdx < players.length ? players[playerIdx++] : null;
-
-    let p2: Participant | null;
-    if (match === 0) {
-      // First match: always pair two players together
-      p2 = playerIdx < players.length ? players[playerIdx++] : null;
-    } else if (byesLeft > 0 && playerIdx < players.length) {
-      // Has byes remaining: give this player a BYE
-      p2 = null;
-      byesLeft--;
-    } else {
-      // No byes left (or no player for p1): pair normally
-      p2 = playerIdx < players.length ? players[playerIdx++] : null;
-    }
-
+    const p2 = !byeMatches.has(match) && playerIdx < players.length
+      ? players[playerIdx++]
+      : null;
     slots.push(p1, p2);
   }
 

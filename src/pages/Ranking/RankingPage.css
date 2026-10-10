@@ -173,6 +173,20 @@
   animation: fadeIn 0.2s ease;
 }
 
+.rk-stale-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 0.75rem;
+  border-radius: var(--border-radius);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
