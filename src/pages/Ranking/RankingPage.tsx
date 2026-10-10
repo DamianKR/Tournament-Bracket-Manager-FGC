@@ -7,7 +7,9 @@ import { gameBadgeStyle } from '@/utils/gameColor';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
 import {
   getLeaderboard,
+  getLeaderboardSync,
   getAllMatches,
+  getAllMatchesSync,
   deleteMatch,
   hardResetRanking,
   softResetRanking,
@@ -71,6 +73,7 @@ function RankingPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingBoard, setLoadingBoard] = useState(true);
   const [boardError, setBoardError] = useState('');
+  const [boardCachedAt, setBoardCachedAt] = useState<string | null>(null);
 
   // All participants (for selectors)
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
@@ -103,28 +106,45 @@ function RankingPage() {
   // Participant name lookup
   const participantMap = new Map(allParticipants.map((p) => [p.id, p]));
 
+  const gameIdForFetch = selectedGameId === 'all' ? GAMES[0]?.id : selectedGameId;
+
   const loadLeaderboard = useCallback(async () => {
-    setLoadingBoard(true);
+    // Show cached data immediately — no spinner if we already have something
+    const sync = getLeaderboardSync(communityId, gameIdForFetch);
+    if (sync) {
+      setLeaderboard(sync.entries);
+      setBoardCachedAt(sync.cachedAt);
+      setLoadingBoard(false);
+    } else {
+      setLoadingBoard(true);
+    }
     setBoardError('');
     try {
-      // 'all' no tiene leaderboard global — fallback al primer juego
-      const data = await getLeaderboard(communityId, selectedGameId === 'all' ? GAMES[0]?.id : selectedGameId);
+      const data = await getLeaderboard(communityId, gameIdForFetch);
       setLeaderboard(data);
+      setBoardCachedAt(null); // fresh data — hide stale banner
     } catch {
-      setBoardError(t('ranking.errorTitle'));
+      if (!sync) setBoardError(t('ranking.errorTitle'));
+      // if we had cache, keep showing it — no error shown
     } finally {
       setLoadingBoard(false);
     }
-  }, [communityId, selectedGameId]);
+  }, [communityId, gameIdForFetch]);
 
   const loadHistory = useCallback(async () => {
     if (!communityId) return;
-    setLoadingHistory(true);
+    const sync = getAllMatchesSync(communityId, selectedGameId === 'all' ? undefined : selectedGameId);
+    if (sync) {
+      setMatchHistory(sync.entries as unknown as MatchRecord[]);
+      setLoadingHistory(false);
+    } else {
+      setLoadingHistory(true);
+    }
     try {
       const data = await getAllMatches(communityId, selectedGameId === 'all' ? undefined : selectedGameId);
       setMatchHistory(data as unknown as MatchRecord[]);
     } catch {
-      // silently fail
+      // keep cached data if available, silently ignore otherwise
     } finally {
       setLoadingHistory(false);
     }
@@ -276,6 +296,12 @@ function RankingPage() {
       {tab === 'leaderboard' && (
         <div className="rk-section">
           {loadingBoard && <Loading message={t('ranking.loadingRanking')} />}
+          {boardCachedAt && !loadingBoard && (
+            <div className="rk-stale-banner">
+              <i className="fas fa-wifi-slash" />
+              {' '}{t('ranking.offlineCache', { date: new Date(boardCachedAt).toLocaleString() })}
+            </div>
+          )}
           {boardError && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-triangle-exclamation" /></span>

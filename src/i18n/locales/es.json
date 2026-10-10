@@ -96,6 +96,7 @@
     "colRank": "Rango",
     "colPoints": "Puntos",
     "loadingRanking": "Cargando ranking...",
+    "offlineCache": "Sin conexión — mostrando datos del {{date}}",
     "errorTitle": "No se pudo conectar al servidor.",
     "errorDesc": "Asegúrate de que el servidor API esté corriendo en el puerto 3001.",
     "errorDesc2": "Usa npm run dev o abre Abrir_Aplicacion.bat.",
