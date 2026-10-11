@@ -8,7 +8,7 @@ import { League, LeagueMatch, LeagueStanding } from '@/models/league';
 import type { MatchGame } from '@/models/rankedMatch';
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
-import { enqueueMatchOp } from '@/services/storage/matchOpsQueue';
+import { enqueueMatchOp, readMatchOps } from '@/services/storage/matchOpsQueue';
 import { isDateInTimeZonePassed } from '@/utils/timeZone';
 
 // ── API Calls ─────────────────────────────────────────────────────────────
@@ -196,12 +196,37 @@ async function postLeagueOp(
   }
 
   // Offline / transient failure → ordered queue replay applies it later.
-  enqueueMatchOp({ id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`, method: 'POST', path, body });
+  // Skip the enqueue if an op for this exact endpoint is already queued —
+  // a second report of the same match would replay a duplicate write.
+  if (!readMatchOps().some((op) => op.path === path)) {
+    enqueueMatchOp({ id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`, method: 'POST', path, body });
+  }
   return {
     match: { id: fallbackMatchId } as LeagueMatch,
     eloChanges: null,
     queued: true,
   };
+}
+
+const LEAGUE_OP_RE = /\/api\/leagues\/[^/]+\/matches\/([^/]+)\/(report|resolve)/;
+
+/** Match IDs with a report/resolve op still sitting in the offline queue —
+ *  read once per render so lists don't re-parse localStorage per row. */
+export function getPendingLeagueOpMatchIds(): Set<string> {
+  const ids = new Set<string>();
+  for (const op of readMatchOps()) {
+    const m = LEAGUE_OP_RE.exec(op.path);
+    if (m) ids.add(m[1]);
+  }
+  return ids;
+}
+
+/**
+ * True if this league match already has a report/resolve op sitting in the
+ * offline queue — the UI shows "queued" instead of offering Report again.
+ */
+export function hasPendingLeagueOp(matchId: string): boolean {
+  return getPendingLeagueOpMatchIds().has(matchId);
 }
 
 export async function reportMatchResult(

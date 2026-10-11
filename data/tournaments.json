@@ -22400,5 +22400,574 @@
         "_position": 5
       }
     ]
+  },
+  {
+    "id": "1791635478917-uhgnbx837",
+    "name": "Seeding After Update",
+    "mode": "double_elimination",
+    "type": "singles",
+    "status": "in_progress",
+    "gameId": "ssbu",
+    "givesPoints": true,
+    "pointsDepth": 8,
+    "seedingMode": "partial",
+    "participants": [
+      {
+        "id": "1791635792365-gmczoiiug",
+        "name": "Damiam",
+        "alias": "KruX",
+        "seed": 1,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786387087046_wnwtadb"
+      },
+      {
+        "id": "1791635816141-n8lfry358",
+        "name": "Tails",
+        "seed": 8,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786391783115_87zwx03"
+      },
+      {
+        "id": "1791635822204-ok8b8heib",
+        "name": "Dionisio",
+        "alias": "Obake",
+        "seed": 9,
+        "eliminated": false,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1786393850039_1imzf6x"
+      },
+      {
+        "id": "1791635802742-vpqm1ib5q",
+        "name": "Alexis",
+        "alias": "Adecty",
+        "seed": 4,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786387250178_ac5thmv"
+      },
+      {
+        "id": "1791635810560-epxrbazbz",
+        "name": "Kevin",
+        "alias": "AmorAltras",
+        "seed": 5,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786393834683_lievrvf"
+      },
+      {
+        "id": "1791635838673-4gz7ygfna",
+        "name": "Manuel Martinez",
+        "alias": "Manuel(Z)",
+        "seed": 12,
+        "eliminated": false,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1786410268124_ja1vgy5"
+      },
+      {
+        "id": "1791635794778-ge27a6h9s",
+        "name": "Gino",
+        "seed": 2,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786387234567_aoe1z95"
+      },
+      {
+        "id": "1791635855262-4odn29znx",
+        "name": "Alexs",
+        "seed": 7,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1787409813244_ymqkq1e"
+      },
+      {
+        "id": "1791635851450-iheukhv6x",
+        "name": "Maidiel",
+        "alias": "Ghost",
+        "seed": 10,
+        "eliminated": false,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1787112645165_cj7eik8"
+      },
+      {
+        "id": "1791635798223-p8bm86u6d",
+        "name": "Ale",
+        "alias": "TQMandreFN",
+        "seed": 3,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786387243524_6er0c9u"
+      },
+      {
+        "id": "1791635831608-izq5dx3iz",
+        "name": "Ismael",
+        "seed": 6,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1786408686972_s4nl3vz"
+      },
+      {
+        "id": "1791635806683-ngb9xwpd8",
+        "name": "Delvi",
+        "alias": "Bola e'h carne",
+        "seed": 11,
+        "eliminated": false,
+        "lossCount": 1,
+        "globalParticipantId": "gp_1786391892402_8intsz3"
+      }
+    ],
+    "bracket": {
+      "winnerBracket": [
+        {
+          "id": "winner-r1-m1",
+          "roundNumber": 1,
+          "matchNumber": 1,
+          "bracketType": "winner",
+          "participant1Id": "1791635792365-gmczoiiug",
+          "participant2Id": null,
+          "winnerId": "1791635792365-gmczoiiug",
+          "loserId": null,
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m1",
+          "nextLoserMatchId": "loser-r1-m1"
+        },
+        {
+          "id": "winner-r1-m2",
+          "roundNumber": 1,
+          "matchNumber": 2,
+          "bracketType": "winner",
+          "participant1Id": "1791635816141-n8lfry358",
+          "participant2Id": "1791635822204-ok8b8heib",
+          "winnerId": "1791635816141-n8lfry358",
+          "loserId": "1791635822204-ok8b8heib",
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m1",
+          "nextLoserMatchId": "loser-r1-m1",
+          "participant1Score": 2,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1791635816141-n8lfry358"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1791635816141-n8lfry358"
+            }
+          ]
+        },
+        {
+          "id": "winner-r1-m3",
+          "roundNumber": 1,
+          "matchNumber": 3,
+          "bracketType": "winner",
+          "participant1Id": "1791635802742-vpqm1ib5q",
+          "participant2Id": null,
+          "winnerId": "1791635802742-vpqm1ib5q",
+          "loserId": null,
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m2",
+          "nextLoserMatchId": "loser-r1-m2"
+        },
+        {
+          "id": "winner-r1-m4",
+          "roundNumber": 1,
+          "matchNumber": 4,
+          "bracketType": "winner",
+          "participant1Id": "1791635810560-epxrbazbz",
+          "participant2Id": "1791635838673-4gz7ygfna",
+          "winnerId": "1791635810560-epxrbazbz",
+          "loserId": "1791635838673-4gz7ygfna",
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m2",
+          "nextLoserMatchId": "loser-r1-m2",
+          "participant1Score": 2,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1791635810560-epxrbazbz"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1791635810560-epxrbazbz"
+            }
+          ]
+        },
+        {
+          "id": "winner-r1-m5",
+          "roundNumber": 1,
+          "matchNumber": 5,
+          "bracketType": "winner",
+          "participant1Id": "1791635794778-ge27a6h9s",
+          "participant2Id": null,
+          "winnerId": "1791635794778-ge27a6h9s",
+          "loserId": null,
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m3",
+          "nextLoserMatchId": "loser-r1-m3"
+        },
+        {
+          "id": "winner-r1-m6",
+          "roundNumber": 1,
+          "matchNumber": 6,
+          "bracketType": "winner",
+          "participant1Id": "1791635855262-4odn29znx",
+          "participant2Id": "1791635851450-iheukhv6x",
+          "winnerId": "1791635855262-4odn29znx",
+          "loserId": "1791635851450-iheukhv6x",
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m3",
+          "nextLoserMatchId": "loser-r1-m3",
+          "participant1Score": 2,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1791635855262-4odn29znx"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1791635855262-4odn29znx"
+            }
+          ]
+        },
+        {
+          "id": "winner-r1-m7",
+          "roundNumber": 1,
+          "matchNumber": 7,
+          "bracketType": "winner",
+          "participant1Id": "1791635798223-p8bm86u6d",
+          "participant2Id": null,
+          "winnerId": "1791635798223-p8bm86u6d",
+          "loserId": null,
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m4",
+          "nextLoserMatchId": "loser-r1-m4"
+        },
+        {
+          "id": "winner-r1-m8",
+          "roundNumber": 1,
+          "matchNumber": 8,
+          "bracketType": "winner",
+          "participant1Id": "1791635831608-izq5dx3iz",
+          "participant2Id": "1791635806683-ngb9xwpd8",
+          "winnerId": "1791635831608-izq5dx3iz",
+          "loserId": "1791635806683-ngb9xwpd8",
+          "status": "completed",
+          "nextWinnerMatchId": "winner-r2-m4",
+          "nextLoserMatchId": "loser-r1-m4",
+          "participant1Score": 2,
+          "participant2Score": 0,
+          "games": [
+            {
+              "gameNumber": 1,
+              "winnerId": "1791635831608-izq5dx3iz"
+            },
+            {
+              "gameNumber": 2,
+              "winnerId": "1791635831608-izq5dx3iz"
+            }
+          ]
+        },
+        {
+          "id": "winner-r2-m1",
+          "roundNumber": 2,
+          "matchNumber": 1,
+          "bracketType": "winner",
+          "participant1Id": "1791635792365-gmczoiiug",
+          "participant2Id": "1791635816141-n8lfry358",
+          "winnerId": null,
+          "loserId": null,
+          "status": "in_progress",
+          "nextWinnerMatchId": "winner-r3-m1",
+          "nextLoserMatchId": "loser-r2-m4"
+        },
+        {
+          "id": "winner-r2-m2",
+          "roundNumber": 2,
+          "matchNumber": 2,
+          "bracketType": "winner",
+          "participant1Id": "1791635802742-vpqm1ib5q",
+          "participant2Id": "1791635810560-epxrbazbz",
+          "winnerId": null,
+          "loserId": null,
+          "status": "in_progress",
+          "nextWinnerMatchId": "winner-r3-m1",
+          "nextLoserMatchId": "loser-r2-m3"
+        },
+        {
+          "id": "winner-r2-m3",
+          "roundNumber": 2,
+          "matchNumber": 3,
+          "bracketType": "winner",
+          "participant1Id": "1791635794778-ge27a6h9s",
+          "participant2Id": "1791635855262-4odn29znx",
+          "winnerId": null,
+          "loserId": null,
+          "status": "in_progress",
+          "nextWinnerMatchId": "winner-r3-m2",
+          "nextLoserMatchId": "loser-r2-m2"
+        },
+        {
+          "id": "winner-r2-m4",
+          "roundNumber": 2,
+          "matchNumber": 4,
+          "bracketType": "winner",
+          "participant1Id": "1791635798223-p8bm86u6d",
+          "participant2Id": "1791635831608-izq5dx3iz",
+          "winnerId": null,
+          "loserId": null,
+          "status": "in_progress",
+          "nextWinnerMatchId": "winner-r3-m2",
+          "nextLoserMatchId": "loser-r2-m1"
+        },
+        {
+          "id": "winner-r3-m1",
+          "roundNumber": 3,
+          "matchNumber": 1,
+          "bracketType": "winner",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "winner-r4-m1",
+          "nextLoserMatchId": "loser-r4-m1"
+        },
+        {
+          "id": "winner-r3-m2",
+          "roundNumber": 3,
+          "matchNumber": 2,
+          "bracketType": "winner",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "winner-r4-m1",
+          "nextLoserMatchId": "loser-r4-m2"
+        },
+        {
+          "id": "winner-r4-m1",
+          "roundNumber": 4,
+          "matchNumber": 1,
+          "bracketType": "winner",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "grand-final",
+          "nextLoserMatchId": "loser-r6-m1"
+        }
+      ],
+      "loserBracket": [
+        {
+          "id": "loser-r1-m1",
+          "roundNumber": 1,
+          "matchNumber": 1,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": "1791635822204-ok8b8heib",
+          "winnerId": "1791635822204-ok8b8heib",
+          "loserId": null,
+          "status": "completed",
+          "nextWinnerMatchId": "loser-r2-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r1-m2",
+          "roundNumber": 1,
+          "matchNumber": 2,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": "1791635838673-4gz7ygfna",
+          "winnerId": "1791635838673-4gz7ygfna",
+          "loserId": null,
+          "status": "completed",
+          "nextWinnerMatchId": "loser-r2-m2",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r1-m3",
+          "roundNumber": 1,
+          "matchNumber": 3,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": "1791635851450-iheukhv6x",
+          "winnerId": "1791635851450-iheukhv6x",
+          "loserId": null,
+          "status": "completed",
+          "nextWinnerMatchId": "loser-r2-m3",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r1-m4",
+          "roundNumber": 1,
+          "matchNumber": 4,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": "1791635806683-ngb9xwpd8",
+          "winnerId": "1791635806683-ngb9xwpd8",
+          "loserId": null,
+          "status": "completed",
+          "nextWinnerMatchId": "loser-r2-m4",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r2-m1",
+          "roundNumber": 2,
+          "matchNumber": 1,
+          "bracketType": "loser",
+          "participant1Id": "1791635822204-ok8b8heib",
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "loser-r3-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r2-m2",
+          "roundNumber": 2,
+          "matchNumber": 2,
+          "bracketType": "loser",
+          "participant1Id": "1791635838673-4gz7ygfna",
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "loser-r3-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r2-m3",
+          "roundNumber": 2,
+          "matchNumber": 3,
+          "bracketType": "loser",
+          "participant1Id": "1791635851450-iheukhv6x",
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "loser-r3-m2",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r2-m4",
+          "roundNumber": 2,
+          "matchNumber": 4,
+          "bracketType": "loser",
+          "participant1Id": "1791635806683-ngb9xwpd8",
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "loser-r3-m2",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r3-m1",
+          "roundNumber": 3,
+          "matchNumber": 1,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "loser-r4-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r3-m2",
+          "roundNumber": 3,
+          "matchNumber": 2,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "loser-r4-m2",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r4-m1",
+          "roundNumber": 4,
+          "matchNumber": 1,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "loser-r5-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r4-m2",
+          "roundNumber": 4,
+          "matchNumber": 2,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "loser-r5-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r5-m1",
+          "roundNumber": 5,
+          "matchNumber": 1,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "loser-r6-m1",
+          "nextLoserMatchId": null
+        },
+        {
+          "id": "loser-r6-m1",
+          "roundNumber": 6,
+          "matchNumber": 1,
+          "bracketType": "loser",
+          "participant1Id": null,
+          "participant2Id": null,
+          "winnerId": null,
+          "loserId": null,
+          "status": "pending",
+          "nextWinnerMatchId": "grand-final",
+          "nextLoserMatchId": null
+        }
+      ],
+      "grandFinal": {
+        "id": "grand-final",
+        "roundNumber": 1,
+        "matchNumber": 1,
+        "bracketType": "grand_final",
+        "participant1Id": null,
+        "participant2Id": null,
+        "winnerId": null,
+        "loserId": null,
+        "status": "pending",
+        "nextWinnerMatchId": null,
+        "nextLoserMatchId": null
+      },
+      "grandFinalReset": null
+    },
+    "championId": null,
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:31:18.917Z",
+    "updatedAt": "2026-10-10T12:38:54.586Z",
+    "partialSeedCount": 8,
+    "totalParticipants": 12,
+    "bracketSeeded": true
   }
 ]

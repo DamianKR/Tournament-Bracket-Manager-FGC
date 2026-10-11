@@ -115,13 +115,30 @@ function lsWriteDuelOps(ops: PendingDuelOp[]): void {
 
 function enqueueDuelOp(challengeId: string, action: DuelOpAction, payload?: Record<string, unknown>): void {
   const ops = lsReadDuelOps();
-  ops.push({ challengeId, action, payload, queuedAt: new Date().toISOString() });
+  // Same challenge + same action already queued → keep the LATEST payload
+  // (e.g. a corrected result report) instead of replaying a stale duplicate.
+  const existing = ops.findIndex((o) => o.challengeId === challengeId && o.action === action);
+  const entry = { challengeId, action, payload, queuedAt: new Date().toISOString() };
+  if (existing >= 0) ops[existing] = entry;
+  else ops.push(entry);
   lsWriteDuelOps(ops);
 }
 
 /** Ids of challenges with at least one op still waiting for the server. */
 function pendingChallengeIds(): Set<string> {
   return new Set(lsReadDuelOps().map((o) => o.challengeId));
+}
+
+/** Challenge IDs with any op still waiting to reach the server — read once
+ *  per render so lists don't re-parse localStorage per row. */
+export function getPendingDuelOpIds(): Set<string> {
+  return pendingChallengeIds();
+}
+
+/** True if this challenge has any op still waiting to reach the server —
+ *  the UI shows a "queued" state instead of offering the action again. */
+export function hasPendingDuelOp(challengeId: string): boolean {
+  return pendingChallengeIds().has(challengeId);
 }
 
 /**

@@ -513,6 +513,7 @@
       "reportResult": "Reportar resultado",
       "resolveConflict": "Resolver conflicto",
       "matchRecorded": "Partida registrada",
+      "queuedSync": "En espera",
       "createTitle": "Crear desafío de duelo",
       "gameLabel": "Juego",
       "duelType": "Tipo de duelo",
@@ -1466,6 +1467,8 @@
       "completedPill": "Completado",
       "pendingPill": "Pendiente",
       "lockedPill": "Bloqueado",
+      "queuedPill": "En espera",
+      "queuedSync": "En espera",
       "noMatches": "No se encontraron partidos."
     },
     "myMatches": {
@@ -1487,6 +1490,7 @@
       "win": "W {{score}}",
       "loss": "L {{score}}",
       "pending": "Pendiente",
+      "queuedSync": "En espera",
       "reportResult": "Reportar resultado",
       "startsSoon": "Empieza pronto",
       "lockedWeek": "Semana {{week}}",

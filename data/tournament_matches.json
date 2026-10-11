@@ -14619,5 +14619,129 @@
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-10-10T12:30:22.856Z",
     "synced": false
+  },
+  {
+    "id": "tm_1791635917736_dsusi1uge",
+    "tournamentId": "1791635478917-uhgnbx837",
+    "tournamentName": "Seeding After Update",
+    "gameId": "ssbu",
+    "player1Id": "1791635816141-n8lfry358",
+    "player2Id": "1791635822204-ok8b8heib",
+    "player1GlobalId": "gp_1786391783115_87zwx03",
+    "player2GlobalId": "gp_1786393850039_1imzf6x",
+    "player1Name": "Tails",
+    "player2Name": "Dionisio",
+    "winnerId": "1791635816141-n8lfry358",
+    "winnerGlobalId": "gp_1786391783115_87zwx03",
+    "round": 1,
+    "matchNumber": 2,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635816141-n8lfry358"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635816141-n8lfry358"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:38:37.736Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635923199_x5c4i9sw0",
+    "tournamentId": "1791635478917-uhgnbx837",
+    "tournamentName": "Seeding After Update",
+    "gameId": "ssbu",
+    "player1Id": "1791635810560-epxrbazbz",
+    "player2Id": "1791635838673-4gz7ygfna",
+    "player1GlobalId": "gp_1786393834683_lievrvf",
+    "player2GlobalId": "gp_1786410268124_ja1vgy5",
+    "player1Name": "Kevin",
+    "player2Name": "Manuel Martinez",
+    "winnerId": "1791635810560-epxrbazbz",
+    "winnerGlobalId": "gp_1786393834683_lievrvf",
+    "round": 1,
+    "matchNumber": 4,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635810560-epxrbazbz"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635810560-epxrbazbz"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:38:43.199Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635929652_dljy7pnwd",
+    "tournamentId": "1791635478917-uhgnbx837",
+    "tournamentName": "Seeding After Update",
+    "gameId": "ssbu",
+    "player1Id": "1791635855262-4odn29znx",
+    "player2Id": "1791635851450-iheukhv6x",
+    "player1GlobalId": "gp_1787409813244_ymqkq1e",
+    "player2GlobalId": "gp_1787112645165_cj7eik8",
+    "player1Name": "Alexs",
+    "player2Name": "Maidiel",
+    "winnerId": "1791635855262-4odn29znx",
+    "winnerGlobalId": "gp_1787409813244_ymqkq1e",
+    "round": 1,
+    "matchNumber": 6,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635855262-4odn29znx"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635855262-4odn29znx"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:38:49.652Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1791635934568_3h2tq68u1",
+    "tournamentId": "1791635478917-uhgnbx837",
+    "tournamentName": "Seeding After Update",
+    "gameId": "ssbu",
+    "player1Id": "1791635831608-izq5dx3iz",
+    "player2Id": "1791635806683-ngb9xwpd8",
+    "player1GlobalId": "gp_1786408686972_s4nl3vz",
+    "player2GlobalId": "gp_1786391892402_8intsz3",
+    "player1Name": "Ismael",
+    "player2Name": "Delvi",
+    "winnerId": "1791635831608-izq5dx3iz",
+    "winnerGlobalId": "gp_1786408686972_s4nl3vz",
+    "round": 1,
+    "matchNumber": 8,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1791635831608-izq5dx3iz"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1791635831608-izq5dx3iz"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-10-10T12:38:54.568Z",
+    "synced": false
   }
 ]
