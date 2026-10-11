@@ -15,6 +15,7 @@ import {
   getAllChallengesAsync,
   expireOldChallenges,
   getDuelSettingsAsync,
+  getPendingDuelOpIds,
 } from '@/services/duels/duelService';
 import { getAllParticipantsAsync } from '@/services/participants/participantService';
 import { DEFAULT_DUEL_SETTINGS, DuelSettings } from '@/models/duel';
@@ -56,6 +57,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
   const [filterGameId, setFilterGameId] = useState<string | null>(null);
   const [createError, setCreateError] = useState('');
   const [creating, setCreating] = useState(false);
+  // Challenges with queued ops still waiting to reach the server.
+  const pendingDuelIds = getPendingDuelOpIds();
 
   useEffect(() => {
     loadData();
@@ -305,7 +308,12 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     </button>
                   </>
                 )}
-                {challenge.status === 'accepted' && canInteract && (
+                {challenge.status === 'accepted' && canInteract && pendingDuelIds.has(challenge.id) && (
+                  <span className="challenge-queued-badge" title={t('ranked.challenges.queuedSync')}>
+                    <i className="fas fa-clock" /> {t('ranked.challenges.queuedSync')}
+                  </span>
+                )}
+                {challenge.status === 'accepted' && canInteract && !pendingDuelIds.has(challenge.id) && (
                   <>
                     {(myParticipantId === challenge.challengerId || myParticipantId === challenge.challengedId || canAdminGame(challenge.gameId)) && (
                       <button
@@ -319,13 +327,19 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                   </>
                 )}
                 {challenge.status === 'pending_review' && canAdminGame(challenge.gameId) && (
-                  <button
-                    className="btn-warning btn-sm"
-                    onClick={() => handleRecordMatch(challenge)}
-                    title={t('ranked.challenges.resolveConflict')}
-                  >
-                    <i className="fas fa-gavel" /> {t('ranked.challenges.resolveConflict')}
-                  </button>
+                  pendingDuelIds.has(challenge.id) ? (
+                    <span className="challenge-queued-badge" title={t('ranked.challenges.queuedSync')}>
+                      <i className="fas fa-clock" /> {t('ranked.challenges.queuedSync')}
+                    </span>
+                  ) : (
+                    <button
+                      className="btn-warning btn-sm"
+                      onClick={() => handleRecordMatch(challenge)}
+                      title={t('ranked.challenges.resolveConflict')}
+                    >
+                      <i className="fas fa-gavel" /> {t('ranked.challenges.resolveConflict')}
+                    </button>
+                  )
                 )}
                 {challenge.status === 'completed' && challenge.matchId && (
                   <span className="challenge-completed-badge">

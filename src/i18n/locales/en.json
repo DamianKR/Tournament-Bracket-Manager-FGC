@@ -513,6 +513,7 @@
       "reportResult": "Report match result",
       "resolveConflict": "Resolve Conflict",
       "matchRecorded": "Match Recorded",
+      "queuedSync": "Queued",
       "createTitle": "Create Duel Challenge",
       "gameLabel": "Game",
       "duelType": "Duel Type",
@@ -1462,6 +1463,8 @@
       "completedPill": "Completed",
       "pendingPill": "Pending",
       "lockedPill": "Locked",
+      "queuedPill": "Queued",
+      "queuedSync": "Queued",
       "noMatches": "No matches found."
     },
     "myMatches": {
@@ -1483,6 +1486,7 @@
       "win": "W {{score}}",
       "loss": "L {{score}}",
       "pending": "Pending",
+      "queuedSync": "Queued",
       "reportResult": "Report Result",
       "startsSoon": "Starts soon",
       "lockedWeek": "Week {{week}}",

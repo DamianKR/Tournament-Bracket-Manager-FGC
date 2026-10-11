@@ -429,11 +429,12 @@
     font-size: 0.65rem;
   }
 
-  /* ELO / cambio de rango al final, abajo */
+  /* ELO / cambio de rango al final — delta a la derecha del flujo */
   .player-elo {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 0.15rem;
+    justify-content: center;
+    gap: 0.4rem;
     font-size: 0.75rem;
   }
 

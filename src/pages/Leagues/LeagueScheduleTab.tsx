@@ -5,6 +5,7 @@ import { useCommunity } from '@/contexts/CommunityContext';
 import { formatInTimeZone } from '@/utils/timeZone';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
+import { getPendingLeagueOpMatchIds } from '@/services/leagues/leagueService';
 import ReportMatchModal from './ReportMatchModal';
 import './LeagueScheduleTab.css';
 
@@ -21,6 +22,8 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
   const canAdminLeague = canAdminGame(league.gameId);
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
   const [weekFilter, setWeekFilter] = useState<number | 'all'>('all');
+  // League match IDs with a report/resolve op still queued for the server.
+  const pendingOpIds = getPendingLeagueOpMatchIds();
 
   function getParticipantName(id: string): string {
     const p = participants.get(id);
@@ -110,7 +113,8 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                 const isFutureWeek = match.week > effectiveCurrentWeek;
                 const matchStarted = !match.scheduledDate || new Date(match.scheduledDate) <= new Date();
 
-                const statusKey = isCompleted ? 'completed' : isFutureWeek ? 'locked' : 'pending';
+                const isQueued = !isCompleted && pendingOpIds.has(match.id);
+                const statusKey = isCompleted ? 'completed' : isQueued ? 'queued' : isFutureWeek ? 'locked' : 'pending';
 
                 return (
                   <div key={match.id} className={`match-row ${isCompleted ? 'completed' : isFutureWeek ? 'pending future' : 'pending'}`}>
@@ -173,7 +177,13 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                         </span>
                       )}
 
-                      {!isCompleted && !isFutureWeek && matchStarted && isInMyCommunity && (canAdminLeague ||
+                      {!isCompleted && isQueued && (
+                        <span className="match-queued" title={t('league.schedule.queuedSync')}>
+                          <i className="fas fa-clock" /> {t('league.schedule.queuedSync')}
+                        </span>
+                      )}
+
+                      {!isCompleted && !isQueued && !isFutureWeek && matchStarted && isInMyCommunity && (canAdminLeague ||
                         (myParticipantId && (match.participant1Id === myParticipantId || match.participant2Id === myParticipantId))) && (
                         <button
                           className="btn-primary btn-sm"

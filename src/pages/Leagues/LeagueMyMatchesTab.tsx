@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { League, LeagueMatch, LeagueStanding, GlobalParticipant } from '@/models/types';
 import { useCommunity } from '@/contexts/CommunityContext';
 import ParticipantName from '@/components/ParticipantName/ParticipantName';
+import { getPendingLeagueOpMatchIds } from '@/services/leagues/leagueService';
 import ReportMatchModal from './ReportMatchModal';
 import './LeagueMyMatchesTab.css';
 
@@ -19,6 +20,8 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
   const { isInMyCommunity, canAdminGame, myParticipantId } = useCommunity();
   const [selectedParticipantId, setSelectedParticipantId] = useState<string>('');
   const [selectedMatch, setSelectedMatch] = useState<LeagueMatch | null>(null);
+  // League match IDs with a report/resolve op still queued for the server.
+  const pendingOpIds = getPendingLeagueOpMatchIds();
 
   // Reporting: only the selected player themselves or an admin of this game.
   const canAdminLeague = isInMyCommunity && canAdminGame(league.gameId);
@@ -77,6 +80,7 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
 
   function renderMatch(match: LeagueMatch) {
     const isCompleted = match.status === 'completed' || match.status === 'no_show';
+    const isQueued = !isCompleted && pendingOpIds.has(match.id);
     const isNoShow = match.status === 'no_show';
     const opponentId = match.participant1Id === selectedParticipantId ? match.participant2Id : match.participant1Id;
     const didWin = match.winnerId === selectedParticipantId;
@@ -112,13 +116,19 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
               )}
             </>
           ) : (
-            <div className="my-match-status">{t('league.myMatches.pending')}</div>
+            <div className={`my-match-status ${isQueued ? 'queued' : ''}`}>
+              {isQueued ? t('league.myMatches.queuedSync') : t('league.myMatches.pending')}
+            </div>
           )}
         </div>
 
         {!isCompleted && (
           <div className="my-match-action">
-            {match.week <= effectiveCurrentWeek && (!match.scheduledDate || new Date(match.scheduledDate) <= new Date()) ? (
+            {isQueued ? (
+              <span className="match-queued" title={t('league.myMatches.queuedSync')}>
+                <i className="fas fa-clock" /> {t('league.myMatches.queuedSync')}
+              </span>
+            ) : match.week <= effectiveCurrentWeek && (!match.scheduledDate || new Date(match.scheduledDate) <= new Date()) ? (
               canReportSelected && (
                 <button
                   className="btn-primary btn-sm"

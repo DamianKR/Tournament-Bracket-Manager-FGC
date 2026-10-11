@@ -59,6 +59,10 @@ export interface DuelChallenge {
   // Participant-reported results
   challengerResult?: DuelResult | null;
   challengedResult?: DuelResult | null;
+
+  // Local-only flag: a result report was queued offline and hasn't reached
+  // the server yet. Never sent to the server; cleared when the op drains.
+  _pendingReport?: DuelResult | null;
   
   // Dates
   createdAt: string;
