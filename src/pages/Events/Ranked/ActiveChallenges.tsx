@@ -257,7 +257,13 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         </div>
       ) : (
         <div className="challenges-list">
-          {filteredChallenges.map(challenge => (
+          {filteredChallenges.map(challenge => {
+            // My side already reported (queued locally or on the server) —
+            // the duel waits on the opponent's report, not on my action.
+            const iReported = (myParticipantId === challenge.challengerId && !!challenge.challengerResult)
+              || (myParticipantId === challenge.challengedId && !!challenge.challengedResult);
+            const waitingOnResult = pendingDuelIds.has(challenge.id) || iReported;
+            return (
             <div key={challenge.id} className={`challenge-card card challenge-card--${challenge.status}`}>
               <span className="challenge-game" style={gameBadgeStyle(challenge.gameId)}>{challenge.gameId?.toUpperCase()}</span>
               <div className="challenge-main">
@@ -308,12 +314,12 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                     </button>
                   </>
                 )}
-                {challenge.status === 'accepted' && canInteract && pendingDuelIds.has(challenge.id) && (
+                {challenge.status === 'accepted' && canInteract && waitingOnResult && (
                   <span className="challenge-queued-badge" title={t('ranked.challenges.queuedSync')}>
                     <i className="fas fa-clock" /> {t('ranked.challenges.queuedSync')}
                   </span>
                 )}
-                {challenge.status === 'accepted' && canInteract && !pendingDuelIds.has(challenge.id) && (
+                {challenge.status === 'accepted' && canInteract && !waitingOnResult && (
                   <>
                     {(myParticipantId === challenge.challengerId || myParticipantId === challenge.challengedId || canAdminGame(challenge.gameId)) && (
                       <button
@@ -348,7 +354,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

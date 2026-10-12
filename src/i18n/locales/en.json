@@ -1464,6 +1464,8 @@
       "pendingPill": "Pending",
       "lockedPill": "Locked",
       "queuedPill": "Queued",
+      "reportedPill": "Reported",
+      "reviewPill": "Under review",
       "queuedSync": "Queued",
       "noMatches": "No matches found."
     },
@@ -1486,6 +1488,8 @@
       "win": "W {{score}}",
       "loss": "L {{score}}",
       "pending": "Pending",
+      "reported": "Reported",
+      "pendingReview": "Under review",
       "queuedSync": "Queued",
       "reportResult": "Report Result",
       "startsSoon": "Starts soon",

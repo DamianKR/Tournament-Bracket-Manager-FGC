@@ -1468,6 +1468,8 @@
       "pendingPill": "Pendiente",
       "lockedPill": "Bloqueado",
       "queuedPill": "En espera",
+      "reportedPill": "Reportado",
+      "reviewPill": "Revisión",
       "queuedSync": "En espera",
       "noMatches": "No se encontraron partidos."
     },
@@ -1490,6 +1492,8 @@
       "win": "W {{score}}",
       "loss": "L {{score}}",
       "pending": "Pendiente",
+      "reported": "Reportado",
+      "pendingReview": "Revisión",
       "queuedSync": "En espera",
       "reportResult": "Reportar resultado",
       "startsSoon": "Empieza pronto",
