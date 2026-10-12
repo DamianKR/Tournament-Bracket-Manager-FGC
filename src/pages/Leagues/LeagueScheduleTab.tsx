@@ -114,7 +114,11 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                 const matchStarted = !match.scheduledDate || new Date(match.scheduledDate) <= new Date();
 
                 const isQueued = !isCompleted && pendingOpIds.has(match.id);
-                const statusKey = isCompleted ? 'completed' : isQueued ? 'queued' : isFutureWeek ? 'locked' : 'pending';
+                // My side already reported (queued or already on the server) —
+                // the match now waits on the opponent, not on me.
+                const iReported = !!myParticipantId &&
+                  (match.reportedResults ?? []).some((r) => r.participantId === myParticipantId);
+                const statusKey = isCompleted ? 'completed' : isQueued ? 'queued' : match.status === 'reported' ? 'reported' : match.status === 'pending_review' ? 'review' : isFutureWeek ? 'locked' : 'pending';
 
                 return (
                   <div key={match.id} className={`match-row ${isCompleted ? 'completed' : isFutureWeek ? 'pending future' : 'pending'}`}>
@@ -177,14 +181,14 @@ function LeagueScheduleTab({ league, matches, participants, onMatchUpdated }: Le
                         </span>
                       )}
 
-                      {!isCompleted && isQueued && (
+                      {!isCompleted && (isQueued || ((match.status === 'reported' || match.status === 'pending_review') && iReported && !canAdminLeague)) && (
                         <span className="match-queued" title={t('league.schedule.queuedSync')}>
                           <i className="fas fa-clock" /> {t('league.schedule.queuedSync')}
                         </span>
                       )}
 
                       {!isCompleted && !isQueued && !isFutureWeek && matchStarted && isInMyCommunity && (canAdminLeague ||
-                        (myParticipantId && (match.participant1Id === myParticipantId || match.participant2Id === myParticipantId))) && (
+                        (myParticipantId && !iReported && (match.participant1Id === myParticipantId || match.participant2Id === myParticipantId))) && (
                         <button
                           className="btn-primary btn-sm"
                           onClick={() => setSelectedMatch(match)}

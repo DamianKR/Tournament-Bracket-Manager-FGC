@@ -81,6 +81,14 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
   function renderMatch(match: LeagueMatch) {
     const isCompleted = match.status === 'completed' || match.status === 'no_show';
     const isQueued = !isCompleted && pendingOpIds.has(match.id);
+    // The selected player already reported (queued or on the server) — the
+    // match now waits on the opponent (reported) or an admin (pending_review).
+    const iReported = (match.reportedResults ?? []).some((r) => r.participantId === selectedParticipantId);
+    const awaitingOther = (match.status === 'reported' || match.status === 'pending_review') && iReported && !canAdminLeague;
+    // Who may still act: admin always (resolve); the selected player only if
+    // they haven't reported yet and the match accepts player reports.
+    const showReportBtn = canAdminLeague ||
+      (canReportSelected && (match.status === 'scheduled' || (match.status === 'reported' && !iReported)));
     const isNoShow = match.status === 'no_show';
     const opponentId = match.participant1Id === selectedParticipantId ? match.participant2Id : match.participant1Id;
     const didWin = match.winnerId === selectedParticipantId;
@@ -116,20 +124,26 @@ function LeagueMyMatchesTab({ league, matches, standings, participants, onMatchU
               )}
             </>
           ) : (
-            <div className={`my-match-status ${isQueued ? 'queued' : ''}`}>
-              {isQueued ? t('league.myMatches.queuedSync') : t('league.myMatches.pending')}
+            <div className={`my-match-status ${isQueued || awaitingOther ? 'queued' : match.status === 'reported' ? 'reported' : match.status === 'pending_review' ? 'review' : ''}`}>
+              {isQueued || awaitingOther
+                ? t('league.myMatches.queuedSync')
+                : match.status === 'reported'
+                  ? t('league.myMatches.reported')
+                  : match.status === 'pending_review'
+                    ? t('league.myMatches.pendingReview')
+                    : t('league.myMatches.pending')}
             </div>
           )}
         </div>
 
         {!isCompleted && (
           <div className="my-match-action">
-            {isQueued ? (
+            {isQueued || awaitingOther ? (
               <span className="match-queued" title={t('league.myMatches.queuedSync')}>
                 <i className="fas fa-clock" /> {t('league.myMatches.queuedSync')}
               </span>
             ) : match.week <= effectiveCurrentWeek && (!match.scheduledDate || new Date(match.scheduledDate) <= new Date()) ? (
-              canReportSelected && (
+              showReportBtn && (
                 <button
                   className="btn-primary btn-sm"
                   onClick={() => setSelectedMatch(match)}
