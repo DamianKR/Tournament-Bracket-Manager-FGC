@@ -9,31 +9,75 @@ import type { MatchGame } from '@/models/rankedMatch';
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
 import { enqueueMatchOp, readMatchOps } from '@/services/storage/matchOpsQueue';
+import { mirrorGet, mirrorDel } from '@/services/storage/mirrorStore';
+import { readThrough, dataOr } from '@/services/storage/readThrough';
 import { isDateInTimeZonePassed } from '@/utils/timeZone';
+
+// ── Read cache (stale-while-revalidate) ───────────────────────────────────
+// Reads go through the shared readThrough/mirrorStore helpers: server when
+// reachable, last mirror when offline or on a 5xx. Writes (report/resolve)
+// queue offline through matchOpsQueue.
+
+const CACHE = {
+  leagues: 'bracket_leagues_cache',
+  league: 'bracket_league_cache',
+  leagueMatches: 'bracket_league_matches_cache',
+  allMatches: 'bracket_all_league_matches_cache',
+  standings: 'bracket_league_standings_cache',
+} as const;
+
+const ALL_KEY = 'all';
+const MAX_CACHED_EVIDENCE_CHARS = 2048;
+
+/** Evidence photos are base64 blobs — drop them from the mirror so match
+ *  lists don't eat the localStorage quota. A short marker keeps the
+ *  "with evidence" label working. */
+function slimMatches(matches: LeagueMatch[]): LeagueMatch[] {
+  return matches.map((m) =>
+    m.reportedResults?.some((r) => (r.evidence?.length ?? 0) > MAX_CACHED_EVIDENCE_CHARS)
+      ? {
+          ...m,
+          reportedResults: m.reportedResults.map((r) =>
+            (r.evidence?.length ?? 0) > MAX_CACHED_EVIDENCE_CHARS ? { ...r, evidence: '…' } : r
+          ),
+        }
+      : m
+  );
+}
+
+export function getLeaguesCached(communityId?: string): League[] | null {
+  return mirrorGet<League[]>(CACHE.leagues, communityId ?? ALL_KEY)?.data ?? null;
+}
+
+export function getLeagueCached(id: string): League | null {
+  return mirrorGet<League>(CACHE.league, id)?.data ?? null;
+}
+
+export function getLeagueMatchesCached(leagueId: string): LeagueMatch[] | null {
+  return mirrorGet<LeagueMatch[]>(CACHE.leagueMatches, leagueId)?.data ?? null;
+}
+
+export function getLeagueStandingsCached(leagueId: string): LeagueStanding[] | null {
+  return mirrorGet<LeagueStanding[]>(CACHE.standings, leagueId)?.data ?? null;
+}
 
 // ── API Calls ─────────────────────────────────────────────────────────────
 
 export async function getAllLeagues(communityId?: string): Promise<League[]> {
-  try {
-    const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
-    const res = await fetch(`${SERVER_URL}/api/leagues${query}`);
-    if (!res.ok) throw new Error('Failed to fetch leagues');
-    return await res.json();
-  } catch (err) {
-    console.error('[LeagueService] getAllLeagues error:', err);
-    return [];
-  }
+  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+  return dataOr(
+    await readThrough<League[]>({ path: `/api/leagues${query}`, store: CACHE.leagues, key: communityId ?? ALL_KEY, label: 'getAllLeagues' }),
+    []
+  );
 }
 
 export async function getLeague(id: string): Promise<League | null> {
-  try {
-    const res = await fetch(`${SERVER_URL}/api/leagues/${id}`);
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (err) {
-    console.error('[LeagueService] getLeague error:', err);
-    return null;
-  }
+  return dataOr(
+    await readThrough<League | null>({
+      path: `/api/leagues/${id}`, store: CACHE.league, key: id, label: 'getLeague', goneStatuses: [404],
+    }),
+    null
+  );
 }
 
 export async function estimateLeagueDuration(config: {
@@ -125,37 +169,33 @@ export async function startLeague(leagueId: string): Promise<{ league: League; m
 }
 
 export async function getLeagueMatches(leagueId: string): Promise<LeagueMatch[]> {
-  try {
-    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/matches`);
-    if (!res.ok) throw new Error('Failed to fetch league matches');
-    return await res.json();
-  } catch (err) {
-    console.error('[LeagueService] getLeagueMatches error:', err);
-    return [];
-  }
+  return dataOr(
+    await readThrough<LeagueMatch[]>({
+      path: `/api/leagues/${leagueId}/matches`, store: CACHE.leagueMatches, key: leagueId,
+      label: 'getLeagueMatches', prepare: slimMatches,
+    }),
+    []
+  );
 }
 
 export async function getAllLeagueMatches(communityId?: string): Promise<LeagueMatch[]> {
-  try {
-    const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
-    const res = await fetch(`${SERVER_URL}/api/leagues/matches${query}`);
-    if (!res.ok) throw new Error('Failed to fetch all league matches');
-    return await res.json();
-  } catch (err) {
-    console.error('[LeagueService] getAllLeagueMatches error:', err);
-    return [];
-  }
+  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
+  return dataOr(
+    await readThrough<LeagueMatch[]>({
+      path: `/api/leagues/matches${query}`, store: CACHE.allMatches, key: communityId ?? ALL_KEY,
+      label: 'getAllLeagueMatches', prepare: slimMatches,
+    }),
+    []
+  );
 }
 
 export async function getLeagueStandings(leagueId: string): Promise<LeagueStanding[]> {
-  try {
-    const res = await fetch(`${SERVER_URL}/api/leagues/${leagueId}/standings`);
-    if (!res.ok) throw new Error('Failed to fetch standings');
-    return await res.json();
-  } catch (err) {
-    console.error('[LeagueService] getLeagueStandings error:', err);
-    return [];
-  }
+  return dataOr(
+    await readThrough<LeagueStanding[]>({
+      path: `/api/leagues/${leagueId}/standings`, store: CACHE.standings, key: leagueId, label: 'getLeagueStandings',
+    }),
+    []
+  );
 }
 
 export interface LeagueReportResult {
@@ -274,6 +314,11 @@ export async function deleteLeague(id: string): Promise<boolean> {
       method: 'DELETE',
       headers: getAuthHeader(),
     });
+    if (res.ok) {
+      mirrorDel(CACHE.league, id);
+      mirrorDel(CACHE.leagueMatches, id);
+      mirrorDel(CACHE.standings, id);
+    }
     return res.ok;
   } catch (err) {
     console.error('[LeagueService] deleteLeague error:', err);

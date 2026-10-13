@@ -2,7 +2,8 @@
  * AuthContext — estado global de sesión de usuario.
  *
  * Al montar la app, intenta restaurar la sesión desde el token en localStorage.
- * Si el servidor no está disponible devuelve null silenciosamente.
+ * Si el servidor no está disponible, getMe recurre al usuario guardado (mientras
+ * el token siga vigente) para que la app arranque offline.
  */
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
@@ -14,6 +15,8 @@ import {
   getMe,
   refreshToken,
   isTokenExpiringSoon,
+  getStoredToken,
+  cacheSessionUser,
 } from '@/services/auth/authService';
 
 interface AuthContextType {
@@ -86,6 +89,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('auth:expired', handleExpired);
   }, []);
 
+  // Al recuperar conexión, revalidar la sesión (un usuario restaurado desde
+  // caché puede tener roles desactualizados o un token ya revocado). Si el
+  // token sigue ahí y el servidor no pudo confirmar, se conserva el usuario.
+  useEffect(() => {
+    function handleOnline() {
+      if (!getStoredToken()) return;
+      getMe().then((fresh) => {
+        if (fresh || !getStoredToken()) setUser(fresh);
+      });
+    }
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, []);
+
   const login = useCallback(async (username: string, password: string) => {
     const session = await authLogin(username, password);
     const loggedInUser: SessionUser = {
@@ -99,6 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       participantByCommunity: session.user.participantByCommunity,
       gameAdminFor: session.user.gameAdminFor,
     };
+    cacheSessionUser(loggedInUser);
     setUser(loggedInUser);
     setLoginNotifications(session.notifications || []);
     return loggedInUser;

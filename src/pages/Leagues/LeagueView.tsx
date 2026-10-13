@@ -11,10 +11,13 @@ import {
   getLeague,
   getLeagueMatches,
   getLeagueStandings,
+  getLeagueCached,
+  getLeagueMatchesCached,
+  getLeagueStandingsCached,
   registerForLeague,
   startLeague,
 } from '@/services/leagues/leagueService';
-import { getAllParticipantsAsync } from '@/services/participants/participantService';
+import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
 
 import LeagueStandingsTab from './LeagueStandingsTab';
 import LeagueScheduleTab from './LeagueScheduleTab';
@@ -36,12 +39,14 @@ function LeagueView() {
   const { currentCommunity, getPath, canAdminGame } = useCommunity();
   const communityId = currentCommunity?.id;
 
-  const [league, setLeague] = useState<League | null>(null);
-  const [matches, setMatches] = useState<LeagueMatch[]>([]);
-  const [standings, setStandings] = useState<LeagueStanding[]>([]);
-  const [participants, setParticipants] = useState<Map<string, GlobalParticipant>>(new Map());
+  const [league, setLeague] = useState<League | null>(() => (id ? getLeagueCached(id) : null));
+  const [matches, setMatches] = useState<LeagueMatch[]>(() => (id ? getLeagueMatchesCached(id) ?? [] : []));
+  const [standings, setStandings] = useState<LeagueStanding[]>(() => (id ? getLeagueStandingsCached(id) ?? [] : []));
+  const [participants, setParticipants] = useState<Map<string, GlobalParticipant>>(
+    () => new Map(getAllParticipants(communityId).map(p => [p.id, p]))
+  );
   const [tab, setTab] = useState<Tab>('standings');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !(id && getLeagueCached(id)));
   const [notFound, setNotFound] = useState(false);
   const [registering, setRegistering] = useState(false);
 
@@ -49,7 +54,22 @@ function LeagueView() {
 
   async function loadData() {
     if (!id || !communityId) return;
-    setLoading(true);
+
+    // Cache first: when switching to a league we have a mirror of, render it
+    // right away (no spinner) and refresh in the background. Refreshing the
+    // league already on screen never swaps in stale data or a spinner.
+    if (league?.id !== id) {
+      const cached = getLeagueCached(id);
+      if (cached) {
+        setLeague(cached);
+        setMatches(getLeagueMatchesCached(id) ?? []);
+        setStandings(getLeagueStandingsCached(id) ?? []);
+        setParticipants(new Map(getAllParticipants(communityId).map(p => [p.id, p])));
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+    }
 
     const [leagueData, matchesData, standingsData, participantsData] = await Promise.all([
       getLeague(id),

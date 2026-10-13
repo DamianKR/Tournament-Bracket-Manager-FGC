@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminRoute from './components/AdminRoute/AdminRoute';
 import NotificationToast from './components/Notifications/NotificationToast';
 import SyncConflictModal from './components/SyncConflict/SyncConflictModal';
+import PwaUpdatePrompt from './components/PwaUpdatePrompt/PwaUpdatePrompt';
 import CommunityLayout from './components/CommunityLayout/CommunityLayout';
 import EventsPage from './pages/Events/EventsPage';
 import CreateTournament from './pages/CreateTournament/CreateTournament';
@@ -55,6 +56,7 @@ function App() {
             <Header />
             <NotificationToast />
             <SyncConflictModal />
+            <PwaUpdatePrompt />
             <Routes>
               {/* Auth */}
               <Route path="/login" element={<LoginPage />} />

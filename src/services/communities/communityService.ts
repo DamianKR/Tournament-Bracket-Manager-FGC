@@ -6,15 +6,33 @@
 
 import type { Community, CommunityFeatures } from '@/models/community';
 import { SERVER_URL } from '@/services/api/apiClient';
-import { getAuthHeader } from '@/services/auth/authService';
+import { getAuthHeader, getCurrentUserKey } from '@/services/auth/authService';
+import { mirrorGet } from '@/services/storage/mirrorStore';
+import { readThrough } from '@/services/storage/readThrough';
 
 const API_BASE = `${SERVER_URL}/api/communities`;
+const COMMUNITIES_STORE = 'bracket_communities_cache';
 
-/** Fetches all communities the current user is allowed to see. */
+/** Last mirrored community list for the current account (null if none yet). */
+export function getCachedCommunities(): Community[] | null {
+  return mirrorGet<Community[]>(COMMUNITIES_STORE, getCurrentUserKey())?.data ?? null;
+}
+
+/**
+ * Fetches all communities the current user is allowed to see. The list
+ * depends on the account, so the mirror is keyed per user ('anon' = visitor).
+ * Offline it serves the last mirror; throws only when there is none.
+ */
 export async function getAllCommunities(): Promise<Community[]> {
-  const res = await fetch(API_BASE, { headers: getAuthHeader() });
-  if (!res.ok) throw new Error(`Failed to load communities: ${res.status}`);
-  return res.json() as Promise<Community[]>;
+  const r = await readThrough<Community[]>({
+    path: '/api/communities',
+    store: COMMUNITIES_STORE,
+    key: getCurrentUserKey(),
+    label: 'getAllCommunities',
+    init: { headers: getAuthHeader() },
+  });
+  if ('data' in r) return r.data;
+  throw new Error(`Failed to load communities: ${r.status}`);
 }
 
 /** Fetches a single community by id. */

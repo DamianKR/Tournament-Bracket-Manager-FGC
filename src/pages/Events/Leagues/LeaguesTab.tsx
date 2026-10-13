@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { League } from '@/models/league';
-import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
+import { getAllLeagues, getLeaguesCached, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getEffectiveCurrentWeek } from '@/utils/leagueWeek';
@@ -15,17 +15,25 @@ function LeaguesTab() {
   const navigate = useNavigate();
   const { currentCommunity, getPath, canAdminCurrentCommunity, canAdminGame, communityGames } = useCommunity();
   const communityId = currentCommunity?.id;
-  const [leagues, setLeagues] = useState<League[]>([]);
+  const [leagues, setLeagues] = useState<League[]>(() => getLeaguesCached(communityId) ?? []);
   const [gameFilter, setGameFilter] = useState<string>('all');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !getLeaguesCached(communityId));
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     loadLeagues();
   }, [communityId]);
 
-  async function loadLeagues() {
-    setLoading(true);
+  // Cache first (instant render, no spinner), then refresh from the server.
+  // After a delete we skip the cache so the removed league doesn't flash back.
+  async function loadLeagues(useCache = true) {
+    const cached = useCache ? getLeaguesCached(communityId) : null;
+    if (cached) {
+      setLeagues(cached);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     const data = await getAllLeagues(communityId);
     setLeagues(data);
     setLoading(false);
@@ -35,7 +43,7 @@ function LeaguesTab() {
     if (!deleteTarget) return;
     const ok = await deleteLeague(deleteTarget.id);
     setDeleteTarget(null);
-    if (ok) loadLeagues();
+    if (ok) loadLeagues(false);
   }
 
   if (loading) {
