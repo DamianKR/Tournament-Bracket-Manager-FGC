@@ -801,6 +801,12 @@
       "save": "Error saving"
     }
   },
+  "pwa": {
+    "updateAvailable": "New version available",
+    "update": "Update",
+    "later": "Later",
+    "offlineReady": "The app can now open without a connection"
+  },
   "common": {
     "cancel": "Cancel",
     "delete": "Delete",

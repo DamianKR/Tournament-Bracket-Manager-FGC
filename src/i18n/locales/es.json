@@ -805,6 +805,12 @@
       "save": "Error al guardar"
     }
   },
+  "pwa": {
+    "updateAvailable": "Nueva versión disponible",
+    "update": "Actualizar",
+    "later": "Después",
+    "offlineReady": "La app ya puede abrirse sin conexión"
+  },
   "common": {
     "cancel": "Cancelar",
     "delete": "Eliminar",

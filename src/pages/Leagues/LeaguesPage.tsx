@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { League } from '@/models/league';
-import { getAllLeagues, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
+import { getAllLeagues, getLeaguesCached, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
 import { getEffectiveCurrentWeek } from '@/utils/leagueWeek';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
@@ -15,17 +15,25 @@ function LeaguesPage() {
   const navigate = useNavigate();
   const { currentCommunity, getPath } = useCommunity();
   const communityId = currentCommunity?.id;
-  const [leagues, setLeagues] = useState<League[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [leagues, setLeagues] = useState<League[]>(() => getLeaguesCached(communityId) ?? []);
+  const [loading, setLoading] = useState(() => !getLeaguesCached(communityId));
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     loadLeagues();
   }, [communityId]);
 
-  async function loadLeagues() {
+  // Cache first (instant render, no spinner), then refresh from the server.
+  // After a delete we skip the cache so the removed league doesn't flash back.
+  async function loadLeagues(useCache = true) {
     if (!communityId) return;
-    setLoading(true);
+    const cached = useCache ? getLeaguesCached(communityId) : null;
+    if (cached) {
+      setLeagues(cached);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     const data = await getAllLeagues(communityId);
     setLeagues(data);
     setLoading(false);
@@ -35,7 +43,7 @@ function LeaguesPage() {
     if (!deleteTarget) return;
     const ok = await deleteLeague(deleteTarget.id);
     setDeleteTarget(null);
-    if (ok) loadLeagues();
+    if (ok) loadLeagues(false);
   }
 
   if (loading) {

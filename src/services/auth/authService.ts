@@ -15,8 +15,10 @@
 import { SERVER_URL, isServerAvailable } from '@/services/api/apiClient';
 import type { AuthSession, AuthUser, SessionUser } from '@/models/auth';
 import { queueUserDelete } from '@/services/storage/userDeleteQueue';
+import { mirrorGet, mirrorPut, mirrorDel } from '@/services/storage/mirrorStore';
 
 const TOKEN_KEY = 'bracket_auth_token';
+const SESSION_STORE = 'bracket_session_cache';
 
 // ── Token helpers ────────────────────────────────────────────────────────
 
@@ -30,6 +32,42 @@ function storeToken(token: string): void {
 
 export function clearToken(): void {
   try { localStorage.removeItem(TOKEN_KEY); } catch {}
+  mirrorDel(SESSION_STORE, 'user');
+}
+
+/** Payload del JWT (base64url) sin verificar firma — solo para UX client-side. */
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(b64.padEnd(Math.ceil(b64.length / 4) * 4, '=')));
+  } catch {
+    return null;
+  }
+}
+
+/** Clave estable por cuenta para espejos por usuario ('anon' sin sesión). */
+export function getCurrentUserKey(): string {
+  const token = getStoredToken();
+  const id = token ? decodeJwtPayload(token)?.userId : null;
+  return typeof id === 'string' ? id : 'anon';
+}
+
+/** Guarda el usuario de sesión para poder arrancar sin conexión (ver getMe). */
+export function cacheSessionUser(user: SessionUser): void {
+  mirrorPut(SESSION_STORE, 'user', user);
+}
+
+/**
+ * Usuario guardado para arranque offline. Solo si el token sigue vigente y
+ * pertenece a esa misma cuenta; el servidor sigue siendo la autoridad en
+ * cada escritura (un token revocado recibe 401 al reenviar la cola).
+ */
+function offlineSessionUser(token: string): SessionUser | null {
+  const payload = decodeJwtPayload(token);
+  const exp = typeof payload?.exp === 'number' ? payload.exp : null;
+  if (!exp || exp <= Date.now() / 1000) return null;
+  const cached = mirrorGet<SessionUser>(SESSION_STORE, 'user')?.data ?? null;
+  return cached && cached.id === payload?.userId ? cached : null;
 }
 
 /** Header Authorization para adjuntar en fetch. */
@@ -43,12 +81,8 @@ export function getAuthHeader(): Record<string, string> {
  * Retorna el timestamp Unix de expiración, o null si no se puede parsear.
  */
 export function getTokenExpiryTs(token: string): number | null {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return typeof payload.exp === 'number' ? payload.exp : null;
-  } catch {
-    return null;
-  }
+  const exp = decodeJwtPayload(token)?.exp;
+  return typeof exp === 'number' ? exp : null;
 }
 
 /**
@@ -88,7 +122,12 @@ export function logout(): void {
   }).catch(() => {});
 }
 
-/** Restaura sesión desde el token almacenado. Retorna null si expiró. */
+/**
+ * Restaura sesión desde el token almacenado. Retorna null si expiró.
+ * Solo un 401 invalida la sesión (requireAuth). Cualquier otro fallo (sin red,
+ * 502/503 mientras el host despierta…) conserva el token y recurre al usuario
+ * guardado, para que la app arranque offline.
+ */
 export async function getMe(): Promise<SessionUser | null> {
   const token = getStoredToken();
   if (!token) return null;
@@ -96,10 +135,13 @@ export async function getMe(): Promise<SessionUser | null> {
     const res = await fetch(`${SERVER_URL}/api/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) { clearToken(); return null; }
-    return await res.json() as SessionUser;
+    if (res.status === 401) { clearToken(); return null; }
+    if (!res.ok) return offlineSessionUser(token);
+    const user = await res.json() as SessionUser;
+    cacheSessionUser(user);
+    return user;
   } catch {
-    return null;
+    return offlineSessionUser(token);
   }
 }
 
@@ -117,9 +159,11 @@ export async function refreshToken(): Promise<SessionUser | null> {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) { clearToken(); return null; }
+    if (res.status === 401) { clearToken(); return null; }
+    if (!res.ok) return null;
     const data = await res.json() as { token: string; user: SessionUser };
     storeToken(data.token);
+    cacheSessionUser(data.user);
     return data.user;
   } catch {
     return null;

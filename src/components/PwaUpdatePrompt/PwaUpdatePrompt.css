@@ -1,0 +1,50 @@
+.pwa-update {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  padding: 0.75rem 1rem;
+  background: var(--card-background);
+  color: var(--text-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.pwa-update__text {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.pwa-update__text i {
+  color: var(--primary-color);
+}
+
+.pwa-update__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .pwa-update {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    width: calc(100vw - 2rem);
+  }
+
+  .pwa-update__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}

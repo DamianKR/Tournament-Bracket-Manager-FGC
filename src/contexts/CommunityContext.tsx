@@ -12,7 +12,7 @@ import type { Community, CommunityFeatures } from '@/models/community';
 import { GAMES, type Game } from '@/data/games';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { useAuth } from '@/contexts/AuthContext';
-import { getAllCommunities } from '@/services/communities/communityService';
+import { getAllCommunities, getCachedCommunities } from '@/services/communities/communityService';
 import {
   communityRoleOf,
   isCommunityAdminOf,
@@ -67,7 +67,9 @@ const CommunityContext = createContext<CommunityContextValue | null>(null);
 
 export function CommunityProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [allCommunities, setAllCommunities] = useState<Community[]>([]);
+  // Seeded from the mirror so community routes (/c/:id/...) resolve on the
+  // first effect pass even offline; refresh() then revalidates against the server.
+  const [allCommunities, setAllCommunities] = useState<Community[]>(() => getCachedCommunities() ?? []);
   const [currentCommunity, setCurrentCommunity] = useState<Community | null>(null);
 
   const refresh = useCallback(async () => {
