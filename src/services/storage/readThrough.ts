@@ -15,6 +15,7 @@
  */
 
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
+import { setServerStatus } from '@/services/api/serverStatus';
 import { mirrorGet, mirrorPut, mirrorDel } from './mirrorStore';
 
 export type ReadResult<T> =
@@ -65,6 +66,7 @@ export async function readThrough<T>(o: ReadThroughOptions<T>): Promise<ReadResu
     } catch (err) {
       console.error(`[readThrough] ${o.label} error:`, err);
       resetServerCache();
+      setServerStatus('offline');
     }
   }
   const m = mirrorGet<T>(o.store, o.key);

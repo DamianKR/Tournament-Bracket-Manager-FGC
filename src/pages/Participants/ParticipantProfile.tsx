@@ -45,6 +45,9 @@ import { changeMyPassword, listUsers, updateUserAccount, deleteUserAccountOfflin
 import { redirectToStartggOAuth, disconnectStartgg, getStartggLinkStatus, type StartggLinkStatus } from '@/services/startgg/startggService';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
+import { getServerStatus } from '@/services/api/serverStatus';
 import PasswordInput from '@/components/PasswordInput/PasswordInput';
 import './ParticipantProfile.css';
 import ParticipantStatsOverview from './ParticipantStatsOverview';
@@ -142,6 +145,9 @@ function ParticipantProfile() {
   // Matches tab
   const [allMatches, setAllMatches] = useState<any[]>([]);
   const [loadingMatches, setLoadingMatches] = useState(false);
+  // True when the matches were loaded without a reachable server: server-only
+  // sources (ranked, league) may be missing from the list.
+  const [matchesIncomplete, setMatchesIncomplete] = useState(false);
   const [matchTypeFilter, setMatchTypeFilter] = useState<MatchTypeFilter>('all');
   const [matchResultFilter, setMatchResultFilter] = useState<MatchResultFilter>('all');
 
@@ -450,7 +456,8 @@ function ParticipantProfile() {
     try {
       const [tournamentMatches, rankedMatches, leagueMatches, allParticipants] = await Promise.all([
         getAllTournamentMatchesAsync(communityId),
-        getAllMatches(communityId),
+        // Throws offline with no mirror — must not blank the other sources.
+        getAllMatches(communityId).catch(() => [] as MatchRecord[]),
         getParticipantLeagueMatches(id),
         getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : []),
       ]);
@@ -546,6 +553,7 @@ function ParticipantProfile() {
     } catch (err) {
       console.error('Failed to load matches:', err);
     } finally {
+      setMatchesIncomplete(getServerStatus() === 'offline');
       setLoadingMatches(false);
     }
   }
@@ -781,16 +789,45 @@ function ParticipantProfile() {
     }
   }
 
+  // Everything in the stats overview is computed server-side: with no server
+  // and nothing loaded, say so instead of showing "no data" in every card.
+  const offline = useServerOffline();
+  const statsEmpty = !statsSummary || (
+    statsSummary.recordByGame.length === 0 &&
+    statsSummary.allMatchWins + statsSummary.allMatchLosses === 0 &&
+    statsSummary.characterUsage.length === 0
+  );
+  useOnReconnect(() => {
+    if (!id) return;
+    getParticipantStats(id).then(setStatsSummary).catch(() => {});
+    getParticipantLeagueStats(id).then(setLeagueStats).catch(() => {});
+    // Also refill whichever data tab is open (they only load on tab change).
+    if (tab === 'matches' && communityId) loadMatches();
+    if (tab === 'results') getTournamentResults(id).then(setTournamentResults).catch(() => {});
+    if (tab === 'h2h') {
+      getHeadToHead(id, h2hMatchType, profileGame, h2hTimeFilter, disabledMatchTypes).then(setH2hData).catch(() => {});
+    }
+  });
+
   if (notFound) {
     return (
       <div className="profile-page">
         <div className="container">
-          <div className="empty-state card">
-            <h3>{t('participantProfile.notFoundTitle')}</h3>
-            <button className="btn-outline mt-2" onClick={() => navigate(getPath('participants'))}>
-              {t('participantProfile.backToRoster')}
-            </button>
-          </div>
+          {offline ? (
+            <>
+              <OfflineNotice />
+              <button className="btn-outline mt-2" onClick={() => navigate(getPath('participants'))}>
+                {t('participantProfile.backToRoster')}
+              </button>
+            </>
+          ) : (
+            <div className="empty-state card">
+              <h3>{t('participantProfile.notFoundTitle')}</h3>
+              <button className="btn-outline mt-2" onClick={() => navigate(getPath('participants'))}>
+                {t('participantProfile.backToRoster')}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -1086,7 +1123,9 @@ function ParticipantProfile() {
               </div>
             )}
 
-            <ParticipantStatsOverview stats={statsSummary} participant={participant} gameFilter={profileGame} />
+            {offline && statsEmpty
+              ? <OfflineNotice compact />
+              : <ParticipantStatsOverview stats={statsSummary} participant={participant} gameFilter={profileGame} />}
 
             {/* Per-game ELO profiles */}
             {participant && (
@@ -1174,6 +1213,8 @@ function ParticipantProfile() {
                   <div className="tr-empty">
                     <i className="fas fa-spinner fa-spin" /> {t('common.loading', 'Loading...')}
                   </div>
+                ) : offline && tournamentResults.length === 0 ? (
+                  <OfflineNotice compact />
                 ) : (
                   <ParticipantTournamentResults
                     results={profileGame ? tournamentResults.filter((r) => r.gameId === profileGame) : tournamentResults}
@@ -1185,17 +1226,23 @@ function ParticipantProfile() {
 
             {resultsSubTab === 'leagues' && isFeatureEnabled('leagues') && (
               <div className="card results-panel">
-                <ParticipantLeagueResults
-                  results={profileGame ? completedLeagues.filter((l) => !l.gameId || l.gameId === profileGame) : completedLeagues}
-                  onNavigate={(id) => navigate(getPath(`events/leagues/${id}`))}
-                />
+                {offline && completedLeagues.length === 0 ? (
+                  <OfflineNotice compact />
+                ) : (
+                  <ParticipantLeagueResults
+                    results={profileGame ? completedLeagues.filter((l) => !l.gameId || l.gameId === profileGame) : completedLeagues}
+                    onNavigate={(id) => navigate(getPath(`events/leagues/${id}`))}
+                  />
+                )}
               </div>
             )}
           </div>
         )}
 
         {/* ── H2H tab ── */}
-        {tab === 'h2h' && (
+        {tab === 'h2h' && (offline && !loadingH2h && h2hData.length === 0 ? (
+          <OfflineNotice />
+        ) : (
           <ParticipantH2H
             entries={h2hData}
             matchType={h2hMatchType}
@@ -1205,7 +1252,7 @@ function ParticipantProfile() {
             loading={loadingH2h}
             onNavigateParticipant={(pid) => navigate(getPath(`participants/${pid}?game=${profileGame || primaryGameId}`))}
           />
-        )}
+        ))}
 
         {/* ── Matches tab ── */}
         {tab === 'matches' && (
@@ -1292,13 +1339,14 @@ function ParticipantProfile() {
               });
 
               if (filtered.length === 0) {
-                return (
-                  <p className="text-secondary">{t('participantProfile.matches.noMatches')}</p>
-                );
+                return offline && allMatches.length === 0
+                  ? <OfflineNotice />
+                  : <p className="text-secondary">{t('participantProfile.matches.noMatches')}</p>;
               }
 
               return (
                 <div className="matches-list">
+                  {offline && matchesIncomplete && <OfflineNotice compact />}
                   {filtered.map(m => {
                     const isPlayer1 = m.player1Id === id;
                     const won = m.winnerId === id;

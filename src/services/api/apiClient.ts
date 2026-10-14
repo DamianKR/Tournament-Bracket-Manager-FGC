@@ -14,6 +14,8 @@
  *                    también reemplazar localStorage con AsyncStorage
  */
 
+import { setServerStatus } from './serverStatus';
+
 /**
  * URL del backend Express.
  * - Local:       http://localhost:3001 (valor por defecto)
@@ -57,11 +59,13 @@ export function isServerAvailable(): Promise<boolean> {
         _offlineAt = Date.now();
         console.log('[API] Servidor no responde correctamente');
       }
+      setServerStatus(ok ? 'online' : 'offline');
       return ok;
     })
     .catch(() => {
       _offlineAt = Date.now();
       console.log('[API] Servidor no disponible — modo offline (localStorage)');
+      setServerStatus('offline');
       return false;
     });
   return _healthPromise;
@@ -71,6 +75,20 @@ export function isServerAvailable(): Promise<boolean> {
 export function resetServerCache(): void {
   _healthPromise = null;
   _offlineAt = 0;
+}
+
+// El navegador avisa al instante cuando se pierde/recupera la red: no hace falta
+// esperar el timeout del health check para saber que estamos offline.
+if (typeof window !== 'undefined') {
+  window.addEventListener('offline', () => {
+    _healthPromise = Promise.resolve(false);
+    _offlineAt = Date.now();
+    setServerStatus('offline');
+  });
+  window.addEventListener('online', () => {
+    resetServerCache();
+    void isServerAvailable();
+  });
 }
 
 // ── Detección de Supabase ─────────────────────────────────────────────────

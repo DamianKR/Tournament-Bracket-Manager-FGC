@@ -26,6 +26,8 @@ import LeaguePendingTab from './LeaguePendingTab';
 import LeagueOptionsTab from './LeagueOptionsTab';
 import LeagueInfoTab from './LeagueInfoTab';
 import Loading from '@/components/Loading/Loading';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
 import './LeagueView.css';
 
 type Tab = 'info' | 'standings' | 'schedule' | 'my-matches' | 'pending' | 'options';
@@ -83,6 +85,7 @@ function LeagueView() {
       setLoading(false);
       return;
     }
+    setNotFound(false);
 
     // Auto-start draft league if fixture close time (1h before startDate) has passed
     if (leagueData.status === 'draft' && new Date().getTime() >= new Date(leagueData.startDate).getTime() - 60 * 60 * 1000 && leagueData.participantIds.length >= 2) {
@@ -133,6 +136,9 @@ function LeagueView() {
     loadData();
   }, [id, communityId]);
 
+  const offline = useServerOffline();
+  useOnReconnect(loadData);
+
   if (loading) {
     return (
       <div className="league-view-page">
@@ -147,12 +153,21 @@ function LeagueView() {
     return (
       <div className="league-view-page">
         <div className="container">
-          <div className="empty-state card">
-            <h3>{t('league.view.notFound')}</h3>
-            <button className="btn-outline mt-2" onClick={() => navigate(getPath('events?tab=leagues'))}>
-              {t('league.view.backToLeagues')}
-            </button>
-          </div>
+          {offline ? (
+            <>
+              <OfflineNotice />
+              <button className="btn-outline mt-2" onClick={() => navigate(getPath('events?tab=leagues'))}>
+                {t('league.view.backToLeagues')}
+              </button>
+            </>
+          ) : (
+            <div className="empty-state card">
+              <h3>{t('league.view.notFound')}</h3>
+              <button className="btn-outline mt-2" onClick={() => navigate(getPath('events?tab=leagues'))}>
+                {t('league.view.backToLeagues')}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

@@ -14,6 +14,8 @@ import type { Community } from '@/models/community';
 import type { GlobalParticipant, Tournament } from '@/models/types';
 import type { League } from '@/models/league';
 import Loading from '@/components/Loading/Loading';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline } from '@/hooks/useServerStatus';
 import { isCommunityAdminOf, adminLevelOf } from '@/utils/membershipRole';
 import { useToast } from '@/contexts/NotificationContext';
 import './CommunityDashboard.css';
@@ -42,6 +44,7 @@ export default function CommunityDashboard() {
   const [topRankedGameId, setTopRankedGameId] = useState<string>(GAMES[0]?.id ?? 'ssbu');
   const [topRanked, setTopRanked] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const offline = useServerOffline();
 
   useEffect(() => {
     if (!communityId) return;
@@ -78,7 +81,11 @@ export default function CommunityDashboard() {
   }, [communityId, allCommunities, setCommunityId, topRankedGameId]);
 
   if (loading) return <div className="community-dashboard"><Loading message={t('common.loading')} /></div>;
-  if (!community) return <div className="community-dashboard not-found">{t('communityDashboard.notFound')}</div>;
+  if (!community) {
+    return offline
+      ? <div className="community-dashboard"><OfflineNotice /></div>
+      : <div className="community-dashboard not-found">{t('communityDashboard.notFound')}</div>;
+  }
 
   const displayName = community.name;
   // "Mi comunidad" = cualquier comunidad donde el usuario tenga membresía activa

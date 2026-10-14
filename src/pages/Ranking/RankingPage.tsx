@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
 import { GAMES } from '@/data/games';
 import { gameBadgeStyle } from '@/utils/gameColor';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
 import {
   getLeaderboard,
@@ -165,6 +167,12 @@ function RankingPage() {
     if (tab === 'history') loadHistory();
   }, [tab, loadHistory, rankedHistoryEnabled]);
 
+  const offline = useServerOffline();
+  useOnReconnect(() => {
+    void loadLeaderboard();
+    if (tab === 'history') void loadHistory();
+  });
+
 
 
   // ── Delete match ────────────────────────────────────────────────────────
@@ -298,11 +306,13 @@ function RankingPage() {
           {loadingBoard && <Loading message={t('ranking.loadingRanking')} />}
           {boardCachedAt && !loadingBoard && (
             <div className="rk-stale-banner">
-              <i className="fas fa-wifi-slash" />
+              <i className="fas fa-plug-circle-xmark" />
               {' '}{t('ranking.offlineCache', { date: new Date(boardCachedAt).toLocaleString() })}
             </div>
           )}
-          {boardError && (
+          {boardError && (offline ? (
+            <OfflineNotice />
+          ) : (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-triangle-exclamation" /></span>
               <p style={{ color: 'var(--danger-color, #ef4444)', fontWeight: 600 }}>
@@ -316,7 +326,7 @@ function RankingPage() {
                 {t('ranking.retry')}
               </button>
             </div>
-          )}
+          ))}
 
           {!loadingBoard && !boardError && leaderboard.length === 0 && (
             <div className="rk-empty">
@@ -412,10 +422,14 @@ function RankingPage() {
           {loadingHistory && <Loading message={t('ranking.loadingHistory')} />}
 
           {!loadingHistory && matchHistory.filter(m => rankedTypeEnabled(m.type)).filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId).length === 0 && (
-            <div className="rk-empty">
-              <span className="rk-empty-icon"><i className="fas fa-list" /></span>
-              <p>{t('ranking.emptyNoMatches')}</p>
-            </div>
+            offline && matchHistory.length === 0 ? (
+              <OfflineNotice />
+            ) : (
+              <div className="rk-empty">
+                <span className="rk-empty-icon"><i className="fas fa-list" /></span>
+                <p>{t('ranking.emptyNoMatches')}</p>
+              </div>
+            )
           )}
 
           {!loadingHistory && matchHistory.length > 0 && (

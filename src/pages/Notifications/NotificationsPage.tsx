@@ -5,6 +5,8 @@ import { useCommunity } from '@/contexts/CommunityContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { AppNotification } from '@/models/notification';
 import Loading from '@/components/Loading/Loading';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
 import { localizedNotification } from '@/utils/notificationText';
 import './NotificationsPage.css';
 
@@ -32,7 +34,9 @@ export default function NotificationsPage() {
     if (h < 48) return t('notifications.timeAgo.yesterday');
     return new Date(dateStr).toLocaleDateString();
   }
-  const { notifications, unreadCount, markRead, markAllRead, deleteNotification, loading } = useNotifications();
+  const { notifications, unreadCount, markRead, markAllRead, deleteNotification, loading, refresh } = useNotifications();
+  const offline = useServerOffline();
+  useOnReconnect(refresh);
   const navigate = useNavigate();
   const { getPath, allCommunities } = useCommunity();
   const communityName = (id: string) => allCommunities.find(c => c.id === id)?.name;
@@ -80,11 +84,15 @@ export default function NotificationsPage() {
             <Loading message={t('notifications.loading')} />
           </div>
         ) : notifications.length === 0 ? (
-          <div className="notif-page-empty card">
-            <i className="fas fa-bell-slash" />
-            <h3>{t('notifications.empty')}</h3>
-            <p>{t('notifications.emptyDesc')}</p>
-          </div>
+          offline ? (
+            <OfflineNotice />
+          ) : (
+            <div className="notif-page-empty card">
+              <i className="fas fa-bell-slash" />
+              <h3>{t('notifications.empty')}</h3>
+              <p>{t('notifications.emptyDesc')}</p>
+            </div>
+          )
         ) : (
           <div className="notif-page-list">
             {notifications.map(notif => {
