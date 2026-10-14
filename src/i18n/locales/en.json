@@ -804,6 +804,7 @@
   "offline": {
     "title": "You're offline",
     "message": "Reconnect to the internet to get this data. It will load automatically once you're back online.",
+    "partialMessage": "Showing only what is saved on this device. Reconnect to see the rest.",
     "retry": "Retry",
     "checking": "Checking…"
   },

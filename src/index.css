@@ -40,6 +40,12 @@
   --font-display: 'Orbitron', 'Rajdhani', 'Arial Black', sans-serif;
   --font-body: 'Rajdhani', 'Segoe UI', 'Roboto', sans-serif;
 
+  /* Legacy aliases — many components still reference these names.
+     Keep mapped so they resolve instead of silently falling back. */
+  --card-background: var(--bg-primary);
+  --text-color: var(--text-primary);
+  --text-muted: var(--text-tertiary);
+
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
