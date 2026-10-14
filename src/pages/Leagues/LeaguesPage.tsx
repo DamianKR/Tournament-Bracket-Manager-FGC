@@ -8,6 +8,8 @@ import { getGame } from '@/data/games';
 import { getEffectiveCurrentWeek } from '@/utils/leagueWeek';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
 import './LeaguesPage.css';
 
 function LeaguesPage() {
@@ -22,6 +24,9 @@ function LeaguesPage() {
   useEffect(() => {
     loadLeagues();
   }, [communityId]);
+
+  const offline = useServerOffline();
+  useOnReconnect(loadLeagues);
 
   // Cache first (instant render, no spinner), then refresh from the server.
   // After a delete we skip the cache so the removed league doesn't flash back.
@@ -70,13 +75,17 @@ function LeaguesPage() {
         </div>
 
         {leagues.length === 0 ? (
-          <div className="empty-state card">
-            <h3>{t('leagues.emptyTitle')}</h3>
-            <p className="text-secondary">{t('leagues.emptyDesc')}</p>
-            <button className="btn-primary mt-2" onClick={() => navigate(getPath('events/leagues/create'))}>
-              <i className="fas fa-plus" /> {t('leagues.newLeague')}
-            </button>
-          </div>
+          offline ? (
+            <OfflineNotice />
+          ) : (
+            <div className="empty-state card">
+              <h3>{t('leagues.emptyTitle')}</h3>
+              <p className="text-secondary">{t('leagues.emptyDesc')}</p>
+              <button className="btn-primary mt-2" onClick={() => navigate(getPath('events/leagues/create'))}>
+                <i className="fas fa-plus" /> {t('leagues.newLeague')}
+              </button>
+            </div>
+          )
         ) : (
           <div className="leagues-grid">
             {leagues.map((league) => {

@@ -23,6 +23,8 @@ import { getAllCommunities } from '@/services/communities/communityService';
 import { initials, avatarColor } from '@/pages/Participants/ParticipantsPage';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
 import './UsersAdminPage.css';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -113,6 +115,11 @@ function UsersAdminPage() {
   useEffect(() => {
     if (isSuperAdmin) loadAll();
   }, [isSuperAdmin]);
+
+  const offline = useServerOffline();
+  useOnReconnect(() => {
+    if (isSuperAdmin) loadAll();
+  });
 
   async function loadAll() {
     setLoading(true);
@@ -306,7 +313,7 @@ function UsersAdminPage() {
             <Loading message={t('usersAdmin.loading')} />
           </div>
         ) : loadError ? (
-          <div className="error-message">{loadError}</div>
+          offline ? <OfflineNotice /> : <div className="error-message">{loadError}</div>
         ) : filtered.length === 0 ? (
           <div className="ua-empty">
             <i className="fas fa-user-slash" />

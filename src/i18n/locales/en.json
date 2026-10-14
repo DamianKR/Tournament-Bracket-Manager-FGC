@@ -801,6 +801,12 @@
       "save": "Error saving"
     }
   },
+  "offline": {
+    "title": "You're offline",
+    "message": "Reconnect to the internet to get this data. It will load automatically once you're back online.",
+    "retry": "Retry",
+    "checking": "Checking…"
+  },
   "pwa": {
     "updateAvailable": "New version available",
     "update": "Update",

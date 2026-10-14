@@ -11,6 +11,8 @@ import {
 } from '@/services/participants/participantService';
 import type { Community } from '@/models/community';
 import { isCommunityAdminOf } from '@/utils/membershipRole';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline } from '@/hooks/useServerStatus';
 import './CommunitiesPage.css';
 
 function CommunitiesPage() {
@@ -161,6 +163,7 @@ function CommunitiesPage() {
   }
 
   const hasCommunities = allCommunities.length > 0;
+  const offline = useServerOffline();
 
   return (
     <div className="communities-page">
@@ -239,6 +242,8 @@ function CommunitiesPage() {
               ))}
             </ul>
           </section>
+        ) : offline ? (
+          <OfflineNotice />
         ) : (
           <section className="card communities-empty">
             <h2 className="communities-section-title">{t('communities.emptyTitle')}</h2>

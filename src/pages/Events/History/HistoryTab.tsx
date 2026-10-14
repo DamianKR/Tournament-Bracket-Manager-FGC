@@ -13,6 +13,8 @@ import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import Loading from '@/components/Loading/Loading';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
 import './HistoryTab.css';
 
 type HistoryFilter = 'all' | 'tournament' | 'league' | 'duel' | 'matchmaking';
@@ -63,6 +65,9 @@ function HistoryTab() {
   const [matches, setMatches] = useState<UnifiedMatch[]>([]);
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
   const [loading, setLoading] = useState(true);
+  // Ranked/duel history comes only from the server (or its mirror): when it
+  // can't be loaded the rest of the history must still render.
+  const [rankedUnavailable, setRankedUnavailable] = useState(false);
 
   useEffect(() => {
     loadHistory();
@@ -74,7 +79,10 @@ function HistoryTab() {
     try {
       const [tournamentMatches, rankedMatches, leagueMatches, leagueList, participants] = await Promise.all([
         getAllTournamentMatchesAsync(communityId),
-        getAllMatches(communityId),
+        getAllMatches(communityId).then(
+          (r) => { setRankedUnavailable(false); return r; },
+          () => { setRankedUnavailable(true); return [] as MatchRecord[]; }
+        ),
         getAllLeagueMatches(communityId),
         getAllLeagues(communityId),
         getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : getAllParticipants(communityId)),
@@ -183,6 +191,9 @@ function HistoryTab() {
       setLoading(false);
     }
   };
+
+  const offline = useServerOffline();
+  useOnReconnect(loadHistory);
 
   const getParticipantName = (id: string, participants: GlobalParticipant[]): string => {
     const p = participants.find(p => p.id === id);
@@ -299,7 +310,11 @@ function HistoryTab() {
 
       {loading && <Loading message={t('history.loading')} />}
 
-      {!loading && filteredMatches.length === 0 && (
+      {!loading && offline && rankedUnavailable && filteredMatches.length > 0 && <OfflineNotice compact />}
+
+      {!loading && filteredMatches.length === 0 && offline && <OfflineNotice />}
+
+      {!loading && filteredMatches.length === 0 && !offline && (
         <div className="empty-state card">
           <i className="fas fa-history" style={{ fontSize: '3rem', color: 'var(--text-secondary)', marginBottom: '1rem' }} />
           <h3>{t('history.empty', { context: filter !== 'all' ? t('history.emptyIn', { filter }) : t('history.emptyYet') })}</h3>

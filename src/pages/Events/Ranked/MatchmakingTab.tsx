@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { GAMES } from '@/data/games';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { useToast } from '@/contexts/NotificationContext';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
 import { getAllParticipantsAsync } from '@/services/participants/participantService';
 import { recordMatch } from '@/services/ranking/rankingService';
 import { GlobalParticipant } from '@/models/types';
@@ -95,6 +97,10 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
   }, []);
 
   useEffect(() => { loadSeasons(); }, [loadSeasons]);
+
+  const offline = useServerOffline();
+  useOnReconnect(loadSeasons);
+  const showOffline = offline && seasons.length === 0 && !loading;
 
   const pMap  = new Map(participants.map((p) => [p.id, p]));
   const pName = (id: string) => { const p = pMap.get(id); return p ? (p.alias || p.name) : id; };
@@ -627,11 +633,12 @@ export default function MatchmakingTab({ onReportAssignment }: MatchmakingTabPro
         )}
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {showOffline && <OfflineNotice />}
+      {error && !showOffline && <div className="error-message">{error}</div>}
       {loading && <div className="loading-spinner"><i className="fas fa-spinner fa-spin" /></div>}
 
 
-      {seasons.length === 0 && !loading && (
+      {seasons.length === 0 && !loading && !showOffline && (
         <div className="mm-empty">
           <i className="fas fa-shuffle" style={{ fontSize: '2rem', opacity: 0.3, display: 'block', marginBottom: '0.75rem' }} />
           {t('ranked.mm.empty')}

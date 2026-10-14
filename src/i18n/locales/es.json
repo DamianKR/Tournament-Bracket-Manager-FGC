@@ -805,6 +805,12 @@
       "save": "Error al guardar"
     }
   },
+  "offline": {
+    "title": "Sin conexión",
+    "message": "Necesitas volver a conectarte para obtener estos datos. Se cargarán solos cuando recuperes la conexión.",
+    "retry": "Reintentar",
+    "checking": "Comprobando…"
+  },
   "pwa": {
     "updateAvailable": "Nueva versión disponible",
     "update": "Actualizar",

@@ -9,6 +9,9 @@ import {
   type MembershipRequest,
 } from '@/services/participants/participantService';
 import Loading from '@/components/Loading/Loading';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
+import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
+import { getServerStatus } from '@/services/api/serverStatus';
 import { communityRoleOf, gameAdminForOf } from '@/utils/membershipRole';
 import { useToast } from '@/contexts/NotificationContext';
 import './MembershipRequestsPage.css';
@@ -29,7 +32,10 @@ function MembershipRequestsPage() {
       data.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
       setRequests(data);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('membershipRequests.loadError'));
+      // Offline gets the dedicated notice instead of a raw fetch error toast.
+      if (getServerStatus() !== 'offline') {
+        toast.error(err instanceof Error ? err.message : t('membershipRequests.loadError'));
+      }
     } finally {
       setLoading(false);
     }
@@ -38,6 +44,9 @@ function MembershipRequestsPage() {
   useEffect(() => {
     loadRequests();
   }, [currentCommunity?.id]);
+
+  const offline = useServerOffline();
+  useOnReconnect(loadRequests);
 
   async function handleResolve(req: MembershipRequest, action: 'accept' | 'decline') {
     setProcessing((prev) => ({ ...prev, [req.id]: true }));
@@ -101,7 +110,9 @@ function MembershipRequestsPage() {
           <Loading />
         ) : (
           <>
-            {incoming.length === 0 && invites.length === 0 && (
+            {incoming.length === 0 && invites.length === 0 && offline && <OfflineNotice />}
+
+            {incoming.length === 0 && invites.length === 0 && !offline && (
               <section className="card mr-empty">
                 <h3>{t('membershipRequests.noneTitle', { defaultValue: 'No hay solicitudes pendientes' })}</h3>
                 <p className="text-secondary">

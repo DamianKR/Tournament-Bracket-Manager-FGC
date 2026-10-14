@@ -13,6 +13,7 @@ import { GAMES, type Game } from '@/data/games';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAllCommunities, getCachedCommunities } from '@/services/communities/communityService';
+import { useOnReconnect } from '@/hooks/useServerStatus';
 import {
   communityRoleOf,
   isCommunityAdminOf,
@@ -102,6 +103,9 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // Reload the community list as soon as the server is reachable again.
+  useOnReconnect(refresh);
 
   // A user "owns" the current community if they are superadmin OR their communityId matches
   // OR the community is in their membership list (multi-community).
