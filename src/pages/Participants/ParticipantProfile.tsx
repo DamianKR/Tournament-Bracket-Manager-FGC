@@ -47,7 +47,6 @@ import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
 import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
-import { getServerStatus } from '@/services/api/serverStatus';
 import PasswordInput from '@/components/PasswordInput/PasswordInput';
 import './ParticipantProfile.css';
 import ParticipantStatsOverview from './ParticipantStatsOverview';
@@ -145,8 +144,8 @@ function ParticipantProfile() {
   // Matches tab
   const [allMatches, setAllMatches] = useState<any[]>([]);
   const [loadingMatches, setLoadingMatches] = useState(false);
-  // True when the matches were loaded without a reachable server: server-only
-  // sources (ranked, league) may be missing from the list.
+  // True when a match source could not be loaded at all (no server and nothing
+  // saved for it): the list is partial. Saved-but-possibly-stale data is not.
   const [matchesIncomplete, setMatchesIncomplete] = useState(false);
   const [matchTypeFilter, setMatchTypeFilter] = useState<MatchTypeFilter>('all');
   const [matchResultFilter, setMatchResultFilter] = useState<MatchResultFilter>('all');
@@ -454,13 +453,17 @@ function ParticipantProfile() {
     if (!id || !communityId) return;
     setLoadingMatches(true);
     try {
+      // A source that cannot be loaded (no server and nothing saved) is
+      // reported, so the list can say it is partial instead of looking complete.
+      let missingSource = false;
       const [tournamentMatches, rankedMatches, leagueMatches, allParticipants] = await Promise.all([
         getAllTournamentMatchesAsync(communityId),
         // Throws offline with no mirror — must not blank the other sources.
-        getAllMatches(communityId).catch(() => [] as MatchRecord[]),
-        getParticipantLeagueMatches(id),
+        getAllMatches(communityId).catch(() => { missingSource = true; return [] as MatchRecord[]; }),
+        getParticipantLeagueMatches(id, communityId).then((r) => { if (!r) missingSource = true; return r ?? []; }),
         getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : []),
       ]);
+      setMatchesIncomplete(missingSource);
 
       const participantMap = new Map(allParticipants.map((p: GlobalParticipant) => [p.id, p]));
 
@@ -553,7 +556,6 @@ function ParticipantProfile() {
     } catch (err) {
       console.error('Failed to load matches:', err);
     } finally {
-      setMatchesIncomplete(getServerStatus() === 'offline');
       setLoadingMatches(false);
     }
   }
@@ -1346,7 +1348,7 @@ function ParticipantProfile() {
 
               return (
                 <div className="matches-list">
-                  {offline && matchesIncomplete && <OfflineNotice compact />}
+                  {offline && matchesIncomplete && <OfflineNotice compact partial />}
                   {filtered.map(m => {
                     const isPlayer1 = m.player1Id === id;
                     const won = m.winnerId === id;

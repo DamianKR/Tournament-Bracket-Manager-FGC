@@ -808,6 +808,7 @@
   "offline": {
     "title": "Sin conexión",
     "message": "Necesitas volver a conectarte para obtener estos datos. Se cargarán solos cuando recuperes la conexión.",
+    "partialMessage": "Mostrando solo lo guardado en este dispositivo. Reconéctate para ver el resto.",
     "retry": "Reintentar",
     "checking": "Comprobando…"
   },

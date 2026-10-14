@@ -57,6 +57,11 @@ export function getLeagueMatchesCached(leagueId: string): LeagueMatch[] | null {
   return mirrorGet<LeagueMatch[]>(CACHE.leagueMatches, leagueId)?.data ?? null;
 }
 
+/** Community-wide completed league matches, as last mirrored (null if never loaded). */
+export function getAllLeagueMatchesCached(communityId?: string): LeagueMatch[] | null {
+  return mirrorGet<LeagueMatch[]>(CACHE.allMatches, communityId ?? ALL_KEY)?.data ?? null;
+}
+
 export function getLeagueStandingsCached(leagueId: string): LeagueStanding[] | null {
   return mirrorGet<LeagueStanding[]>(CACHE.standings, leagueId)?.data ?? null;
 }

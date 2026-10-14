@@ -9,8 +9,10 @@ const POLL_MS = 6000;
  * Shown instead of a generic "no data" message when the API can't be reached
  * and there is nothing cached to display. It re-pings the server while
  * visible; pages reload via useOnReconnect once the server answers.
+ * `partial`: some data IS on screen (saved on this device) but part of it
+ * could not be loaded — the message says so instead of "no data".
  */
-function OfflineNotice({ compact = false }: { compact?: boolean }) {
+function OfflineNotice({ compact = false, partial = false }: { compact?: boolean; partial?: boolean }) {
   const { t } = useTranslation();
   const [checking, setChecking] = useState(false);
 
@@ -30,7 +32,7 @@ function OfflineNotice({ compact = false }: { compact?: boolean }) {
       <i className="fas fa-plug-circle-xmark offline-notice__icon" />
       <div className="offline-notice__text">
         <strong>{t('offline.title')}</strong>
-        <span>{t('offline.message')}</span>
+        <span>{t(partial ? 'offline.partialMessage' : 'offline.message')}</span>
       </div>
       <button className="btn-outline btn-sm" onClick={retry} disabled={checking}>
         <i className={`fas ${checking ? 'fa-spinner fa-spin' : 'fa-rotate-right'}`} />{' '}

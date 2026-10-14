@@ -20,6 +20,8 @@ import {
 } from '@/services/storage/localStorage';
 import { SERVER_URL } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
+import { readThrough } from '@/services/storage/readThrough';
+import { getAllLeagueMatchesCached } from '@/services/leagues/leagueService';
 import { setParticipantGameList, setParticipantPrimaryGame } from '@/utils/participantGames';
 
 // ── ID generator ─────────────────────────────────────────────────────────
@@ -351,15 +353,34 @@ export async function getParticipantLeagueStats(participantId: string): Promise<
   }
 }
 
-export async function getParticipantLeagueMatches(participantId: string): Promise<LeagueMatch[]> {
-  try {
-    const res = await fetch(`${SERVER_URL}/api/participants/${participantId}/league-matches`);
-    if (!res.ok) throw new Error('Failed to fetch league matches');
-    return await res.json();
-  } catch (err) {
-    console.error('[ParticipantService] getParticipantLeagueMatches error:', err);
-    return [];
-  }
+/**
+ * Completed league matches of one participant.
+ *
+ * Online → the per-participant endpoint (it has no community-scope check, so
+ * public visitors can read it) and mirrors the answer. Offline → that mirror,
+ * else the community-wide league mirror that History / league pages keep,
+ * filtered to this participant. Returns null only when nothing is available.
+ */
+export async function getParticipantLeagueMatches(
+  participantId: string,
+  communityId?: string
+): Promise<LeagueMatch[] | null> {
+  const r = await readThrough<LeagueMatch[]>({
+    path: `/api/participants/${participantId}/league-matches`,
+    store: 'bracket_participant_league_matches_cache',
+    key: participantId,
+    label: 'getParticipantLeagueMatches',
+  });
+  if ('data' in r) return r.data;
+
+  const community = getAllLeagueMatchesCached(communityId);
+  return community
+    ? community.filter(
+        (m) =>
+          (m.participant1Id === participantId || m.participant2Id === participantId) &&
+          (m.status === 'completed' || m.status === 'no_show')
+      )
+    : null;
 }
 
 // ── Comprehensive stats ──────────────────────────────────────────────────

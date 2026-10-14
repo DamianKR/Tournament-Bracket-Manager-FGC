@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
 import { getAllMatches } from '@/services/ranking/rankingService';
-import { getAllLeagueMatches, getAllLeagues } from '@/services/leagues/leagueService';
+import { getAllLeagueMatches, getAllLeagueMatchesCached, getAllLeagues } from '@/services/leagues/leagueService';
 import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
 import { MatchRecord, GlobalParticipant, LeagueMatch } from '@/models/types';
 import { gameBadgeStyle } from '@/utils/gameColor';
@@ -65,9 +65,9 @@ function HistoryTab() {
   const [matches, setMatches] = useState<UnifiedMatch[]>([]);
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
   const [loading, setLoading] = useState(true);
-  // Ranked/duel history comes only from the server (or its mirror): when it
-  // can't be loaded the rest of the history must still render.
-  const [rankedUnavailable, setRankedUnavailable] = useState(false);
+  // Ranked and league history come only from the server (or its mirror): when
+  // a source can't be loaded at all the rest must still render, flagged partial.
+  const [historyIncomplete, setHistoryIncomplete] = useState(false);
 
   useEffect(() => {
     loadHistory();
@@ -77,16 +77,17 @@ function HistoryTab() {
     if (!communityId) return;
     setLoading(true);
     try {
+      let rankedMissing = false;
       const [tournamentMatches, rankedMatches, leagueMatches, leagueList, participants] = await Promise.all([
         getAllTournamentMatchesAsync(communityId),
-        getAllMatches(communityId).then(
-          (r) => { setRankedUnavailable(false); return r; },
-          () => { setRankedUnavailable(true); return [] as MatchRecord[]; }
-        ),
+        getAllMatches(communityId).catch(() => { rankedMissing = true; return [] as MatchRecord[]; }),
         getAllLeagueMatches(communityId),
         getAllLeagues(communityId),
         getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : getAllParticipants(communityId)),
       ]);
+
+      // getAllLeagueMatches yields [] when unreachable: the mirror tells "empty" from "never loaded".
+      setHistoryIncomplete(rankedMissing || getAllLeagueMatchesCached(communityId) === null);
 
       const leagueNameById = new Map(leagueList.map(l => [l.id, l.name]));
 
@@ -310,7 +311,7 @@ function HistoryTab() {
 
       {loading && <Loading message={t('history.loading')} />}
 
-      {!loading && offline && rankedUnavailable && filteredMatches.length > 0 && <OfflineNotice compact />}
+      {!loading && offline && historyIncomplete && filteredMatches.length > 0 && <OfflineNotice compact partial />}
 
       {!loading && filteredMatches.length === 0 && offline && <OfflineNotice />}
 
