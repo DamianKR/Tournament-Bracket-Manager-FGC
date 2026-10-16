@@ -21426,5 +21426,2701 @@
         "gp_1787409434840_k4h4ski"
       ]
     }
+  },
+  {
+    "id": "notif_1792098376996_5jho5bhli",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Virutica JR, Manuel(Z), Drakonite.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:16.996Z",
+    "scheduledAt": "2026-10-15T21:06:16.996Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786410268124_ja1vgy5",
+        "gp_1786802617779_nnibxrr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377006_wdns85jrh",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: ERNE, Daysuke, KruX.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.006Z",
+    "scheduledAt": "2026-10-15T21:06:17.006Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb",
+        "gp_1786387087046_wnwtadb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377013_8x8qo4dc9",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Obake, Bola e'h carne, Unknown.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.013Z",
+    "scheduledAt": "2026-10-15T21:06:17.013Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3",
+        "gp_1786388790209_sr4ldku"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377020_dhrb1hlk4",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Daysuke, KruX, el pepe.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.020Z",
+    "scheduledAt": "2026-10-15T21:06:17.020Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786396304199_u7v6gsb",
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377027_enqs281iv",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Bola e'h carne, Unknown, Adecty.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.027Z",
+    "scheduledAt": "2026-10-15T21:06:17.027Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391892402_8intsz3",
+        "gp_1786388790209_sr4ldku",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377035_pbfnebqlg",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: KruX, el pepe.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.035Z",
+    "scheduledAt": "2026-10-15T21:06:17.035Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377042_pqe2ptna1",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Unknown, Adecty, you.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.042Z",
+    "scheduledAt": "2026-10-15T21:06:17.042Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786388790209_sr4ldku",
+        "gp_1786387250178_ac5thmv",
+        "gp_1786408732935_gefziig"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377049_wzozd89x3",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: el pepe, Yokai.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.049Z",
+    "scheduledAt": "2026-10-15T21:06:17.049Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786756661811_fa5pg74",
+        "gp_1786802386624_ficm2tl"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377056_r41wf3c94",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Adecty, you, Akuma.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.056Z",
+    "scheduledAt": "2026-10-15T21:06:17.056Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387250178_ac5thmv",
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377064_uzw0x45o7",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Yokai, Yoeeee.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.064Z",
+    "scheduledAt": "2026-10-15T21:06:17.064Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377071_q8rtbrhaa",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: you, Akuma, WolfCat Silence.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.071Z",
+    "scheduledAt": "2026-10-15T21:06:17.071Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787798635187_v9qifdf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377077_2cw5xib63",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Yokai, Yoeeee, WiikiFox.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.077Z",
+    "scheduledAt": "2026-10-15T21:06:17.077Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9",
+        "gp_1787087788652_q2n124j"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377083_ghvjt8cjq",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Akuma, WolfCat Silence, Sybau.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.083Z",
+    "scheduledAt": "2026-10-15T21:06:17.083Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787798635187_v9qifdf",
+        "gp_1786808135517_vfoni2a"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377089_kkpe2mn96",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Yoeeee, WiikiFox, Tails.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.089Z",
+    "scheduledAt": "2026-10-15T21:06:17.089Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786758755895_bgdf2b9",
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377095_cqe0opp9e",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: WolfCat Silence, Sybau, Slendy.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.095Z",
+    "scheduledAt": "2026-10-15T21:06:17.095Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787798635187_v9qifdf",
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377101_3lmasz2c8",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: WiikiFox, Tails, Sementino.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.101Z",
+    "scheduledAt": "2026-10-15T21:06:17.101Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377107_8h4lpq5s6",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Sybau, Slendy, Grimmjo.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.107Z",
+    "scheduledAt": "2026-10-15T21:06:17.107Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377113_p3advhnpl",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Tails, Sementino, Pokred.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.113Z",
+    "scheduledAt": "2026-10-15T21:06:17.113Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i",
+        "gp_1787202786652_4bme4ih"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377120_mkcugmvjt",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Slendy, Grimmjo, Poke.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.120Z",
+    "scheduledAt": "2026-10-15T21:06:17.120Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377126_eo37vhl9v",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Sementino, Pokred, Pal.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.126Z",
+    "scheduledAt": "2026-10-15T21:06:17.126Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393670067_xild06i",
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377132_bzgejprus",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Grimmjo, Poke, Olimak.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.132Z",
+    "scheduledAt": "2026-10-15T21:06:17.132Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377139_hemz8inzl",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Pokred, Pal, Neuthor.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.139Z",
+    "scheduledAt": "2026-10-15T21:06:17.139Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377145_lug5hmtju",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Poke, Olimak, Nelson.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.145Z",
+    "scheduledAt": "2026-10-15T21:06:17.145Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro",
+        "gp_1786399978250_n7msxo5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377152_8rjdr3i69",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Pal, Neuthor, TQMandreFN, Virutica JR.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.152Z",
+    "scheduledAt": "2026-10-15T21:06:17.152Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds",
+        "gp_1786387243524_6er0c9u",
+        "gp_1787176804167_dgzm0z9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377158_uy2h41ppq",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Olimak, TQMandreFN, Nelson.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.158Z",
+    "scheduledAt": "2026-10-15T21:06:17.158Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393655444_41zyrro",
+        "gp_1786387243524_6er0c9u",
+        "gp_1786399978250_n7msxo5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377164_1qht3wkoq",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: TQMandreFN, Neuthor, Drakonite.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.164Z",
+    "scheduledAt": "2026-10-15T21:06:17.164Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387243524_6er0c9u",
+        "gp_1787069564643_5pithds",
+        "gp_1786802617779_nnibxrr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377170_htvg5ibmd",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Manuel(Z), Ghost.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.170Z",
+    "scheduledAt": "2026-10-15T21:06:17.170Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377176_xq5991uw7",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Virutica JR, Drakonite, Daeron.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.176Z",
+    "scheduledAt": "2026-10-15T21:06:17.176Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377183_k090l83rl",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Manuel(Z), Ghost, Shiro.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.183Z",
+    "scheduledAt": "2026-10-15T21:06:17.183Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377189_rmosos1b2",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Drakonite, Daeron, Oby.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.189Z",
+    "scheduledAt": "2026-10-15T21:06:17.189Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377195_9ft7i0dvx",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Ghost, Shiro, LiokLiok18.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.195Z",
+    "scheduledAt": "2026-10-15T21:06:17.195Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377201_wb07pv5tk",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Daeron, Oby, Nilo.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.201Z",
+    "scheduledAt": "2026-10-15T21:06:17.201Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377208_79ak928j6",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Shiro, LiokLiok18, AmorAltras.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.208Z",
+    "scheduledAt": "2026-10-15T21:06:17.208Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d",
+        "gp_1786393834683_lievrvf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377214_ahbsjqfgl",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Oby, Nilo, Verne.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.214Z",
+    "scheduledAt": "2026-10-15T21:06:17.214Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm",
+        "gp_1787060528167_2mzmy24"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377222_8c01ymik5",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: LiokLiok18, AmorAltras, Dante.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.222Z",
+    "scheduledAt": "2026-10-15T21:06:17.222Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393783053_ztfg99d",
+        "gp_1786393834683_lievrvf",
+        "gp_1787150448285_vlvxdb2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377228_hvbdfxaq1",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Nilo, Verne, Soru-san.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.228Z",
+    "scheduledAt": "2026-10-15T21:06:17.228Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786409261693_7dx00bm",
+        "gp_1787060528167_2mzmy24",
+        "gp_1786756707267_xybm206"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377234_j70itj0dy",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: AmorAltras, Dante, Ismael.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.234Z",
+    "scheduledAt": "2026-10-15T21:06:17.234Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393834683_lievrvf",
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377240_e2ip447ij",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Verne, Soru-san, negroloko_54.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.240Z",
+    "scheduledAt": "2026-10-15T21:06:17.240Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787060528167_2mzmy24",
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377245_e48q0exrt",
+    "recipientId": "gp_1787798635187_v9qifdf",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Dante, Ismael, Gino.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.245Z",
+    "scheduledAt": "2026-10-15T21:06:17.245Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377252_5ilz4tmja",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Soru-san, negroloko_54, ElTarket.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.252Z",
+    "scheduledAt": "2026-10-15T21:06:17.252Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2",
+        "gp_1786648984526_6yyg6ao"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377258_ixyivykj5",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Ismael, Gino, ERNE.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.258Z",
+    "scheduledAt": "2026-10-15T21:06:17.258Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95",
+        "gp_1786420928315_91m6kmr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377264_fbou082cj",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: negroloko_54, ElTarket, Obake.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.264Z",
+    "scheduledAt": "2026-10-15T21:06:17.264Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786420836915_wqj6gv2",
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377271_3k3r8bjd5",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Testing smash has started. Your opponents this week: Gino, ERNE, Daysuke.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.271Z",
+    "scheduledAt": "2026-10-15T21:06:17.271Z",
+    "data": {
+      "leagueId": "league_1788286353719_bz8pjt2",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387234567_aoe1z95",
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377287_prswl98fo",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Pokred, Poke.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.287Z",
+    "scheduledAt": "2026-10-15T21:06:17.287Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787202786652_4bme4ih",
+        "gp_1787087495865_2esi76p"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377294_8b6wnvnv9",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Shiro, LiokLiok18.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.294Z",
+    "scheduledAt": "2026-10-15T21:06:17.294Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377302_tb6xkhw7g",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Oby, Nilo.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.302Z",
+    "scheduledAt": "2026-10-15T21:06:17.302Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377308_spuulzrz8",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: LiokLiok18, Unknown.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.308Z",
+    "scheduledAt": "2026-10-15T21:06:17.308Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393783053_ztfg99d",
+        "gp_1787176726649_m106rr7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377314_t0ubfw8g9",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Nilo, Yoko.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.314Z",
+    "scheduledAt": "2026-10-15T21:06:17.314Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786409261693_7dx00bm",
+        "gp_1786758906647_1ib85c1"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377320_un1hkc0q8",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Unknown, AmorAltras.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.320Z",
+    "scheduledAt": "2026-10-15T21:06:17.320Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787176726649_m106rr7",
+        "gp_1786393834683_lievrvf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377327_xq5f12ova",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Yoko, Verne.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.327Z",
+    "scheduledAt": "2026-10-15T21:06:17.327Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786758906647_1ib85c1",
+        "gp_1787060528167_2mzmy24"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377337_0t2nj9v56",
+    "recipientId": "gp_1787060569919_ov80gcy",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: AmorAltras, Ragna.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.337Z",
+    "scheduledAt": "2026-10-15T21:06:17.337Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393834683_lievrvf",
+        "gp_1787409434840_k4h4ski"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377343_vspuphdg8",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Verne, Eknd3las.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.343Z",
+    "scheduledAt": "2026-10-15T21:06:17.343Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787060528167_2mzmy24",
+        "gp_1786391936937_anlwmxy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377349_9fdm9epzp",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Ragna, Dante.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.349Z",
+    "scheduledAt": "2026-10-15T21:06:17.349Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787409434840_k4h4ski",
+        "gp_1787150448285_vlvxdb2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377356_i9od0qkht",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Eknd3las, Soru-san.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.356Z",
+    "scheduledAt": "2026-10-15T21:06:17.356Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391936937_anlwmxy",
+        "gp_1786756707267_xybm206"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377362_cy0bcoyh9",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Dante, Ismael.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.362Z",
+    "scheduledAt": "2026-10-15T21:06:17.362Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377368_nup1m8mpv",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Soru-san, negroloko_54.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.368Z",
+    "scheduledAt": "2026-10-15T21:06:17.368Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377374_b4fuqg4bj",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Ismael, Gino.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.374Z",
+    "scheduledAt": "2026-10-15T21:06:17.374Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377380_xjf9l7su9",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: negroloko_54, Pollo.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.380Z",
+    "scheduledAt": "2026-10-15T21:06:17.380Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786420836915_wqj6gv2",
+        "gp_1787112745370_2zahvg8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377387_0rord3xwm",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Gino, ElTarket.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.387Z",
+    "scheduledAt": "2026-10-15T21:06:17.387Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387234567_aoe1z95",
+        "gp_1786648984526_6yyg6ao"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377393_ge0qs1tvn",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Pollo, ERNE.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.393Z",
+    "scheduledAt": "2026-10-15T21:06:17.393Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787112745370_2zahvg8",
+        "gp_1786420928315_91m6kmr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377399_ps96l6ex6",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: ElTarket, Obake.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.399Z",
+    "scheduledAt": "2026-10-15T21:06:17.399Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377407_4dpu5uqtj",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: ERNE, Daysuke.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.407Z",
+    "scheduledAt": "2026-10-15T21:06:17.407Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377414_1bmpjs8is",
+    "recipientId": "gp_1786391936937_anlwmxy",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Obake, Bola e'h carne.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.414Z",
+    "scheduledAt": "2026-10-15T21:06:17.414Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377421_29r69ebu7",
+    "recipientId": "gp_1787409434840_k4h4ski",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Daysuke, DeathFrost.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.421Z",
+    "scheduledAt": "2026-10-15T21:06:17.421Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786396304199_u7v6gsb",
+        "gp_1787060569919_ov80gcy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377428_chde5oex8",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Bola e'h carne, KruX.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.428Z",
+    "scheduledAt": "2026-10-15T21:06:17.428Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391892402_8intsz3",
+        "gp_1786387087046_wnwtadb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377436_2rcdjug5p",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: DeathFrost, Unknown.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.436Z",
+    "scheduledAt": "2026-10-15T21:06:17.436Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787060569919_ov80gcy",
+        "gp_1786388790209_sr4ldku"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377443_saks3gj5j",
+    "recipientId": "gp_1786758906647_1ib85c1",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: KruX, el pepe.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.443Z",
+    "scheduledAt": "2026-10-15T21:06:17.443Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377449_itla0lpvp",
+    "recipientId": "gp_1787176726649_m106rr7",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Unknown, Alexs.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.449Z",
+    "scheduledAt": "2026-10-15T21:06:17.449Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786388790209_sr4ldku",
+        "gp_1787409813244_ymqkq1e"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377456_2oru0tm7v",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: el pepe, Adecty.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.456Z",
+    "scheduledAt": "2026-10-15T21:06:17.456Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786756661811_fa5pg74",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377463_q8or29hl7",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Alexs, TQMandreFN.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.463Z",
+    "scheduledAt": "2026-10-15T21:06:17.463Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787409813244_ymqkq1e",
+        "gp_1786387243524_6er0c9u"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377470_abte7yxux",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponent this week: Adecty.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.470Z",
+    "scheduledAt": "2026-10-15T21:06:17.470Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377477_t5h6p6vdo",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: TQMandreFN, you.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.477Z",
+    "scheduledAt": "2026-10-15T21:06:17.477Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387243524_6er0c9u",
+        "gp_1786408732935_gefziig"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377485_8qmam8tqp",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponent this week: Yokai.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.485Z",
+    "scheduledAt": "2026-10-15T21:06:17.485Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377491_mwisoy7us",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: you, Akuma.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.491Z",
+    "scheduledAt": "2026-10-15T21:06:17.491Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377502_wogm0idjq",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Yokai, Yoeeee.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.502Z",
+    "scheduledAt": "2026-10-15T21:06:17.502Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377511_vpxq2tral",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Akuma, WolfCat Silence.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.511Z",
+    "scheduledAt": "2026-10-15T21:06:17.511Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787798635187_v9qifdf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377517_ip158vkdt",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Yoeeee, WiikiFox.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.517Z",
+    "scheduledAt": "2026-10-15T21:06:17.517Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786758755895_bgdf2b9",
+        "gp_1787087788652_q2n124j"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377524_41pwas6lp",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: WolfCat Silence, Sybau.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.524Z",
+    "scheduledAt": "2026-10-15T21:06:17.524Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787798635187_v9qifdf",
+        "gp_1786808135517_vfoni2a"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377530_m8vubik4w",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: WiikiFox, Tails.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.530Z",
+    "scheduledAt": "2026-10-15T21:06:17.530Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377537_1eju19k5s",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Sybau, Slendy.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.537Z",
+    "scheduledAt": "2026-10-15T21:06:17.537Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377543_yaetvq2mk",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Tails, Sementino.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.543Z",
+    "scheduledAt": "2026-10-15T21:06:17.543Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377550_muog6tjq9",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Slendy, Unknown, Grimmjo.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.550Z",
+    "scheduledAt": "2026-10-15T21:06:17.550Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787202759812_b30336h",
+        "gp_1787409902362_3u9f0qr",
+        "gp_1786761981144_462dv5s"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377558_succarkz3",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Unknown, Sementino.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.557Z",
+    "scheduledAt": "2026-10-15T21:06:17.557Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787409902362_3u9f0qr",
+        "gp_1786393670067_xild06i"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377565_ixep8rcrw",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponent this week: Poke.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.565Z",
+    "scheduledAt": "2026-10-15T21:06:17.565Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787087495865_2esi76p"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377574_nxxlq2ekl",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Pokred, Pal.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.573Z",
+    "scheduledAt": "2026-10-15T21:06:17.573Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377581_h4ezrxp8a",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Poke, Olimak.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.581Z",
+    "scheduledAt": "2026-10-15T21:06:17.581Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377588_j2mwf3res",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Pal, Neuthor.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.588Z",
+    "scheduledAt": "2026-10-15T21:06:17.588Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377595_4r7gfxszp",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Olimak, Nelson.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.595Z",
+    "scheduledAt": "2026-10-15T21:06:17.595Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393655444_41zyrro",
+        "gp_1786399978250_n7msxo5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377601_kds5cht6l",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Neuthor, Virutica JR.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.601Z",
+    "scheduledAt": "2026-10-15T21:06:17.601Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787069564643_5pithds",
+        "gp_1787176804167_dgzm0z9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377610_8jy3jvzws",
+    "recipientId": "gp_1787798635187_v9qifdf",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Nelson, Manuel(Z).",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.610Z",
+    "scheduledAt": "2026-10-15T21:06:17.610Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786399978250_n7msxo5",
+        "gp_1786410268124_ja1vgy5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377616_vq85owwc2",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Virutica JR, Drakonite.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.616Z",
+    "scheduledAt": "2026-10-15T21:06:17.616Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786802617779_nnibxrr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377624_6zyw7bxxo",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Manuel(Z), Ghost.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.624Z",
+    "scheduledAt": "2026-10-15T21:06:17.624Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377630_lzq55k7jk",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Drakonite, Daeron.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.630Z",
+    "scheduledAt": "2026-10-15T21:06:17.630Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377637_3gojkkadf",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Timing League Creation has started. Your opponents this week: Ghost, Shiro.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.637Z",
+    "scheduledAt": "2026-10-15T21:06:17.637Z",
+    "data": {
+      "leagueId": "league_1788293958929_soe8mlu",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377653_o2jdojw0y",
+    "recipientId": "gp_1787409902362_3u9f0qr",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Virutica JR, Manuel(Z), Drakonite.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.653Z",
+    "scheduledAt": "2026-10-15T21:06:17.653Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786410268124_ja1vgy5",
+        "gp_1786802617779_nnibxrr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377661_9hk78e0xy",
+    "recipientId": "gp_1786387243524_6er0c9u",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Ismael, Gino, ElTarket.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.661Z",
+    "scheduledAt": "2026-10-15T21:06:17.661Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95",
+        "gp_1786648984526_6yyg6ao"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377667_srdmphdes",
+    "recipientId": "gp_1786387250178_ac5thmv",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: negroloko_54, Pollo, ERNE.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.667Z",
+    "scheduledAt": "2026-10-15T21:06:17.667Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786420836915_wqj6gv2",
+        "gp_1787112745370_2zahvg8",
+        "gp_1786420928315_91m6kmr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377674_eouymh983",
+    "recipientId": "gp_1787409813244_ymqkq1e",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Gino, ElTarket, Obake.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.674Z",
+    "scheduledAt": "2026-10-15T21:06:17.674Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387234567_aoe1z95",
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377680_8iahl8w9c",
+    "recipientId": "gp_1786756661811_fa5pg74",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Pollo, ERNE, Daysuke.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.680Z",
+    "scheduledAt": "2026-10-15T21:06:17.680Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787112745370_2zahvg8",
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377687_t9ab102oc",
+    "recipientId": "gp_1786388790209_sr4ldku",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: ElTarket, Obake, Bola e'h carne.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.687Z",
+    "scheduledAt": "2026-10-15T21:06:17.687Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786648984526_6yyg6ao",
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377693_0f8srr981",
+    "recipientId": "gp_1786387087046_wnwtadb",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: ERNE, Daysuke, DeathFrost.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.693Z",
+    "scheduledAt": "2026-10-15T21:06:17.693Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786420928315_91m6kmr",
+        "gp_1786396304199_u7v6gsb",
+        "gp_1787060569919_ov80gcy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377700_wf716c2vo",
+    "recipientId": "gp_1787060569919_ov80gcy",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Obake, Bola e'h carne, KruX.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.700Z",
+    "scheduledAt": "2026-10-15T21:06:17.700Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393850039_1imzf6x",
+        "gp_1786391892402_8intsz3",
+        "gp_1786387087046_wnwtadb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377706_kxp57ocl6",
+    "recipientId": "gp_1786391892402_8intsz3",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Daysuke, DeathFrost, Unknown.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.706Z",
+    "scheduledAt": "2026-10-15T21:06:17.706Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786396304199_u7v6gsb",
+        "gp_1787060569919_ov80gcy",
+        "gp_1786388790209_sr4ldku"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377714_26ytcrb5o",
+    "recipientId": "gp_1786396304199_u7v6gsb",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Bola e'h carne, KruX, el pepe.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.714Z",
+    "scheduledAt": "2026-10-15T21:06:17.714Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391892402_8intsz3",
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377721_u8rz7zow3",
+    "recipientId": "gp_1786393850039_1imzf6x",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: DeathFrost, Unknown, Alexs.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.721Z",
+    "scheduledAt": "2026-10-15T21:06:17.721Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787060569919_ov80gcy",
+        "gp_1786388790209_sr4ldku",
+        "gp_1787409813244_ymqkq1e"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377728_7t0g85hc4",
+    "recipientId": "gp_1786420928315_91m6kmr",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: KruX, el pepe, Adecty.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.728Z",
+    "scheduledAt": "2026-10-15T21:06:17.728Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387087046_wnwtadb",
+        "gp_1786756661811_fa5pg74",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377734_rkfoal0p9",
+    "recipientId": "gp_1786648984526_6yyg6ao",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Unknown, Alexs, TQMandreFN.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.734Z",
+    "scheduledAt": "2026-10-15T21:06:17.734Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786388790209_sr4ldku",
+        "gp_1787409813244_ymqkq1e",
+        "gp_1786387243524_6er0c9u"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377741_jrhbe41gc",
+    "recipientId": "gp_1787112745370_2zahvg8",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: el pepe, Adecty.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.741Z",
+    "scheduledAt": "2026-10-15T21:06:17.741Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786756661811_fa5pg74",
+        "gp_1786387250178_ac5thmv"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377747_ydsxhpq5p",
+    "recipientId": "gp_1786387234567_aoe1z95",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Alexs, TQMandreFN, you.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.747Z",
+    "scheduledAt": "2026-10-15T21:06:17.747Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787409813244_ymqkq1e",
+        "gp_1786387243524_6er0c9u",
+        "gp_1786408732935_gefziig"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377754_0y62o6265",
+    "recipientId": "gp_1786420836915_wqj6gv2",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Adecty, Yokai.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.754Z",
+    "scheduledAt": "2026-10-15T21:06:17.754Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387250178_ac5thmv",
+        "gp_1786802386624_ficm2tl"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377760_gu2p8m7xh",
+    "recipientId": "gp_1786408686972_s4nl3vz",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: TQMandreFN, you, Akuma.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.760Z",
+    "scheduledAt": "2026-10-15T21:06:17.760Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786387243524_6er0c9u",
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377768_tcad4q9kj",
+    "recipientId": "gp_1786756707267_xybm206",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Yokai, Yoeeee.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.768Z",
+    "scheduledAt": "2026-10-15T21:06:17.768Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377775_3ioi8vwnx",
+    "recipientId": "gp_1787150448285_vlvxdb2",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: you, Akuma, WolfCat Silence.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.775Z",
+    "scheduledAt": "2026-10-15T21:06:17.775Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786408732935_gefziig",
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787798635187_v9qifdf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377781_puitp1jfj",
+    "recipientId": "gp_1786391936937_anlwmxy",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Yokai, Yoeeee, WiikiFox.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.781Z",
+    "scheduledAt": "2026-10-15T21:06:17.781Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786802386624_ficm2tl",
+        "gp_1786758755895_bgdf2b9",
+        "gp_1787087788652_q2n124j"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377788_ecwfxc370",
+    "recipientId": "gp_1787409434840_k4h4ski",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Akuma, WolfCat Silence, Sybau.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.788Z",
+    "scheduledAt": "2026-10-15T21:06:17.788Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786757329455_8ijcyo8",
+        "gp_1787798635187_v9qifdf",
+        "gp_1786808135517_vfoni2a"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377794_rv10l3j8s",
+    "recipientId": "gp_1787060528167_2mzmy24",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Yoeeee, WiikiFox, Tails.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.794Z",
+    "scheduledAt": "2026-10-15T21:06:17.794Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786758755895_bgdf2b9",
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377800_j2fud8gnd",
+    "recipientId": "gp_1786393834683_lievrvf",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: WolfCat Silence, Sybau, Slendy.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.800Z",
+    "scheduledAt": "2026-10-15T21:06:17.800Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787798635187_v9qifdf",
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377807_u4jkwe8an",
+    "recipientId": "gp_1786758906647_1ib85c1",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: WiikiFox, Tails, Sementino.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.807Z",
+    "scheduledAt": "2026-10-15T21:06:17.807Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787087788652_q2n124j",
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377814_pf0fffu4q",
+    "recipientId": "gp_1787176726649_m106rr7",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Sybau, Slendy, Grimmjo.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.814Z",
+    "scheduledAt": "2026-10-15T21:06:17.814Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786808135517_vfoni2a",
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377821_kdqg2616v",
+    "recipientId": "gp_1786409261693_7dx00bm",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Tails, Sementino, Pokred.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.821Z",
+    "scheduledAt": "2026-10-15T21:06:17.821Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391783115_87zwx03",
+        "gp_1786393670067_xild06i",
+        "gp_1787202786652_4bme4ih"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377827_l4axexzek",
+    "recipientId": "gp_1786393783053_ztfg99d",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Slendy, Grimmjo, Poke.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.827Z",
+    "scheduledAt": "2026-10-15T21:06:17.827Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787202759812_b30336h",
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377834_q0ugmomrm",
+    "recipientId": "gp_1786391754729_ma3zmky",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Sementino, Pokred, Pal.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.834Z",
+    "scheduledAt": "2026-10-15T21:06:17.834Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393670067_xild06i",
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377840_urouvwynd",
+    "recipientId": "gp_1786391850317_8z5itq7",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Grimmjo, Poke, Olimak.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.840Z",
+    "scheduledAt": "2026-10-15T21:06:17.840Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786761981144_462dv5s",
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377846_ljd229xck",
+    "recipientId": "gp_1787150405263_dyjmu7b",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Pokred, Pal, Neuthor.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.846Z",
+    "scheduledAt": "2026-10-15T21:06:17.846Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787202786652_4bme4ih",
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377852_izig8px8v",
+    "recipientId": "gp_1787112645165_cj7eik8",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Poke, Olimak, Nelson.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.852Z",
+    "scheduledAt": "2026-10-15T21:06:17.852Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787087495865_2esi76p",
+        "gp_1786393655444_41zyrro",
+        "gp_1786399978250_n7msxo5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377860_lp8lsm54h",
+    "recipientId": "gp_1786802617779_nnibxrr",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Pal, Neuthor, Unknown, Virutica JR.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.860Z",
+    "scheduledAt": "2026-10-15T21:06:17.860Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786399934148_stq7jpb",
+        "gp_1787069564643_5pithds",
+        "gp_1787409902362_3u9f0qr",
+        "gp_1787176804167_dgzm0z9"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377867_12gx8a1lt",
+    "recipientId": "gp_1786410268124_ja1vgy5",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Olimak, Unknown, Nelson.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.867Z",
+    "scheduledAt": "2026-10-15T21:06:17.867Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393655444_41zyrro",
+        "gp_1787409902362_3u9f0qr",
+        "gp_1786399978250_n7msxo5"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377873_yaiv1mzdv",
+    "recipientId": "gp_1787176804167_dgzm0z9",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Unknown, Neuthor, Drakonite.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.873Z",
+    "scheduledAt": "2026-10-15T21:06:17.873Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787409902362_3u9f0qr",
+        "gp_1787069564643_5pithds",
+        "gp_1786802617779_nnibxrr"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377880_rcr2u0g13",
+    "recipientId": "gp_1786399978250_n7msxo5",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Manuel(Z), Ghost.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.880Z",
+    "scheduledAt": "2026-10-15T21:06:17.880Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377887_stpjt656f",
+    "recipientId": "gp_1787069564643_5pithds",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Virutica JR, Drakonite, Daeron.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.887Z",
+    "scheduledAt": "2026-10-15T21:06:17.887Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787176804167_dgzm0z9",
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377893_vmcpfcrxc",
+    "recipientId": "gp_1786393655444_41zyrro",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Manuel(Z), Ghost, Shiro.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.893Z",
+    "scheduledAt": "2026-10-15T21:06:17.893Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786410268124_ja1vgy5",
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377899_25p068rdq",
+    "recipientId": "gp_1786399934148_stq7jpb",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Drakonite, Daeron, Oby.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.899Z",
+    "scheduledAt": "2026-10-15T21:06:17.899Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786802617779_nnibxrr",
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377906_j5mrdhngc",
+    "recipientId": "gp_1787087495865_2esi76p",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Ghost, Shiro, LiokLiok18.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.906Z",
+    "scheduledAt": "2026-10-15T21:06:17.906Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787112645165_cj7eik8",
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377913_nve96unwn",
+    "recipientId": "gp_1787202786652_4bme4ih",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Daeron, Oby, Nilo.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.913Z",
+    "scheduledAt": "2026-10-15T21:06:17.913Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787150405263_dyjmu7b",
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377919_6vnb7spi5",
+    "recipientId": "gp_1786761981144_462dv5s",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Shiro, LiokLiok18, Unknown.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.919Z",
+    "scheduledAt": "2026-10-15T21:06:17.919Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391850317_8z5itq7",
+        "gp_1786393783053_ztfg99d",
+        "gp_1787176726649_m106rr7"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377925_rnbsr12kt",
+    "recipientId": "gp_1786393670067_xild06i",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Oby, Nilo, Yoko.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.925Z",
+    "scheduledAt": "2026-10-15T21:06:17.925Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391754729_ma3zmky",
+        "gp_1786409261693_7dx00bm",
+        "gp_1786758906647_1ib85c1"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377932_6ad8kiybw",
+    "recipientId": "gp_1787202759812_b30336h",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: LiokLiok18, Unknown, AmorAltras.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.932Z",
+    "scheduledAt": "2026-10-15T21:06:17.932Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393783053_ztfg99d",
+        "gp_1787176726649_m106rr7",
+        "gp_1786393834683_lievrvf"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377939_hatx733ia",
+    "recipientId": "gp_1786391783115_87zwx03",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Nilo, Yoko, Verne.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.939Z",
+    "scheduledAt": "2026-10-15T21:06:17.939Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786409261693_7dx00bm",
+        "gp_1786758906647_1ib85c1",
+        "gp_1787060528167_2mzmy24"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377945_knizvt2dv",
+    "recipientId": "gp_1786808135517_vfoni2a",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Unknown, AmorAltras, Ragna.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.945Z",
+    "scheduledAt": "2026-10-15T21:06:17.945Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787176726649_m106rr7",
+        "gp_1786393834683_lievrvf",
+        "gp_1787409434840_k4h4ski"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377951_nl93aep3t",
+    "recipientId": "gp_1787087788652_q2n124j",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Yoko, Verne, Eknd3las.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.951Z",
+    "scheduledAt": "2026-10-15T21:06:17.951Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786758906647_1ib85c1",
+        "gp_1787060528167_2mzmy24",
+        "gp_1786391936937_anlwmxy"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377958_fkyyurwjl",
+    "recipientId": "gp_1787798635187_v9qifdf",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: AmorAltras, Ragna, Dante.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.958Z",
+    "scheduledAt": "2026-10-15T21:06:17.958Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786393834683_lievrvf",
+        "gp_1787409434840_k4h4ski",
+        "gp_1787150448285_vlvxdb2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377965_4zj6b05e9",
+    "recipientId": "gp_1786758755895_bgdf2b9",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Verne, Eknd3las, Soru-san.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.965Z",
+    "scheduledAt": "2026-10-15T21:06:17.965Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787060528167_2mzmy24",
+        "gp_1786391936937_anlwmxy",
+        "gp_1786756707267_xybm206"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377972_1sh74olo7",
+    "recipientId": "gp_1786757329455_8ijcyo8",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Ragna, Dante, Ismael.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.972Z",
+    "scheduledAt": "2026-10-15T21:06:17.972Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787409434840_k4h4ski",
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377978_e66q93kl7",
+    "recipientId": "gp_1786802386624_ficm2tl",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Eknd3las, Soru-san, negroloko_54.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.978Z",
+    "scheduledAt": "2026-10-15T21:06:17.978Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1786391936937_anlwmxy",
+        "gp_1786756707267_xybm206",
+        "gp_1786420836915_wqj6gv2"
+      ]
+    }
+  },
+  {
+    "id": "notif_1792098377984_bw355nnds",
+    "recipientId": "gp_1786408732935_gefziig",
+    "type": "league_week_start",
+    "title": "League Week 7 started",
+    "message": "Week 7 of Smash new at last has started. Your opponents this week: Dante, Ismael, Gino.",
+    "read": false,
+    "createdAt": "2026-10-15T21:06:17.984Z",
+    "scheduledAt": "2026-10-15T21:06:17.984Z",
+    "data": {
+      "leagueId": "league_1788385465834_ojcnvic",
+      "week": 7,
+      "opponentIds": [
+        "gp_1787150448285_vlvxdb2",
+        "gp_1786408686972_s4nl3vz",
+        "gp_1786387234567_aoe1z95"
+      ]
+    }
   }
 ]

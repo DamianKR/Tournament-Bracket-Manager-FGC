@@ -34,7 +34,7 @@ function OfflineNotice({ compact = false, partial = false }: { compact?: boolean
         <strong>{t('offline.title')}</strong>
         <span>{t(partial ? 'offline.partialMessage' : 'offline.message')}</span>
       </div>
-      <button className="btn-outline btn-sm" onClick={retry} disabled={checking}>
+      <button className="btn-primary" onClick={retry} disabled={checking}>
         <i className={`fas ${checking ? 'fa-spinner fa-spin' : 'fa-rotate-right'}`} />{' '}
         {t(checking ? 'offline.checking' : 'offline.retry')}
       </button>
