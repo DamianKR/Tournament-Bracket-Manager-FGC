@@ -51,7 +51,11 @@ function useDebounced<V>(value: V, ms: number): V {
 
 /** Page + page size, with the page snapping back to 1 when `resetKey` changes. */
 function usePagingState(listId: string, resetKey: string, defaultPageSize: number) {
-  const [pageSize, setSize] = useState(() => loadSize(listId, defaultPageSize));
+  // The saved size follows the list id: a list whose source is not ready on the first render
+  // (community still resolving) starts as 'none' and must pick up its own preference once known.
+  const [size, setSizeState] = useState({ id: listId, v: loadSize(listId, defaultPageSize) });
+  if (size.id !== listId) setSizeState({ id: listId, v: loadSize(listId, defaultPageSize) });
+  const pageSize = size.id === listId ? size.v : loadSize(listId, defaultPageSize);
   const [pg, setPg] = useState({ key: resetKey, page: 1 });
   // New filters/search/sort → back to page 1 FOR GOOD (derived-state reset during render), so
   // returning to an earlier filter state later does not bring its old page back.
@@ -62,7 +66,7 @@ function usePagingState(listId: string, resetKey: string, defaultPageSize: numbe
     (n: number) => {
       const v = clampPageSize(n, defaultPageSize);
       saveSize(listId, v);
-      setSize(v);
+      setSizeState({ id: listId, v });
       setPg({ key: resetKey, page: 1 });
     },
     [listId, resetKey, defaultPageSize]
@@ -144,6 +148,7 @@ export function usePaginatedList<T extends { id: string }>(o: PaginatedListOptio
   const [error, setError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const reqRef = useRef(0);
+  const scopeRef = useRef(sourceKey);
   const reload = useCallback(() => setTick((t) => t + 1), []);
   useOnReconnect(reload);
 
@@ -151,6 +156,14 @@ export function usePaginatedList<T extends { id: string }>(o: PaginatedListOptio
     const req = ++reqRef.current;
     const stale = () => req !== reqRef.current;
     const source = sourceRef.current;
+    // Different data scope (community, game…): the previous scope's rows / flags must not linger
+    // while the new one loads (a filter change inside the same scope keeps its rows on screen).
+    if (scopeRef.current !== sourceKey) {
+      scopeRef.current = sourceKey;
+      setShown(null);
+      setUnavailable(false);
+      setError(null);
+    }
     if (!source) {
       setShown(null);
       setFetching(false);

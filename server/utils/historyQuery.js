@@ -38,6 +38,21 @@ const COLUMNS = {
 const KINDS = Object.keys(COLUMNS);
 const RANKED_TYPES = ['duel', 'matchmaking', 'free'];
 
+const MAX_EVIDENCE_CHARS = 2048;
+
+/**
+ * League reports may carry base64 evidence photos. History never shows them, but the
+ * browser keeps every row it receives: drop big photos (a short marker keeps the
+ * "has evidence" flag truthy) so a few uploads cannot fill the local storage quota.
+ */
+function slimLeague(rec) {
+  if (!rec.reportedResults?.some((r) => (r.evidence?.length ?? 0) > MAX_EVIDENCE_CHARS)) return rec;
+  return {
+    ...rec,
+    reportedResults: rec.reportedResults.map((r) => ((r.evidence?.length ?? 0) > MAX_EVIDENCE_CHARS ? { ...r, evidence: '…' } : r)),
+  };
+}
+
 /** Record → the flat row shared by server pages and the browser's offline copy. */
 export function toRow(kind, rec) {
   const c = COLUMNS[kind];
@@ -50,7 +65,7 @@ export function toRow(kind, rec) {
     p2: rec[c.p2] ?? null,
     winnerId: rec[c.winnerId] ?? null,
     date: rec[c.date] ?? null,
-    data: rec,
+    data: kind === 'league' ? slimLeague(rec) : rec,
   };
 }
 

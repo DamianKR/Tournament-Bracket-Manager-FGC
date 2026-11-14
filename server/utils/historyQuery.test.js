@@ -128,6 +128,16 @@ test('out-of-range page clamps to the last page; absurdly deep windows are rejec
   await assert.rejects(queryHistory({ cols: bigCols, scope: {}, spec, page: 300, pageSize: 25 }), QueryError);
 });
 
+test('league rows drop big evidence photos but keep small ones and the marker', () => {
+  const big = 'x'.repeat(5000);
+  const rec = { id: 'lm_ev', leagueId: 'L1', status: 'completed', participant1Id: 'a', participant2Id: 'b', reportedResults: [{ reportedBy: 'a', evidence: big }, { reportedBy: 'b', evidence: 'small' }, { reportedBy: 'c' }] };
+  const row = toRow('league', rec);
+  assert.deepEqual(row.data.reportedResults.map((r) => r.evidence), ['…', 'small', undefined]);
+  assert.equal(rec.reportedResults[0].evidence, big, 'the stored record is not mutated');
+  assert.equal(toRow('league', { ...rec, reportedResults: undefined }).data.reportedResults, undefined);
+  assert.equal(toRow('tournament', { id: 't', reportedResults: [{ evidence: big }] }).data.reportedResults[0].evidence, big, 'only league rows are slimmed');
+});
+
 test('translate: constants fold (type is a literal on tournament / league sources)', () => {
   assert.equal(translate({ field: 'type', op: 'eq', value: 'league' }, 'tournament'), false);
   assert.equal(translate({ field: 'type', op: 'eq', value: 'league' }, 'league'), true);
