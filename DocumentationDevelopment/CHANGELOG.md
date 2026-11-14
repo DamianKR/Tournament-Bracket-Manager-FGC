@@ -1,5 +1,31 @@
 # Changelog
 
+## [Unreleased] - 2026-11-14
+
+### ✨ Paginación en todo el sitio
+
+- Un solo sistema (componente `Pagination`, hook `usePaginatedList`, lenguaje de consulta compartido servidor/navegador). Ver [PAGINATION.md](PAGINATION.md)
+- Niveles 25 / 50 / 75 / 100 (por defecto 25; 50 en ranking y participantes). Se oculta con 25 elementos o menos, también tras filtrar o buscar
+- Servidor + copia local (funciona offline): historial del ranking, Events → History, Matches del perfil, leaderboard, Ligas
+- Servidor sin copia local: Usuarios (superadmin)
+- Local: Participantes, Torneos, Retos ranked, Resultados del perfil y H2H
+- Filtros y búsqueda se ejecutan en la base de datos (Postgres/JSONB en Supabase) y, sin conexión, con la misma lógica sobre la copia local
+- Nuevos endpoints: `GET /api/history`, `GET /api/history/counts`; `?page=` opt-in en `/api/ranking`, `/api/ranking/matches`, `/api/leagues` y `/api/auth/users` (sin `?page=` responden como antes)
+
+### 🐛 Bug Fixes
+
+- Events → History marcaba siempre al jugador 1 como ganador en partidas de torneo
+- Los contadores de los filtros del historial ahora salen del servidor (antes contaban solo lo cargado)
+- Aviso offline y banda de datos parciales con los colores del tema; mejor diseño en móvil
+
+### 🔧 Cambios Técnicos
+
+- `npm test` (Node `--test`): motor de consulta, helper de rutas, ámbito de comunidad e historial unificado
+- Ligas: orden "más nueva primero". Leaderboard: los jugadores sin puntos van al final en orden alfabético
+- Eliminadas las copias locales antiguas `bracket_history_cache` y `bracket_all_league_matches_cache` (se purgan al arrancar) y la página sin uso `LeaguesPage`
+
+---
+
 ## [1.0.4] - 2026-08-07
 
 ### 🐛 Bug Fixes

@@ -11,6 +11,10 @@ import { getAuthHeader } from '@/services/auth/authService';
 import { enqueueMatchOp, readMatchOps } from '@/services/storage/matchOpsQueue';
 import { mirrorGet, mirrorDel } from '@/services/storage/mirrorStore';
 import { readThrough, dataOr } from '@/services/storage/readThrough';
+import { createListMirror } from '@/services/pagination/listMirror';
+import { createServerPagedSource } from '@/services/pagination/pagedSource';
+import type { PagedSource } from '@/services/pagination/pagedSource';
+import type { QuerySpec } from '../../../shared/query.js';
 import { isDateInTimeZonePassed } from '@/utils/timeZone';
 
 // ── Read cache (stale-while-revalidate) ───────────────────────────────────
@@ -22,7 +26,6 @@ const CACHE = {
   leagues: 'bracket_leagues_cache',
   league: 'bracket_league_cache',
   leagueMatches: 'bracket_league_matches_cache',
-  allMatches: 'bracket_all_league_matches_cache',
   standings: 'bracket_league_standings_cache',
 } as const;
 
@@ -45,21 +48,12 @@ function slimMatches(matches: LeagueMatch[]): LeagueMatch[] {
   );
 }
 
-export function getLeaguesCached(communityId?: string): League[] | null {
-  return mirrorGet<League[]>(CACHE.leagues, communityId ?? ALL_KEY)?.data ?? null;
-}
-
 export function getLeagueCached(id: string): League | null {
   return mirrorGet<League>(CACHE.league, id)?.data ?? null;
 }
 
 export function getLeagueMatchesCached(leagueId: string): LeagueMatch[] | null {
   return mirrorGet<LeagueMatch[]>(CACHE.leagueMatches, leagueId)?.data ?? null;
-}
-
-/** Community-wide completed league matches, as last mirrored (null if never loaded). */
-export function getAllLeagueMatchesCached(communityId?: string): LeagueMatch[] | null {
-  return mirrorGet<LeagueMatch[]>(CACHE.allMatches, communityId ?? ALL_KEY)?.data ?? null;
 }
 
 export function getLeagueStandingsCached(leagueId: string): LeagueStanding[] | null {
@@ -178,17 +172,6 @@ export async function getLeagueMatches(leagueId: string): Promise<LeagueMatch[]>
     await readThrough<LeagueMatch[]>({
       path: `/api/leagues/${leagueId}/matches`, store: CACHE.leagueMatches, key: leagueId,
       label: 'getLeagueMatches', prepare: slimMatches,
-    }),
-    []
-  );
-}
-
-export async function getAllLeagueMatches(communityId?: string): Promise<LeagueMatch[]> {
-  const query = communityId ? `?communityId=${encodeURIComponent(communityId)}` : '';
-  return dataOr(
-    await readThrough<LeagueMatch[]>({
-      path: `/api/leagues/matches${query}`, store: CACHE.allMatches, key: communityId ?? ALL_KEY,
-      label: 'getAllLeagueMatches', prepare: slimMatches,
     }),
     []
   );
@@ -476,4 +459,32 @@ export async function regenerateSchedule(
     console.error('[LeagueService] regenerateSchedule error:', err);
     return null;
   }
+}
+
+// ── Paginated league list ─────────────────────────────────────────────────
+// Server pages (game filter + newest first run in the DB) over a local copy
+// filled page by page, so the Events → Leagues grid also pages offline.
+
+const LEAGUE_PAGES_STORE = 'bracket_leagues_pages';
+
+export function createLeaguesSource(communityId: string): PagedSource<League> {
+  return createServerPagedSource<League>({
+    id: 'events-leagues',
+    path: '/api/leagues',
+    params: { communityId },
+    init: () => ({ headers: { ...getAuthHeader() } }),
+    mirror: createListMirror<League>(LEAGUE_PAGES_STORE, communityId),
+  });
+}
+
+export function buildLeaguesSpec(gameId: string | 'all'): QuerySpec {
+  return {
+    where: gameId === 'all' ? [] : [{ field: 'gameId', op: 'eq', value: gameId }],
+    sort: [{ field: 'createdAt', dir: 'desc' }],
+  };
+}
+
+/** A league was deleted: drop it from the local copy too. */
+export function forgetLeagueRow(communityId: string, leagueId: string): void {
+  createListMirror<League>(LEAGUE_PAGES_STORE, communityId).remove([leagueId]);
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/contexts/NotificationContext';
@@ -25,6 +25,8 @@ import ResetAvailabilityButton from '@/components/ResetAvailabilityButton/ResetA
 import Loading from '@/components/Loading/Loading';
 import PasswordInput from '@/components/PasswordInput/PasswordInput';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
+import Pagination from '@/components/Pagination/Pagination';
+import { useLocalPagination } from '@/hooks/usePaginatedList';
 import './ParticipantsPage.css';
 
 type SortKey = 'name' | 'wins' | 'tournamentsPlayed' | 'winRate';
@@ -159,26 +161,37 @@ function ParticipantsPage() {
     p.gameId === gameId ||
     Object.keys(p.games ?? {}).includes(gameId);
 
-  const filtered = participants
-    .filter((p) => {
-      if (gameFilter !== 'all' && !participantHasGame(p, gameFilter)) return false;
-      if (!searchQuery) return true;
-      const q = searchQuery.toLowerCase();
-      const charName = p.gameId && p.mainCharacterId
-        ? getCharacter(p.gameId, p.mainCharacterId)?.name.toLowerCase()
-        : '';
-      return p.name.toLowerCase().includes(q)
-        || p.alias?.toLowerCase().includes(q)
-        || charName?.includes(q);
-    })
-    .sort((a, b) => {
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
-      const sa = getStats(a.id), sb = getStats(b.id);
-      if (sortBy === 'wins') return sb.wins - sa.wins;
-      if (sortBy === 'tournamentsPlayed') return sb.tournamentsPlayed - sa.tournamentsPlayed;
-      if (sortBy === 'winRate') return sb.winRate - sa.winRate;
-      return 0;
-    });
+  // Pagination is local on purpose: participants are created / edited / deleted offline and
+  // every other screen needs the full list, so the merged local list stays the source of truth.
+  // The game filter narrows the list before pagination; search and sort run in the shared engine.
+  const listTopRef = useRef<HTMLDivElement>(null);
+  const rows = useMemo(
+    () => participants
+      .filter((p) => gameFilter === 'all' || participantHasGame(p, gameFilter))
+      .map((p) => {
+        const st = getStats(p.id);
+        return {
+          id: p.id,
+          p,
+          name: p.name,
+          alias: p.alias ?? null,
+          charName: p.gameId && p.mainCharacterId ? getCharacter(p.gameId, p.mainCharacterId)?.name ?? null : null,
+          wins: st.wins,
+          tournamentsPlayed: st.tournamentsPlayed,
+          winRate: st.winRate,
+        };
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [participants, statsMap, gameFilter]
+  );
+  const spec = useMemo(
+    () => ({
+      search: searchQuery.trim() ? { text: searchQuery, fields: ['name', 'alias', 'charName'] } : null,
+      sort: sortBy === 'name' ? [{ field: 'name', dir: 'asc' as const }] : [{ field: sortBy, dir: 'desc' as const, type: 'number' as const }],
+    }),
+    [searchQuery, sortBy]
+  );
+  const list = useLocalPagination(rows, spec, { listId: 'participants', defaultPageSize: 50, resetKey: gameFilter });
 
   // ── Create ────────────────────────────────────────────────────────────
 
@@ -289,7 +302,7 @@ function ParticipantsPage() {
 
         <div className="pp-header">
           <div>
-            <h1>{t('participants.title')} <span className="pp-count">{filtered.length}</span></h1>
+            <h1>{t('participants.title')} <span className="pp-count">{list.total}</span></h1>
             <p className="text-secondary">{t('participants.subtitle')}</p>
           </div>
           {canAdminCurrentCommunity && (
@@ -477,9 +490,10 @@ function ParticipantsPage() {
           </div>
         </div>
 
+        <div ref={listTopRef} />
         {loading ? (
           <Loading message={t('participants.loading')} />
-        ) : filtered.length === 0 ? (
+        ) : list.total === 0 ? (
           <div className="empty-state card">
             {participants.length === 0
               ? <><h3>{t('participants.emptyNoParticipants')}</h3><p className="text-secondary">{t('participants.emptyNoParticipantsDesc')}</p></>
@@ -487,7 +501,7 @@ function ParticipantsPage() {
           </div>
         ) : (
           <div className="pp-list">
-            {filtered.map((p) => {
+            {list.items.map(({ p }) => {
               const s = getStats(p.id);
               return (
                 <div key={p.id} className="pp-item card">
@@ -603,6 +617,8 @@ function ParticipantsPage() {
             })}
           </div>
         )}
+
+        <Pagination {...list.paginationProps} scrollRef={listTopRef} />
       </div>
 
       <ConfirmModal

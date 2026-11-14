@@ -63,6 +63,11 @@ Bienvenido a la documentación del **Bracket Tournament Manager**.
    - Tablas de referencia
    - Prevención de rematches
 
+9. **[PAGINATION.md](PAGINATION.md)** - Sistema de paginación
+   - Contrato del servidor y lenguaje de consulta
+   - Modo servidor / local y comportamiento offline
+   - Cómo añadir una lista nueva
+
 ---
 
 ## 🗂️ Organización
@@ -77,7 +82,8 @@ DocumentationDevelopment/
 ├── CHANGELOG.md                  ← Historial de cambios
 ├── BUGFIX_BYES.md                ← Fix de BYEs explícitos
 ├── BUGFIX_IMPLICIT_BYES.md       ← Fix de BYEs implícitos
-└── LOSER_BRACKET_STRUCTURE.md    ← Estructura del Loser Bracket
+├── LOSER_BRACKET_STRUCTURE.md    ← Estructura del Loser Bracket
+└── PAGINATION.md                 ← Sistema de paginación
 ```
 
 ---
@@ -101,5 +107,5 @@ DocumentationDevelopment/
 
 ---
 
-**Última actualización:** 2026-08-07  
+**Última actualización:** 2026-11-14  
 **Versión del proyecto:** 1.0.4

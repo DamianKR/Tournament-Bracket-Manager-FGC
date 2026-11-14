@@ -15,6 +15,9 @@
 import { SERVER_URL, isServerAvailable } from '@/services/api/apiClient';
 import type { AuthSession, AuthUser, SessionUser } from '@/models/auth';
 import { queueUserDelete } from '@/services/storage/userDeleteQueue';
+import { createServerOnlyPagedSource } from '@/services/pagination/pagedSource';
+import type { PagedSource } from '@/services/pagination/pagedSource';
+import type { QuerySpec } from '../../../shared/query.js';
 import { mirrorGet, mirrorPut, mirrorDel } from '@/services/storage/mirrorStore';
 
 const TOKEN_KEY = 'bracket_auth_token';
@@ -216,6 +219,25 @@ export async function listUsers(): Promise<AuthUser[]> {
   });
   if (!res.ok) throw new Error('Failed to fetch users');
   return res.json();
+}
+
+/**
+ * Paginated account list for the superadmin page. Server pages only: accounts
+ * are never copied into the browser, so offline the list reports "unavailable".
+ */
+export function createUsersPageSource(): PagedSource<AuthUser> {
+  return createServerOnlyPagedSource<AuthUser>({
+    id: 'users-admin',
+    path: '/api/auth/users',
+    init: () => ({ headers: { ...getAuthHeader() } }),
+  });
+}
+
+/** Manageable accounts (no superadmins), optionally one community's, matching a username search. */
+export function buildUsersSpec(o: { search: string; communityId: string | 'all' }): QuerySpec {
+  const where: QuerySpec['where'] = [{ or: [{ field: 'role', op: 'null', value: true }, { field: 'role', op: 'neq', value: 'superadmin' }] }];
+  if (o.communityId !== 'all') where.push({ field: `communities.${o.communityId}`, op: 'eq', value: true });
+  return { where, search: o.search.trim() ? { text: o.search, fields: ['username'] } : null, sort: [{ field: 'username', dir: 'asc' }] };
 }
 
 /** Crea cuenta para un participant existente. */

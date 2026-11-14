@@ -1,25 +1,27 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GlobalParticipant } from '@/models/types';
 import { GAMES } from '@/data/games';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
-import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
 import { getAllParticipantsAsync, getAllParticipants } from '@/services/participants/participantService';
 import {
-  getLeaderboard,
-  getLeaderboardSync,
-  getAllMatches,
-  getAllMatchesSync,
+  createLeaderboardSource,
+  LEADERBOARD_SPEC,
+  clearLeaderboard,
+  createRankedHistorySource,
+  buildRankedHistorySpec,
+  forgetRankedMatch,
+  clearRankedHistory,
   deleteMatch,
   hardResetRanking,
   softResetRanking,
   getRankColor,
   getRankIcon,
-  type LeaderboardEntry,
 } from '@/services/ranking/rankingService';
-import type { MatchRecord } from '@/models/types';
+import Pagination from '@/components/Pagination/Pagination';
+import { usePaginatedList } from '@/hooks/usePaginatedList';
 import { charsWithColorsFromGames } from '@/utils/matchData';
 import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
@@ -42,11 +44,6 @@ function RankingPage() {
 
   // Ranked apagado por completo (duels + matchmaking) → el tab History desaparece
   const rankedHistoryEnabled = isFeatureEnabled('duels') || isFeatureEnabled('matchmaking');
-  const rankedTypeEnabled = (type: string | undefined): boolean => {
-    if (type === 'duel') return isFeatureEnabled('duels');
-    if (type === 'matchmaking') return isFeatureEnabled('matchmaking');
-    return rankedHistoryEnabled; // free/legacy = módulo ranked en general
-  };
 
   function formatRank(rank: string | null | undefined) {
     if (!rank || rank === 'Sin puntos') return t('common.unranked');
@@ -71,12 +68,6 @@ function RankingPage() {
 
   const [tab, setTab] = useState<Tab>('leaderboard');
 
-  // Leaderboard
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [loadingBoard, setLoadingBoard] = useState(true);
-  const [boardError, setBoardError] = useState('');
-  const [boardCachedAt, setBoardCachedAt] = useState<string | null>(null);
-
   // All participants (for selectors)
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
 
@@ -92,11 +83,30 @@ function RankingPage() {
   // Resets aplican al juego seleccionado — un admin de juegos solo puede resetear SUS juegos
   const canAdminSelectedGame = canAdminGame(selectedGameId === 'all' ? null : selectedGameId);
 
-  // History
-  const [matchHistory, setMatchHistory] = useState<MatchRecord[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
+  // History — paginated: filters (game / player / enabled ranked types) run in
+  // the server when online and on the local copy when offline.
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const historyTopRef = useRef<HTMLDivElement>(null);
+  const duelsOn = isFeatureEnabled('duels');
+  const matchmakingOn = isFeatureEnabled('matchmaking');
+  const communityGameIds = communityGames.map((g) => g.id).join(',');
+
+  const historySource = useMemo(
+    () => (communityId && tab === 'history' && rankedHistoryEnabled ? createRankedHistorySource(communityId) : null),
+    [communityId, tab, rankedHistoryEnabled]
+  );
+  const historySpec = useMemo(
+    () => buildRankedHistorySpec({
+      gameId: selectedGameId,
+      communityGameIds: communityGameIds ? communityGameIds.split(',') : [],
+      duelsOn,
+      matchmakingOn,
+      playerId: selectedPlayerId,
+    }),
+    [selectedGameId, communityGameIds, duelsOn, matchmakingOn, selectedPlayerId]
+  );
+  const history = usePaginatedList({ source: historySource, spec: historySpec });
 
   // Reset modals
   // Soft: single confirmation. Hard: two-step (first modal → second modal).
@@ -110,47 +120,13 @@ function RankingPage() {
 
   const gameIdForFetch = selectedGameId === 'all' ? GAMES[0]?.id : selectedGameId;
 
-  const loadLeaderboard = useCallback(async () => {
-    // Show cached data immediately — no spinner if we already have something
-    const sync = getLeaderboardSync(communityId, gameIdForFetch);
-    if (sync) {
-      setLeaderboard(sync.entries);
-      setBoardCachedAt(sync.cachedAt);
-      setLoadingBoard(false);
-    } else {
-      setLoadingBoard(true);
-    }
-    setBoardError('');
-    try {
-      const data = await getLeaderboard(communityId, gameIdForFetch);
-      setLeaderboard(data);
-      setBoardCachedAt(null); // fresh data — hide stale banner
-    } catch {
-      if (!sync) setBoardError(t('ranking.errorTitle'));
-      // if we had cache, keep showing it — no error shown
-    } finally {
-      setLoadingBoard(false);
-    }
-  }, [communityId, gameIdForFetch]);
-
-  const loadHistory = useCallback(async () => {
-    if (!communityId) return;
-    const sync = getAllMatchesSync(communityId, selectedGameId === 'all' ? undefined : selectedGameId);
-    if (sync) {
-      setMatchHistory(sync.entries as unknown as MatchRecord[]);
-      setLoadingHistory(false);
-    } else {
-      setLoadingHistory(true);
-    }
-    try {
-      const data = await getAllMatches(communityId, selectedGameId === 'all' ? undefined : selectedGameId);
-      setMatchHistory(data as unknown as MatchRecord[]);
-    } catch {
-      // keep cached data if available, silently ignore otherwise
-    } finally {
-      setLoadingHistory(false);
-    }
-  }, [communityId, selectedGameId]);
+  // Leaderboard — paginated (default 50). Positions are global; the page is cut by the server.
+  const boardTopRef = useRef<HTMLDivElement>(null);
+  const leaderboardSource = useMemo(
+    () => (communityId && tab === 'leaderboard' && gameIdForFetch ? createLeaderboardSource(communityId, gameIdForFetch) : null),
+    [communityId, tab, gameIdForFetch]
+  );
+  const board = usePaginatedList({ source: leaderboardSource, spec: LEADERBOARD_SPEC, defaultPageSize: 50 });
 
   useEffect(() => {
     if (!communityId) return;
@@ -158,20 +134,13 @@ function RankingPage() {
     const cached = getAllParticipants(communityId);
     if (cached.length) setAllParticipants(cached);
     getAllParticipantsAsync(communityId).then((data) => { if (data.length) setAllParticipants(data); });
-
-    loadLeaderboard();
-  }, [loadLeaderboard, communityId]);
+  }, [communityId]);
 
   useEffect(() => {
     if (tab === 'history' && !rankedHistoryEnabled) setTab('leaderboard');
-    if (tab === 'history') loadHistory();
-  }, [tab, loadHistory, rankedHistoryEnabled]);
+  }, [tab, rankedHistoryEnabled]);
 
-  const offline = useServerOffline();
-  useOnReconnect(() => {
-    void loadLeaderboard();
-    if (tab === 'history') void loadHistory();
-  });
+  // Both lists reload themselves on reconnect (usePaginatedList).
 
 
 
@@ -181,7 +150,8 @@ function RankingPage() {
     if (!deleteTarget) return;
     try {
       await deleteMatch(deleteTarget);
-      setMatchHistory((prev) => prev.filter((m) => m.id !== deleteTarget));
+      if (communityId) forgetRankedMatch(communityId, deleteTarget);
+      history.reload();
     } catch {
       // silently fail
     } finally {
@@ -196,8 +166,9 @@ function RankingPage() {
     setResetting(true);
     try {
       await softResetRanking(communityId, selectedGameId);
-      await loadLeaderboard();
-      if (tab === 'history') await loadHistory();
+      if (communityId && gameIdForFetch) clearLeaderboard(communityId, gameIdForFetch);
+      board.reload();
+      history.reload();
     } catch { /* silently fail */ }
     finally { setResetting(false); }
   }
@@ -207,12 +178,10 @@ function RankingPage() {
     setResetting(true);
     try {
       await hardResetRanking(communityId, selectedGameId);
-      await loadLeaderboard();
-      if (tab === 'history') {
-        await loadHistory();
-      } else {
-        setMatchHistory([]);
-      }
+      if (communityId && gameIdForFetch) clearLeaderboard(communityId, gameIdForFetch);
+      board.reload();
+      if (communityId) clearRankedHistory(communityId);   // the wiped history must not survive offline
+      history.reload();
     } catch { /* silently fail */ }
     finally { setResetting(false); }
   }
@@ -303,16 +272,17 @@ function RankingPage() {
       {/* ── LEADERBOARD TAB ── */}
       {tab === 'leaderboard' && (
         <div className="rk-section">
-          {loadingBoard && <Loading message={t('ranking.loadingRanking')} />}
-          {boardCachedAt && !loadingBoard && (
+          <div ref={boardTopRef} />
+          {board.loading && <Loading message={t('ranking.loadingRanking')} />}
+          {board.from === 'local' && board.cachedAt && !board.incomplete && (
             <div className="rk-stale-banner">
               <i className="fas fa-plug-circle-xmark" />
-              {' '}{t('ranking.offlineCache', { date: new Date(boardCachedAt).toLocaleString() })}
+              {' '}{t('ranking.offlineCache', { date: new Date(board.cachedAt).toLocaleString() })}
             </div>
           )}
-          {boardError && (offline ? (
-            <OfflineNotice />
-          ) : (
+          {board.unavailable && <OfflineNotice />}
+          {board.incomplete && <OfflineNotice compact partial />}
+          {board.error && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-triangle-exclamation" /></span>
               <p style={{ color: 'var(--danger-color, #ef4444)', fontWeight: 600 }}>
@@ -322,13 +292,13 @@ function RankingPage() {
                 {t('ranking.errorDesc')}<br />
                 {t('ranking.errorDesc2')}
               </p>
-              <button className="btn btn-primary" onClick={() => void loadLeaderboard()}>
+              <button className="btn btn-primary" onClick={board.reload}>
                 {t('ranking.retry')}
               </button>
             </div>
-          ))}
+          )}
 
-          {!loadingBoard && !boardError && leaderboard.length === 0 && (
+          {!board.loading && !board.unavailable && !board.error && board.total === 0 && (
             <div className="rk-empty">
               <span className="rk-empty-icon"><i className="fas fa-trophy" /></span>
               <p>{t('ranking.emptyNoParticipants')}</p>
@@ -338,7 +308,7 @@ function RankingPage() {
             </div>
           )}
 
-          {!loadingBoard && leaderboard.length > 0 && (
+          {board.items.length > 0 && (
             <div className="rk-table-wrapper card">
               <table className="rk-table">
                 <thead>
@@ -350,7 +320,7 @@ function RankingPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {leaderboard.map((entry) => (
+                  {board.items.map((entry) => (
                     <tr
                       key={entry.id}
                       className={`rk-row ${entry.position != null && entry.position <= 5 ? 'legend-row' : ''}`}
@@ -402,6 +372,8 @@ function RankingPage() {
               </table>
             </div>
           )}
+
+          <Pagination {...board.paginationProps} scrollRef={boardTopRef} />
         </div>
       )}
 
@@ -419,31 +391,29 @@ function RankingPage() {
             />
           </div>
 
-          {loadingHistory && <Loading message={t('ranking.loadingHistory')} />}
+          <div ref={historyTopRef} />
+          {history.loading && <Loading message={t('ranking.loadingHistory')} />}
+          {history.unavailable && <OfflineNotice />}
+          {history.incomplete && <OfflineNotice compact partial />}
 
-          {!loadingHistory && matchHistory.filter(m => rankedTypeEnabled(m.type)).filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId).length === 0 && (
-            offline && matchHistory.length === 0 ? (
-              <OfflineNotice />
-            ) : (
-              <div className="rk-empty">
-                <span className="rk-empty-icon"><i className="fas fa-list" /></span>
-                <p>{t('ranking.emptyNoMatches')}</p>
-              </div>
-            )
+          {history.error && (
+            <div className="rk-empty">
+              <span className="rk-empty-icon"><i className="fas fa-triangle-exclamation" /></span>
+              <p style={{ color: 'var(--danger-color, #ef4444)', fontWeight: 600 }}>{t('ranking.errorTitle')}</p>
+              <button className="btn btn-primary" onClick={history.reload}>{t('ranking.retry')}</button>
+            </div>
           )}
 
-          {!loadingHistory && matchHistory.length > 0 && (
+          {!history.loading && !history.unavailable && !history.error && history.total === 0 && (
+            <div className="rk-empty">
+              <span className="rk-empty-icon"><i className="fas fa-list" /></span>
+              <p>{t('ranking.emptyNoMatches')}</p>
+            </div>
+          )}
+
+          {history.items.length > 0 && (
             <div className="rk-history-list">
-              {(matchHistory as unknown as (MatchRecord & {
-                playerAPointsBefore: number; playerBPointsBefore: number;
-                playerAPointsAfter: number; playerBPointsAfter: number;
-                playerADelta: number; playerBDelta: number;
-                playerARankBefore: string; playerBRankBefore: string;
-                playerARankAfter: string; playerBRankAfter: string;
-              })[])
-                .filter(m => rankedTypeEnabled(m.type))
-                .filter(m => !m.gameId || communityGames.some((g) => g.id === m.gameId))
-                .filter(m => !selectedPlayerId || m.playerAId === selectedPlayerId || m.playerBId === selectedPlayerId)
+              {history.items
                 .map((m) => (
                 <div key={m.id} className="card rk-history-card">
                   <div className="rk-history-top">
@@ -513,6 +483,8 @@ function RankingPage() {
               ))}
             </div>
           )}
+
+          <Pagination {...history.paginationProps} scrollRef={historyTopRef} />
         </div>
       )}
 

@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getGame, getCharacter } from '@/data/games';
 import { getCharacterIconUrl } from '@/utils/characterImage';
 import type { ColoredChar } from '@/utils/matchData';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
+import Pagination from '@/components/Pagination/Pagination';
+import { useLocalPagination } from '@/hooks/usePaginatedList';
 import type { HeadToHeadEntry, H2HMatchType, H2HTimeFilter } from '@/services/participants/participantService';
 import { useCommunity } from '@/contexts/CommunityContext';
 import './ParticipantH2H.css';
@@ -217,6 +219,8 @@ interface CharMatchup {
   losses: number;
 }
 
+const ORDERED = { sort: [{ field: 'order', dir: 'asc' as const, type: 'number' as const }] };
+
 export default function ParticipantH2H({
   entries,
   matchType,
@@ -259,6 +263,35 @@ export default function ParticipantH2H({
     }
     return [...map.values()].sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
   }, [entries]);
+
+  // Matchups after the character filters, grouped by "my character" (biggest group first).
+  const filteredMatchups = useMemo(
+    () => charMatchups.filter((m) => (!myCharFilter || m.myChar === myCharFilter) && (!oppCharFilter || m.oppChar === oppCharFilter)),
+    [charMatchups, myCharFilter, oppCharFilter]
+  );
+  const groups = useMemo(() => {
+    const groupMap = new Map<string, CharMatchup[]>();
+    for (const m of filteredMatchups) {
+      const key = `${m.gameId}:${m.myChar}`;
+      if (!groupMap.has(key)) groupMap.set(key, []);
+      groupMap.get(key)!.push(m);
+    }
+    return [...groupMap.entries()].sort((a, b) => {
+      const aTotal = a[1].reduce((s, m) => s + m.wins + m.losses, 0);
+      const bTotal = b[1].reduce((s, m) => s + m.wins + m.losses, 0);
+      return bTotal - aTotal;
+    });
+  }, [filteredMatchups]);
+
+  // Both lists are paginated in the order computed above (the server/aggregation order is the ranking).
+  // Page goes back to 1 when the underlying data or filters change.
+  const oppTopRef = useRef<HTMLDivElement>(null);
+  const charTopRef = useRef<HTMLDivElement>(null);
+  const oppRows = useMemo(() => entries.map((e, i) => ({ id: e.opponentId, order: i, entry: e })), [entries]);
+  const groupRows = useMemo(() => groups.map((g, i) => ({ id: g[0], order: i, group: g })), [groups]);
+  const entriesKey = `${matchType}|${timeFilter}|${entries.length}|${entries[0]?.opponentId ?? ''}`;
+  const oppList = useLocalPagination(oppRows, ORDERED, { listId: 'profile-h2h-opponents', resetKey: entriesKey });
+  const charList = useLocalPagination(groupRows, ORDERED, { listId: 'profile-h2h-characters', resetKey: `${entriesKey}|${myCharFilter}|${oppCharFilter}` });
 
   if (loading) {
     return <div className="h2h-panel"><div className="h2h-empty">Loading...</div></div>;
@@ -317,11 +350,15 @@ export default function ParticipantH2H({
         entries.length === 0
           ? <div className="h2h-empty">{t('participantProfile.h2h.noOpponents', 'No opponents yet.')}</div>
           : (
-            <div className="h2h-opp-list">
-              {entries.map((e) => (
-                <OpponentCard key={e.opponentId} entry={e} onNavigate={onNavigateParticipant} />
-              ))}
-            </div>
+            <>
+              <div ref={oppTopRef} />
+              <div className="h2h-opp-list">
+                {oppList.items.map(({ entry: e }) => (
+                  <OpponentCard key={e.opponentId} entry={e} onNavigate={onNavigateParticipant} />
+                ))}
+              </div>
+              <Pagination {...oppList.paginationProps} scrollRef={oppTopRef} />
+            </>
           )
       )}
 
@@ -332,24 +369,6 @@ export default function ParticipantH2H({
         // Unique options for filters
         const myCharOpts = [...new Map(charMatchups.map((m) => [`${m.gameId}:${m.myChar}`, m])).values()];
         const oppCharOpts = [...new Map(charMatchups.map((m) => [`${m.gameId}:${m.oppChar}`, m])).values()];
-
-        const filtered = charMatchups.filter((m) =>
-          (!myCharFilter || m.myChar === myCharFilter) &&
-          (!oppCharFilter || m.oppChar === oppCharFilter)
-        );
-
-        // Group by gameId:myChar
-        const groupMap = new Map<string, CharMatchup[]>();
-        for (const m of filtered) {
-          const key = `${m.gameId}:${m.myChar}`;
-          if (!groupMap.has(key)) groupMap.set(key, []);
-          groupMap.get(key)!.push(m);
-        }
-        const groups = [...groupMap.entries()].sort((a, b) => {
-          const aTotal = a[1].reduce((s, m) => s + m.wins + m.losses, 0);
-          const bTotal = b[1].reduce((s, m) => s + m.wins + m.losses, 0);
-          return bTotal - aTotal;
-        });
 
         return (
           <div className="h2h-mu-table">
@@ -403,9 +422,10 @@ export default function ParticipantH2H({
             </div>
 
             {/* ── Grouped rows ── */}
-            {filtered.length === 0
+            <div ref={charTopRef} />
+            {filteredMatchups.length === 0
               ? <div className="h2h-empty">{t('participantProfile.h2h.noMatchupsFilter', 'No matchups for this filter.')}</div>
-              : groups.map(([groupKey, matchups]) => {
+              : charList.items.map(({ group: [groupKey, matchups] }) => {
                 const first = matchups[0];
                 const myChar = getCharacter(first.gameId, first.myChar);
                 const badge = gameBadgeStyle(first.gameId);
@@ -440,6 +460,7 @@ export default function ParticipantH2H({
                 );
               })
             }
+            <Pagination {...charList.paginationProps} scrollRef={charTopRef} />
           </div>
         );
       })()}

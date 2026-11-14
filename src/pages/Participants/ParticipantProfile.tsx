@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { GlobalParticipant, ComputedStats, MatchRecord, LeagueMatch } from '@/models/types';
+import { GlobalParticipant, ComputedStats } from '@/models/types';
 import type { AuthUser } from '@/models/auth';
 import {
   getParticipant,
@@ -9,7 +9,6 @@ import {
   updateParticipant,
   removeParticipant,
   getParticipantLeagueStats,
-  getParticipantLeagueMatches,
   getParticipantStats,
   getTournamentResults,
   getHeadToHead,
@@ -24,8 +23,9 @@ import {
   type LeagueStatsSummary,
 } from '@/services/participants/participantService';
 import { loadTournamentsForParticipantAsync } from '@/services/storage/localStorage';
-import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
-import { getAllMatches } from '@/services/ranking/rankingService';
+import { buildHistorySpec, createHistorySource, type HistoryRow, type HistoryType } from '@/services/history/historyService';
+import Pagination from '@/components/Pagination/Pagination';
+import { usePaginatedList } from '@/hooks/usePaginatedList';
 import { initials, avatarColor } from './ParticipantsPage';
 import { getCharacter, getGame, GAMES, GAMES_MAP } from '@/data/games';
 import { getCharacterImageUrl } from '@/utils/characterImage';
@@ -142,11 +142,6 @@ function ParticipantProfile() {
   const [nextResetText, setNextResetText] = useState('');
 
   // Matches tab
-  const [allMatches, setAllMatches] = useState<any[]>([]);
-  const [loadingMatches, setLoadingMatches] = useState(false);
-  // True when a match source could not be loaded at all (no server and nothing
-  // saved for it): the list is partial. Saved-but-possibly-stale data is not.
-  const [matchesIncomplete, setMatchesIncomplete] = useState(false);
   const [matchTypeFilter, setMatchTypeFilter] = useState<MatchTypeFilter>('all');
   const [matchResultFilter, setMatchResultFilter] = useState<MatchResultFilter>('all');
 
@@ -314,13 +309,6 @@ function ParticipantProfile() {
     }).catch(() => setRankEntry(null));
   }, [id, communityId, profileGame, participant?.gameId]);
 
-  // Load matches when Matches tab is opened
-  useEffect(() => {
-    if (tab === 'matches' && id && communityId && allMatches.length === 0) {
-      loadMatches();
-    }
-  }, [tab, id, communityId]);
-
   // Cargar estado start.gg cuando es propio perfil y se abre la pestaña edit
   useEffect(() => {
     if (!isOwnProfile || tab !== 'edit' || startggStatus !== null) return;
@@ -364,6 +352,110 @@ function ParticipantProfile() {
     if (resultsSubTab === 'tournaments' && !isFeatureEnabled('tournaments')) setResultsSubTab('leagues');
     if (resultsSubTab === 'leagues' && !isFeatureEnabled('leagues')) setResultsSubTab('tournaments');
   }, [isFeatureEnabled, h2hMatchType, matchTypeFilter, resultsSubTab]);
+
+  // ── Matches tab: paginated ────────────────────────────────────────────
+  // Type / result / game filters run in the server online and on the local copy
+  // (shared with Events → History) offline. Opponent names come from the community list.
+  const matchesTopRef = useRef<HTMLDivElement>(null);
+  const [matchParticipants, setMatchParticipants] = useState<GlobalParticipant[]>([]);
+  useEffect(() => {
+    if (tab === 'matches' && communityId) getAllParticipantsAsync(communityId).then(setMatchParticipants);
+  }, [tab, communityId]);
+  const matchesSource = useMemo(
+    () => (communityId && tab === 'matches' ? createHistorySource(communityId, 'profile-matches') : null),
+    [communityId, tab]
+  );
+  const matchGameKey = communityGames.map((g) => g.id).join(',');
+  const disabledTypeKey = disabledMatchTypes.join(',');
+  const matchesSpec = useMemo(
+    () => buildHistorySpec({
+      type: matchTypeFilter,
+      gameId: profileGame || null,
+      enabledGameIds: matchGameKey ? matchGameKey.split(',') : [],
+      disabledTypes: (disabledTypeKey ? disabledTypeKey.split(',') : []) as HistoryType[],
+      playerId: id ?? null,
+      resultFor: id && matchResultFilter !== 'all' ? { participantId: id, result: matchResultFilter } : null,
+    }),
+    [matchTypeFilter, profileGame, matchGameKey, disabledTypeKey, id, matchResultFilter]
+  );
+  const matches = usePaginatedList<HistoryRow>({ source: matchesSource, spec: matchesSpec });
+
+  // Row → card model (names, characters and scores come from the original record).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function toProfileMatch(row: HistoryRow): any {
+    const m = row.data;
+    const byId = (pid: string | null | undefined) => matchParticipants.find((p) => p.id === pid);
+    const unknown = t('tournament.bracket.unknown');
+    if (row.kind === 'tournament') {
+      const gP1 = byId(m.player1GlobalId);
+      const gP2 = byId(m.player2GlobalId);
+      const player1IsWinner = m.winnerId === m.player1Id;
+      return {
+        id: row.id,
+        type: 'tournament' as const,
+        gameId: m.gameId,
+        player1Id: gP1?.id ?? m.player1GlobalId ?? m.player1Id,
+        player2Id: gP2?.id ?? m.player2GlobalId ?? m.player2Id,
+        winnerId: player1IsWinner ? (gP1?.id ?? m.winnerGlobalId ?? m.winnerId) : (gP2?.id ?? m.winnerGlobalId ?? m.winnerId),
+        player1Name: gP1?.name ?? (m.player1Name || unknown),
+        player2Name: gP2?.name ?? (m.player2Name || unknown),
+        player1Alias: gP1?.alias ?? null,
+        player2Alias: gP2?.alias ?? null,
+        date: m.createdAt,
+        context: m.tournamentName,
+        player1Score: m.player1Score ?? null,
+        player2Score: m.player2Score ?? null,
+        player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
+        player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
+      };
+    }
+    if (row.kind === 'league') {
+      const [s1, s2] = parseScoreString(m.score);
+      return {
+        id: row.id,
+        type: 'league' as const,
+        gameId: m.gameId,
+        player1Id: m.participant1Id,
+        player2Id: m.participant2Id,
+        winnerId: m.winnerId,
+        player1Name: byId(m.participant1Id)?.name ?? unknown,
+        player2Name: byId(m.participant2Id)?.name ?? unknown,
+        player1Alias: byId(m.participant1Id)?.alias ?? null,
+        player2Alias: byId(m.participant2Id)?.alias ?? null,
+        date: m.completedDate ?? m.scheduledDate ?? '',
+        context: `League ${m.week ? `Week ${m.week}` : ''}`,
+        player1Score: s1,
+        player2Score: s2,
+        player1Chars: charsWithColorsFromGames(m.games, 1),
+        player2Chars: charsWithColorsFromGames(m.games, 2),
+      };
+    }
+    return {
+      id: row.id,
+      type: row.type,
+      gameId: m.gameId,
+      player1Id: m.playerAId,
+      player2Id: m.playerBId,
+      winnerId: m.winnerId,
+      player1Name: byId(m.playerAId)?.name ?? unknown,
+      player2Name: byId(m.playerBId)?.name ?? unknown,
+      player1Alias: byId(m.playerAId)?.alias ?? null,
+      player2Alias: byId(m.playerBId)?.alias ?? null,
+      player1EloBefore: m.playerAPointsBefore,
+      player2EloBefore: m.playerBPointsBefore,
+      player1EloAfter: m.playerAPointsAfter,
+      player2EloAfter: m.playerBPointsAfter,
+      player1EloChange: m.playerADelta,
+      player2EloChange: m.playerBDelta,
+      date: m.createdAt,
+      player1Score: m.player1Score ?? null,
+      player2Score: m.player2Score ?? null,
+      player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
+      player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
+    };
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const profileMatches = useMemo(() => matches.items.map(toProfileMatch), [matches.items, matchParticipants]);
 
   // Load head-to-head data when H2H tab is opened or filter changes
   useEffect(() => {
@@ -446,117 +538,6 @@ function ParticipantProfile() {
       setLinkedUser(null);
     } finally {
       setLoadingUser(false);
-    }
-  }
-
-  async function loadMatches() {
-    if (!id || !communityId) return;
-    setLoadingMatches(true);
-    try {
-      // A source that cannot be loaded (no server and nothing saved) is
-      // reported, so the list can say it is partial instead of looking complete.
-      let missingSource = false;
-      const [tournamentMatches, rankedMatches, leagueMatches, allParticipants] = await Promise.all([
-        getAllTournamentMatchesAsync(communityId),
-        // Throws offline with no mirror — must not blank the other sources.
-        getAllMatches(communityId).catch(() => { missingSource = true; return [] as MatchRecord[]; }),
-        getParticipantLeagueMatches(id, communityId).then((r) => { if (!r) missingSource = true; return r ?? []; }),
-        getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : []),
-      ]);
-      setMatchesIncomplete(missingSource);
-
-      const participantMap = new Map(allParticipants.map((p: GlobalParticipant) => [p.id, p]));
-
-      // Filter and unify matches for this participant
-      const unified = [
-        ...tournamentMatches
-          .filter((m: any) => m.player1GlobalId === id || m.player2GlobalId === id)
-          .map((m: any) => {
-            const gP1 = m.player1GlobalId ? participantMap.get(m.player1GlobalId) : null;
-            const gP2 = m.player2GlobalId ? participantMap.get(m.player2GlobalId) : null;
-            const player1IsWinner = m.winnerId === m.player1Id;
-
-            return {
-              id: m.id,
-              type: 'tournament' as const,
-              gameId: m.gameId,
-              player1Id: gP1?.id ?? m.player1GlobalId ?? m.player1Id,
-              player2Id: gP2?.id ?? m.player2GlobalId ?? m.player2Id,
-              winnerId: player1IsWinner
-                ? (gP1?.id ?? m.winnerGlobalId ?? m.winnerId)
-                : (gP2?.id ?? m.winnerGlobalId ?? m.winnerId),
-              player1Name: gP1?.name ?? (m.player1Name || t('tournament.bracket.unknown')),
-              player2Name: gP2?.name ?? (m.player2Name || t('tournament.bracket.unknown')),
-              player1Alias: gP1?.alias ?? null,
-              player2Alias: gP2?.alias ?? null,
-              date: m.createdAt,
-              context: m.tournamentName,
-              player1Score: m.player1Score ?? null,
-              player2Score: m.player2Score ?? null,
-              player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
-              player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
-            };
-          }),
-        ...rankedMatches
-          .filter((m: MatchRecord) => m.playerAId === id || m.playerBId === id)
-          .map((m: MatchRecord) => ({
-            id: m.id,
-            type: (m.type as 'duel' | 'matchmaking' | 'free') ?? 'duel',
-            gameId: m.gameId,
-            player1Id: m.playerAId,
-            player2Id: m.playerBId,
-            winnerId: m.winnerId,
-            player1Name: participantMap.get(m.playerAId)?.name ?? t('tournament.bracket.unknown'),
-            player2Name: participantMap.get(m.playerBId)?.name ?? t('tournament.bracket.unknown'),
-            player1Alias: participantMap.get(m.playerAId)?.alias ?? null,
-            player2Alias: participantMap.get(m.playerBId)?.alias ?? null,
-            player1EloBefore: m.playerAPointsBefore,
-            player2EloBefore: m.playerBPointsBefore,
-            player1EloAfter: m.playerAPointsAfter,
-            player2EloAfter: m.playerBPointsAfter,
-            player1EloChange: m.playerADelta,
-            player2EloChange: m.playerBDelta,
-            date: m.createdAt,
-            player1Score: m.player1Score ?? null,
-            player2Score: m.player2Score ?? null,
-            player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
-            player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
-          })),
-        ...leagueMatches
-          .filter((m: LeagueMatch) =>
-            (m.participant1Id === id || m.participant2Id === id) &&
-            (m.status === 'completed' || m.status === 'no_show')
-          )
-          .map((m: LeagueMatch) => {
-            const p1 = participantMap.get(m.participant1Id);
-            const p2 = participantMap.get(m.participant2Id);
-            const [s1, s2] = parseScoreString(m.score);
-            return {
-              id: m.id,
-              type: 'league' as const,
-              gameId: m.gameId,
-              player1Id: m.participant1Id,
-              player2Id: m.participant2Id,
-              winnerId: m.winnerId,
-              player1Name: p1?.name ?? t('tournament.bracket.unknown'),
-              player2Name: p2?.name ?? t('tournament.bracket.unknown'),
-              player1Alias: p1?.alias ?? null,
-              player2Alias: p2?.alias ?? null,
-              date: m.completedDate ?? m.scheduledDate ?? '',
-              context: `League ${m.week ? `Week ${m.week}` : ''}`,
-              player1Score: s1,
-              player2Score: s2,
-              player1Chars: charsWithColorsFromGames(m.games, 1),
-              player2Chars: charsWithColorsFromGames(m.games, 2),
-            };
-          }),
-      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-      setAllMatches(unified);
-    } catch (err) {
-      console.error('Failed to load matches:', err);
-    } finally {
-      setLoadingMatches(false);
     }
   }
 
@@ -803,8 +784,7 @@ function ParticipantProfile() {
     if (!id) return;
     getParticipantStats(id).then(setStatsSummary).catch(() => {});
     getParticipantLeagueStats(id).then(setLeagueStats).catch(() => {});
-    // Also refill whichever data tab is open (they only load on tab change).
-    if (tab === 'matches' && communityId) loadMatches();
+    // Also refill whichever data tab is open (they only load on tab change; the matches list reloads itself).
     if (tab === 'results') getTournamentResults(id).then(setTournamentResults).catch(() => {});
     if (tab === 'h2h') {
       getHeadToHead(id, h2hMatchType, profileGame, h2hTimeFilter, disabledMatchTypes).then(setH2hData).catch(() => {});
@@ -1325,122 +1305,110 @@ function ParticipantProfile() {
               {/* game filter handled by global selector above tabs */}
             </div>
 
-            {loadingMatches && <Loading message={t('participantProfile.matches.loading')} />}
+            <div ref={matchesTopRef} />
+            {matches.loading && <Loading message={t('participantProfile.matches.loading')} />}
+            {matches.unavailable && <OfflineNotice />}
+            {matches.incomplete && <OfflineNotice compact partial />}
+            {matches.error && <p className="text-secondary">{matches.error}</p>}
+            {!matches.loading && !matches.unavailable && !matches.error && matches.total === 0 && (
+              <p className="text-secondary">{t('participantProfile.matches.noMatches')}</p>
+            )}
 
-            {!loadingMatches && (() => {
-              const enabledGameIds = new Set(communityGames.map((g) => g.id));
-              const filtered = allMatches.filter(m => {
-                if (disabledMatchTypes.includes(m.type ?? '')) return false;
-                if (m.gameId && !enabledGameIds.has(m.gameId)) return false;
-                const typeMatch = matchTypeFilter === 'all' || m.type === matchTypeFilter;
-                const resultMatch = matchResultFilter === 'all' 
-                  || (matchResultFilter === 'wins' && m.winnerId === id)
-                  || (matchResultFilter === 'losses' && m.winnerId !== id);
-                const gameMatch = !profileGame || m.gameId === profileGame;
-                return typeMatch && resultMatch && gameMatch;
-              });
+            {profileMatches.length > 0 && (
+              <div className="matches-list">
+                {profileMatches.map(m => {
+                  const isPlayer1 = m.player1Id === id;
+                  const won = m.winnerId === id;
+                  const opponentId = isPlayer1 ? m.player2Id : m.player1Id;
+                  const opponentName = isPlayer1 ? m.player2Name : m.player1Name;
+                  const opponentAlias = isPlayer1 ? m.player2Alias : m.player1Alias;
+                  const myScore = isPlayer1 ? m.player1Score : m.player2Score;
+                  const oppScore = isPlayer1 ? m.player2Score : m.player1Score;
+                  const myChars = isPlayer1 ? m.player1Chars : m.player2Chars;
+                  const oppChars = isPlayer1 ? m.player2Chars : m.player1Chars;
+                  const hasScore = myScore !== null && myScore !== undefined && oppScore !== null && oppScore !== undefined;
 
-              if (filtered.length === 0) {
-                return offline && allMatches.length === 0
-                  ? <OfflineNotice />
-                  : <p className="text-secondary">{t('participantProfile.matches.noMatches')}</p>;
-              }
-
-              return (
-                <div className="matches-list">
-                  {offline && matchesIncomplete && <OfflineNotice compact partial />}
-                  {filtered.map(m => {
-                    const isPlayer1 = m.player1Id === id;
-                    const won = m.winnerId === id;
-                    const opponentId = isPlayer1 ? m.player2Id : m.player1Id;
-                    const opponentName = isPlayer1 ? m.player2Name : m.player1Name;
-                    const opponentAlias = isPlayer1 ? m.player2Alias : m.player1Alias;
-                    const myScore = isPlayer1 ? m.player1Score : m.player2Score;
-                    const oppScore = isPlayer1 ? m.player2Score : m.player1Score;
-                    const myChars = isPlayer1 ? m.player1Chars : m.player2Chars;
-                    const oppChars = isPlayer1 ? m.player2Chars : m.player1Chars;
-                    const hasScore = myScore !== null && myScore !== undefined && oppScore !== null && oppScore !== undefined;
-
-                    return (
-                      <div key={m.id} className={`match-item ${won ? 'win' : 'loss'}`}>
-                        <div className="match-item-header">
-                          {m.gameId && (
-                            <span className="match-item-game" style={gameBadgeStyle(m.gameId)}>
-                              {m.gameId.toUpperCase()}
+                  return (
+                    <div key={m.id} className={`match-item ${won ? 'win' : 'loss'}`}>
+                      <div className="match-item-header">
+                        {m.gameId && (
+                          <span className="match-item-game" style={gameBadgeStyle(m.gameId)}>
+                            {m.gameId.toUpperCase()}
+                          </span>
+                        )}
+                        <span className="match-item-date">
+                          {new Date(m.date).toLocaleDateString(undefined, {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                        <span className="match-item-header-break" aria-hidden="true" />
+                        <span className={`match-item-result ${won ? 'win' : 'loss'}`}>
+                          {won ? <><i className="fas fa-trophy" /> {t('participantProfile.matches.win')}</> : <><i className="fas fa-times" /> {t('participantProfile.matches.loss')}</>}
+                        </span>
+                        <span className="match-item-type">
+                          {m.type && (
+                            <>
+                              <i className={m.type === 'tournament' ? 'fas fa-trophy' : m.type === 'league' ? 'fas fa-calendar-alt' : m.type === 'duel' ? 'fas fa-khanda' : m.type === 'matchmaking' ? 'fas fa-random' : 'fas fa-gamepad'} />
+                              {' '}{t(`participantProfile.matches.matchTypes.${m.type}`)}
+                            </>
+                          )}
+                        </span>
+                      </div>
+                      <div className="match-item-body">
+                        <div className="match-item-opponent">
+                          <CharacterIcons gameId={m.gameId} characterIds={myChars} />
+                          <span className="match-item-vs">{t('common.vs')}</span>
+                          <span
+                            className="match-item-opponent-name"
+                            onClick={() => navigate(getPath(`participants/${opponentId}?game=${m.gameId || profileGame}`))}
+                          >
+                            <PlayerDisplay name={opponentName || t('tournament.bracket.unknown')} alias={opponentAlias} size="sm" />
+                          </span>
+                          <CharacterIcons gameId={m.gameId} characterIds={oppChars} />
+                          {hasScore && (
+                            <span className="match-item-score">
+                              <span className={won ? 'ms-win' : 'ms-loss'}>{myScore}</span>
+                              <em>–</em>
+                              <span className={!won ? 'ms-win' : 'ms-loss'}>{oppScore}</span>
                             </span>
                           )}
-                          <span className="match-item-date">
-                            {new Date(m.date).toLocaleDateString(undefined, {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </span>
-                          <span className="match-item-header-break" aria-hidden="true" />
-                          <span className={`match-item-result ${won ? 'win' : 'loss'}`}>
-                            {won ? <><i className="fas fa-trophy" /> {t('participantProfile.matches.win')}</> : <><i className="fas fa-times" /> {t('participantProfile.matches.loss')}</>}
-                          </span>
-                          <span className="match-item-type">
-                            {m.type && (
+                        </div>
+                        {m.context && (
+                          <div className="match-item-context">
+                            <i className="fas fa-info-circle" /> {m.context}
+                          </div>
+                        )}
+                        {m.type !== 'tournament' && m.player1EloChange !== undefined && (
+                          <div className="match-item-elo">
+                            {isPlayer1 ? (
                               <>
-                                <i className={m.type === 'tournament' ? 'fas fa-trophy' : m.type === 'league' ? 'fas fa-calendar-alt' : m.type === 'duel' ? 'fas fa-khanda' : m.type === 'matchmaking' ? 'fas fa-random' : 'fas fa-gamepad'} />
-                                {' '}{t(`participantProfile.matches.matchTypes.${m.type}`)}
+                                <span>{m.player1EloBefore} → {m.player1EloAfter}</span>
+                                <span className={`elo-change ${m.player1EloChange >= 0 ? 'positive' : 'negative'}`}>
+                                  {m.player1EloChange >= 0 ? '+' : ''}{m.player1EloChange}
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <span>{m.player2EloBefore} → {m.player2EloAfter}</span>
+                                <span className={`elo-change ${m.player2EloChange >= 0 ? 'positive' : 'negative'}`}>
+                                  {m.player2EloChange >= 0 ? '+' : ''}{m.player2EloChange}
+                                </span>
                               </>
                             )}
-                          </span>
-                        </div>
-                        <div className="match-item-body">
-                          <div className="match-item-opponent">
-                            <CharacterIcons gameId={m.gameId} characterIds={myChars} />
-                            <span className="match-item-vs">{t('common.vs')}</span>
-                            <span
-                              className="match-item-opponent-name"
-                              onClick={() => navigate(getPath(`participants/${opponentId}?game=${m.gameId || profileGame}`))}
-                            >
-                              <PlayerDisplay name={opponentName || t('tournament.bracket.unknown')} alias={opponentAlias} size="sm" />
-                            </span>
-                            <CharacterIcons gameId={m.gameId} characterIds={oppChars} />
-                            {hasScore && (
-                              <span className="match-item-score">
-                                <span className={won ? 'ms-win' : 'ms-loss'}>{myScore}</span>
-                                <em>–</em>
-                                <span className={!won ? 'ms-win' : 'ms-loss'}>{oppScore}</span>
-                              </span>
-                            )}
                           </div>
-                          {m.context && (
-                            <div className="match-item-context">
-                              <i className="fas fa-info-circle" /> {m.context}
-                            </div>
-                          )}
-                          {m.type !== 'tournament' && m.player1EloChange !== undefined && (
-                            <div className="match-item-elo">
-                              {isPlayer1 ? (
-                                <>
-                                  <span>{m.player1EloBefore} → {m.player1EloAfter}</span>
-                                  <span className={`elo-change ${m.player1EloChange >= 0 ? 'positive' : 'negative'}`}>
-                                    {m.player1EloChange >= 0 ? '+' : ''}{m.player1EloChange}
-                                  </span>
-                                </>
-                              ) : (
-                                <>
-                                  <span>{m.player2EloBefore} → {m.player2EloAfter}</span>
-                                  <span className={`elo-change ${m.player2EloChange >= 0 ? 'positive' : 'negative'}`}>
-                                    {m.player2EloChange >= 0 ? '+' : ''}{m.player2EloChange}
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                        )}
                       </div>
-                    );
-                  })}
-                </div>
-              );
-            })()}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <Pagination {...matches.paginationProps} scrollRef={matchesTopRef} />
           </div>
         )}
 

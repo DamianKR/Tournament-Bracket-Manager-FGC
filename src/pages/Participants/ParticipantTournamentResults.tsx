@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getGame, getCharacter } from '@/data/games';
 import { gameBadgeStyle, gameAccent } from '@/utils/gameColor';
 import { getCharacterIconUrl } from '@/utils/characterImage';
 import type { TournamentResult, TournamentResultMatch } from '@/services/participants/participantService';
+import Pagination from '@/components/Pagination/Pagination';
+import { useLocalPagination } from '@/hooks/usePaginatedList';
 import './ParticipantTournamentResults.css';
 
 type SortField = 'date' | 'placement';
@@ -108,17 +110,18 @@ export default function ParticipantTournamentResults({ results, onNavigate }: Pr
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  const sorted = [...results].sort((a, b) => {
-    let cmp = 0;
-    if (sortField === 'date') {
-      cmp = new Date(a.date).getTime() - new Date(b.date).getTime();
-    } else {
-      const pa = a.placement ?? 9999;
-      const pb = b.placement ?? 9999;
-      cmp = pa - pb;
-    }
-    return sortDir === 'desc' ? -cmp : cmp;
-  });
+  // Sorted by the shared engine, then paginated. Keys mirror the old comparator exactly:
+  // dates by timestamp; an unplaced event counts as the worst placement (9999).
+  const listTopRef = useRef<HTMLDivElement>(null);
+  const rows = useMemo(
+    () => results.map((r) => ({ ...r, id: r.tournamentId, dateKey: new Date(r.date).getTime(), placementKey: r.placement ?? 9999 })),
+    [results]
+  );
+  const spec = useMemo(
+    () => ({ sort: [{ field: sortField === 'date' ? 'dateKey' : 'placementKey', dir: sortDir, type: 'number' as const }] }),
+    [sortField, sortDir]
+  );
+  const list = useLocalPagination(rows, spec, { listId: 'profile-tournament-results' });
 
   const toggle = (id: string) => {
     setExpandedIds((prev) => {
@@ -166,11 +169,12 @@ export default function ParticipantTournamentResults({ results, onNavigate }: Pr
       </div>
 
       {/* Tournament rows */}
-      {sorted.length === 0 ? (
+      <div ref={listTopRef} />
+      {results.length === 0 ? (
         <div className="tr-empty">{t('participantProfile.results.noTournamentResults', 'No tournament results yet.')}</div>
       ) : (
         <div className="tr-list">
-          {sorted.map((r) => {
+          {list.items.map((r) => {
             const expanded = expandedIds.has(r.tournamentId);
             const accent = gameAccent(r.gameId);
             return (
@@ -237,6 +241,8 @@ export default function ParticipantTournamentResults({ results, onNavigate }: Pr
           })}
         </div>
       )}
+
+      <Pagination {...list.paginationProps} scrollRef={listTopRef} />
     </div>
   );
 }

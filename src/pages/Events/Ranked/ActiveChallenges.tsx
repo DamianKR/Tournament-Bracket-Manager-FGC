@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DuelChallenge } from '@/models/duel';
 import { GlobalParticipant } from '@/models/types';
@@ -21,6 +21,9 @@ import { getAllParticipantsAsync } from '@/services/participants/participantServ
 import { DEFAULT_DUEL_SETTINGS, DuelSettings } from '@/models/duel';
 import { getParticipantElo as getGameElo } from '@/utils/participantGames';
 import { gameBadgeStyle } from '@/utils/gameColor';
+import Pagination from '@/components/Pagination/Pagination';
+import { useLocalPagination } from '@/hooks/usePaginatedList';
+import type { QueryCond, QuerySpec } from '../../../../shared/query.js';
 import './ActiveChallenges.css';
 
 interface ActiveChallengesProps {
@@ -157,18 +160,19 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
     return p ? getGameElo(p, gameId) : null;
   };
 
-  const sortedChallenges = [...allChallenges].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-
-  const filteredChallenges = sortedChallenges.filter(c => {
-    const statusMatch = filterStatus === 'all' || c.status === filterStatus;
-    const participantMatch = !filterParticipantId ||
-      c.challengerId === filterParticipantId ||
-      c.challengedId === filterParticipantId;
-    const gameMatch = !filterGameId || c.gameId === filterGameId;
-    return statusMatch && participantMatch && gameMatch;
-  });
+  // Challenges are created / answered offline (ops queue), so the local list is paginated in
+  // place: status, player and game filters + newest first run in the shared engine.
+  const listTopRef = useRef<HTMLDivElement>(null);
+  const challengeSpec = useMemo<QuerySpec>(() => {
+    const where: QueryCond[] = [];
+    if (filterStatus !== 'all') where.push({ field: 'status', op: 'eq', value: filterStatus });
+    if (filterParticipantId) {
+      where.push({ or: [{ field: 'challengerId', op: 'eq', value: filterParticipantId }, { field: 'challengedId', op: 'eq', value: filterParticipantId }] });
+    }
+    if (filterGameId) where.push({ field: 'gameId', op: 'eq', value: filterGameId });
+    return { where, sort: [{ field: 'createdAt', dir: 'desc' }] };
+  }, [filterStatus, filterParticipantId, filterGameId]);
+  const list = useLocalPagination(allChallenges, challengeSpec, { listId: 'ranked-challenges' });
 
   return (
     <div className="active-challenges">
@@ -242,7 +246,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         </button>
       </div>
 
-      {filteredChallenges.length === 0 ? (
+      <div ref={listTopRef} />
+      {list.total === 0 ? (
         <div className="empty-state card">
           <i className="fas fa-khanda" style={{ fontSize: '3rem', color: 'var(--text-secondary)', marginBottom: '1rem' }} />
           <h3>{t('ranked.challenges.noChallenges')}</h3>
@@ -257,7 +262,7 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
         </div>
       ) : (
         <div className="challenges-list">
-          {filteredChallenges.map(challenge => {
+          {list.items.map(challenge => {
             // My side already reported (queued locally or on the server) —
             // the duel waits on the opponent's report, not on my action.
             const iReported = (myParticipantId === challenge.challengerId && !!challenge.challengerResult)
@@ -358,6 +363,8 @@ function ActiveChallenges({ onChallengeSelect }: ActiveChallengesProps) {
           })}
         </div>
       )}
+
+      <Pagination {...list.paginationProps} scrollRef={listTopRef} />
 
       {showCreateModal && (
         <div className="modal-overlay" onClick={() => { setShowCreateModal(false); setCreateError(''); }}>

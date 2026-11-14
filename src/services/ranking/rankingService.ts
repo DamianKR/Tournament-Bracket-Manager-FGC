@@ -13,8 +13,11 @@ import type { MatchRecord, GlobalParticipant, MatchGame } from '../../models/typ
 import { SERVER_URL, isServerAvailable, resetServerCache } from '@/services/api/apiClient';
 import { getAuthHeader } from '@/services/auth/authService';
 import { enqueueMatchOp } from '@/services/storage/matchOpsQueue';
-import { mirrorGet } from '@/services/storage/mirrorStore';
 import { readThrough } from '@/services/storage/readThrough';
+import { createListMirror } from '@/services/pagination/listMirror';
+import { createServerPagedSource } from '@/services/pagination/pagedSource';
+import type { PagedSource } from '@/services/pagination/pagedSource';
+import type { QueryCond, QuerySpec } from '../../../shared/query.js';
 import { getEffectiveElo } from '@/utils/participantGames';
 import { getRankName } from '@/utils/rank';
 import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
@@ -23,32 +26,13 @@ import { DEFAULT_COMMUNITY_ID } from '@/constants/community';
 
 const LS_PARTICIPANTS_KEY = 'bracket_global_participants';
 
-// ── Leaderboard + history cache ───────────────────────────────────────────
+// ── Leaderboard cache (unpaged read, used by the dashboard and profiles) ───
 // Keyed by communityId+gameId so multiple communities/games are independent.
 
 const LS_LEADERBOARD_KEY = 'bracket_leaderboard_cache';
-const LS_HISTORY_KEY     = 'bracket_history_cache';
 
 function _cacheKey(communityId = '', gameId = ''): string {
   return `${communityId}::${gameId}`;
-}
-
-/** Read leaderboard from cache synchronously — returns null if not cached yet. */
-export function getLeaderboardSync(
-  communityId?: string,
-  gameId?: string,
-): { entries: LeaderboardEntry[]; cachedAt: string } | null {
-  const m = mirrorGet<LeaderboardEntry[]>(LS_LEADERBOARD_KEY, _cacheKey(communityId, gameId));
-  return m ? { entries: m.data, cachedAt: m.cachedAt } : null;
-}
-
-/** Read match history from cache synchronously — returns null if not cached yet. */
-export function getAllMatchesSync(
-  communityId?: string,
-  gameId?: string,
-): { entries: MatchRecord[]; cachedAt: string } | null {
-  const m = mirrorGet<MatchRecord[]>(LS_HISTORY_KEY, _cacheKey(communityId, gameId));
-  return m ? { entries: m.data, cachedAt: m.cachedAt } : null;
 }
 
 function lsPatchParticipants(updated: GlobalParticipant[]): void {
@@ -164,18 +148,93 @@ export async function getLeaderboard(communityId?: string, gameId?: string): Pro
   throw new Error('No leaderboard data available offline');
 }
 
-/** Fetches full match history (newest first).
- *  Saves result to localStorage on success; falls back to cached data offline. */
-export async function getAllMatches(communityId?: string, gameId?: string): Promise<MatchRecord[]> {
-  const query = buildQuery({ communityId, gameId: gameId ?? '' });
-  const r = await readThrough<MatchRecord[]>({
-    path: `/api/ranking/matches${query}`,
-    store: LS_HISTORY_KEY,
-    key: _cacheKey(communityId, gameId),
-    label: 'getAllMatches',
+// ── Paginated ranked history ──────────────────────────────────────────────
+// Server pages (filters/search/sort run in the DB) over a local copy that is
+// filled page by page; offline the same query runs on that copy.
+
+export type RankedHistoryMatch = MatchRecord & {
+  playerAPointsBefore: number; playerBPointsBefore: number;
+  playerAPointsAfter: number; playerBPointsAfter: number;
+  playerADelta: number; playerBDelta: number;
+  playerARankBefore: string; playerBRankBefore: string;
+  playerARankAfter: string; playerBRankAfter: string;
+};
+
+const HISTORY_PAGES_STORE = 'bracket_history_pages';
+
+function rankedHistoryMirror(communityId: string) {
+  return createListMirror<RankedHistoryMatch>(HISTORY_PAGES_STORE, communityId);
+}
+
+export function createRankedHistorySource(communityId: string): PagedSource<RankedHistoryMatch> {
+  return createServerPagedSource<RankedHistoryMatch>({
+    id: 'ranking-history',
+    path: '/api/ranking/matches',
+    params: { communityId },
+    init: () => ({ headers: { ...getAuthHeader() } }),
+    mirror: rankedHistoryMirror(communityId),
   });
-  if ('data' in r) return r.data;
-  throw new Error('No match history available offline');
+}
+
+// ── Paginated leaderboard ─────────────────────────────────────────────────
+// Positions / Legend are computed by the server over the whole board; pages are
+// cut afterwards. The local copy (filled page by page) serves it offline.
+
+const LEADERBOARD_PAGES_STORE = 'bracket_leaderboard_pages';
+
+export function createLeaderboardSource(communityId: string, gameId: string): PagedSource<LeaderboardEntry> {
+  return createServerPagedSource<LeaderboardEntry>({
+    id: 'ranking-leaderboard',
+    path: '/api/ranking',
+    params: { communityId, gameId },
+    init: () => ({ headers: { ...getAuthHeader() } }),
+    mirror: createListMirror<LeaderboardEntry>(LEADERBOARD_PAGES_STORE, _cacheKey(communityId, gameId)),
+    refreshAfterMs: 5 * 60 * 1000,
+  });
+}
+
+/** Ranked players by position, then the unranked alphabetically (same order online and offline). */
+export const LEADERBOARD_SPEC: QuerySpec = {
+  sort: [{ field: 'position', dir: 'asc', type: 'number' }, { field: 'name', dir: 'asc' }],
+};
+
+/** ELO changed (reset…): the local copy of that board is stale. */
+export function clearLeaderboard(communityId: string, gameId: string): void {
+  createListMirror<LeaderboardEntry>(LEADERBOARD_PAGES_STORE, _cacheKey(communityId, gameId)).clear();
+}
+
+/**
+ * The History tab's filters as a query (runs in the DB online, on the local
+ * copy offline):
+ *   - a chosen game, or every game enabled in the community (untagged legacy rows too)
+ *   - duel / matchmaking rows hidden when that module is off (untyped legacy rows stay)
+ *   - one player on either side
+ * Newest first.
+ */
+export function buildRankedHistorySpec(o: {
+  gameId: string | 'all';
+  communityGameIds: string[];
+  duelsOn: boolean;
+  matchmakingOn: boolean;
+  playerId: string | null;
+}): QuerySpec {
+  const where: QueryCond[] = [];
+  if (o.gameId !== 'all') where.push({ field: 'gameId', op: 'eq', value: o.gameId });
+  else where.push({ or: [{ field: 'gameId', op: 'null', value: true }, { field: 'gameId', op: 'in', value: o.communityGameIds }] });
+  const off = [!o.duelsOn && 'duel', !o.matchmakingOn && 'matchmaking'].filter((x): x is string => !!x);
+  if (off.length) where.push({ or: [{ field: 'type', op: 'null', value: true }, { field: 'type', op: 'nin', value: off }] });
+  if (o.playerId) where.push({ or: [{ field: 'playerAId', op: 'eq', value: o.playerId }, { field: 'playerBId', op: 'eq', value: o.playerId }] });
+  return { where, sort: [{ field: 'createdAt', dir: 'desc' }] };
+}
+
+/** A match was deleted: drop it from the local copy too. */
+export function forgetRankedMatch(communityId: string, matchId: string): void {
+  rankedHistoryMirror(communityId).remove([matchId]);
+}
+
+/** History was wiped (hard reset): the local copy is no longer valid. */
+export function clearRankedHistory(communityId: string): void {
+  rankedHistoryMirror(communityId).clear();
 }
 
 /** Fetches match history for a single participant. */

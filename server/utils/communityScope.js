@@ -66,6 +66,19 @@ export function filterByCommunity(user, items, requestedCommunityId) {
 }
 
 /**
+ * filterByCommunity() expressed as a shared/query condition, so paginated
+ * routes can push the same visibility rule into the database query.
+ * Returns null when nothing must be filtered (superadmin, no target).
+ */
+export function communityScopeCond(user, requestedCommunityId) {
+  const target = requestedCommunityId || (user?.role === 'superadmin' ? null : user?.communityId) || null;
+  const noCommunity = { field: 'communityId', op: 'null', value: true };
+  if (target) return { or: [noCommunity, { field: 'communityId', op: 'eq', value: target }] };
+  if (!user) return { or: [noCommunity, { field: 'communityId', op: 'eq', value: DEFAULT_COMMUNITY_ID }] };
+  return null;
+}
+
+/**
  * Devuelve el participantId del user EN una comunidad concreta.
  * Multi-comunidad: el user tiene un participant distinto por comunidad
  * (hogar = participantId; extras = participantByCommunity del JWT, o memberships).

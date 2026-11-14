@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { League } from '@/models/league';
-import { getAllLeagues, getLeaguesCached, deleteLeague, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
+import type { League } from '@/models/league';
+import { buildLeaguesSpec, createLeaguesSource, deleteLeague, forgetLeagueRow, getLeagueDisplayStatus } from '@/services/leagues/leagueService';
 import { getGame } from '@/data/games';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { getEffectiveCurrentWeek } from '@/utils/leagueWeek';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
-import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
+import Pagination from '@/components/Pagination/Pagination';
+import { usePaginatedList } from '@/hooks/usePaginatedList';
 import './LeaguesTab.css';
 
 function LeaguesTab() {
@@ -17,49 +18,25 @@ function LeaguesTab() {
   const navigate = useNavigate();
   const { currentCommunity, getPath, canAdminCurrentCommunity, canAdminGame, communityGames } = useCommunity();
   const communityId = currentCommunity?.id;
-  const [leagues, setLeagues] = useState<League[]>(() => getLeaguesCached(communityId) ?? []);
   const [gameFilter, setGameFilter] = useState<string>('all');
-  const [loading, setLoading] = useState(() => !getLeaguesCached(communityId));
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const listTopRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    loadLeagues();
-  }, [communityId]);
-
-  const offline = useServerOffline();
-  useOnReconnect(loadLeagues);
-
-  // Cache first (instant render, no spinner), then refresh from the server.
-  // After a delete we skip the cache so the removed league doesn't flash back.
-  async function loadLeagues(useCache = true) {
-    const cached = useCache ? getLeaguesCached(communityId) : null;
-    if (cached) {
-      setLeagues(cached);
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
-    const data = await getAllLeagues(communityId);
-    setLeagues(data);
-    setLoading(false);
-  }
+  // Server pages (game filter + newest first run in the DB) over a local copy → also pages offline.
+  const source = useMemo(() => (communityId ? createLeaguesSource(communityId) : null), [communityId]);
+  const spec = useMemo(() => buildLeaguesSpec(gameFilter), [gameFilter]);
+  const list = usePaginatedList<League>({ source, spec });
 
   async function handleConfirmDelete() {
     if (!deleteTarget) return;
-    const ok = await deleteLeague(deleteTarget.id);
+    const { id } = deleteTarget;
+    const ok = await deleteLeague(id);
     setDeleteTarget(null);
-    if (ok) loadLeagues(false);
+    if (ok) {
+      if (communityId) forgetLeagueRow(communityId, id);
+      list.reload();
+    }
   }
-
-  if (loading) {
-    return (
-      <div className="leagues-tab">
-        <Loading message={t('leagues.loading')} />
-      </div>
-    );
-  }
-
-  const filteredLeagues = gameFilter === 'all' ? leagues : leagues.filter(l => l.gameId === gameFilter);
 
   return (
     <div className="leagues-tab">
@@ -88,10 +65,14 @@ function LeaguesTab() {
         </div>
       </div>
 
-      {leagues.length === 0 ? (
-        offline ? (
-          <OfflineNotice />
-        ) : (
+      <div ref={listTopRef} />
+      {list.loading && <Loading message={t('leagues.loading')} />}
+      {list.unavailable && <OfflineNotice />}
+      {list.incomplete && <OfflineNotice compact partial />}
+      {list.error && <div className="error-message">{list.error}</div>}
+
+      {!list.loading && !list.unavailable && !list.error && list.total === 0 && (
+        gameFilter === 'all' ? (
           <div className="empty-state card">
             <h3>{t('leagues.emptyTitle')}</h3>
             <p className="text-secondary">{t('leagues.emptyDesc')}</p>
@@ -101,15 +82,17 @@ function LeaguesTab() {
               </button>
             )}
           </div>
+        ) : (
+          <div className="empty-state card">
+            <h3>{t('leagues.emptyTitle')}</h3>
+            <p className="text-secondary">{t('history.noMatchesForGame', { defaultValue: 'No leagues for this game' })}</p>
+          </div>
         )
-      ) : filteredLeagues.length === 0 ? (
-        <div className="empty-state card">
-          <h3>{t('leagues.emptyTitle')}</h3>
-          <p className="text-secondary">{t('history.noMatchesForGame', { defaultValue: 'No leagues for this game' })}</p>
-        </div>
-      ) : (
+      )}
+
+      {list.items.length > 0 && (
         <div className="leagues-grid">
-          {filteredLeagues.map((league) => {
+          {list.items.map((league) => {
             const game = getGame(league.gameId);
             const displayStatus = getLeagueDisplayStatus(league);
             const statusClass = `status-${displayStatus}`;
@@ -174,6 +157,8 @@ function LeaguesTab() {
           })}
         </div>
       )}
+
+      <Pagination {...list.paginationProps} scrollRef={listTopRef} />
 
       <ConfirmModal
         isOpen={deleteTarget !== null}

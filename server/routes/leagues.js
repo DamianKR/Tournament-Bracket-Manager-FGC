@@ -25,7 +25,8 @@ import { notifyAdminsOfBanEligibility } from '../services/leagueExpiration.js';
 import { scheduleLeagueNotifications } from '../services/notificationScheduler.js';
 import { startLeague, scheduleLeagueStart } from '../services/leagueStart.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, isInUserScope, getTargetCommunityId, canAdminGame, participantIdFor } from '../utils/communityScope.js';
+import { filterByCommunity, communityScopeCond, isInUserScope, getTargetCommunityId, canAdminGame, participantIdFor } from '../utils/communityScope.js';
+import { isPaged, parseClientSpec, withScope, runPagedQuery, sendQueryError } from '../utils/paginate.js';
 import {
   migrateParticipantGames,
   getEffectiveElo,
@@ -210,14 +211,26 @@ async function calculateStandings(leagueId) {
 
 // ── Routes ────────────────────────────────────────────────────────────────
 
+// Paginated mode (?page=&pageSize=&q=): filter / sort run in the database; community visibility is enforced here.
+const LEAGUE_QUERY_RULES = { filterFields: ['gameId', 'status'], searchFields: [], sortFields: ['createdAt', 'name'] };
+
 // GET /api/leagues?communityId=...
 router.get('/', optionalAuth, async (req, res) => {
   try {
     const { communityId } = req.query;
+    if (isPaged(req.query)) {
+      const client = parseClientSpec(req.query, LEAGUE_QUERY_RULES);
+      const spec = withScope(
+        { ...client, sort: client.sort.length ? client.sort : [{ field: 'createdAt', dir: 'desc' }] },
+        communityScopeCond(req.user, communityId)
+      );
+      return res.json(await runPagedQuery(leagues, spec, req.query));
+    }
     const data = await leagues.getAll();
     const filtered = filterByCommunity(req.user, data, communityId);
     res.json(filtered);
   } catch (err) {
+    if (sendQueryError(res, err)) return;
     console.error('[Leagues] GET / error:', err);
     res.status(500).json({ error: 'Failed to read leagues' });
   }

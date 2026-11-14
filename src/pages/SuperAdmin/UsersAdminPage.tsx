@@ -9,22 +9,24 @@
  * Superadmin accounts are excluded from the list intentionally.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/contexts/NotificationContext';
 import { useAuth } from '@/contexts/AuthContext';
-import type { AuthUser, CommunityMembership } from '@/models/auth';
+import type { AuthUser } from '@/models/auth';
 import type { GlobalParticipant } from '@/models/types';
 import type { Community } from '@/models/community';
-import { listUsers, deleteUserAccountOffline } from '@/services/auth/authService';
+import { buildUsersSpec, createUsersPageSource, deleteUserAccountOffline } from '@/services/auth/authService';
 import { getAllParticipantsAsync, removeParticipant } from '@/services/participants/participantService';
 import { getAllCommunities } from '@/services/communities/communityService';
 import { initials, avatarColor } from '@/pages/Participants/ParticipantsPage';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import Loading from '@/components/Loading/Loading';
 import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
-import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
+import Pagination from '@/components/Pagination/Pagination';
+import { usePaginatedList } from '@/hooks/usePaginatedList';
+import { useOnReconnect } from '@/hooks/useServerStatus';
 import './UsersAdminPage.css';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -92,7 +94,6 @@ function UsersAdminPage() {
   const toast = useToast();
   const { isSuperAdmin, isLoading: authLoading } = useAuth();
 
-  const [users, setUsers] = useState<AuthUser[]>([]);
   const [communities, setCommunities] = useState<Community[]>([]);
   const [participantMap, setParticipantMap] = useState<Map<string, GlobalParticipant>>(new Map());
   const [loading, setLoading] = useState(true);
@@ -100,7 +101,9 @@ function UsersAdminPage() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [communityFilter, setCommunityFilter] = useState('all');
-  const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
+  // Cards start expanded; this remembers the ones the admin folded.
+  const [collapsedUsers, setCollapsedUsers] = useState<Set<string>>(new Set());
+  const listTopRef = useRef<HTMLDivElement>(null);
 
   const [deleteUserTarget, setDeleteUserTarget] = useState<AuthUser | null>(null);
   const [deletingUser, setDeletingUser] = useState(false);
@@ -113,31 +116,23 @@ function UsersAdminPage() {
   }, [authLoading, isSuperAdmin, navigate]);
 
   useEffect(() => {
-    if (isSuperAdmin) loadAll();
+    if (isSuperAdmin) loadLookups();
   }, [isSuperAdmin]);
 
-  const offline = useServerOffline();
+  // Reload the supporting lookups too once the connection is back (the list reloads itself).
   useOnReconnect(() => {
-    if (isSuperAdmin) loadAll();
+    if (isSuperAdmin) loadLookups();
   });
 
-  async function loadAll() {
-    setLoading(true);
+  // Communities + participants only feed names / the filter; the accounts come paginated.
+  async function loadLookups() {
     setLoadError('');
     try {
-      const [userList, communityList, allParticipants] = await Promise.all([
-        listUsers(),
-        getAllCommunities(),
-        getAllParticipantsAsync(),
-      ]);
-      // Exclude superadmin accounts from this management page
-      const manageable = userList.filter(u => u.role !== 'superadmin');
-      setUsers(manageable);
+      const [communityList, allParticipants] = await Promise.all([getAllCommunities(), getAllParticipantsAsync()]);
       setCommunities(communityList);
       const pMap = new Map<string, GlobalParticipant>();
       for (const p of allParticipants) pMap.set(p.id, p);
       setParticipantMap(pMap);
-      setExpandedUsers(new Set(manageable.map(u => u.id)));
     } catch (err: any) {
       setLoadError(err.message || 'Failed to load users');
     } finally {
@@ -145,24 +140,16 @@ function UsersAdminPage() {
     }
   }
 
-  // ── Filtering ─────────────────────────────────────────────────────────────
-
-  const filtered = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    return users.filter(u => {
-      if (q && !u.username.toLowerCase().includes(q)) return false;
-      if (communityFilter === 'all') return true;
-      if (u.communityId === communityFilter) return true;
-      return (u.memberships ?? []).some(
-        m => m.communityId === communityFilter && m.isActive !== false,
-      );
-    });
-  }, [users, searchQuery, communityFilter]);
+  // Search / community filter run in the server (accounts are paginated there).
+  const usersSource = useMemo(() => (isSuperAdmin ? createUsersPageSource() : null), [isSuperAdmin]);
+  const usersSpec = useMemo(() => buildUsersSpec({ search: searchQuery, communityId: communityFilter }), [searchQuery, communityFilter]);
+  const list = usePaginatedList<AuthUser>({ source: usersSource, spec: usersSpec });
+  const users = list.items;
 
   // ── Expand toggle ─────────────────────────────────────────────────────────
 
   function toggleExpand(uid: string) {
-    setExpandedUsers(prev => {
+    setCollapsedUsers(prev => {
       const next = new Set(prev);
       if (next.has(uid)) next.delete(uid); else next.add(uid);
       return next;
@@ -180,7 +167,7 @@ function UsersAdminPage() {
         try { await removeParticipant(m.participantId); } catch {}
       }
       await deleteUserAccountOffline(u.id);
-      setUsers(prev => prev.filter(x => x.id !== u.id));
+      list.reload();
       toast.success(t('usersAdmin.deleteUserSuccess', { username: u.username }));
     } catch (err: any) {
       toast.error(err.message || 'Failed to delete user');
@@ -194,21 +181,11 @@ function UsersAdminPage() {
 
   async function confirmDeleteMembership() {
     if (!deleteMemberTarget) return;
-    const { user, participantId } = deleteMemberTarget;
+    const { participantId } = deleteMemberTarget;
     setDeletingMember(true);
     try {
       await removeParticipant(participantId);
-      setUsers(prev => prev.map(u => {
-        if (u.id !== user.id) return u;
-        return {
-          ...u,
-          participantId: u.participantId === participantId ? null : u.participantId,
-          communityId:   u.participantId === participantId ? null : u.communityId,
-          memberships:   (u.memberships ?? []).filter(
-            (m: CommunityMembership) => m.participantId !== participantId,
-          ),
-        };
-      }));
+      list.reload();
       toast.success(t('usersAdmin.deleteMemberSuccess'));
     } catch (err: any) {
       toast.error(err.message || 'Failed to delete membership');
@@ -244,8 +221,8 @@ function UsersAdminPage() {
               <h1 className="ua-hero-title">
                 <i className="fas fa-users-cog" />
                 {t('usersAdmin.title')}
-                {!loading && (
-                  <span className="ua-hero-count">{filtered.length}</span>
+                {!list.loading && !list.unavailable && (
+                  <span className="ua-hero-count">{list.total}</span>
                 )}
               </h1>
               <p className="ua-hero-sub">
@@ -253,25 +230,25 @@ function UsersAdminPage() {
               </p>
             </div>
             <div className="ua-hero-right">
-              {!loading && users.length > 0 && (
+              {users.length > 0 && (
                 <>
                   <button
                     className="ua-hero-btn"
-                    onClick={() => setExpandedUsers(new Set(filtered.map(u => u.id)))}
+                    onClick={() => setCollapsedUsers(new Set())}
                   >
                     <i className="fas fa-expand-alt" />
                     {t('usersAdmin.expandAll')}
                   </button>
                   <button
                     className="ua-hero-btn"
-                    onClick={() => setExpandedUsers(new Set())}
+                    onClick={() => setCollapsedUsers(new Set(users.map(u => u.id)))}
                   >
                     <i className="fas fa-compress-alt" />
                     {t('usersAdmin.collapseAll')}
                   </button>
                 </>
               )}
-              <button className="ua-hero-btn ua-hero-btn--icon" onClick={loadAll} title={t('common.loading')}>
+              <button className="ua-hero-btn ua-hero-btn--icon" onClick={() => { loadLookups(); list.reload(); }} title={t('common.loading')}>
                 <i className="fas fa-sync-alt" />
               </button>
             </div>
@@ -308,22 +285,25 @@ function UsersAdminPage() {
       <div className="container ua-body">
 
         {/* ── Content ──────────────────────────────────────────────── */}
-        {loading ? (
+        <div ref={listTopRef} />
+        {loading || list.loading ? (
           <div className="pp-loading">
             <Loading message={t('usersAdmin.loading')} />
           </div>
-        ) : loadError ? (
-          offline ? <OfflineNotice /> : <div className="error-message">{loadError}</div>
-        ) : filtered.length === 0 ? (
+        ) : list.unavailable ? (
+          <OfflineNotice />
+        ) : loadError || list.error ? (
+          <div className="error-message">{loadError || list.error}</div>
+        ) : users.length === 0 ? (
           <div className="ua-empty">
             <i className="fas fa-user-slash" />
             <p>{t('usersAdmin.noUsers')}</p>
           </div>
         ) : (
           <div className="pp-list">
-            {filtered.map(u => {
+            {users.map(u => {
               const memberships = getUserMemberships(u);
-              const expanded    = expandedUsers.has(u.id);
+              const expanded    = !collapsedUsers.has(u.id);
               const color       = avatarColor(u.username);
               const ini         = initials(u.username);
 
@@ -442,6 +422,8 @@ function UsersAdminPage() {
             })}
           </div>
         )}
+
+        <Pagination {...list.paginationProps} scrollRef={listTopRef} />
       </div>
 
       {/* ── Confirm: delete user ──────────────────────────────────── */}
