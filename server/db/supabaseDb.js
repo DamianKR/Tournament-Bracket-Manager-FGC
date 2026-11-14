@@ -16,6 +16,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { normalizeSearch, parsePath } from '../../shared/query.js';
 
 let _client = null;
 
@@ -32,6 +33,74 @@ function getClient() {
     auth: { persistSession: false },
   });
   return _client;
+}
+
+// ── shared/query spec → PostgREST ────────────────────────────────────────
+// Field names are validated by parsePath (letters/digits/underscore only) so
+// they can be interpolated into JSON-path column expressions safely.
+
+/** data->>f  /  data->a->b->>f   (text form: SQL NULL for missing/null) */
+function textColumn(field) {
+  const segs = parsePath(field);
+  return segs.length === 1
+    ? `data->>${segs[0]}`
+    : `data->${segs.slice(0, -1).join('->')}->>${segs[segs.length - 1]}`;
+}
+
+/** data->a->b  (jsonb: numbers sort numerically) */
+function jsonColumn(field) {
+  return `data->${parsePath(field).join('->')}`;
+}
+
+function sortColumn(s) {
+  return s.type === 'number' ? jsonColumn(s.field) : textColumn(s.field);
+}
+
+/** Always-quoted value for PostgREST's or()/in() grammar. */
+function pgQuote(v) {
+  return `"${String(v).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
+/** One condition as "col.op.value" (used inside or(...) groups). */
+function condToString(c) {
+  if (c.or) return `or(${c.or.map(condToString).join(',')})`;
+  if (c.and) return `and(${c.and.map(condToString).join(',')})`;
+  const col = textColumn(c.field);
+  switch (c.op) {
+    case 'eq': return `${col}.eq.${pgQuote(c.value)}`;
+    case 'neq': return `${col}.neq.${pgQuote(c.value)}`;
+    case 'in': return `${col}.in.(${c.value.map(pgQuote).join(',')})`;
+    case 'nin': return `${col}.not.in.(${c.value.map(pgQuote).join(',')})`;
+    case 'null': return c.value === false ? `${col}.not.is.null` : `${col}.is.null`;
+    default: throw new Error(`Unknown op: ${c.op}`);
+  }
+}
+
+/**
+ * Case-insensitive "contains" via regex match (`~*`), text fully escaped.
+ * (ilike can't be used: PostgREST rewrites a literal `*` in the value into `%`.)
+ */
+function regexContains(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function applySpecFilters(q, spec) {
+  const flat = [];
+  const flatten = (c) => (c.and ? c.and.forEach(flatten) : flat.push(c));
+  (spec.where ?? []).forEach(flatten);
+  for (const c of flat) {
+    if (c.or) { q = q.or(c.or.map(condToString).join(',')); continue; }
+    const col = textColumn(c.field);
+    if (c.op === 'eq') q = q.eq(col, c.value);
+    else if (c.op === 'neq') q = q.neq(col, c.value);
+    else q = q.or(condToString(c));
+  }
+  const search = normalizeSearch(spec.search);
+  if (search) {
+    if (!search.fields.length) return q.or('id.is.null');   // no searchable field → matches nothing
+    q = q.or(search.fields.map((f) => `${textColumn(f)}.imatch.${pgQuote(regexContains(search.text))}`).join(','));
+  }
+  return q;
 }
 
 /**
@@ -130,6 +199,53 @@ export function createSupabaseCollection(tableName) {
       }
 
       return results;
+    },
+
+    /**
+     * Filter + search + sort + slice executed IN POSTGRES (see shared/query.js).
+     * Returns { items, total } where total is the exact count BEFORE offset/limit.
+     * Without `limit` it reads every match in 1000-row chunks (PostgREST cap).
+     */
+    async query(spec = {}) {
+      const CHUNK = 1000;
+      const run = (from, to, head = false) => {
+        let q = getClient().from(tableName).select(head ? 'id' : 'data', { count: 'exact', head });
+        q = applySpecFilters(q, spec);
+        if (head) return q;
+        for (const s of spec.sort ?? []) {
+          q = q.order(sortColumn(s), { ascending: s.dir !== 'desc', nullsFirst: false });
+        }
+        return q.order('id', { ascending: true }).range(from, to);
+      };
+
+      const offset = spec.offset ?? 0;
+      if (spec.limit === 0) {
+        const { count, error } = await run(0, 0, true);
+        if (error) throw new Error(`[supabaseDb.query:${tableName}] ${error.message}`);
+        return { items: [], total: count ?? 0 };
+      }
+
+      const items = [];
+      let total = 0;
+      let from = offset;
+      const end = spec.limit == null ? Infinity : offset + spec.limit;
+      while (from < end) {
+        const to = Math.min(from + CHUNK, end) - 1;
+        const { data, count, error } = await run(from, to);
+        if (error) {
+          // 416: offset is past the last row. Report the real total, empty page.
+          if (error.code === 'PGRST103') {
+            const head = await run(0, 0, true);
+            return { items: [], total: head.count ?? 0 };
+          }
+          throw new Error(`[supabaseDb.query:${tableName}] ${error.message}`);
+        }
+        total = count ?? 0;
+        for (const row of data ?? []) items.push(row.data);
+        if ((data ?? []).length < to - from + 1) break;
+        from = to + 1;
+      }
+      return { items, total };
     },
 
     /** Inserta o actualiza un registro (por id) */

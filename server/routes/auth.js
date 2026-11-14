@@ -40,6 +40,7 @@ import {
   canManageUserAnyCommunity,
 } from '../utils/communityScope.js';
 import { users, participants } from '../db/collections.js';
+import { isPaged, parseClientSpec, pageInMemory, sendQueryError } from '../utils/paginate.js';
 import { getNotificationsForRecipient } from '../services/notificationService.js';
 
 const router = Router();
@@ -286,7 +287,18 @@ router.put('/me/password', requireAuth, async (req, res) => {
 
 // ── GET /api/auth/users ───────────────────────────────────────────────────
 
+// Paginated mode (?page=&pageSize=&q=): `communities.<id>` = true for the user's home
+// community and every active membership, so the community filter is one equality.
+const USER_QUERY_RULES = { filterFields: ['role', 'communities.*'], searchFields: ['username'], sortFields: ['username'] };
+
 router.get('/users', requireAuth, requireAdmin, async (req, res) => {
+  let pagedSpec = null;
+  try {
+    if (isPaged(req.query)) pagedSpec = parseClientSpec(req.query, USER_QUERY_RULES);
+  } catch (err) {
+    if (sendQueryError(res, err)) return;
+    throw err;
+  }
   const all = await users.getAll();
   const visibleTo = (u) => {
     if (req.user.role === 'superadmin') return true;
@@ -301,6 +313,17 @@ router.get('/users', requireAuth, requireAdmin, async (req, res) => {
     return false;
   };
   const filtered = all.filter(visibleTo);
+  if (pagedSpec) {
+    const rows = filtered.map((u) => {
+      const communities = {};
+      if (u.communityId) communities[u.communityId] = true;
+      for (const m of u.memberships ?? []) if (m.communityId && m.isActive !== false) communities[m.communityId] = true;
+      return { ...safeUser(u), communities };
+    });
+    const sort = pagedSpec.sort.length ? pagedSpec.sort : [{ field: 'username', dir: 'asc' }];
+    const page = pageInMemory(rows, { ...pagedSpec, sort }, req.query);
+    return res.json({ ...page, items: page.items.map(({ communities: _c, ...u }) => u) });
+  }
   res.json(filtered.map(safeUser));
 });
 

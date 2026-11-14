@@ -17,7 +17,14 @@ npm run dev          # Start dev server at http://localhost:5173
 # Build
 npm run build        # Build for production
 npm run preview      # Preview production build
+
+# Tests (Node --test, no extra dependencies)
+npm test             # query engine, route helpers, community scope, unified history
 ```
+
+### Lists and pagination
+Every long list uses the shared pagination system (`<Pagination/>`, `usePaginatedList` / `useLocalPagination`,
+`shared/query.js`). See `PAGINATION.md` before adding or changing a list.
 
 ## Architecture
 

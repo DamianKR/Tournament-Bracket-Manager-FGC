@@ -1,5 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { LeagueResultEntry } from '@/models/types';
+import { useMemo, useRef } from 'react';
+import Pagination from '@/components/Pagination/Pagination';
+import { useLocalPagination } from '@/hooks/usePaginatedList';
 import './ParticipantLeagueResults.css';
 
 interface Props {
@@ -13,16 +16,24 @@ function ordinal(n: number) {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
+const ORDERED = { sort: [{ field: 'order', dir: 'asc' as const, type: 'number' as const }] };
+
 export default function ParticipantLeagueResults({ results, onNavigate }: Props) {
   const { t } = useTranslation();
+  // Paginated in the order the profile gives (most relevant first); ids are the league ids.
+  const listTopRef = useRef<HTMLDivElement>(null);
+  const rows = useMemo(() => results.map((r, i) => ({ ...r, id: r.leagueId, order: i })), [results]);
+  const list = useLocalPagination(rows, ORDERED, { listId: 'profile-league-results' });
 
   if (results.length === 0) {
     return <div className="lr-empty">{t('participantProfile.results.noLeagueResults', 'No league results yet.')}</div>;
   }
 
   return (
+    <div>
+    <div ref={listTopRef} />
     <div className="lr-list">
-      {results.map((r) => (
+      {list.items.map((r) => (
         <div
           key={r.leagueId}
           className="lr-card"
@@ -61,6 +72,8 @@ export default function ParticipantLeagueResults({ results, onNavigate }: Props)
           </div>
         </div>
       ))}
+    </div>
+    <Pagination {...list.paginationProps} scrollRef={listTopRef} />
     </div>
   );
 }

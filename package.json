@@ -9,6 +9,7 @@
     "server": "node --env-file=.env.local server.js",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
+    "test": "node --test \"shared/*.test.js\" \"server/**/*.test.js\"",
     "lint": "biome check .",
     "lint:fix": "biome check . --write",
     "preview": "vite preview"

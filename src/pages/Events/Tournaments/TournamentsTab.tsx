@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Tournament } from '@/models/types';
@@ -8,6 +8,9 @@ import { loadTournamentsAsync } from '@/services/storage/localStorage';
 import { useCommunity } from '@/contexts/CommunityContext';
 import ConfirmModal from '@/components/ConfirmModal/ConfirmModal';
 import { getGame } from '@/data/games';
+import Pagination from '@/components/Pagination/Pagination';
+import { useLocalPagination } from '@/hooks/usePaginatedList';
+import type { QuerySpec } from '../../../../shared/query.js';
 
 import './TournamentsTab.css';
 
@@ -88,7 +91,14 @@ function TournamentsTab() {
     return <span className={`status-badge ${badge.className}`}>{badge.label}</span>;
   };
 
-  const filteredTournaments = gameFilter === 'all' ? tournaments : tournaments.filter(t => t.gameId === gameFilter);
+  // Tournaments are created / edited offline, so the merged local list stays the source of
+  // truth and is paginated in place (newest update first, optional game filter).
+  const listTopRef = useRef<HTMLDivElement>(null);
+  const spec = useMemo<QuerySpec>(() => ({
+    where: gameFilter === 'all' ? [] : [{ field: 'gameId', op: 'eq', value: gameFilter }],
+    sort: [{ field: 'updatedAt', dir: 'desc' }],
+  }), [gameFilter]);
+  const list = useLocalPagination(tournaments, spec, { listId: 'events-tournaments' });
 
   return (
     <div className="tournaments-tab">
@@ -117,6 +127,7 @@ function TournamentsTab() {
         </div>
       </div>
 
+      <div ref={listTopRef} />
       {tournaments.length === 0 ? (
         <div className="empty-state card">
           <h3>{t('tournaments.emptyTitle')}</h3>
@@ -127,14 +138,14 @@ function TournamentsTab() {
             </button>
           )}
         </div>
-      ) : filteredTournaments.length === 0 ? (
+      ) : list.total === 0 ? (
         <div className="empty-state card">
           <h3>{t('tournaments.emptyTitle')}</h3>
           <p className="text-secondary">{t('history.noMatchesForGame', { defaultValue: 'No tournaments for this game' })}</p>
         </div>
       ) : (
         <div className="tournaments-grid">
-          {filteredTournaments.map(tournament => (
+          {list.items.map(tournament => (
             <div
               key={tournament.id}
               className="tournament-card card"
@@ -196,6 +207,8 @@ function TournamentsTab() {
           ))}
         </div>
       )}
+
+      <Pagination {...list.paginationProps} scrollRef={listTopRef} />
 
       <ConfirmModal
         isOpen={deleteTarget !== null}

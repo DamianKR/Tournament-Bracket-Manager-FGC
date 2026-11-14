@@ -15,6 +15,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import { runQuery } from '../../shared/query.js';
 
 // ── Per-file write queue ───────────────────────────────────────────────────
 // Maps absolute file path → tail of the promise chain for that file.
@@ -98,6 +99,14 @@ export function createCollection(filePath) {
     async getByField(fieldName, value) {
       const all = await readAll();
       return all.filter((item) => item[fieldName] === value);
+    },
+
+    /**
+     * Filter + search + sort + slice (see shared/query.js).
+     * Returns { items, total } where total is the count BEFORE offset/limit.
+     */
+    async query(spec = {}) {
+      return runQuery(await readAll(), spec);
     },
 
     /** Insert or update a record (matched by id) */

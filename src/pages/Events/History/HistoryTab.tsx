@@ -1,12 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCommunity } from '@/contexts/CommunityContext';
-import { getAllTournamentMatchesAsync } from '@/services/tournament/tournamentService';
-import { getAllMatches } from '@/services/ranking/rankingService';
-import { getAllLeagueMatches, getAllLeagueMatchesCached, getAllLeagues } from '@/services/leagues/leagueService';
+import { getAllLeagues } from '@/services/leagues/leagueService';
 import { getAllParticipants, getAllParticipantsAsync } from '@/services/participants/participantService';
-import { MatchRecord, GlobalParticipant, LeagueMatch } from '@/models/types';
+import {
+  HISTORY_TYPES,
+  buildHistorySpec,
+  createHistorySource,
+  getHistoryCounts,
+  type HistoryCounts,
+  type HistoryRow,
+  type HistoryType,
+} from '@/services/history/historyService';
+import { GlobalParticipant } from '@/models/types';
 import { gameBadgeStyle } from '@/utils/gameColor';
 import { charsWithColorsFromGames, parseScoreString, type ColoredChar } from '@/utils/matchData';
 import CharacterIcons from '@/components/CharacterIcons/CharacterIcons';
@@ -14,14 +21,16 @@ import PlayerDisplay from '@/components/PlayerDisplay/PlayerDisplay';
 import PlayerDropdown from '@/components/PlayerDropdown/PlayerDropdown';
 import Loading from '@/components/Loading/Loading';
 import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
-import { useServerOffline, useOnReconnect } from '@/hooks/useServerStatus';
+import Pagination from '@/components/Pagination/Pagination';
+import { usePaginatedList } from '@/hooks/usePaginatedList';
+import { useOnReconnect } from '@/hooks/useServerStatus';
 import './HistoryTab.css';
 
 type HistoryFilter = 'all' | 'tournament' | 'league' | 'duel' | 'matchmaking';
 
 interface UnifiedMatch {
   id: string;
-  type: 'tournament' | 'league' | 'duel' | 'matchmaking' | 'free';
+  type: HistoryType;
   gameId?: string | null;
   player1Id: string;
   player2Id: string;
@@ -62,155 +71,137 @@ function HistoryTab() {
   const [filter, setFilter] = useState<HistoryFilter>('all');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [filterGameId, setFilterGameId] = useState<string | null>(null);
-  const [matches, setMatches] = useState<UnifiedMatch[]>([]);
   const [allParticipants, setAllParticipants] = useState<GlobalParticipant[]>([]);
-  const [loading, setLoading] = useState(true);
-  // Ranked and league history come only from the server (or its mirror): when
-  // a source can't be loaded at all the rest must still render, flagged partial.
-  const [historyIncomplete, setHistoryIncomplete] = useState(false);
+  const [leagueNameById, setLeagueNameById] = useState<Map<string, string>>(new Map());
+  const [counts, setCounts] = useState<HistoryCounts | null>(null);
+  const listTopRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    loadHistory();
-  }, [communityId]);
-
-  const loadHistory = async () => {
+  // Names for rows (participants, league titles) — small lists, cached by their own services.
+  const loadLookups = () => {
     if (!communityId) return;
-    setLoading(true);
-    try {
-      let rankedMissing = false;
-      const [tournamentMatches, rankedMatches, leagueMatches, leagueList, participants] = await Promise.all([
-        getAllTournamentMatchesAsync(communityId),
-        getAllMatches(communityId).catch(() => { rankedMissing = true; return [] as MatchRecord[]; }),
-        getAllLeagueMatches(communityId),
-        getAllLeagues(communityId),
-        getAllParticipantsAsync(communityId).then(data => data.length > 0 ? data : getAllParticipants(communityId)),
-      ]);
-
-      // getAllLeagueMatches yields [] when unreachable: the mirror tells "empty" from "never loaded".
-      setHistoryIncomplete(rankedMissing || getAllLeagueMatchesCached(communityId) === null);
-
-      const leagueNameById = new Map(leagueList.map(l => [l.id, l.name]));
-
-      setAllParticipants(participants);
-
-      const globalById = new Map(participants.map((p: GlobalParticipant) => [p.id, p]));
-
-      // Convert tournament matches - use stored global IDs
-      const unifiedTournament: UnifiedMatch[] = tournamentMatches.map((m: any) => {
-        const gP1 = m.player1GlobalId ? globalById.get(m.player1GlobalId) : null;
-        const gP2 = m.player2GlobalId ? globalById.get(m.player2GlobalId) : null;
-
-        return {
-          id: m.id,
-          type: 'tournament' as const,
-          gameId: m.gameId,
-          player1Id: gP1?.id ?? m.player1GlobalId ?? m.player1Id,
-          player2Id: gP2?.id ?? m.player2GlobalId ?? m.player2Id,
-          winnerId: gP1?.id ?? m.winnerGlobalId ?? m.winnerId,
-          player1Name: gP1?.name ?? (m.player1Name || t('tournament.bracket.unknown')),
-          player2Name: gP2?.name ?? (m.player2Name || t('tournament.bracket.unknown')),
-          player1Alias: gP1?.alias ?? null,
-          player2Alias: gP2?.alias ?? null,
-          player1EloBefore: 0,
-          player2EloBefore: 0,
-          player1EloAfter: 0,
-          player2EloAfter: 0,
-          player1EloChange: 0,
-          player2EloChange: 0,
-          date: m.createdAt,
-          context: m.tournamentName,
-          player1Score: m.player1Score ?? m.participant1Score ?? null,
-          player2Score: m.player2Score ?? m.participant2Score ?? null,
-          player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
-          player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
-        };
-      });
-
-      // Convert ranking matches (duel/free/matchmaking)
-      const unifiedRanked: UnifiedMatch[] = rankedMatches.map((m: MatchRecord) => ({
-        id: m.id,
-        type: (m.type as 'duel' | 'matchmaking' | 'free') ?? 'free',
-        gameId: m.gameId,
-        player1Id: m.playerAId,
-        player2Id: m.playerBId,
-        winnerId: m.winnerId,
-        player1Name: getParticipantName(m.playerAId, participants),
-        player2Name: getParticipantName(m.playerBId, participants),
-        player1Alias: participants.find(p => p.id === m.playerAId)?.alias ?? null,
-        player2Alias: participants.find(p => p.id === m.playerBId)?.alias ?? null,
-        player1EloBefore: m.playerAPointsBefore,
-        player2EloBefore: m.playerBPointsBefore,
-        player1EloAfter: m.playerAPointsAfter,
-        player2EloAfter: m.playerBPointsAfter,
-        player1EloChange: m.playerADelta,
-        player2EloChange: m.playerBDelta,
-        date: m.createdAt,
-        player1Score: m.player1Score ?? null,
-        player2Score: m.player2Score ?? null,
-        player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
-        player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
-      }));
-
-      // Convert league matches
-      const unifiedLeague: UnifiedMatch[] = leagueMatches.map((m: LeagueMatch) => {
-        const [s1, s2] = parseScoreString(m.score);
-        return {
-          id: m.id,
-          type: 'league' as const,
-          gameId: m.gameId,
-          player1Id: m.participant1Id,
-          player2Id: m.participant2Id,
-          winnerId: m.winnerId ?? '',
-          player1Name: getParticipantName(m.participant1Id, participants),
-          player2Name: getParticipantName(m.participant2Id, participants),
-          player1Alias: participants.find(p => p.id === m.participant1Id)?.alias ?? null,
-          player2Alias: participants.find(p => p.id === m.participant2Id)?.alias ?? null,
-          player1EloBefore: m.participant1EloBefore ?? 0,
-          player2EloBefore: m.participant2EloBefore ?? 0,
-          player1EloAfter: (m.participant1EloBefore ?? 0) + (m.participant1EloChange ?? 0),
-          player2EloAfter: (m.participant2EloBefore ?? 0) + (m.participant2EloChange ?? 0),
-          player1EloChange: m.participant1EloChange ?? 0,
-          player2EloChange: m.participant2EloChange ?? 0,
-          date: m.completedDate ?? m.scheduledDate ?? new Date(0).toISOString(),
-          context: leagueNameById.get(m.leagueId),
-          player1Score: s1,
-          player2Score: s2,
-          player1Chars: charsWithColorsFromGames(m.games, 1),
-          player2Chars: charsWithColorsFromGames(m.games, 2),
-        };
-      });
-
-      // Combine all sources and sort by date (newest first)
-      const all = [...unifiedTournament, ...unifiedRanked, ...unifiedLeague].sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-
-      setMatches(all);
-    } catch (err) {
-      console.error('Failed to load history:', err);
-    } finally {
-      setLoading(false);
-    }
+    getAllParticipantsAsync(communityId)
+      .then((data) => (data.length > 0 ? data : getAllParticipants(communityId)))
+      .then(setAllParticipants);
+    getAllLeagues(communityId).then((ls) => setLeagueNameById(new Map(ls.map((l) => [l.id, l.name]))));
+    getHistoryCounts(communityId).then(setCounts);
   };
+  useEffect(loadLookups, [communityId]);
+  useOnReconnect(loadLookups);
 
-  const offline = useServerOffline();
-  useOnReconnect(loadHistory);
+  // Paginated: type / game / player filters run in the server online and on the local copy offline.
+  const source = useMemo(() => (communityId ? createHistorySource(communityId, 'events-history') : null), [communityId]);
+  const enabledGameKey = communityGames.map((g) => g.id).join(',');
+  const disabledKey = HISTORY_TYPES.filter(typeDisabled).join(',');
+  const spec = useMemo(
+    () => buildHistorySpec({
+      type: filter,
+      gameId: filterGameId,
+      enabledGameIds: enabledGameKey ? enabledGameKey.split(',') : [],
+      disabledTypes: (disabledKey ? disabledKey.split(',') : []) as HistoryType[],
+      playerId: selectedPlayerId,
+    }),
+    [filter, filterGameId, enabledGameKey, disabledKey, selectedPlayerId]
+  );
+  const list = usePaginatedList<HistoryRow>({ source, spec });
 
   const getParticipantName = (id: string, participants: GlobalParticipant[]): string => {
     const p = participants.find(p => p.id === id);
     return p ? p.name : t('history.unknownPlayer');
   };
 
-  // Apply type, player and game filters (disabled community modules/games excluded)
-  const enabledGameIds = new Set(communityGames.map((g) => g.id));
-  const filteredMatches = matches.filter(m => {
-    if (typeDisabled(m.type)) return false;
-    if (m.gameId && !enabledGameIds.has(m.gameId)) return false;
-    const typeMatch = filter === 'all' || m.type === filter;
-    const playerMatch = !selectedPlayerId || m.player1Id === selectedPlayerId || m.player2Id === selectedPlayerId;
-    const gameMatch = !filterGameId || m.gameId === filterGameId;
-    return typeMatch && playerMatch && gameMatch;
-  });
+  // Row → card model. Elo / context / characters come from the original record.
+  const toUnified = (row: HistoryRow): UnifiedMatch => {
+    const m = row.data;
+    const aliasOf = (id: string | null | undefined) => allParticipants.find((p) => p.id === id)?.alias ?? null;
+    if (row.kind === 'tournament') {
+      const gP1 = m.player1GlobalId ? allParticipants.find((p) => p.id === m.player1GlobalId) : null;
+      const gP2 = m.player2GlobalId ? allParticipants.find((p) => p.id === m.player2GlobalId) : null;
+      const player1Id = gP1?.id ?? m.player1GlobalId ?? m.player1Id;
+      const player2Id = gP2?.id ?? m.player2GlobalId ?? m.player2Id;
+      return {
+        id: row.id,
+        type: 'tournament',
+        gameId: row.gameId,
+        player1Id,
+        player2Id,
+        winnerId: m.winnerGlobalId ?? (m.winnerId === m.player1Id ? player1Id : m.winnerId === m.player2Id ? player2Id : m.winnerId),
+        player1Name: gP1?.name ?? (m.player1Name || t('tournament.bracket.unknown')),
+        player2Name: gP2?.name ?? (m.player2Name || t('tournament.bracket.unknown')),
+        player1Alias: gP1?.alias ?? null,
+        player2Alias: gP2?.alias ?? null,
+        player1EloBefore: 0,
+        player2EloBefore: 0,
+        player1EloAfter: 0,
+        player2EloAfter: 0,
+        player1EloChange: 0,
+        player2EloChange: 0,
+        date: m.createdAt,
+        context: m.tournamentName,
+        player1Score: m.player1Score ?? m.participant1Score ?? null,
+        player2Score: m.player2Score ?? m.participant2Score ?? null,
+        player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
+        player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
+      };
+    }
+    if (row.kind === 'league') {
+      const [s1, s2] = parseScoreString(m.score);
+      return {
+        id: row.id,
+        type: 'league',
+        gameId: row.gameId,
+        player1Id: m.participant1Id,
+        player2Id: m.participant2Id,
+        winnerId: m.winnerId ?? '',
+        player1Name: getParticipantName(m.participant1Id, allParticipants),
+        player2Name: getParticipantName(m.participant2Id, allParticipants),
+        player1Alias: aliasOf(m.participant1Id),
+        player2Alias: aliasOf(m.participant2Id),
+        player1EloBefore: m.participant1EloBefore ?? 0,
+        player2EloBefore: m.participant2EloBefore ?? 0,
+        player1EloAfter: (m.participant1EloBefore ?? 0) + (m.participant1EloChange ?? 0),
+        player2EloAfter: (m.participant2EloBefore ?? 0) + (m.participant2EloChange ?? 0),
+        player1EloChange: m.participant1EloChange ?? 0,
+        player2EloChange: m.participant2EloChange ?? 0,
+        date: m.completedDate ?? m.scheduledDate ?? new Date(0).toISOString(),
+        context: leagueNameById.get(m.leagueId),
+        player1Score: s1,
+        player2Score: s2,
+        player1Chars: charsWithColorsFromGames(m.games, 1),
+        player2Chars: charsWithColorsFromGames(m.games, 2),
+      };
+    }
+    return {
+      id: row.id,
+      type: row.type,
+      gameId: row.gameId,
+      player1Id: m.playerAId,
+      player2Id: m.playerBId,
+      winnerId: m.winnerId,
+      player1Name: getParticipantName(m.playerAId, allParticipants),
+      player2Name: getParticipantName(m.playerBId, allParticipants),
+      player1Alias: aliasOf(m.playerAId),
+      player2Alias: aliasOf(m.playerBId),
+      player1EloBefore: m.playerAPointsBefore,
+      player2EloBefore: m.playerBPointsBefore,
+      player1EloAfter: m.playerAPointsAfter,
+      player2EloAfter: m.playerBPointsAfter,
+      player1EloChange: m.playerADelta,
+      player2EloChange: m.playerBDelta,
+      date: m.createdAt,
+      player1Score: m.player1Score ?? null,
+      player2Score: m.player2Score ?? null,
+      player1Chars: m.player1Characters?.length ? m.player1Characters : charsWithColorsFromGames(m.games, 1),
+      player2Chars: m.player2Characters?.length ? m.player2Characters : charsWithColorsFromGames(m.games, 2),
+    };
+  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const matches = useMemo(() => list.items.map(toUnified), [list.items, allParticipants, leagueNameById]);
+
+  // Chip counters: totals per enabled type (server counts; last known values offline)
+  const countOf = (type: HistoryType): string => (counts ? ` (${counts[type]})` : '');
+  const allCount = counts
+    ? ` (${HISTORY_TYPES.filter((ty) => !typeDisabled(ty)).reduce((n, ty) => n + counts[ty], 0)})`
+    : '';
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -273,14 +264,14 @@ function HistoryTab() {
           className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
           onClick={() => setFilter('all')}
         >
-          {t('history.all')} ({matches.length})
+          {t('history.all')}{allCount}
         </button>
         {isFeatureEnabled('tournaments') && (
           <button
             className={`filter-btn ${filter === 'tournament' ? 'active' : ''}`}
             onClick={() => setFilter('tournament')}
           >
-            <i className="fas fa-trophy" /> {t('history.tournaments')} ({matches.filter(m => m.type === 'tournament').length})
+            <i className="fas fa-trophy" /> {t('history.tournaments')}{countOf('tournament')}
           </button>
         )}
         {isFeatureEnabled('leagues') && (
@@ -288,7 +279,7 @@ function HistoryTab() {
             className={`filter-btn ${filter === 'league' ? 'active' : ''}`}
             onClick={() => setFilter('league')}
           >
-            <i className="fas fa-calendar-alt" /> {t('history.leagues')} ({matches.filter(m => m.type === 'league').length})
+            <i className="fas fa-calendar-alt" /> {t('history.leagues')}{countOf('league')}
           </button>
         )}
         {isFeatureEnabled('duels') && (
@@ -296,7 +287,7 @@ function HistoryTab() {
             className={`filter-btn ${filter === 'duel' ? 'active' : ''}`}
             onClick={() => setFilter('duel')}
           >
-            <i className="fas fa-khanda" /> {t('history.duels')} ({matches.filter(m => m.type === 'duel').length})
+            <i className="fas fa-khanda" /> {t('history.duels')}{countOf('duel')}
           </button>
         )}
         {isFeatureEnabled('matchmaking') && (
@@ -304,18 +295,26 @@ function HistoryTab() {
             className={`filter-btn ${filter === 'matchmaking' ? 'active' : ''}`}
             onClick={() => setFilter('matchmaking')}
           >
-            <i className="fas fa-random" /> {t('history.matchmaking')} ({matches.filter(m => m.type === 'matchmaking').length})
+            <i className="fas fa-random" /> {t('history.matchmaking')}{countOf('matchmaking')}
           </button>
         )}
       </div>
 
-      {loading && <Loading message={t('history.loading')} />}
+      <div ref={listTopRef} />
+      {list.loading && <Loading message={t('history.loading')} />}
 
-      {!loading && offline && historyIncomplete && filteredMatches.length > 0 && <OfflineNotice compact partial />}
+      {list.unavailable && <OfflineNotice />}
+      {list.incomplete && <OfflineNotice compact partial />}
 
-      {!loading && filteredMatches.length === 0 && offline && <OfflineNotice />}
+      {list.error && (
+        <div className="empty-state card">
+          <i className="fas fa-triangle-exclamation" style={{ fontSize: '3rem', color: 'var(--danger-color)', marginBottom: '1rem' }} />
+          <h3>{t('ranking.errorTitle')}</h3>
+          <button className="btn-primary mt-2" onClick={list.reload}>{t('ranking.retry')}</button>
+        </div>
+      )}
 
-      {!loading && filteredMatches.length === 0 && !offline && (
+      {!list.loading && !list.unavailable && !list.error && list.total === 0 && (
         <div className="empty-state card">
           <i className="fas fa-history" style={{ fontSize: '3rem', color: 'var(--text-secondary)', marginBottom: '1rem' }} />
           <h3>{t('history.empty', { context: filter !== 'all' ? t('history.emptyIn', { filter }) : t('history.emptyYet') })}</h3>
@@ -330,9 +329,9 @@ function HistoryTab() {
         </div>
       )}
 
-      {!loading && filteredMatches.length > 0 && (
+      {matches.length > 0 && (
         <div className="history-list">
-          {filteredMatches.map(match => (
+          {matches.map(match => (
             <div key={match.id} className="history-match-card card">
               <div className="match-banner" style={{ backgroundColor: getTypeColor(match.type) }}>
                 <div className="match-banner-top">
@@ -410,6 +409,8 @@ function HistoryTab() {
           ))}
         </div>
       )}
+
+      <Pagination {...list.paginationProps} scrollRef={listTopRef} />
     </div>
   );
 }

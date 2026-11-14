@@ -805,6 +805,17 @@
       "save": "Error al guardar"
     }
   },
+  "pagination": {
+    "label": "Paginación",
+    "showing": "{{from}}–{{to}} de {{total}}",
+    "first": "Primera página",
+    "prev": "Página anterior",
+    "next": "Página siguiente",
+    "last": "Última página",
+    "page": "Página actual — escribe un número y pulsa Enter",
+    "goTo": "Ir a la página {{page}}",
+    "perPage": "Por página"
+  },
   "offline": {
     "title": "Sin conexión",
     "message": "Necesitas volver a conectarte para obtener estos datos. Se cargarán solos cuando recuperes la conexión.",

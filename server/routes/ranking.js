@@ -26,7 +26,8 @@ import {
   setParticipantGameElo,
 } from '../utils/participantGames.js';
 import { requireAuth, requireAdmin, optionalAuth } from '../utils/jwtMiddleware.js';
-import { filterByCommunity, isInUserScope, getTargetCommunityId, canAdminGame, participantIdFor } from '../utils/communityScope.js';
+import { filterByCommunity, communityScopeCond, isInUserScope, getTargetCommunityId, canAdminGame, participantIdFor } from '../utils/communityScope.js';
+import { isPaged, parseClientSpec, withScope, runPagedQuery, pageInMemory, sendQueryError } from '../utils/paginate.js';
 
 const router = Router();
 
@@ -44,9 +45,15 @@ function normalizeParticipant(p) {
 
 // ── GET /api/ranking — Leaderboard ────────────────────────────────────────
 
+// Paginated mode (?page=&pageSize=&q=): positions / Legend are computed over the
+// WHOLE board first, then the requested page is cut, so every page agrees.
+const LEADERBOARD_QUERY_RULES = { filterFields: [], searchFields: ['name', 'alias'], sortFields: ['position', 'name'] };
+const LEADERBOARD_DEFAULT_SORT = [{ field: 'position', dir: 'asc', type: 'number' }, { field: 'name', dir: 'asc' }];
+
 router.get('/', optionalAuth, async (req, res) => {
   try {
     const { communityId, gameId } = req.query;
+    const pagedSpec = isPaged(req.query) ? parseClientSpec(req.query, LEADERBOARD_QUERY_RULES) : null;
     const targetGameId = gameId || 'ssbu';
     const all = filterByCommunity(
       req.user,
@@ -94,8 +101,13 @@ router.get('/', optionalAuth, async (req, res) => {
       };
     });
 
+    if (pagedSpec) {
+      const sort = pagedSpec.sort.length ? pagedSpec.sort : LEADERBOARD_DEFAULT_SORT;
+      return res.json(pageInMemory(leaderboard, { ...pagedSpec, sort }, req.query, { defaultPageSize: 50 }));
+    }
     res.json(leaderboard);
   } catch (err) {
+    if (sendQueryError(res, err)) return;
     console.error('[Ranking] GET / error:', err);
     res.status(500).json({ error: 'Failed to load ranking' });
   }
@@ -103,9 +115,26 @@ router.get('/', optionalAuth, async (req, res) => {
 
 // ── GET /api/ranking/matches — Full match history ─────────────────────────
 
+// Paginated mode (?page=&pageSize=&q=): filters/search/sort run in the database.
+// `q` may only touch these fields; community visibility is always enforced here.
+const MATCH_QUERY_RULES = {
+  filterFields: ['gameId', 'type', 'playerAId', 'playerBId', 'winnerId'],
+  searchFields: [],
+  sortFields: ['createdAt'],
+};
+
 router.get('/matches', optionalAuth, async (req, res) => {
   try {
     const { communityId, gameId } = req.query;
+    if (isPaged(req.query)) {
+      const client = parseClientSpec(req.query, MATCH_QUERY_RULES);
+      const spec = withScope(
+        { ...client, sort: client.sort.length ? client.sort : [{ field: 'createdAt', dir: 'desc' }] },
+        communityScopeCond(req.user, communityId),
+        gameId ? { field: 'gameId', op: 'eq', value: String(gameId) } : null
+      );
+      return res.json(await runPagedQuery(rankedMatches, spec, req.query));
+    }
     let all = filterByCommunity(req.user, await rankedMatches.getAll(), communityId);
     if (gameId) {
       all = all.filter((m) => m.gameId === gameId);
@@ -113,6 +142,7 @@ router.get('/matches', optionalAuth, async (req, res) => {
     const sorted = [...all].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json(sorted);
   } catch (err) {
+    if (sendQueryError(res, err)) return;
     console.error('[Ranking] GET /matches error:', err);
     res.status(500).json({ error: 'Failed to load matches' });
   }
