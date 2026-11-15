@@ -379,7 +379,8 @@ async function fetchPendingSets(eventId) {
 /**
  * Crea un perfil de juego vacío (sin ELO, sin disponibilidad activa) para un
  * GlobalParticipant importado como stub desde start.gg.
- * La disponibilidad parte en false — el admin/jugador la activa manualmente.
+ * Ranked/ligas parten en false — el admin/jugador las activa manualmente.
+ * Torneos quedan activos por defecto (opt-out), igual que los participantes nuevos.
  */
 function buildGameProfile(gameId) {
   return {
@@ -389,7 +390,7 @@ function buildGameProfile(gameId) {
     eloRank:              'Sin puntos',
     available:            false,
     leagueAvailable:      false,
-    tournamentAvailable:  false,
+    tournamentAvailable:  true,
   };
 }
 

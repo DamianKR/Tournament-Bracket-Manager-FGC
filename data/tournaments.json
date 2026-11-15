@@ -23997,5 +23997,33 @@
         "_position": 4
       }
     ]
+  },
+  {
+    "id": "1794760207658-hplvl98la",
+    "name": "Test new user",
+    "mode": "double_elimination",
+    "type": "singles",
+    "status": "setup",
+    "gameId": "ssbu",
+    "givesPoints": true,
+    "pointsDepth": 8,
+    "seedingMode": "none",
+    "participants": [
+      {
+        "id": "1794760211562-f16bt5n82",
+        "name": "Testing tour",
+        "seed": 1,
+        "eliminated": false,
+        "lossCount": 0,
+        "globalParticipantId": "gp_1794759413593_9ks3ny1"
+      }
+    ],
+    "bracket": null,
+    "championId": null,
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:30:07.658Z",
+    "updatedAt": "2026-11-15T16:30:11.562Z",
+    "bracketSeeded": false,
+    "totalParticipants": 1
   }
 ]

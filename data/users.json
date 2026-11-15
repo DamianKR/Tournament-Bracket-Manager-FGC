@@ -1313,5 +1313,25 @@
     "createdAt": "2026-09-20T15:27:16.393Z",
     "lastLoginAt": null,
     "updatedAt": "2026-09-21T00:55:04.228Z"
+  },
+  {
+    "id": "user_1794759413846_igh15nj",
+    "participantId": "gp_1794759413593_9ks3ny1",
+    "username": "testingtour",
+    "passwordHash": "$2b$12$EUWhNBCIpAGTBeHfFHyr9usa5dXh9ineOfPueYCNhxzi.nx3TSFCW",
+    "role": null,
+    "communityId": "community_fgc_santa_clara",
+    "memberships": [
+      {
+        "participantId": "gp_1794759413593_9ks3ny1",
+        "communityId": "community_fgc_santa_clara",
+        "isActive": true,
+        "role": "user",
+        "gameAdminFor": []
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2026-11-15T16:16:53.846Z",
+    "lastLoginAt": null
   }
 ]

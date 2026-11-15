@@ -5642,5 +5642,36 @@
     "isStartggStub": true,
     "createdAt": "2026-10-02T16:20:59.840Z",
     "updatedAt": "2026-10-06T17:52:16.546Z"
+  },
+  {
+    "id": "gp_1794759413593_9ks3ny1",
+    "name": "Testing tour",
+    "alias": "",
+    "avatarUrl": null,
+    "tournamentIds": [
+      "1794760207658-hplvl98la"
+    ],
+    "gameId": "ssbu",
+    "mainCharacterId": null,
+    "games": {
+      "ssbu": {
+        "gameId": "ssbu",
+        "mainCharacterId": null,
+        "eloPoints": null,
+        "eloRank": "Sin puntos",
+        "available": false,
+        "leagueAvailable": false,
+        "tournamentAvailable": true
+      }
+    },
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:16:53.593Z",
+    "updatedAt": "2026-11-15T16:30:11.588Z",
+    "stats": {
+      "tournamentsPlayed": 0,
+      "wins": 0,
+      "matchWins": 0,
+      "matchLosses": 0
+    }
   }
 ]
