@@ -1196,6 +1196,16 @@
       "tbd": "TBD",
       "unknown": "Desconocido"
     },
+    "dq": {
+      "badge": "DQ",
+      "sectionTitle": "Descalificación (DQ)",
+      "hint": "El rival avanza sin marcador y el jugador sale del torneo. No cuenta como partida jugada: no afecta estadísticas, historial ni H2H.",
+      "buttonFor": "DQ a {{name}}",
+      "confirmMessage": "¿Descalificar a {{name}}? {{opponent}} avanza sin marcador y {{name}} queda fuera del torneo. Podrás deshacerlo mientras los siguientes matches no se hayan jugado.",
+      "confirmButton": "Descalificar",
+      "banner": "{{name}} fue descalificado: {{winner}} avanza sin marcador.",
+      "done": "{{name}} descalificado"
+    },
     "matchCard": {
       "match": "Partido {{number}}",
       "autoBye": "Auto-BYE",

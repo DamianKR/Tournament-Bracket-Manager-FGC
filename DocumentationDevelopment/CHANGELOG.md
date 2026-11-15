@@ -2,6 +2,23 @@
 
 ## [Unreleased] - 2026-11-14
 
+### 🐛 Generador de brackets: matches marcados como terminados antes de tiempo
+
+- Al generar el bracket, un match que dependía de BYEs podía quedar marcado como "fantasma" (completado sin nadie) aunque todavía iba a recibir jugadores, porque el generador miraba si sus feeders estaban terminados antes de mover a sus ganadores. Afectaba a tamaños con BYEs en cadena (9, 17-19, 33-39 jugadores)
+- Si se jugaba una ronda posterior de una mitad del bracket antes de terminar la ronda anterior de la otra, el torneo podía declarar campeón antes de tiempo o atascarse. Jugando ronda por ronda se corregía solo, por eso pasaba desapercibido
+- Un feeder ahora solo cuenta como resuelto cuando su ganador ya está en el match siguiente (`feederSettled` en ambos generadores). Los torneos ya creados no cambian; solo los nuevos
+- Verificado: con los mismos resultados, el bracket nuevo termina en un estado idéntico al anterior en todos los tamaños jugados ronda por ronda; los únicos cambios en la generación son esos matches fantasma erróneos
+
+### ✨ DQ (descalificación) en torneos
+
+- En un match listo del bracket (ambos jugadores presentes) el admin puede descalificar a uno de los dos: botón "DQ" en el modal del match, con confirmación en dos pasos
+- El rival avanza **sin marcador** y el jugador queda fuera del torneo (no cae al Loser Bracket ni suma derrota). Su posición final es la de su ronda y recibe los puntos de ELO de torneo de esa posición
+- Un DQ **no es una partida jugada**: no crea registro de partida, así que no afecta historial, H2H ni estadísticas; la tarjeta muestra una etiqueta DQ y el detalle un aviso
+- Se puede deshacer con el mismo botón que un resultado, mientras los matches siguientes no se hayan jugado. DQ en la gran final decide el título sin bracket reset
+- Si los DQs vacían una rama del Loser Bracket, el bracket se resuelve solo (BYEs / gran final con un solo finalista)
+- Estadísticas del perfil: las victorias/derrotas del bracket ahora cuentan solo partidas jugadas (sin DQ y sin BYEs), igual que ya hacía el servidor con los registros de partida
+- Validado con simulación de torneos de 2 a 64 jugadores (sencilla y doble eliminación) con miles de DQs aleatorios, y exhaustivamente para 3-5 jugadores
+
 ### ✨ Paginación en todo el sitio
 
 - Un solo sistema (componente `Pagination`, hook `usePaginatedList`, lenguaje de consulta compartido servidor/navegador). Ver [PAGINATION.md](PAGINATION.md)

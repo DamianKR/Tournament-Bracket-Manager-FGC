@@ -1192,6 +1192,16 @@
       "tbd": "TBD",
       "unknown": "Unknown"
     },
+    "dq": {
+      "badge": "DQ",
+      "sectionTitle": "Disqualification (DQ)",
+      "hint": "The opponent advances without a score and the player leaves the tournament. It does not count as a played match: no stats, history or head-to-head.",
+      "buttonFor": "DQ {{name}}",
+      "confirmMessage": "Disqualify {{name}}? {{opponent}} advances without a score and {{name}} is out of the tournament. You can undo it until the next matches are played.",
+      "confirmButton": "Disqualify",
+      "banner": "{{name}} was disqualified: {{winner}} advances without a score.",
+      "done": "{{name}} disqualified"
+    },
     "matchCard": {
       "match": "Match {{number}}",
       "autoBye": "Auto-BYE",

@@ -14743,5 +14743,408 @@
     "communityId": "community_fgc_santa_clara",
     "createdAt": "2026-10-10T12:38:54.568Z",
     "synced": false
+  },
+  {
+    "id": "tm_1794758632975_acw5x7fhf",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752088260-1w5zcm01z",
+    "player2Id": "1794752094652-0edt661v3",
+    "player1GlobalId": "gp_1787798635187_v9qifdf",
+    "player2GlobalId": "gp_1786399934148_stq7jpb",
+    "player1Name": "WolfCat Silence",
+    "player2Name": "Pal",
+    "winnerId": "1794752088260-1w5zcm01z",
+    "winnerGlobalId": "gp_1787798635187_v9qifdf",
+    "round": 1,
+    "matchNumber": 2,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752088260-1w5zcm01z"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752088260-1w5zcm01z"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:03:52.975Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758639693_ruqwwrjat",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752066430-vpyyym9cg",
+    "player2Id": "1794752088260-1w5zcm01z",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1787798635187_v9qifdf",
+    "player1Name": "Damiam",
+    "player2Name": "WolfCat Silence",
+    "winnerId": "1794752066430-vpyyym9cg",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752066430-vpyyym9cg"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752066430-vpyyym9cg"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:03:59.693Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758646976_s811t1ix1",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752072389-i04c4ge4m",
+    "player2Id": "1794752074724-sh7k538kd",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786393834683_lievrvf",
+    "player1Name": "Alexis",
+    "player2Name": "Kevin",
+    "winnerId": "1794752072389-i04c4ge4m",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 2,
+    "matchNumber": 2,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752072389-i04c4ge4m"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752072389-i04c4ge4m"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:04:06.976Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758654452_qrbtlgleq",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752066430-vpyyym9cg",
+    "player2Id": "1794752072389-i04c4ge4m",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786387250178_ac5thmv",
+    "player1Name": "Damiam",
+    "player2Name": "Alexis",
+    "winnerId": "1794752066430-vpyyym9cg",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 3,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752066430-vpyyym9cg"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752066430-vpyyym9cg"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:04:14.453Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758661844_76kld8fta",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752070766-tvvw114kj",
+    "player2Id": "1794752090624-krg9tcycr",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1786391783115_87zwx03",
+    "player1Name": "Ale",
+    "player2Name": "Tails",
+    "winnerId": "1794752070766-tvvw114kj",
+    "winnerGlobalId": "gp_1786387243524_6er0c9u",
+    "round": 2,
+    "matchNumber": 4,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752070766-tvvw114kj"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752070766-tvvw114kj"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:04:21.844Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758692410_xvdv47c6q",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752094652-0edt661v3",
+    "player2Id": "1794752090624-krg9tcycr",
+    "player1GlobalId": "gp_1786399934148_stq7jpb",
+    "player2GlobalId": "gp_1786391783115_87zwx03",
+    "player1Name": "Pal",
+    "player2Name": "Tails",
+    "winnerId": "1794752094652-0edt661v3",
+    "winnerGlobalId": "gp_1786399934148_stq7jpb",
+    "round": 2,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752094652-0edt661v3"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752094652-0edt661v3"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:04:52.410Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758735677_jiechskod",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752070766-tvvw114kj",
+    "player2Id": "1794752068988-87dvyjy1l",
+    "player1GlobalId": "gp_1786387243524_6er0c9u",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "Ale",
+    "player2Name": "Gino",
+    "winnerId": "1794752068988-87dvyjy1l",
+    "winnerGlobalId": "gp_1786387234567_aoe1z95",
+    "round": 3,
+    "matchNumber": 2,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752068988-87dvyjy1l"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752068988-87dvyjy1l"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:05:35.677Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758761563_0ctshrg80",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752066430-vpyyym9cg",
+    "player2Id": "1794752068988-87dvyjy1l",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "Damiam",
+    "player2Name": "Gino",
+    "winnerId": "1794752066430-vpyyym9cg",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 4,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752066430-vpyyym9cg"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752066430-vpyyym9cg"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:06:01.563Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758775991_kv5coda0x",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752088260-1w5zcm01z",
+    "player2Id": "1794752074724-sh7k538kd",
+    "player1GlobalId": "gp_1787798635187_v9qifdf",
+    "player2GlobalId": "gp_1786393834683_lievrvf",
+    "player1Name": "WolfCat Silence",
+    "player2Name": "Kevin",
+    "winnerId": "1794752074724-sh7k538kd",
+    "winnerGlobalId": "gp_1786393834683_lievrvf",
+    "round": 3,
+    "matchNumber": 2,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752074724-sh7k538kd"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752074724-sh7k538kd"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:06:15.991Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758806579_obxb0dfr5",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752094652-0edt661v3",
+    "player2Id": "1794752072389-i04c4ge4m",
+    "player1GlobalId": "gp_1786399934148_stq7jpb",
+    "player2GlobalId": "gp_1786387250178_ac5thmv",
+    "player1Name": "Pal",
+    "player2Name": "Alexis",
+    "winnerId": "1794752072389-i04c4ge4m",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 4,
+    "matchNumber": 1,
+    "player1Score": 0,
+    "player2Score": 2,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752072389-i04c4ge4m"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752072389-i04c4ge4m"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:06:46.579Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758821168_48cfkkbql",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752072389-i04c4ge4m",
+    "player2Id": "1794752070766-tvvw114kj",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786387243524_6er0c9u",
+    "player1Name": "Alexis",
+    "player2Name": "Ale",
+    "winnerId": "1794752072389-i04c4ge4m",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 5,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752072389-i04c4ge4m"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752072389-i04c4ge4m"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:07:01.168Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758826625_w3i7zq71w",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752072389-i04c4ge4m",
+    "player2Id": "1794752068988-87dvyjy1l",
+    "player1GlobalId": "gp_1786387250178_ac5thmv",
+    "player2GlobalId": "gp_1786387234567_aoe1z95",
+    "player1Name": "Alexis",
+    "player2Name": "Gino",
+    "winnerId": "1794752072389-i04c4ge4m",
+    "winnerGlobalId": "gp_1786387250178_ac5thmv",
+    "round": 6,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752072389-i04c4ge4m"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752072389-i04c4ge4m"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:07:06.625Z",
+    "synced": false
+  },
+  {
+    "id": "tm_1794758833089_2glsnp4vu",
+    "tournamentId": "1794752057490-sbfn5n8u8",
+    "tournamentName": "Testing new Generation",
+    "gameId": "ssbu",
+    "player1Id": "1794752066430-vpyyym9cg",
+    "player2Id": "1794752072389-i04c4ge4m",
+    "player1GlobalId": "gp_1786387087046_wnwtadb",
+    "player2GlobalId": "gp_1786387250178_ac5thmv",
+    "player1Name": "Damiam",
+    "player2Name": "Alexis",
+    "winnerId": "1794752066430-vpyyym9cg",
+    "winnerGlobalId": "gp_1786387087046_wnwtadb",
+    "round": 1,
+    "matchNumber": 1,
+    "player1Score": 2,
+    "player2Score": 0,
+    "games": [
+      {
+        "gameNumber": 1,
+        "winnerId": "1794752066430-vpyyym9cg"
+      },
+      {
+        "gameNumber": 2,
+        "winnerId": "1794752066430-vpyyym9cg"
+      }
+    ],
+    "communityId": "community_fgc_santa_clara",
+    "createdAt": "2026-11-15T16:07:13.089Z",
+    "synced": false
   }
 ]

@@ -35,14 +35,28 @@ export function assignFinalPositions(tournament) {
     const loser = tournament.participants.find(p => p.id === m.loserId);
     if (!loser || !loser.eliminated) continue;
 
-    const roundsFromEnd = maxLBRound - m.roundNumber;
-    let start = 3;
-    let groupSize = 1;
-    for (let i = 0; i < roundsFromEnd; i++) {
-      start += groupSize;
-      if (i % 2 === 1) groupSize *= 2;
-    }
-
-    loser.finalPosition = start;
+    loser.finalPosition = lbStartPosition(maxLBRound, m.roundNumber);
   }
+
+  // A DQ in the winners bracket places like an elimination in the LB round the player would
+  // have dropped into (a DQ in the loser bracket / grand final is covered by m.loserId above).
+  const allMatches = [...tournament.bracket.winnerBracket, ...lb];
+  for (const m of tournament.bracket.winnerBracket) {
+    if (m.status !== 'completed' || !m.disqualifiedId || !m.nextLoserMatchId) continue;
+    const dq = tournament.participants.find(p => p.id === m.disqualifiedId);
+    const target = allMatches.find(x => x.id === m.nextLoserMatchId);
+    if (dq && dq.disqualified && target) dq.finalPosition = lbStartPosition(maxLBRound, target.roundNumber);
+  }
+}
+
+/** First position of the group eliminated in a given loser-bracket round (Challonge formula). */
+function lbStartPosition(maxLBRound, round) {
+  const roundsFromEnd = maxLBRound - round;
+  let start = 3;
+  let groupSize = 1;
+  for (let i = 0; i < roundsFromEnd; i++) {
+    start += groupSize;
+    if (i % 2 === 1) groupSize *= 2;
+  }
+  return start;
 }

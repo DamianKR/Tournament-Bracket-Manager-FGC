@@ -5,7 +5,7 @@ import type { MatchGame } from '@/models/rankedMatch';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunity } from '@/contexts/CommunityContext';
 import { Tournament } from '@/models/types';
-import { getTournament, setMatchWinner, undoMatchResult, registerForTournament } from '@/services/tournament/tournamentService';
+import { getTournament, setMatchWinner, undoMatchResult, disqualifyInMatch, registerForTournament } from '@/services/tournament/tournamentService';
 import { useToast } from '@/contexts/NotificationContext';
 
 import Sidebar from '@/components/Sidebar/Sidebar';
@@ -90,6 +90,19 @@ function TournamentView() {
     try {
       const updatedTournament = await undoMatchResult(id, matchId);
       setTournament(updatedTournament);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleDisqualify = async (matchId: string, participantId: string) => {
+    if (!id) return;
+
+    try {
+      const updatedTournament = await disqualifyInMatch(id, matchId, participantId);
+      setTournament(updatedTournament);
+      const name = updatedTournament.participants.find((p) => p.id === participantId)?.name ?? '';
+      toast.success(t('tournament.dq.done', { name }));
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -271,6 +284,7 @@ function TournamentView() {
                   onMatchResult={canAdminGame(tournament.gameId) ? handleMatchResult : undefined}
                   onMatchGames={canAdminGame(tournament.gameId) ? handleMatchGames : undefined}
                   onRevertMatch={canAdminGame(tournament.gameId) ? handleRevertMatch : undefined}
+                  onDisqualify={canAdminGame(tournament.gameId) ? handleDisqualify : undefined}
                   readOnly={tournament.status === 'completed' || !canAdminGame(tournament.gameId)}
                 />
               ) : null

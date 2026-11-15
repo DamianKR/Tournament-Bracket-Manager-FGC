@@ -41,7 +41,10 @@ export function recordMatchResult(
     const prevWinnerId = match.winnerId;
     const prevLoserId = match.loserId;
 
-    if (prevLoserId) {
+    const wasDisqualification = !!match.disqualifiedId;
+    if (match.disqualifiedId) {
+      unwindDisqualification(tournament, match);
+    } else if (prevLoserId) {
       const prevLoser = tournament.participants.find((p: Participant) => p.id === prevLoserId);
       if (prevLoser && prevLoser.lossCount > 0) {
         prevLoser.lossCount--;
@@ -65,6 +68,15 @@ export function recordMatchResult(
     }
     if (match.nextLoserMatchId && prevLoserId) {
       removeParticipantFromMatch(tournament.bracket, match.nextLoserMatchId, prevLoserId);
+    }
+    if (wasDisqualification) {
+      settleBracket(tournament.bracket);
+      // The DQ itself may have decided the title: the new result reopens the tournament, as an undo would.
+      if (tournament.status === 'completed') {
+        tournament.status = 'in_progress';
+        tournament.championId = null;
+        delete tournament.completedAt;
+      }
     }
   }
 
@@ -135,6 +147,130 @@ export function recordMatchResult(
   tournament.updatedAt = new Date().toISOString();
 
   return tournament;
+}
+
+/**
+ * Disqualify a participant in a ready match (both players present, not played yet).
+ *
+ * - The opponent wins by forfeit and advances like a normal winner.
+ * - The DQ'd participant leaves the tournament: they do NOT drop to the loser bracket and
+ *   never get a loss counted. Their loser-bracket slot is dead, so it resolves as a BYE.
+ * - No scores / characters / games are stored: a DQ is not a played match, so stats,
+ *   head-to-head and history must ignore it (see Match.disqualifiedId).
+ * - Final position: the one their round gives (assignFinalPositions).
+ * - Undo: revertMatchResult restores everything while later matches are unplayed.
+ */
+export function disqualifyParticipant(
+  tournament: Tournament,
+  matchId: string,
+  disqualifiedId: string
+): Tournament {
+  if (!tournament.bracket) {
+    throw new Error('Tournament bracket not initialized');
+  }
+  const bracket = tournament.bracket;
+
+  const match = findMatch(bracket, matchId);
+  if (!match) {
+    throw new Error(`Match ${matchId} not found`);
+  }
+  if (match.status === 'completed') {
+    throw new Error('Match already decided - undo it first');
+  }
+  if (!match.participant1Id || !match.participant2Id) {
+    throw new Error('Both players must be in the match to disqualify one');
+  }
+  if (match.participant1Id !== disqualifiedId && match.participant2Id !== disqualifiedId) {
+    throw new Error('Disqualified player must be in this match');
+  }
+
+  const winnerId = match.participant1Id === disqualifiedId ? match.participant2Id : match.participant1Id;
+
+  match.winnerId = winnerId;
+  match.loserId = disqualifiedId;
+  match.disqualifiedId = disqualifiedId;
+  match.status = 'completed';
+  delete match.participant1Score;
+  delete match.participant2Score;
+  delete match.participant1Characters;
+  delete match.participant2Characters;
+  delete match.games;
+
+  const dq = tournament.participants.find((p: Participant) => p.id === disqualifiedId);
+  if (dq) {
+    dq.disqualified = true;
+    dq.eliminated = true;
+    dq.finalPosition = undefined;
+  }
+
+  // The opponent advances exactly like a normal winner.
+  if (match.nextWinnerMatchId) {
+    if (match.bracketType === 'loser') {
+      advanceParticipantToSlot(bracket, match.nextWinnerMatchId, winnerId, 1);
+    } else {
+      advanceParticipant(bracket, match.nextWinnerMatchId, winnerId);
+    }
+  }
+
+  // The DQ'd player never reaches the loser bracket: that slot is dead, so let the
+  // target match resolve as a BYE (or wait for its other feeder) instead of hanging.
+  if (match.nextLoserMatchId) {
+    const target = findMatch(bracket, match.nextLoserMatchId);
+    if (target) checkAndProcessImplicitBye(bracket, target);
+  }
+
+  // An empty loser-bracket branch can ghost-out whole chains (up to a grand final with a single
+  // finalist). A normal result always drops someone into the loser bracket, so the regular
+  // progression never had to propagate that — settle the whole bracket now.
+  settleBracket(bracket);
+
+  checkTournamentCompletion(tournament);
+  assignFinalPositions(tournament);
+  tournament.updatedAt = new Date().toISOString();
+  return tournament;
+}
+
+/**
+ * Bring auto-resolved matches (BYEs / ghosts: completed without a loser) in line with the bracket:
+ *   - one that can still receive a player (a feeder is not finished) is reopened;
+ *   - a pending one that can never receive another player resolves as a BYE / ghost,
+ *     and that resolution cascades to the following matches.
+ * Runs to a fixed point. Only used around disqualifications.
+ */
+function settleBracket(bracket: Bracket): void {
+  const everyMatch = (): Match[] => [
+    ...bracket.winnerBracket,
+    ...bracket.loserBracket,
+    ...(bracket.grandFinal ? [bracket.grandFinal] : []),
+    ...(bracket.grandFinalReset ? [bracket.grandFinalReset] : []),
+  ];
+  for (let pass = 0; pass < 200; pass++) {
+    let changed = false;
+    for (const m of everyMatch()) {
+      if (m.status === 'completed' && !m.loserId && checkIfMatchCanReceiveParticipants(bracket, m)) {
+        const winner = m.winnerId;
+        m.status = 'pending';
+        m.winnerId = null;
+        if (winner && m.nextWinnerMatchId) removeParticipantFromMatch(bracket, m.nextWinnerMatchId, winner);
+        changed = true;
+      } else if (m.status === 'pending') {
+        checkAndProcessImplicitBye(bracket, m);
+        if (m.status !== 'pending') changed = true;
+      }
+    }
+    if (!changed) return;
+  }
+}
+
+/** Undo what a DQ did to its participant. The loss count was never touched. */
+function unwindDisqualification(tournament: Tournament, match: Match): void {
+  const dq = tournament.participants.find((p: Participant) => p.id === match.disqualifiedId);
+  if (dq) {
+    delete dq.disqualified;
+    dq.eliminated = false;
+    dq.finalPosition = undefined;
+  }
+  delete match.disqualifiedId;
 }
 
 /**
@@ -381,8 +517,11 @@ export function revertMatchResult(
     throw new Error('Cannot revert - subsequent matches already played');
   }
 
-  // Revert participant loss counts
-  if (match.loserId) {
+  // Revert participant loss counts (a DQ never added a loss: it restores the participant instead)
+  const wasDisqualification = !!match.disqualifiedId;
+  if (match.disqualifiedId) {
+    unwindDisqualification(tournament, match);
+  } else if (match.loserId) {
     const loser = tournament.participants.find((p: Participant) => p.id === match.loserId);
     if (loser && loser.lossCount > 0) {
       loser.lossCount--;
@@ -414,6 +553,10 @@ export function revertMatchResult(
   if (match.nextLoserMatchId && loserId) {
     removeParticipantFromMatch(tournament.bracket, match.nextLoserMatchId, loserId);
   }
+
+  // A DQ may have resolved whole dead branches (ghost chains up to the grand final): reopen
+  // whatever can receive players again.
+  if (wasDisqualification) settleBracket(tournament.bracket);
 
   // A grand-final revert invalidates a bracket-reset match created from it
   if (tournament.bracket.grandFinalReset && tournament.bracket.grandFinal?.status !== 'completed') {
@@ -518,6 +661,15 @@ function checkTournamentCompletion(tournament: Tournament): void {
 
   // ── Grand final must be completed to proceed ─────────────────────────
   if (!grandFinal || grandFinal.status !== 'completed') return;
+
+  // A disqualification in the grand final decides the title outright: the other
+  // finalist is champion and there is no bracket reset to play.
+  if (grandFinal.disqualifiedId && grandFinal.winnerId) {
+    tournament.championId = grandFinal.winnerId;
+    tournament.status = 'completed';
+    assignFinalPositions(tournament);
+    return;
+  }
 
   // ── Case 2: Grand final completed, LB winner won → create reset ──────
   // participant2 is always the LB champion (set in generateGrandFinal)
@@ -628,14 +780,28 @@ export function assignFinalPositions(tournament: Tournament): void {
     if (!loser || !loser.eliminated) continue;
 
     // Compute starting position for this LB round using Challonge formula.
-    const roundsFromEnd = maxLBRound - m.roundNumber;
-    let start = 3;
-    let groupSize = 1;
-    for (let i = 0; i < roundsFromEnd; i++) {
-      start += groupSize;
-      if (i % 2 === 1) groupSize *= 2;
-    }
-
-    loser.finalPosition = start;
+    loser.finalPosition = lbStartPosition(maxLBRound, m.roundNumber);
   }
+
+  // A DQ in the winners bracket removes the player without a loser-bracket match: they
+  // place as if eliminated in the LB round they would have dropped into. (A DQ in the
+  // loser bracket or the grand final is already covered by m.loserId above.)
+  for (const m of tournament.bracket.winnerBracket) {
+    if (m.status !== 'completed' || !m.disqualifiedId || !m.nextLoserMatchId) continue;
+    const dq = tournament.participants.find((p: Participant) => p.id === m.disqualifiedId);
+    const target = findMatch(tournament.bracket, m.nextLoserMatchId);
+    if (dq && dq.disqualified && target) dq.finalPosition = lbStartPosition(maxLBRound, target.roundNumber);
+  }
+}
+
+/** First position of the group eliminated in a given loser-bracket round (Challonge formula). */
+function lbStartPosition(maxLBRound: number, round: number): number {
+  const roundsFromEnd = maxLBRound - round;
+  let start = 3;
+  let groupSize = 1;
+  for (let i = 0; i < roundsFromEnd; i++) {
+    start += groupSize;
+    if (i % 2 === 1) groupSize *= 2;
+  }
+  return start;
 }

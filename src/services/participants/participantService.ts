@@ -238,7 +238,7 @@ export function computeStats(participant: GlobalParticipant, tournaments?: Tourn
         ...t.bracket.loserBracket,
         ...(t.bracket.grandFinal ? [t.bracket.grandFinal] : []),
         ...(t.bracket.grandFinalReset ? [t.bracket.grandFinalReset] : []),
-      ].filter((m) => m.status === 'completed');
+      ].filter((m) => m.status === 'completed' && !m.disqualifiedId && m.participant1Id && m.participant2Id);   // played matches only: no DQ forfeits, no BYEs
 
       for (const m of allMatches) {
         if (m.winnerId === tp.id) matchWins++;
@@ -304,7 +304,7 @@ export function computeAllStats(
           ...t.bracket.loserBracket,
           ...(t.bracket.grandFinal ? [t.bracket.grandFinal] : []),
           ...(t.bracket.grandFinalReset ? [t.bracket.grandFinalReset] : []),
-        ].filter((m) => m.status === 'completed');
+        ].filter((m) => m.status === 'completed' && !m.disqualifiedId && m.participant1Id && m.participant2Id);   // played matches only: no DQ forfeits, no BYEs
 
         for (const m of allMatches) {
           if (m.winnerId === tp.id) matchWins++;

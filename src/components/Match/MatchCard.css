@@ -409,3 +409,16 @@
     padding: 0.05rem 0;
   }
 }
+
+/* A participant decided by disqualification (no score): small DQ tag where the score would be */
+.dq-badge {
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--danger-color);
+  border-radius: var(--border-radius);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--danger-color);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}

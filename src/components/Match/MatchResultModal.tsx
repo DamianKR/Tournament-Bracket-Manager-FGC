@@ -15,6 +15,7 @@ interface MatchResultModalProps {
   onConfirmGames?: (winnerId: string, games: MatchGame[]) => void;
   onCancel: () => void;
   onRevert?: () => void;
+  onDisqualify?: (participantId: string) => void;
   readOnly?: boolean;
 }
 
@@ -27,6 +28,7 @@ function MatchResultModal({
   onConfirmGames,
   onCancel,
   onRevert,
+  onDisqualify,
   readOnly = false,
 }: MatchResultModalProps) {
   const data: MatchDetailData = {
@@ -38,6 +40,7 @@ function MatchResultModal({
     participant2Characters: match.participant2Characters,
     games: match.games,
     winnerId: match.winnerId,
+    disqualifiedId: match.disqualifiedId ?? null,
   };
 
   return (
@@ -50,6 +53,7 @@ function MatchResultModal({
       onConfirmGames={onConfirmGames}
       onCancel={onCancel}
       onRevert={onRevert}
+      onDisqualify={onDisqualify}
       readOnly={readOnly}
     />
   );
