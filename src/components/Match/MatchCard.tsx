@@ -15,6 +15,8 @@ interface MatchCardProps {
   onSelectWinner?: (matchId: string, winnerId: string, score1?: number, score2?: number, chars1?: string[], chars2?: string[]) => void;
   onSelectGames?: (matchId: string, winnerId: string, games: MatchGame[]) => void;
   onRevertMatch?: (matchId: string) => void;
+  /** Disqualify a player of this (pending) match. */
+  onDisqualify?: (matchId: string, participantId: string) => void;
   readOnly?: boolean;
   isGrandFinal?: boolean;
   reversible?: boolean;
@@ -33,6 +35,7 @@ function MatchCard({
   onSelectWinner,
   onSelectGames,
   onRevertMatch,
+  onDisqualify,
   readOnly = false,
   isGrandFinal = false,
   reversible = false,
@@ -64,6 +67,7 @@ function MatchCard({
     setShowDetailModal(false);
   };
 
+  const isDq       = (id: string | null) => id != null && match.disqualifiedId === id;
   const isWinner   = (id: string | null) => id != null && match.winnerId === id;
   const isLoser    = (id: string | null) => id != null && match.loserId === id;
 
@@ -154,6 +158,7 @@ function MatchCard({
               </span>
             </div>
             <div className="participant-right">
+              {isDq(match.participant1Id) && <span className="dq-badge" title={t('tournament.dq.sectionTitle')}>{t('tournament.dq.badge')}</span>}
               {hasScore && <span className="participant-score">{effectiveP1Score ?? 0}</span>}
               {isWinner(match.participant1Id) && !hasScore && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
             </div>
@@ -198,6 +203,7 @@ function MatchCard({
               </span>
             </div>
             <div className="participant-right">
+              {isDq(match.participant2Id) && <span className="dq-badge" title={t('tournament.dq.sectionTitle')}>{t('tournament.dq.badge')}</span>}
               {hasScore && <span className="participant-score">{effectiveP2Score ?? 0}</span>}
               {isWinner(match.participant2Id) && !hasScore && <span className="winner-badge">{t('tournament.matchCard.winnerBadge')}</span>}
             </div>
@@ -216,6 +222,10 @@ function MatchCard({
           onConfirm={handleDetailedConfirm}
           onConfirmGames={onSelectGames ? handleDetailedConfirmGames : undefined}
           onCancel={() => setShowDetailModal(false)}
+          onDisqualify={canSelect && onDisqualify ? (participantId) => {
+            onDisqualify(match.id, participantId);
+            setShowDetailModal(false);
+          } : undefined}
           onRevert={reversible && onRevertMatch ? () => {
             onRevertMatch(match.id);
             setShowDetailModal(false);

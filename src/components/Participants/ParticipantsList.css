@@ -219,3 +219,8 @@
     font-size: 0.95rem;
   }
 }
+
+.eliminated-badge.dq-tag {
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+}

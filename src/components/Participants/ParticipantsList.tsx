@@ -229,7 +229,9 @@ function ParticipantsList({
                       </span>
                     )}
                     {tournamentMode && participant.eliminated && (
-                      <span className="eliminated-badge">{t('tournament.participantsList.eliminated')}</span>
+                      participant.disqualified
+                        ? <span className="eliminated-badge dq-tag">{t('tournament.dq.badge')}</span>
+                        : <span className="eliminated-badge">{t('tournament.participantsList.eliminated')}</span>
                     )}
                   </div>
                 ) : (
@@ -245,7 +247,9 @@ function ParticipantsList({
                       </span>
                     )}
                     {tournamentMode && participant.eliminated && (
-                      <span className="eliminated-badge">{t('tournament.participantsList.eliminated')}</span>
+                      participant.disqualified
+                        ? <span className="eliminated-badge dq-tag">{t('tournament.dq.badge')}</span>
+                        : <span className="eliminated-badge">{t('tournament.participantsList.eliminated')}</span>
                     )}
                   </>
                 )}

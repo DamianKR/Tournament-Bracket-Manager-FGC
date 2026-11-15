@@ -20,6 +20,8 @@ export interface MatchDetailData {
   participant2Characters?: string[];
   games?: MatchGame[];
   winnerId?: string | null;
+  /** The match was decided by disqualifying this participant (no scores / characters). */
+  disqualifiedId?: string | null;
 }
 
 interface MatchDetailModalProps {
@@ -32,6 +34,8 @@ interface MatchDetailModalProps {
   onConfirmGames?: (winnerId: string, games: MatchGame[]) => void;
   onCancel: () => void;
   onRevert?: () => void;
+  /** Pending bracket matches only: disqualify one of the two players. */
+  onDisqualify?: (participantId: string) => void;
   readOnly?: boolean;
   hideScores?: boolean; // Para casos donde no se usan scores
 }
@@ -46,6 +50,7 @@ function MatchDetailModal({
   onConfirmGames,
   onCancel,
   onRevert,
+  onDisqualify,
   readOnly = false,
   hideScores = false,
 }: MatchDetailModalProps) {
@@ -186,6 +191,23 @@ function MatchDetailModal({
   const openChar2Picker = () => { setCharFilter2(''); setShowChar2Picker(true); };
   const closeChar2Picker = () => { setShowChar2Picker(false); setCharFilter2(''); };
 
+  // Two-step DQ: a small DQ tag sits next to each name; tapping it arms the inline confirmation
+  // (a nested ConfirmModal would sit under this overlay, so it stays inline).
+  const [dqTarget, setDqTarget] = useState<string | null>(null);
+  const nameOf = (id: string) => (id === participant1Id ? data.participant1Name : data.participant2Name);
+  const otherOf = (id: string) => (id === participant1Id ? participant2Id : participant1Id);
+  const canDq = !readOnly && !!onDisqualify && !!participant1Id && !!participant2Id;
+  const dqTag = (pid: string) => canDq && (
+    <button
+      type="button"
+      className={`dq-tag ${dqTarget === pid ? 'armed' : ''}`}
+      title={t('tournament.dq.buttonFor', { name: nameOf(pid) })}
+      onClick={() => setDqTarget(dqTarget === pid ? null : pid)}
+    >
+      DQ
+    </button>
+  );
+
   const modalTitle = title ?? (readOnly ? t('tournament.matchResult.viewTitle') : t('tournament.matchResult.title'));
 
   return (
@@ -199,25 +221,44 @@ function MatchDetailModal({
         </div>
 
         <div className="modal-body">
+          {data.disqualifiedId && (
+            <div className="dq-banner">
+              <i className="fas fa-user-slash" />{' '}
+              {t('tournament.dq.banner', { name: nameOf(data.disqualifiedId), winner: nameOf(otherOf(data.disqualifiedId)) })}
+            </div>
+          )}
+
           {/* Matchup header */}
-          {!useGameLog && !hideScores && (
+          {!useGameLog && !hideScores && !data.disqualifiedId && (
             <div className="game-log-score-display">
               <span className="score-pill">{score1} - {score2}</span>
             </div>
           )}
 
+          {dqTarget && (
+            <div className="dq-confirm">
+              <p><i className="fas fa-user-slash" /> {t('tournament.dq.confirmMessage', { name: nameOf(dqTarget), opponent: nameOf(otherOf(dqTarget)) })}</p>
+              <div className="dq-confirm-actions">
+                <button type="button" className="btn-outline dq-confirm-cancel" onClick={() => setDqTarget(null)}>{t('common.cancel')}</button>
+                <button type="button" className="btn-danger dq-confirm-btn" onClick={() => onDisqualify!(dqTarget)}>
+                  <i className="fas fa-user-slash" /> {t('tournament.dq.confirmButton')}
+                </button>
+              </div>
+            </div>
+          )}
+
           {useGameLog && (
             <div className="matchup-header">
-              <span className={`matchup-player matchup-p1 ${winnerId === participant1Id ? 'winner' : ''}`}>{data.participant1Name}</span>
+              <span className={`matchup-player matchup-p1 ${winnerId === participant1Id ? 'winner' : ''}`}>{data.participant1Name}{dqTag(participant1Id)}</span>
               <span className="matchup-score">{score1} - {score2}</span>
-              <span className={`matchup-player matchup-p2 ${winnerId === participant2Id ? 'winner' : ''}`}>{data.participant2Name}</span>
+              <span className={`matchup-player matchup-p2 ${winnerId === participant2Id ? 'winner' : ''}`}>{dqTag(participant2Id)}{data.participant2Name}</span>
             </div>
           )}
 
           {/* Participant 1 */}
           <div className={`result-participant ${winnerId === participant1Id ? 'winner' : ''} ${useGameLog ? 'hidden' : ''}`}>
             <div className="participant-info">
-              <span className="participant-label">{data.participant1Name}</span>
+              <span className="participant-label">{data.participant1Name}{dqTag(participant1Id)}</span>
               {chars1.length > 0 && gameId && !useGameLog && (
                 <div className="character-badges">
                   {chars1.map((charId, idx) => (
@@ -289,7 +330,7 @@ function MatchDetailModal({
           {/* Participant 2 */}
           <div className={`result-participant ${winnerId === participant2Id ? 'winner' : ''} ${useGameLog ? 'hidden' : ''}`}>
             <div className="participant-info">
-              <span className="participant-label">{data.participant2Name}</span>
+              <span className="participant-label">{data.participant2Name}{dqTag(participant2Id)}</span>
               {chars2.length > 0 && gameId && !useGameLog && (
                 <div className="character-badges">
                   {chars2.map((charId, idx) => (
@@ -540,6 +581,7 @@ function MatchDetailModal({
               </button>
             </div>
           )}
+
         </div>
 
         <div className="modal-footer">

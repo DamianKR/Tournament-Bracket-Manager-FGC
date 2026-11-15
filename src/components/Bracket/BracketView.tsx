@@ -14,10 +14,11 @@ interface BracketViewProps {
   onMatchResult?: (matchId: string, winnerId: string, score1?: number, score2?: number, chars1?: string[], chars2?: string[]) => void;
   onMatchGames?: (matchId: string, winnerId: string, games: MatchGame[]) => void;
   onRevertMatch?: (matchId: string) => void;
+  onDisqualify?: (matchId: string, participantId: string) => void;
   readOnly?: boolean;
 }
 
-function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGames, onRevertMatch, readOnly = false }: BracketViewProps) {
+function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGames, onRevertMatch, onDisqualify, readOnly = false }: BracketViewProps) {
   const { t } = useTranslation();
 
   // Refs to sync horizontal scroll between header row and matches
@@ -142,6 +143,7 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
                       onSelectWinner={onMatchResult}
                       onSelectGames={onMatchGames}
                       onRevertMatch={onRevertMatch}
+                      onDisqualify={onDisqualify}
                       readOnly={readOnly}
                       slot1Awaiting={!match.participant1Id && isSlotAwaitingParticipant(bracket, match, 1)}
                       slot2Awaiting={!match.participant2Id && isSlotAwaitingParticipant(bracket, match, 2)}
@@ -186,6 +188,7 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
               onSelectWinner={onMatchResult}
               onSelectGames={onMatchGames}
               onRevertMatch={onRevertMatch}
+              onDisqualify={onDisqualify}
               readOnly={readOnly}
               isGrandFinal={true}
               displayMatchNumber={1}
@@ -204,6 +207,7 @@ function BracketView({ bracket, participants, gameId, onMatchResult, onMatchGame
                   onSelectWinner={onMatchResult}
                   onSelectGames={onMatchGames}
                   onRevertMatch={onRevertMatch}
+                  onDisqualify={onDisqualify}
                   readOnly={readOnly}
                   isGrandFinal={true}
                   displayMatchNumber={1}

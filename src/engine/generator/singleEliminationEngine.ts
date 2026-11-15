@@ -185,6 +185,21 @@ function linkSingleEliminationMatches(matches: Match[], totalRounds: number): vo
 }
 
 /**
+ * A feeder is "settled" for `match` once it is finished AND its winner (if it has one) already
+ * sits in `match`. A finished BYE whose winner has not been advanced yet is NOT settled: that
+ * winner is about to arrive, so the next match is neither a BYE nor a ghost.
+ * (Treating it as settled marked matches that still receive players as finished ghosts, and a
+ * later round could then be decided early when played ahead of the other half of the bracket.)
+ */
+function feederSettled(feeder: Match, match: Match): boolean {
+  return feeder.status === 'completed' && (
+    !feeder.winnerId ||
+    match.participant1Id === feeder.winnerId ||
+    match.participant2Id === feeder.winnerId
+  );
+}
+
+/**
  * Process BYE matches and advance winners automatically
  */
 function processByeMatches(matches: Match[]): void {
@@ -204,7 +219,7 @@ function processByeMatches(matches: Match[]): void {
       if (isDoubleBye) {
         const feeders = matches.filter((m: Match) => m.nextWinnerMatchId === match.id);
         const allFeedersResolved = feeders.length === 0 ||
-          feeders.every((m: Match) => m.status === 'completed');
+          feeders.every((m: Match) => feederSettled(m, match));
         if (allFeedersResolved) {
           match.status = 'completed';
           changed = true;
@@ -222,7 +237,7 @@ function processByeMatches(matches: Match[]): void {
       if (singleByeWinner) {
         const emptySlotFeeders = matches.filter((m: Match) => m.nextWinnerMatchId === match.id);
         const allResolved = emptySlotFeeders.length === 0 ||
-          emptySlotFeeders.every((m: Match) => m.status === 'completed');
+          emptySlotFeeders.every((m: Match) => feederSettled(m, match));
         if (allResolved) {
           match.winnerId = singleByeWinner;
           match.status = 'completed';

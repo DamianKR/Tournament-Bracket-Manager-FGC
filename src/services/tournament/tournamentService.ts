@@ -2,7 +2,7 @@ import { Tournament, Participant, TournamentMode, TournamentType, TeamSize, Seed
 import type { MatchGame } from '@/models/rankedMatch';
 import { generateBracket } from '@/engine/generator/bracketGenerator';
 import { assignSeeds, randomizeParticipants } from '@/engine/seeding/seeding';
-import { recordMatchResult, revertMatchResult, findMatch } from '@/engine/progression/matchProgression';
+import { recordMatchResult, revertMatchResult, disqualifyParticipant, findMatch } from '@/engine/progression/matchProgression';
 import { getTournamentPlacement } from '@/utils/tournamentPlacements';
 import { saveTournament, saveTournamentAsync, loadTournament, deleteTournament, loadTournaments, linkParticipantToTournament, loadGlobalParticipants, cacheTournament, queueTournamentMatchRecord } from '@/services/storage/localStorage';
 import { findGlobalParticipantByName } from '@/services/storage/localStorage';
@@ -543,6 +543,25 @@ export async function setMatchWinner(
     }
   }
 
+  await saveTournamentAsync(updatedTournament);
+  return updatedTournament;
+}
+
+/**
+ * Disqualify a participant in a ready bracket match. The opponent advances without a score and
+ * the participant leaves the tournament. Deliberately NO match record is queued: a DQ is not a
+ * played match, so history, head-to-head and stats never see it (undo works like any result).
+ */
+export async function disqualifyInMatch(
+  tournamentId: string,
+  matchId: string,
+  participantId: string
+): Promise<Tournament> {
+  const tournament = loadTournament(tournamentId);
+  if (!tournament) throw new Error('Tournament not found');
+  if (tournament.status !== 'in_progress') throw new Error('Tournament is not in progress');
+
+  const updatedTournament = disqualifyParticipant(tournament, matchId, participantId);
   await saveTournamentAsync(updatedTournament);
   return updatedTournament;
 }

@@ -45,6 +45,8 @@ export interface Participant {
   eliminated: boolean;
   finalPosition?: number;
   lossCount: number; // Track number of losses (0, 1, or 2 for double elimination)
+  /** Disqualified from the tournament (see Match.disqualifiedId). Their loss count is never touched. */
+  disqualified?: boolean;
   
   // For singles tournaments: links to GlobalParticipant
   globalParticipantId?: string;
@@ -67,6 +69,12 @@ export interface Match {
   participant2Id: string | null;
   winnerId: string | null;
   loserId: string | null;
+  /**
+   * Set when the match was decided by a disqualification: this participant was DQ'd, the
+   * other one advances. No scores / characters / games, and it never counts as a played
+   * match in stats, H2H or history.
+   */
+  disqualifiedId?: string | null;
   status: MatchStatus;
   nextWinnerMatchId: string | null; // Where winner advances
   nextLoserMatchId: string | null; // Where loser goes (only in winner bracket)
