@@ -63,7 +63,7 @@ export function ensureGameProfile(
       eloRank: 'Sin puntos',
       available: false,
       leagueAvailable: false,
-      tournamentAvailable: false,
+      tournamentAvailable: true,
     };
   }
   return p.games[gameId];

@@ -39,8 +39,9 @@ export function getEffectiveElo(p, gameId = null) {
 export function ensureGameProfile(p, gameId) {
   if (!p.games) p.games = {};
   if (!p.games[gameId]) {
-    // New profiles start opted-out of every activity — the user or an admin
-    // must activate each one from the profile edit.
+    // New profiles start opted-out of ranked and leagues — the user or an admin
+    // must activate them from the profile edit. Tournaments are opt-out instead:
+    // new participants can be added to brackets by default.
     p.games[gameId] = {
       gameId,
       mainCharacterId: null,
@@ -48,7 +49,7 @@ export function ensureGameProfile(p, gameId) {
       eloRank: 'Sin puntos',
       available: false,
       leagueAvailable: false,
-      tournamentAvailable: false,
+      tournamentAvailable: true,
     };
   }
   return p.games[gameId];

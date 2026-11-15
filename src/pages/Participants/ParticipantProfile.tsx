@@ -838,6 +838,14 @@ function ParticipantProfile() {
           return nextMains;
         });
       }
+      if (checked) {
+        // A newly checked game gets the same defaults as a fresh profile:
+        // tournaments ON, ranked and leagues OFF.
+        setEditGameAvailability((prev) => prev[gameId] ? prev : ({
+          ...prev,
+          [gameId]: { ranked: false, leagues: false, tournaments: true },
+        }));
+      }
       return next;
     });
   }

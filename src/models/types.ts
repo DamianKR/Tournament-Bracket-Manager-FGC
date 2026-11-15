@@ -219,7 +219,8 @@ export interface ParticipantGameProfile {
    *  undefined = allowed (legacy profiles); false = cannot be registered, not even by admin. */
   leagueAvailable?: boolean;
   /** Whether the player can be added to tournament participant pools.
-   *  undefined = allowed (legacy profiles); false = cannot be added, not even by admin. */
+   *  Defaults to true for new profiles (opt-out); undefined = allowed (legacy);
+   *  false = cannot be added, not even by admin. */
   tournamentAvailable?: boolean;
 }
 
