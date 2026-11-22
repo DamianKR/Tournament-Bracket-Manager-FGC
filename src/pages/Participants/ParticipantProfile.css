@@ -114,11 +114,17 @@
 }
 
 /* start.gg link status */
-.startgg-linked-info {
+.startgg-accounts-list {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem 0;
+}
+
+.startgg-linked-info {
+  display: flex;
+  align-items: center;
   gap: 0.6rem;
-  padding: 0.8rem 1.1rem 0;
 }
 
 .startgg-linked-badge {
@@ -126,6 +132,8 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   border-radius: 8px;
@@ -146,8 +154,9 @@
 }
 
 .startgg-disconnect-btn {
-  align-self: flex-start;
-  margin: 0 0 0.9rem;
+  flex-shrink: 0;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.8rem;
 }
 
 .success-message {

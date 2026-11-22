@@ -10,8 +10,17 @@ import { getAuthHeader } from '@/services/auth/authService';
 
 // ── Tipos ────────────────────────────────────────────────────────────────
 
+export interface StartggAccountInfo {
+  startggUserId:   number | null;
+  startggPlayerId: number | null;
+  startggSlug:     string | null;
+  startggGamerTag: string | null;
+}
+
 export interface StartggLinkStatus {
   linked: boolean;
+  accounts: StartggAccountInfo[];
+  /** @deprecated Escalares del primer account — usar accounts[]. */
   startggUserId:   number | null;
   startggPlayerId: number | null;
   startggSlug:     string | null;
@@ -66,10 +75,13 @@ export async function completeStartggOAuth(code: string): Promise<StartggLinkSta
 }
 
 /**
- * Desvincula la cuenta start.gg del usuario actual.
+ * Desvincula una cuenta start.gg específica del usuario actual.
+ * Si no se pasa playerId, desvincula todas (compat legacy).
  */
-export async function disconnectStartgg(): Promise<void> {
-  const res = await fetch(`${SERVER_URL}/api/startgg/auth/disconnect`, {
+export async function disconnectStartgg(playerId?: number | null): Promise<void> {
+  const url = new URL(`${SERVER_URL}/api/startgg/auth/disconnect`);
+  if (playerId != null) url.searchParams.set('playerId', String(playerId));
+  const res = await fetch(url.toString(), {
     method:  'DELETE',
     headers: getAuthHeader(),
   });

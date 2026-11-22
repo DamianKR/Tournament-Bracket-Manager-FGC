@@ -314,7 +314,7 @@ function ParticipantProfile() {
     if (!isOwnProfile || tab !== 'edit' || startggStatus !== null) return;
     getStartggLinkStatus()
       .then(setStartggStatus)
-      .catch(() => setStartggStatus({ linked: false, startggUserId: null, startggPlayerId: null, startggSlug: null, startggGamerTag: null }));
+      .catch(() => setStartggStatus({ linked: false, accounts: [], startggUserId: null, startggPlayerId: null, startggSlug: null, startggGamerTag: null }));
   }, [isOwnProfile, tab, startggStatus]);
 
   // Load tournament results when Results tab is opened
@@ -627,12 +627,14 @@ function ParticipantProfile() {
     }
   }
 
-  async function handleDisconnectStartgg() {
+  async function handleDisconnectStartgg(playerId?: number | null) {
     setStartggLoading(true);
     setStartggError('');
     try {
-      await disconnectStartgg();
-      setStartggStatus({ linked: false, startggUserId: null, startggPlayerId: null, startggSlug: null, startggGamerTag: null });
+      await disconnectStartgg(playerId);
+      // Reload status from server to get the updated accounts list
+      const updated = await getStartggLinkStatus();
+      setStartggStatus(updated);
       toast.success('Cuenta de start.gg desconectada');
     } catch (err: any) {
       setStartggError(err.message || 'Error al desconectar start.gg');
@@ -1638,45 +1640,49 @@ function ParticipantProfile() {
                     <span>start<span className="sgg-accent">.gg</span></span>
                   </div>
                   <p className="edit-section-desc">
-                    {startggStatus?.linked
-                      ? 'Tu cuenta está vinculada a start.gg. Los torneos importados te identificarán automáticamente.'
+                    {(startggStatus?.accounts?.length ?? 0) > 0
+                      ? 'Tus cuentas vinculadas de start.gg. Los torneos importados te identificarán automáticamente.'
                       : 'Vincula tu cuenta de start.gg para que los torneos importados te identifiquen automáticamente.'}
                   </p>
                   {startggError && <div className="error-message">{startggError}</div>}
-                  {startggStatus?.linked ? (
-                    <div className="startgg-linked-info">
-                      <div className="startgg-linked-badge">
-                        <i className="fas fa-check-circle" />
-                        <span>
-                          {startggStatus.startggGamerTag
-                            ? <>Conectado como <strong>{startggStatus.startggGamerTag}</strong></>
-                            : <>Conectado (ID: {startggStatus.startggUserId})</>}
-                        </span>
-                        {startggStatus.startggPlayerId && (
-                          <span className="startgg-player-id">Player ID: {startggStatus.startggPlayerId}</span>
-                        )}
-                      </div>
-                      <button
-                        className="btn-secondary startgg-disconnect-btn"
-                        onClick={handleDisconnectStartgg}
-                        disabled={startggLoading}
-                      >
-                        <i className="fas fa-unlink" /> Desconectar start.gg
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="edit-section-actions">
-                      <button
-                        className="btn-primary"
-                        onClick={handleConnectStartgg}
-                        disabled={startggLoading}
-                      >
-                        {startggLoading
-                          ? <><i className="fas fa-spinner fa-spin" /> Conectando…</>
-                          : <><i className="fas fa-link" /> Conectar start.gg</>}
-                      </button>
+                  {(startggStatus?.accounts?.length ?? 0) > 0 && (
+                    <div className="startgg-accounts-list">
+                      {startggStatus!.accounts.map((acc) => (
+                        <div className="startgg-linked-info" key={acc.startggPlayerId ?? acc.startggUserId}>
+                          <div className="startgg-linked-badge">
+                            <i className="fas fa-check-circle" />
+                            <span>
+                              {acc.startggGamerTag
+                                ? <><strong>{acc.startggGamerTag}</strong></>
+                                : <>ID: {acc.startggUserId}</>}
+                            </span>
+                            {acc.startggPlayerId && (
+                              <span className="startgg-player-id">Player ID: {acc.startggPlayerId}</span>
+                            )}
+                          </div>
+                          <button
+                            className="btn-secondary startgg-disconnect-btn"
+                            onClick={() => handleDisconnectStartgg(acc.startggPlayerId)}
+                            disabled={startggLoading}
+                            title="Desconectar esta cuenta"
+                          >
+                            <i className="fas fa-unlink" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   )}
+                  <div className="edit-section-actions">
+                    <button
+                      className="btn-primary"
+                      onClick={handleConnectStartgg}
+                      disabled={startggLoading}
+                    >
+                      {startggLoading
+                        ? <><i className="fas fa-spinner fa-spin" /> Conectando…</>
+                        : <><i className="fas fa-link" /> {(startggStatus?.accounts?.length ?? 0) > 0 ? 'Añadir otra cuenta' : 'Conectar start.gg'}</>}
+                    </button>
+                  </div>
                 </div>
               </>
             )}

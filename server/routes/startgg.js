@@ -2,9 +2,9 @@
  * start.gg OAuth & integration routes
  *
  * GET    /api/startgg/auth/url        — genera la URL de autorización OAuth
- * POST   /api/startgg/auth/callback   — intercambia code por token + guarda IDs en el user
- * DELETE /api/startgg/auth/disconnect — desvincula la cuenta de start.gg
- * GET    /api/startgg/me              — devuelve los campos startgg del usuario actual
+ * POST   /api/startgg/auth/callback   — intercambia code por token + añade cuenta al array
+ * DELETE /api/startgg/auth/disconnect — desvincula UNA cuenta (por playerId) o TODAS
+ * GET    /api/startgg/me              — devuelve las cuentas vinculadas del usuario actual
  */
 
 import { Router } from 'express';
@@ -30,6 +30,63 @@ const CLIENT_SECRET = process.env.STARTGG_OAUTH_CLIENT_SECRET;
 const REDIRECT_URI  = process.env.STARTGG_REDIRECT_URI || 'http://localhost:5173/auth/startgg/callback';
 const STARTGG_API   = 'https://api.start.gg/gql/alpha';
 const SCOPES        = 'user.identity';
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+
+/**
+ * Returns the user's startggAccounts array, migrating from legacy scalar
+ * fields if the array doesn't exist yet.
+ */
+function getAccounts(user) {
+  if (Array.isArray(user.startggAccounts) && user.startggAccounts.length > 0) {
+    return user.startggAccounts;
+  }
+  // Legacy migration: scalar fields → single-element array
+  if (user.startggPlayerId || user.startggUserId) {
+    return [{
+      startggUserId:   user.startggUserId   ?? null,
+      startggPlayerId: user.startggPlayerId ?? null,
+      startggSlug:     user.startggSlug     ?? null,
+      startggGamerTag: user.startggGamerTag ?? null,
+    }];
+  }
+  return [];
+}
+
+/**
+ * Sync legacy scalar fields from the accounts array (first entry = primary).
+ * Also persists the accounts array itself on the user.
+ */
+function syncAccountFields(user, accounts) {
+  user.startggAccounts = accounts;
+  if (accounts.length > 0) {
+    const primary = accounts[0];
+    user.startggUserId   = primary.startggUserId;
+    user.startggPlayerId = primary.startggPlayerId;
+    user.startggSlug     = primary.startggSlug;
+    user.startggGamerTag = primary.startggGamerTag;
+  } else {
+    delete user.startggUserId;
+    delete user.startggPlayerId;
+    delete user.startggSlug;
+    delete user.startggGamerTag;
+  }
+}
+
+/**
+ * Build the response shape for /me and callback.
+ */
+function buildLinkResponse(accounts) {
+  const primary = accounts[0] ?? null;
+  return {
+    linked:          accounts.length > 0,
+    accounts,
+    startggUserId:   primary?.startggUserId   ?? null,
+    startggPlayerId: primary?.startggPlayerId ?? null,
+    startggSlug:     primary?.startggSlug     ?? null,
+    startggGamerTag: primary?.startggGamerTag ?? null,
+  };
+}
 
 // ── GET /api/startgg/auth/url ─────────────────────────────────────────────
 // Devuelve la URL de autorización de start.gg para redirigir al usuario.
@@ -124,10 +181,19 @@ router.post('/auth/callback', requireAuth, async (req, res) => {
 
     const incomingPlayerId = startggUser.player?.id ?? null;
     if (incomingPlayerId) {
+      // Check this user doesn't already have this account linked
+      const existing = getAccounts(user);
+      if (existing.some((a) => String(a.startggPlayerId) === String(incomingPlayerId))) {
+        return res.status(409).json({
+          error: 'Esta cuenta de start.gg ya está vinculada a tu usuario.',
+        });
+      }
+      // Check no OTHER user has this account linked
       const allUsers = await users.getAll();
-      const conflict = allUsers.find(
-        (u) => u.id !== user.id && String(u.startggPlayerId) === String(incomingPlayerId)
-      );
+      const conflict = allUsers.find((u) => {
+        if (u.id === user.id) return false;
+        return getAccounts(u).some((a) => String(a.startggPlayerId) === String(incomingPlayerId));
+      });
       if (conflict) {
         return res.status(409).json({
           error: 'Esta cuenta de start.gg ya está vinculada a otro usuario del sistema.',
@@ -135,11 +201,15 @@ router.post('/auth/callback', requireAuth, async (req, res) => {
       }
     }
 
-    // 4. Guardar IDs en el usuario local
-    user.startggUserId   = startggUser.id ?? null;
-    user.startggPlayerId = incomingPlayerId;
-    user.startggSlug     = startggUser.slug ?? null;
-    user.startggGamerTag = startggUser.player?.gamerTag ?? null;
+    // 4. Añadir la cuenta al array del usuario
+    const newAccount = {
+      startggUserId:   startggUser.id ?? null,
+      startggPlayerId: incomingPlayerId,
+      startggSlug:     startggUser.slug ?? null,
+      startggGamerTag: startggUser.player?.gamerTag ?? null,
+    };
+    const accounts = [...getAccounts(user), newAccount];
+    syncAccountFields(user, accounts);
 
     await users.upsert(user);
 
@@ -148,10 +218,7 @@ router.post('/auth/callback', requireAuth, async (req, res) => {
     console.log(`[startgg] Link propagation result for user ${user.username}:`, mergeResult);
 
     res.json({
-      startggUserId:   user.startggUserId,
-      startggPlayerId: user.startggPlayerId,
-      startggSlug:     user.startggSlug,
-      startggGamerTag: user.startggGamerTag,
+      ...buildLinkResponse(getAccounts(user)),
       mergeResult,
     });
   } catch (err) {
@@ -161,35 +228,34 @@ router.post('/auth/callback', requireAuth, async (req, res) => {
 });
 
 // ── DELETE /api/startgg/auth/disconnect ──────────────────────────────────
-// Elimina el vínculo con start.gg del usuario actual.
+// Desvincula UNA cuenta (por ?playerId=) o TODAS si no se pasa playerId.
 
 router.delete('/auth/disconnect', requireAuth, async (req, res) => {
   const user = await users.findById(req.user.id);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  delete user.startggUserId;
-  delete user.startggPlayerId;
-  delete user.startggSlug;
-  delete user.startggGamerTag;
+  const targetPlayerId = req.query.playerId;
+  let accounts = getAccounts(user);
+
+  if (targetPlayerId) {
+    accounts = accounts.filter((a) => String(a.startggPlayerId) !== String(targetPlayerId));
+  } else {
+    accounts = [];
+  }
+  syncAccountFields(user, accounts);
 
   await users.upsert(user);
   res.json({ ok: true });
 });
 
 // ── GET /api/startgg/me ───────────────────────────────────────────────────
-// Devuelve el estado de vinculación start.gg del usuario autenticado.
+// Devuelve las cuentas vinculadas de start.gg del usuario autenticado.
 
 router.get('/me', requireAuth, async (req, res) => {
   const user = await users.findById(req.user.id);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  res.json({
-    linked: !!user.startggUserId,
-    startggUserId:   user.startggUserId   ?? null,
-    startggPlayerId: user.startggPlayerId ?? null,
-    startggSlug:     user.startggSlug     ?? null,
-    startggGamerTag: user.startggGamerTag ?? null,
-  });
+  res.json(buildLinkResponse(getAccounts(user)));
 });
 
 // ── POST /api/startgg/import/preview ─────────────────────────────────────

@@ -14,10 +14,12 @@
  *
  *   propagateStartggLink(userId)
  *     Llamar después de que un user complete el OAuth de start.gg.
- *     1. Propaga startggPlayerId al/los participant(s) del user.
- *     2. Busca stubs en CUALQUIER comunidad con ese startggPlayerId.
- *     3. Para cada stub encontrado: merge (si el user ya tiene participant
+ *     1. Para CADA cuenta en user.startggAccounts, busca stubs en CUALQUIER
+ *        comunidad con ese startggPlayerId.
+ *     2. Para cada stub encontrado: merge (si el user ya tiene participant
  *        en esa comunidad) o adopt (si no tiene).
+ *     NO propaga startggPlayerId a los participants reales: la identidad
+ *     start.gg vive en el user, no en el participant.
  */
 
 import {
@@ -97,7 +99,9 @@ export async function mergeParticipants(survivorId, absorbedId) {
   // 2. Merge identity fields onto survivor
   migrateParticipantGames(survivor);
 
-  survivor.startggPlayerId = survivor.startggPlayerId ?? absorbed.startggPlayerId;
+  // startggPlayerId: NO se copia al survivor. La identidad start.gg vive en
+  // el user (startggAccounts), no en el participant real. Los stubs lo
+  // conservan mientras no estén absorbidos.
   survivor.startggEntrantIds = [
     ...new Set([
       ...(survivor.startggEntrantIds ?? []),
@@ -336,60 +340,52 @@ export async function adoptStub(user, stub) {
 // ── propagateStartggLink ──────────────────────────────────────────────────────
 
 /**
- * Called after a user completes start.gg OAuth.
- * 1. Writes startggPlayerId to every participant the user owns.
- * 2. Finds all stubs (any community) with that startggPlayerId.
- * 3. For each stub:
- *      - User already has a participant in that community → mergeParticipants
- *      - User has no participant in that community       → adoptStub
+ * Called after a user completes start.gg OAuth (may have multiple accounts).
+ *
+ * For EACH account in user.startggAccounts:
+ *   1. Finds all stubs (any community) with that startggPlayerId.
+ *   2. For each stub: merge (user already has participant) or adopt (user has none).
+ *
+ * Does NOT propagate startggPlayerId to real participants — the identity
+ * lives in the user record (startggAccounts), not on the participant.
  *
  * @param {string} userId - The local user ID
  * @returns {Promise<{ propagated: number, merged: number, adopted: number }>}
  */
 export async function propagateStartggLink(userId) {
   const user = await users.findById(userId);
-  if (!user || !user.startggPlayerId) return { propagated: 0, merged: 0, adopted: 0 };
+  if (!user) return { propagated: 0, merged: 0, adopted: 0 };
 
-  const sggPlayerId = String(user.startggPlayerId);
-  let propagated = 0, merged = 0, adopted = 0;
+  // Collect all playerIds from the accounts array (with legacy fallback)
+  const accounts = Array.isArray(user.startggAccounts) && user.startggAccounts.length > 0
+    ? user.startggAccounts
+    : (user.startggPlayerId ? [{ startggPlayerId: user.startggPlayerId, startggGamerTag: user.startggGamerTag }] : []);
+  const playerIds = accounts.map((a) => a.startggPlayerId).filter(Boolean).map(String);
 
-  // 1. Propagate startggPlayerId to user's own participants
-  const ownParticipantIds = getAllParticipantIds(user);
-  for (const pid of ownParticipantIds) {
-    const p = await participants.findById(pid);
-    if (p && !p.startggPlayerId) {
-      p.startggPlayerId = user.startggPlayerId;
-      p.updatedAt = now();
-      await participants.upsert(p);
-      propagated++;
-    }
-  }
+  if (playerIds.length === 0) return { propagated: 0, merged: 0, adopted: 0 };
 
-  // 2. Find all stubs across ALL communities with this startggPlayerId
+  let merged = 0, adopted = 0;
+
+  // 1. Find all stubs across ALL communities matching ANY of the user's playerIds
   const allParticipants = await participants.getAll();
+  const playerIdSet = new Set(playerIds);
   const matchingStubs = allParticipants.filter(
-    (p) => p.isStartggStub && String(p.startggPlayerId) === sggPlayerId
+    (p) => p.isStartggStub && p.startggPlayerId && playerIdSet.has(String(p.startggPlayerId))
   );
 
-  // Reload user in case adoptStub modified memberships in a previous iteration
   let freshUser = await users.findById(userId);
 
   for (const stub of matchingStubs) {
-    // Reload user each iteration so memberships stay fresh
     freshUser = await users.findById(userId);
     const existingPid = getParticipantForCommunity(freshUser, stub.communityId);
 
     if (existingPid && existingPid !== stub.id) {
-      // User already has a real participant in this community → merge
       await mergeParticipants(existingPid, stub.id);
       merged++;
     } else if (!existingPid) {
-      // User has no participant in this community → adopt
       await adoptStub(freshUser, stub);
       adopted++;
-    }
-    // If existingPid === stub.id the stub is already "their" participant — just un-stub it
-    else if (existingPid === stub.id && stub.isStartggStub) {
+    } else if (existingPid === stub.id && stub.isStartggStub) {
       stub.isStartggStub = false;
       stub.updatedAt = now();
       await participants.upsert(stub);
@@ -397,24 +393,24 @@ export async function propagateStartggLink(userId) {
     }
   }
 
-  // 3. Fallback por nombre: stubs SIN startggPlayerId (entrants sin cuenta
-  //    start.gg vinculada) jamás podrán matchear por playerId. Los unimos al
-  //    participant del user SOLO en comunidades donde el user ya tiene uno —
-  //    nunca adoptamos en comunidades extrañas por nombre solo (gamertags
-  //    comunes harían merges incorrectos e irreversibles).
-  const gamerTag = (user.startggGamerTag ?? '').trim().toLowerCase();
+  // 2. Fallback por nombre: stubs SIN startggPlayerId (entrants sin cuenta
+  //    start.gg vinculada). Se unen SOLO en comunidades donde el user ya tiene
+  //    participant — nunca adoptamos por nombre solo.
+  const gamerTags = accounts
+    .map((a) => (a.startggGamerTag ?? '').trim().toLowerCase())
+    .filter(Boolean);
   let nameMatched = 0;
-  if (gamerTag) {
+  if (gamerTags.length > 0) {
     freshUser = await users.findById(userId);
+    const gamerTagSet = new Set(gamerTags);
     const nameCandidates = allParticipants.filter(
       (p) => p.isStartggStub
           && !p.startggPlayerId
-          && (p.name ?? '').trim().toLowerCase() === gamerTag
+          && gamerTagSet.has((p.name ?? '').trim().toLowerCase())
     );
     for (const stub of nameCandidates) {
       freshUser = await users.findById(userId);
       const existingPid = getParticipantForCommunity(freshUser, stub.communityId);
-      // Solo merge cuando el user ya tiene participant en esa comunidad
       if (existingPid && existingPid !== stub.id) {
         console.log(`[propagateStartggLink] name-match merge: stub ${stub.id} (${stub.name}) → ${existingPid} en ${stub.communityId}`);
         await mergeParticipants(existingPid, stub.id);
@@ -424,6 +420,6 @@ export async function propagateStartggLink(userId) {
     }
   }
 
-  console.log(`[propagateStartggLink] user=${user.username} propagated=${propagated} merged=${merged} adopted=${adopted} nameMatched=${nameMatched}`);
-  return { propagated, merged, adopted, nameMatched };
+  console.log(`[propagateStartggLink] user=${user.username} playerIds=[${playerIds}] merged=${merged} adopted=${adopted} nameMatched=${nameMatched}`);
+  return { propagated: 0, merged, adopted, nameMatched };
 }

@@ -9,6 +9,14 @@ import type { AppNotification } from './notification';
  *   AuthSession.token → supabase session.access_token
  */
 
+/** Una cuenta de start.gg vinculada al usuario. */
+export interface StartggAccount {
+  startggUserId:   number | null;
+  startggPlayerId: number | null;
+  startggSlug:     string | null;
+  startggGamerTag: string | null;
+}
+
 /** Identidad del user en una comunidad: participant separado con sus propios datos. */
 export interface CommunityMembership {
   participantId: string;
@@ -38,7 +46,9 @@ export interface AuthUser {
   isActive: boolean;
   createdAt: string;
   lastLoginAt: string | null;
-  /** start.gg linked account data (optional) */
+  /** start.gg linked accounts (multiple allowed). */
+  startggAccounts?: StartggAccount[];
+  /** @deprecated Escalares legacy — usar startggAccounts. Se mantienen por compat. */
   startggUserId?: number | null;
   startggPlayerId?: number | null;
   startggSlug?: string | null;
@@ -68,7 +78,9 @@ export interface SessionUser {
   participantByCommunity?: Record<string, string>;
   /** @deprecated Usar memberships. */
   gameAdminFor?: string[];
-  /** start.gg linked account data (optional) */
+  /** start.gg linked accounts (multiple allowed). */
+  startggAccounts?: StartggAccount[];
+  /** @deprecated Escalares legacy — usar startggAccounts. Se mantienen por compat. */
   startggUserId?: number | null;
   startggPlayerId?: number | null;
   startggSlug?: string | null;

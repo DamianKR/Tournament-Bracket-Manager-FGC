@@ -867,11 +867,17 @@ export async function importEvent(slug, eventId, communityId, givesPoints = fals
     }
   }
 
-  // Map: sggPlayerId → user (from users that have linked their start.gg account)
+  // Map: sggPlayerId → user (from ALL linked start.gg accounts per user)
   const userBySggPlayerId = new Map();
   for (const u of allUsers) {
-    if (u.startggPlayerId) {
-      userBySggPlayerId.set(String(u.startggPlayerId), u);
+    // Multi-account: iterate startggAccounts array
+    const accounts = Array.isArray(u.startggAccounts) && u.startggAccounts.length > 0
+      ? u.startggAccounts
+      : (u.startggPlayerId ? [{ startggPlayerId: u.startggPlayerId }] : []);
+    for (const acc of accounts) {
+      if (acc.startggPlayerId) {
+        userBySggPlayerId.set(String(acc.startggPlayerId), u);
+      }
     }
   }
 
@@ -937,14 +943,12 @@ export async function importEvent(slug, eventId, communityId, givesPoints = fals
       if (linkedUser) {
         const existingPid = getParticipantForCommunity(linkedUser, communityId);
         if (existingPid) {
-          // Use the user's real participant — ensure startggPlayerId + entrantId are set
+          // Use the user's real participant — ensure entrantId + game profile are set.
+          // startggPlayerId is NOT copied to the real participant: the identity
+          // lives in the user record (startggAccounts).
           const existingP = allLocalParticipants.find((lp) => lp.id === existingPid);
           if (existingP) {
             let dirty = false;
-            if (!existingP.startggPlayerId) {
-              existingP.startggPlayerId = Number(sggPlayerId);
-              dirty = true;
-            }
             if (!existingP.startggEntrantIds?.includes(sggEntrantId)) {
               existingP.startggEntrantIds = [
                 ...new Set([...(existingP.startggEntrantIds ?? []), sggEntrantId]),
@@ -979,7 +983,7 @@ export async function importEvent(slug, eventId, communityId, givesPoints = fals
             mainCharacterId: null,
             games:           localGameId ? { [localGameId]: buildGameProfile(localGameId) } : {},
             communityId,
-            startggPlayerId:   Number(sggPlayerId),
+            // startggPlayerId NOT set: identity lives in user.startggAccounts
             startggEntrantIds: [sggEntrantId],
             isStartggStub:     false,
             createdAt:         now,
